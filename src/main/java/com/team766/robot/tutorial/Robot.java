@@ -36,6 +36,7 @@ public class Robot implements RobotConfigurator {
             //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
             //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
 
+            new AutonomousMode("DriveSquare", () -> new DriveSquare(drive)),
             new AutonomousMode("TurnRight", () -> new TurnRight(drive)),
             new AutonomousMode("DriveStraight", () -> new DriveStraight(drive)),
             new AutonomousMode("DoNothing", () -> new DoNothing()),

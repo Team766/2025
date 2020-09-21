@@ -14,7 +14,7 @@ public class TurnRight extends Procedure {
     public void run(Context context) {
         drive.setDrivePower(0.25, -0.25);
 
-        context.waitForSeconds(3.0);
+        context.waitForSeconds(0.903);
 
         drive.setDrivePower(0.0, 0.0);
     }
