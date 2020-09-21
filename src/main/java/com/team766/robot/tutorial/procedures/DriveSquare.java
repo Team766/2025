@@ -13,28 +13,13 @@ public class DriveSquare extends Procedure {
     }
 
     public void run(Context context) {
-        // First side
-        context.runSync(new DriveStraight(drive));
+        // This loop repeats 4 times.
+        for (int i = 0; i < 4; ++i) {
+            // Drive along the side of the square
+            context.runSync(new DriveStraight(drive));
 
-        // First corner
-        context.runSync(new TurnRight(drive));
-
-        // Second side
-        context.runSync(new DriveStraight(drive));
-
-        // Second corner
-        context.runSync(new TurnRight(drive));
-
-        // Third side
-        context.runSync(new DriveStraight(drive));
-
-        // Third corner
-        context.runSync(new TurnRight(drive));
-
-        // Fourth side
-        context.runSync(new DriveStraight(drive));
-
-        // Fourth corner
-        context.runSync(new TurnRight(drive));
+            // Turn at the corner
+            context.runSync(new TurnRight(drive));
+        }
     }
 }
