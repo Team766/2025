@@ -19,7 +19,7 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive);
+        return new OI(drive, launcher);
     }
 
     @Override
