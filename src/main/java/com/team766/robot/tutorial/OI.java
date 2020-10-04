@@ -6,6 +6,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.tutorial.mechanisms.*;
 import com.team766.robot.tutorial.procedures.*;
+import java.util.Set;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -18,6 +19,26 @@ public class OI extends RuleEngine {
         final JoystickReader joystick2 = RobotProvider.instance.getJoystick(2);
 
         // Add driver control rules here.
+        addRule(
+                "Log driver controls",
+                UNCONDITIONAL,
+                Set.of(),
+                () ->
+                        log(
+                                "J0 A0: "
+                                        + joystick0.getAxis(0)
+                                        + "  J0 A1: "
+                                        + joystick0.getAxis(1)
+                                        + "  J1 A0: "
+                                        + joystick1.getAxis(0)
+                                        + "  J1 A1: "
+                                        + joystick1.getAxis(1)
+                                        + "  J0 B1: "
+                                        + joystick0.getButton(1)
+                                        + "  J0 B2: "
+                                        + joystick0.getButton(2)
+                                        + "  J0 B3: "
+                                        + joystick0.getButton(3)));
     }
 
     @Override
