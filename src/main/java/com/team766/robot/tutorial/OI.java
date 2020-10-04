@@ -25,7 +25,7 @@ public class OI extends RuleEngine {
                 UNCONDITIONAL,
                 REPEATEDLY,
                 drive,
-                () -> drive.setDrivePower(joystick0.getAxis(1), joystick1.getAxis(1)));
+                () -> drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(0)));
     }
 
     @Override
