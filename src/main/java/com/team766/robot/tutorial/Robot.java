@@ -9,17 +9,19 @@ import com.team766.robot.tutorial.procedures.*;
 public class Robot implements RobotConfigurator {
     private Drive drive;
     private Launcher launcher;
+    private Intake intake;
 
     @Override
     public void initializeMechanisms() {
         // Initialize mechanisms here
         drive = new Drive();
         launcher = new Launcher();
+        intake = new Intake();
     }
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, launcher);
+        return new OI(drive, launcher, intake);
     }
 
     @Override
@@ -38,6 +40,7 @@ public class Robot implements RobotConfigurator {
             //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
             //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
 
+            new AutonomousMode("CollectBalls", () -> new CollectBalls(drive, intake)),
             new AutonomousMode("Launch", () -> new Launch(launcher)),
             new AutonomousMode("DriveSquare", () -> new DriveSquare(drive)),
             new AutonomousMode("TurnRight", () -> new TurnRight(drive)),

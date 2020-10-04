@@ -14,7 +14,7 @@ import com.team766.robot.tutorial.procedures.*;
  * interface to the code that allow control of the robot.
  */
 public class OI extends RuleEngine {
-    public OI(Drive drive, Launcher launcher) {
+    public OI(Drive drive, Launcher launcher, Intake intake) {
         final JoystickReader joystick0 = RobotProvider.instance.getJoystick(0);
         final JoystickReader joystick1 = RobotProvider.instance.getJoystick(1);
         final JoystickReader joystick2 = RobotProvider.instance.getJoystick(2);
@@ -28,6 +28,9 @@ public class OI extends RuleEngine {
                 () -> drive.setArcadeDrivePower(joystick0.getAxis(1), joystick1.getAxis(0)));
 
         addRule("Launch", joystick0.whenButton(1), () -> new Launch(launcher));
+
+        addRule("Start Intake", joystick1.whenButton(2), () -> new StartIntake(intake));
+        addRule("Stop Intake", joystick1.whenButton(3), () -> new StopIntake(intake));
     }
 
     @Override
