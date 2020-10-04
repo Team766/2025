@@ -8,11 +8,13 @@ import com.team766.robot.tutorial.procedures.*;
 
 public class Robot implements RobotConfigurator {
     private Drive drive;
+    private Launcher launcher;
 
     @Override
     public void initializeMechanisms() {
         // Initialize mechanisms here
         drive = new Drive();
+        launcher = new Launcher();
     }
 
     @Override
@@ -36,6 +38,7 @@ public class Robot implements RobotConfigurator {
             //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
             //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
 
+            new AutonomousMode("Launch", () -> new Launch(launcher)),
             new AutonomousMode("DriveSquare", () -> new DriveSquare(drive)),
             new AutonomousMode("TurnRight", () -> new TurnRight(drive)),
             new AutonomousMode("DriveStraight", () -> new DriveStraight(drive)),
