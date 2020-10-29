@@ -10,6 +10,7 @@ public class Robot implements RobotConfigurator {
     private Drive drive;
     private Launcher launcher;
     private Intake intake;
+    private LineSensors lineSensors;
 
     @Override
     public void initializeMechanisms() {
@@ -17,6 +18,7 @@ public class Robot implements RobotConfigurator {
         drive = new Drive();
         launcher = new Launcher();
         intake = new Intake();
+        lineSensors = new LineSensors();
     }
 
     @Override
@@ -40,6 +42,7 @@ public class Robot implements RobotConfigurator {
             //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
             //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
 
+            new AutonomousMode("FollowLine", () -> new FollowLine(drive)),
             new AutonomousMode("DriveAngle", () -> new TurnAngle(drive)),
             new AutonomousMode("DriveDistance", () -> new DriveDistance(drive)),
             new AutonomousMode("Score5", () -> new Score5(drive, launcher, intake)),
