@@ -15,35 +15,35 @@ public class DriveSquare extends Procedure {
 
     public void run(Context context) {
         // First side
-        context.runSync(new DriveStraight(drive));
+        context.runSync(new DriveDistance(drive));
         log("First side complete");
 
         // First corner
-        context.runSync(new TurnRight(drive));
+        context.runSync(new TurnAngle(drive));
         log("First corner complete");
 
         // Second side
-        context.runSync(new DriveStraight(drive));
+        context.runSync(new DriveDistance(drive));
         log("Second side complete");
 
         // Second corner
-        context.runSync(new TurnRight(drive));
+        context.runSync(new TurnAngle(drive));
         log("Second corner complete");
 
         // Third side
-        context.runSync(new DriveStraight(drive));
+        context.runSync(new DriveDistance(drive));
         log("Third side complete");
 
         // Third corner
-        context.runSync(new TurnRight(drive));
+        context.runSync(new TurnAngle(drive));
         log("Third corner complete");
 
         // Fourth side
-        context.runSync(new DriveStraight(drive));
+        context.runSync(new DriveDistance(drive));
         log("Fourth side complete");
 
         // Fourth corner
-        context.runSync(new TurnRight(drive));
+        context.runSync(new TurnAngle(drive));
         log("Fourth corner complete");
     }
 
