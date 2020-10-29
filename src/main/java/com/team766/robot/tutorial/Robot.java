@@ -40,6 +40,7 @@ public class Robot implements RobotConfigurator {
             //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
             //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
 
+            new AutonomousMode("DriveDistance", () -> new DriveDistance(drive)),
             new AutonomousMode("Score5", () -> new Score5(drive, launcher, intake)),
             new AutonomousMode("CollectBalls", () -> new CollectBalls(drive, intake)),
             new AutonomousMode("Launch", () -> new Launch(launcher)),
