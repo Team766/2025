@@ -1,5 +1,6 @@
 package com.team766.framework;
 
+import java.util.List;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -105,6 +106,26 @@ public interface Context {
      * Start running a new Context so the given procedure can run in parallel.
      */
     public LaunchedContext startAsync(final Runnable func);
+
+    /**
+     * Run the given ProcedureWithValue synchronously (the calling Procedure will not resume until
+     * this one has finished).
+     *
+     * Any values yielded by the procedure will be discarded.
+     */
+    public default void runSync(final RunnableWithContextWithValue<?> func) {
+        YieldedValues.discard(func).run(this);
+    }
+
+    /**
+     * Run the given ProcedureWithValue synchronously (the calling Procedure will not resume until
+     * this one has finished).
+     *
+     * All values yielded by the procedure will be collected into a List and returned.
+     */
+    public default <T> List<T> runSyncAndCollectValues(final RunnableWithContextWithValue<T> func) {
+        return YieldedValues.runAndCollect(this, func);
+    }
 
     /**
      * Take ownership of the given Mechanism with this Context.
