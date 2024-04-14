@@ -16,7 +16,7 @@ import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
-import com.team766.hal.wpilib.SystemClock;
+import com.team766.hal.SystemClock;
 
 public class TestRobotProvider extends RobotProvider {
 

@@ -4,6 +4,8 @@ import static com.team766.math.Math.normalizeAngleDegrees;
 
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.simulator.ProgramInterface;
+import com.team766.simulator.SimulationResetException;
+import com.team766.simulator.SimulatorInterface;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -16,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class VrConnector implements Runnable {
+public class VrConnector implements SimulatorInterface {
     private static class PortMapping {
         public final int messageDataIndex;
         public final int robotPortIndex;
@@ -353,8 +355,7 @@ public class VrConnector implements Runnable {
         return newData;
     }
 
-    public void run() {
-        double prevSimTime = 0;
+    public void step() throws SimulationResetException {
         while (true) {
             boolean newData = false;
             try {
@@ -372,10 +373,6 @@ public class VrConnector implements Runnable {
                 startTime = System.currentTimeMillis();
                 continue;
             }
-            if (resetCounter != lastResetCounter) {
-                lastResetCounter = resetCounter;
-                ProgramInterface.program.reset();
-            }
             if (!newData) {
                 continue;
             }
@@ -390,12 +387,12 @@ public class VrConnector implements Runnable {
                 } else {
                     continue;
                 }
-                prevSimTime = ProgramInterface.simulationTime;
             }
-            if (ProgramInterface.program != null) {
-                final double time = ProgramInterface.simulationTime;
-                ProgramInterface.program.step(time - prevSimTime);
-                prevSimTime = time;
+            if (resetCounter != lastResetCounter) {
+                lastResetCounter = resetCounter;
+                throw new SimulationResetException();
+            } else {
+                return;
             }
         }
     }

@@ -6,10 +6,6 @@ public class Parameters {
 
     public static final double LOGGING_PERIOD = 0.005; // seconds
 
-    // Robot mode to run in the simulator
-    public static final ProgramInterface.RobotMode INITIAL_ROBOT_MODE =
-            ProgramInterface.RobotMode.AUTON;
-
     public static final double BATTERY_VOLTAGE = 12.6; // volts
     public static final double PRIMARY_ELECTRICAL_RESISTANCE = 0.018 + 0.01; // ohms
 

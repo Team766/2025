@@ -5,17 +5,15 @@ import com.team766.hal.BeaconReader;
 import com.team766.hal.mock.MockJoystick;
 
 public class ProgramInterface {
-	public static Program program = null;
-
 	public static double simulationTime;
 
 	public static int driverStationUpdateNumber = 0;
 
-	public  enum RobotMode {
+	public enum RobotMode {
 		DISABLED, AUTON, TELEOP
 	}
 
-	public static RobotMode robotMode = Parameters.INITIAL_ROBOT_MODE;
+	public static RobotMode robotMode = ProgramInterface.RobotMode.DISABLED;;
 
 	public static final double[] pwmChannels = new double[20];
 

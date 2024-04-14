@@ -1,4 +1,4 @@
-package com.team766.hal.wpilib;
+package com.team766.hal;
 
 public class SystemClock implements com.team766.hal.Clock {
 

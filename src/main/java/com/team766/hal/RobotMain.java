@@ -1,18 +1,21 @@
-package com.team766.hal.wpilib;
+package com.team766.hal;
 
 import com.team766.config.ConfigFileReader;
-import com.team766.hal.CanivPoller;
-import com.team766.hal.GenericRobotMain;
-import com.team766.hal.RobotProvider;
+import com.team766.hal.simulator.VrConnector;
+import com.team766.hal.wpilib.WPIRobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
+import com.team766.simulator.ProgramInterface;
+import com.team766.simulator.SimulationResetException;
+import com.team766.simulator.SimulatorInterface;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.RobotBase;
 import java.io.File;
-// import java.nio.file.Files;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -24,6 +27,8 @@ public class RobotMain extends LoggedRobot {
     private static final String INTERNAL_CONFIG_FILE = "/home/lvuser/robotConfig.txt";
 
     private GenericRobotMain robot;
+
+    private SimulatorInterface simulator;
 
     public static void main(final String... args) {
         Supplier<RobotMain> supplier =
@@ -88,7 +93,11 @@ public class RobotMain extends LoggedRobot {
             String filename = null;
             filename = checkForAndReturnPathToConfigFile(USB_CONFIG_FILE);
 
-            if (filename == null) {
+            if (isSimulation()) {
+                // TODO: update this to come from deploy directory?
+                filename = "simConfig.txt";
+                configFromUSB = false;
+            } else if (filename == null) {
                 filename = INTERNAL_CONFIG_FILE;
                 configFromUSB = false;
             }
@@ -180,6 +189,39 @@ public class RobotMain extends LoggedRobot {
         } catch (Exception e) {
             e.printStackTrace();
             LoggerExceptionUtils.logException(e);
+        }
+    }
+
+    @Override
+    public void simulationInit() {
+        try {
+            simulator = new VrConnector();
+        } catch (IOException ex) {
+            throw new RuntimeException(
+                    "Error initializing communication with 3d Simulator", ex);
+        }
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        try {
+            simulator.step();
+        } catch (SimulationResetException e) {
+            robot.resetAutonomousMode("simulation reset");
+        }
+
+        switch (ProgramInterface.robotMode) {
+            case AUTON:
+                DriverStationSim.setAutonomous(true);
+                DriverStationSim.setEnabled(true);
+                break;
+            case DISABLED:
+                DriverStationSim.setEnabled(false);
+                break;
+            case TELEOP:
+                DriverStationSim.setAutonomous(false);
+                DriverStationSim.setEnabled(true);
+                break;
         }
     }
 }
