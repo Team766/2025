@@ -14,7 +14,7 @@ public class PwmMotorController extends MotorController {
     }
 
     @Override
-    protected double getCommand() {
+    protected double getPercentOutput() {
         return ProgramInterface.pwmChannels[channel];
     }
 }

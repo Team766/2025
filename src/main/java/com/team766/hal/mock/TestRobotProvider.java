@@ -5,12 +5,10 @@ import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
 import com.team766.hal.CameraReader;
 import com.team766.hal.Clock;
-import com.team766.hal.ControlInputReader;
 import com.team766.hal.DigitalInputReader;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.JoystickReader;
-import com.team766.hal.LocalMotorController;
 import com.team766.hal.MotorController;
 import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
@@ -31,16 +29,9 @@ public class TestRobotProvider extends RobotProvider {
 
     @Override
     public MotorController getMotor(
-            final int index,
-            final String configPrefix,
-            final MotorController.Type type,
-            final ControlInputReader localSensor) {
+            final int index, final String configPrefix, final MotorController.Type type) {
         if (motors[index] == null) {
-            motors[index] =
-                    new LocalMotorController(
-                            configPrefix,
-                            new MockMotorController(index),
-                            localSensor != null ? localSensor : new MockEncoder());
+            motors[index] = new MockMotorController(index);
         }
         return motors[index];
     }

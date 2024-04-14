@@ -4,6 +4,9 @@ import static com.team766.math.Math.normalizeAngleDegrees;
 
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.simulator.ProgramInterface;
+import com.team766.simulator.SimulationResetException;
+import com.team766.simulator.SimulatorInterface;
+import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -16,7 +19,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class VrConnector implements Runnable {
+public class VrConnector implements SimulatorInterface {
+    private enum RobotMode {
+        DISABLED,
+        AUTON,
+        TELEOP
+    }
+
     private static class PortMapping {
         public final int messageDataIndex;
         public final int robotPortIndex;
@@ -93,14 +102,8 @@ public class VrConnector implements Runnable {
     private static final int RESET_COUNTER_CHANNEL = 6;
 
     private static final int ROBOT_MODE_CHANNEL = 3;
-    private static final Map<Integer, ProgramInterface.RobotMode> ROBOT_MODES =
-            Map.of(
-                    0,
-                    ProgramInterface.RobotMode.DISABLED,
-                    1,
-                    ProgramInterface.RobotMode.AUTON,
-                    2,
-                    ProgramInterface.RobotMode.TELEOP);
+    private static final Map<Integer, RobotMode> ROBOT_MODES =
+            Map.of(0, RobotMode.DISABLED, 1, RobotMode.AUTON, 2, RobotMode.TELEOP);
 
     private static final int ROBOT_X_CHANNEL = 8;
     private static final int ROBOT_Y_CHANNEL = 9;
@@ -158,6 +161,7 @@ public class VrConnector implements Runnable {
     private ByteBuffer commands = ByteBuffer.allocate(BUF_SZ);
     private int resetCounter = 0;
 
+    private double simulationTime;
     private int lastResetCounter = 0;
     private double lastGyroValue = Double.NaN;
     private long[] lastEncoderValue = new long[ProgramInterface.encoderChannels.length];
@@ -206,6 +210,13 @@ public class VrConnector implements Runnable {
         commands.order(ByteOrder.LITTLE_ENDIAN);
         feedback.order(ByteOrder.LITTLE_ENDIAN);
         startTime = System.currentTimeMillis();
+
+        ProgramInterface.resetSimulationTime();
+        for (int j = 0; j < NUM_JOYSTICK; ++j) {
+            DriverStationSim.setJoystickAxisCount(
+                    j, BASE_AXES_PER_JOYSTICK + ADDITIONAL_AXES_PER_JOYSTICK);
+            DriverStationSim.setJoystickButtonCount(j, BUTTONS_PER_JOYSTICK);
+        }
     }
 
     private boolean process() throws IOException {
@@ -222,7 +233,7 @@ public class VrConnector implements Runnable {
         for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
             putCommandFloat(
                     m.motorCommandMessageDataIndex,
-                    ProgramInterface.canMotorControllerChannels[m.canId].command.output);
+                    ProgramInterface.canMotorControllerChannels[m.canId].command.percentOutput);
         }
 
         selector.selectedKeys().clear();
@@ -250,17 +261,32 @@ public class VrConnector implements Runnable {
         }
 
         if (newData) {
-            double prevSimTime = ProgramInterface.simulationTime;
+            final double prevSimTime = simulationTime;
             // Time is sent in milliseconds
-            ProgramInterface.simulationTime =
+            simulationTime =
                     assembleLong(
                                     getFeedback(TIMESTAMP_MSW_CHANNEL),
                                     getFeedback(TIMESTAMP_LSW_CHANNEL))
                             * 0.001;
+            final double deltaTime = simulationTime - prevSimTime;
+            ProgramInterface.stepSimulationTime(deltaTime);
 
             resetCounter = getFeedback(RESET_COUNTER_CHANNEL);
 
-            ProgramInterface.robotMode = ROBOT_MODES.get(getFeedback(ROBOT_MODE_CHANNEL));
+            final RobotMode robotMode = ROBOT_MODES.get(getFeedback(ROBOT_MODE_CHANNEL));
+            switch (robotMode) {
+                case AUTON:
+                    DriverStationSim.setAutonomous(true);
+                    DriverStationSim.setEnabled(true);
+                    break;
+                case DISABLED:
+                    DriverStationSim.setEnabled(false);
+                    break;
+                case TELEOP:
+                    DriverStationSim.setAutonomous(false);
+                    DriverStationSim.setEnabled(true);
+                    break;
+            }
 
             final double gyroValue = getFeedback(GYRO_CHANNEL) / 10.0;
             if (Double.isNaN(lastGyroValue)) {
@@ -300,9 +326,8 @@ public class VrConnector implements Runnable {
                 lastEncoderValue[m.robotPortIndex] = value;
 
                 ProgramInterface.encoderChannels[m.robotPortIndex].distance += delta;
-                if (ProgramInterface.simulationTime > prevSimTime) {
-                    ProgramInterface.encoderChannels[m.robotPortIndex].rate =
-                            delta / (ProgramInterface.simulationTime - prevSimTime);
+                if (deltaTime > 0.) {
+                    ProgramInterface.encoderChannels[m.robotPortIndex].rate = delta / deltaTime;
                 }
             }
             for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
@@ -313,8 +338,8 @@ public class VrConnector implements Runnable {
                 lastCANSensorValue[m.canId] = value;
 
                 status.sensorPosition += delta;
-                if (ProgramInterface.simulationTime > prevSimTime) {
-                    status.sensorVelocity = delta / (ProgramInterface.simulationTime - prevSimTime);
+                if (deltaTime > 0.) {
+                    status.sensorVelocity = delta / deltaTime;
                 }
             }
             for (PortMapping m : DIGITAL_CHANNELS) {
@@ -327,12 +352,14 @@ public class VrConnector implements Runnable {
             }
             for (int j = 0; j < NUM_JOYSTICK; ++j) {
                 for (int a = 0; a < BASE_AXES_PER_JOYSTICK; ++a) {
-                    ProgramInterface.joystickChannels[j].setAxisValue(
+                    DriverStationSim.setJoystickAxis(
+                            j,
                             a,
                             getFeedback(j * BASE_AXES_PER_JOYSTICK + a + BASE_AXIS_START) / 100.0);
                 }
                 for (int a = 0; a < ADDITIONAL_AXES_PER_JOYSTICK; ++a) {
-                    ProgramInterface.joystickChannels[j].setAxisValue(
+                    DriverStationSim.setJoystickAxis(
+                            j,
                             a + BASE_AXES_PER_JOYSTICK,
                             getFeedback(
                                             j * ADDITIONAL_AXES_PER_JOYSTICK
@@ -340,22 +367,21 @@ public class VrConnector implements Runnable {
                                                     + ADDITIONAL_AXIS_START)
                                     / 100.0);
                 }
-                int denseButtonState = getFeedback(j + JOYSTICK_BUTTON_START);
-                for (int b = 0; b < BUTTONS_PER_JOYSTICK; ++b) {
-                    ProgramInterface.joystickChannels[j].setButton(
-                            b + 1, ((denseButtonState >> b) & 1) != 0);
-                }
+                final int denseButtonState = getFeedback(j + JOYSTICK_BUTTON_START);
+                DriverStationSim.setJoystickButtons(j, denseButtonState);
             }
 
-            ++ProgramInterface.driverStationUpdateNumber;
+            DriverStationSim.notifyNewData();
         }
 
         return newData;
     }
 
-    public void run() {
-        double prevSimTime = 0;
+    public void step() throws SimulationResetException {
         while (true) {
+            if (simulationTime == 0) {
+                startTime = System.currentTimeMillis();
+            }
             boolean newData = false;
             try {
                 newData = process();
@@ -367,14 +393,9 @@ public class VrConnector implements Runnable {
                 } catch (InterruptedException e1) {
                 }
             }
-            if (ProgramInterface.simulationTime == 0) {
+            if (simulationTime == 0) {
                 // Wait for a connection to the simulator before starting to run the robot code.
-                startTime = System.currentTimeMillis();
                 continue;
-            }
-            if (resetCounter != lastResetCounter) {
-                lastResetCounter = resetCounter;
-                ProgramInterface.program.reset();
             }
             if (!newData) {
                 continue;
@@ -390,12 +411,12 @@ public class VrConnector implements Runnable {
                 } else {
                     continue;
                 }
-                prevSimTime = ProgramInterface.simulationTime;
             }
-            if (ProgramInterface.program != null) {
-                final double time = ProgramInterface.simulationTime;
-                ProgramInterface.program.step(time - prevSimTime);
-                prevSimTime = time;
+            if (resetCounter != lastResetCounter) {
+                lastResetCounter = resetCounter;
+                throw new SimulationResetException();
+            } else {
+                return;
             }
         }
     }

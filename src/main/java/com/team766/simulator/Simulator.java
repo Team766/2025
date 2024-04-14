@@ -8,7 +8,7 @@ import java.util.HashMap;
 import org.apache.commons.math3.geometry.euclidean.threed.RotationConvention;
 import org.apache.commons.math3.geometry.euclidean.threed.RotationOrder;
 
-public class Simulator implements Runnable {
+public class Simulator implements SimulatorInterface {
     private ElectricalSystem electricalSystem = new ElectricalSystem();
     private PneumaticsSystem pneumaticsSystem = new PneumaticsSystem();
     private WestCoastDrive drive = new WestCoastDrive(electricalSystem);
@@ -39,6 +39,10 @@ public class Simulator implements Runnable {
     private ArrayList<Double[]> armTrajectory = new ArrayList<Double[]>();
 
     public Simulator() {
+        ProgramInterface.resetSimulationTime();
+        time = 0.0;
+        nextLogTime = 0.0;
+
         // NOTE(rcahoon, 2023-02-09): Disabled the compressor so it won't affect the battery voltage
         // available to the arm's motors. This should be re-enabled if we want to simulate
         // pneumatics again.
@@ -57,16 +61,12 @@ public class Simulator implements Runnable {
     public void step() {
         double dt = Parameters.TIME_STEP;
         time += dt;
-        ProgramInterface.simulationTime = time;
+        ProgramInterface.stepSimulationTime(dt);
 
         electricalSystem.step(dt);
         pneumaticsSystem.step(dt);
         drive.step(dt);
         arm.step(dt);
-
-        if (ProgramInterface.program != null) {
-            ProgramInterface.program.step(dt);
-        }
 
         if (nextLogTime <= time) {
             nextLogTime += Parameters.LOGGING_PERIOD;
@@ -116,28 +116,30 @@ public class Simulator implements Runnable {
                         arm.getJ2Position().get(1, 0)
                     });
         }
-    }
 
-    public void run() {
-        metrics.clear();
-        time = 0.0;
-        nextLogTime = 0.0;
-        while (time <= Parameters.DURATION) {
-            step();
-            if (Math.abs(time - 3.0) < Parameters.TIME_STEP) {
-                pneumaticsSystem.ventPressure();
-            }
+        if (Math.abs(time - 3.0) < Parameters.TIME_STEP) {
+            pneumaticsSystem.ventPressure();
         }
 
-        var playbackTimer = new PlaybackTimer(time);
+        if (time > Parameters.DURATION) {
+            var playbackTimer = new PlaybackTimer(time);
 
-        // var trajectoryPanel = new Trajectory(driveTrajectory, playbackTimer);
-        // new UIFrame("Trajectory", trajectoryPanel);
+            // var trajectoryPanel = new Trajectory(driveTrajectory, playbackTimer);
+            // new UIFrame("Trajectory", trajectoryPanel);
 
-        var armTrajectoryPanel = new ArmTrajectory(armTrajectory, playbackTimer);
-        new UIFrame("ArmTrajectory", armTrajectoryPanel);
+            var armTrajectoryPanel = new ArmTrajectory(armTrajectory, playbackTimer);
+            new UIFrame("ArmTrajectory", armTrajectoryPanel);
 
-        var metricsPanel = new MetricsPlot(metrics, playbackTimer);
-        new UIFrame("Metrics", metricsPanel);
+            var metricsPanel = new MetricsPlot(metrics, playbackTimer);
+            new UIFrame("Metrics", metricsPanel);
+
+            // Wait until the user closes the UI, which exits the program via JFrame.EXIT_ON_CLOSE
+            while (true) {
+                try {
+                    Thread.sleep(Long.MAX_VALUE);
+                } catch (InterruptedException e) {
+                }
+            }
+        }
     }
 }

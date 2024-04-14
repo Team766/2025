@@ -13,8 +13,8 @@ public class CanMotorController extends MotorController {
     }
 
     @Override
-    protected double getCommand() {
-        return ProgramInterface.canMotorControllerChannels[address].command.output;
+    protected double getPercentOutput() {
+        return ProgramInterface.canMotorControllerChannels[address].command.percentOutput;
     }
 
     public void setSensorPosition(double position) {

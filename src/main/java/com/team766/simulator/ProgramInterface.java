@@ -1,42 +1,31 @@
 package com.team766.simulator;
 
 import com.team766.hal.BeaconReader;
-import com.team766.hal.mock.MockJoystick;
+import edu.wpi.first.wpilibj.simulation.SimHooks;
 import java.lang.reflect.Array;
 
 public class ProgramInterface {
-    public static Program program = null;
-
-    public static double simulationTime;
-
-    public static int driverStationUpdateNumber = 0;
-
-    public enum RobotMode {
-        DISABLED,
-        AUTON,
-        TELEOP
+    static {
+        resetSimulationTime();
     }
 
-    public static RobotMode robotMode = Parameters.INITIAL_ROBOT_MODE;
+    public static void resetSimulationTime() {
+        if (!Parameters.REALTIME_ROBOT_CLOCK) {
+            SimHooks.pauseTiming();
+        }
+        SimHooks.restartTiming();
+    }
+
+    public static void stepSimulationTime(double deltaSeconds) {
+        if (!Parameters.REALTIME_ROBOT_CLOCK) {
+            SimHooks.stepTiming(deltaSeconds);
+        }
+    }
 
     public static final double[] pwmChannels = new double[20];
 
     public static class CANMotorControllerCommand {
-        public enum ControlMode {
-            PercentOutput,
-            Position,
-            Velocity,
-            Current,
-            Follower,
-            MotionProfile,
-            MotionMagic,
-            MotionProfileArc,
-            Voltage,
-            Disabled,
-        }
-
-        public double output;
-        public ControlMode controlMode;
+        public double percentOutput;
     }
 
     public static class CANMotorControllerStatus {
@@ -88,8 +77,6 @@ public class ProgramInterface {
     public static final int NUM_BEACONS = 8;
     public static BeaconReader.BeaconPose[] beacons =
             initializeArray(NUM_BEACONS, BeaconReader.BeaconPose.class);
-
-    public static final MockJoystick[] joystickChannels = initializeArray(6, MockJoystick.class);
 
     private static <E> E[] initializeArray(final int size, final Class<E> clazz) {
         @SuppressWarnings("unchecked")

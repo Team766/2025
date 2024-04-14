@@ -23,7 +23,6 @@ public abstract class RobotProvider {
     public static RobotProvider instance;
 
     private HashMap<Integer, String> motorDeviceIdNames = new HashMap<Integer, String>();
-    private HashMap<Integer, String> motorPortNames = new HashMap<Integer, String>();
     private HashMap<Integer, String> digitalIoNames = new HashMap<Integer, String>();
     private HashMap<Integer, String> analogInputNames = new HashMap<Integer, String>();
     private HashMap<Integer, String> relayNames = new HashMap<Integer, String>();
@@ -32,10 +31,7 @@ public abstract class RobotProvider {
 
     // HAL
     protected abstract MotorController getMotor(
-            int index,
-            String configPrefix,
-            MotorController.Type type,
-            ControlInputReader localSensor);
+            int index, String configPrefix, MotorController.Type type);
 
     public abstract EncoderReader getEncoder(int index1, int index2);
 
@@ -87,20 +83,9 @@ public abstract class RobotProvider {
     }
 
     public MotorController getMotor(final String configName) {
-        final String encoderConfigName = configName + ".encoder";
-        final String analogInputConfigName = configName + ".analogInput";
-        final ControlInputReader sensor =
-                ConfigFileReader.getInstance().containsKey(encoderConfigName)
-                        ? getEncoder(encoderConfigName)
-                        : ConfigFileReader.getInstance().containsKey(analogInputConfigName)
-                                ? getAnalogInput(analogInputConfigName)
-                                : null;
-
         try {
             ValueProvider<Integer> deviceId =
                     ConfigFileReader.getInstance().getInt(configName + ".deviceId");
-            final ValueProvider<Integer> port =
-                    ConfigFileReader.getInstance().getInt(configName + ".port");
             final ValueProvider<Double> sensorScaleConfig =
                     ConfigFileReader.getInstance().getDouble(configName + ".sensorScale");
             final ValueProvider<Boolean> invertedConfig =
@@ -111,25 +96,12 @@ public abstract class RobotProvider {
                     ConfigFileReader.getInstance()
                             .getEnum(MotorController.Type.class, configName + ".type");
 
-            if (deviceId.hasValue() && port.hasValue()) {
-                Logger.get(Category.CONFIGURATION)
-                        .logData(
-                                Severity.ERROR,
-                                "Motor %s configuration should have only one of `deviceId` or `port`",
-                                configName);
-            }
-
-            MotorController.Type defaultType = MotorController.Type.TalonSRX;
-            if (!deviceId.hasValue()) {
-                deviceId = port;
-                defaultType = MotorController.Type.VictorSP;
-                checkDeviceName("PWM motor controller", motorPortNames, port.get(), configName);
-            } else {
+            if (deviceId.hasValue()) {
                 checkDeviceName(
                         "CAN motor controller", motorDeviceIdNames, deviceId.get(), configName);
             }
 
-            var motor = getMotor(deviceId.get(), configName, type.valueOr(defaultType), sensor);
+            var motor = getMotor(deviceId.get(), configName, type.get());
             if (sensorScaleConfig.hasValue()) {
                 motor = new MotorControllerWithSensorScale(motor, sensorScaleConfig.get());
             }
@@ -146,7 +118,7 @@ public abstract class RobotProvider {
                             "Error getting configuration for motor %s from config file, using mock motor instead.\nDetailed error: %s",
                             configName,
                             LoggerExceptionUtils.exceptionToString(ex));
-            return new LocalMotorController(configName, new MockMotorController(0), sensor);
+            return new MockMotorController(0);
         }
     }
 

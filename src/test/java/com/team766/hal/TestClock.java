@@ -1,7 +1,5 @@
 package com.team766.hal;
 
-import com.team766.hal.wpilib.SystemClock;
-
 /**
  * Clock implementation for usage in unit tests.
  */

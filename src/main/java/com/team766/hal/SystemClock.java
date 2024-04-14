@@ -1,4 +1,6 @@
-package com.team766.hal.wpilib;
+package com.team766.hal;
+
+import edu.wpi.first.wpilibj.Timer;
 
 public class SystemClock implements com.team766.hal.Clock {
 
@@ -6,6 +8,6 @@ public class SystemClock implements com.team766.hal.Clock {
 
     @Override
     public double getTime() {
-        return System.currentTimeMillis() * 0.001;
+        return Timer.getFPGATimestamp();
     }
 }

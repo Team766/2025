@@ -10,11 +10,11 @@ public abstract class MotorController implements ElectricalDevice {
     }
 
     // [-1, 1] representing the command sent from the application processor
-    protected abstract double getCommand();
+    protected abstract double getPercentOutput();
 
     @Override
     public ElectricalDevice.Output step(ElectricalDevice.Input input, double dt) {
-        double command = getCommand();
+        double command = getPercentOutput();
         ElectricalDevice.Input downstreamInput =
                 new ElectricalDevice.Input(input.voltage * command);
         ElectricalDevice.Output downstreamOutput = downstream.step(downstreamInput, dt);

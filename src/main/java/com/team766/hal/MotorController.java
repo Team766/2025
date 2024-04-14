@@ -6,10 +6,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 /**
  * Interface for motor controlling devices.
  */
-public interface MotorController extends BasicMotorController {
+public interface MotorController {
 
     enum Type {
-        VictorSP,
         VictorSPX,
         TalonSRX,
         SparkMax,
@@ -25,11 +24,20 @@ public interface MotorController extends BasicMotorController {
     }
 
     /**
+     * Common interface for getting the output power of a motor controller.
+     *
+     * @return The current set power. Value is between -1.0 and 1.0.
+     */
+    double get();
+
+    /**
      * Common interface for setting the power outputu by a motor controller.
      *
      * @param power The power to set. Value should be between -1.0 and 1.0.
      */
-    void set(double power);
+    default void set(double power) {
+        set(ControlMode.PercentOutput, power);
+    }
 
     /**
      * Sets the appropriate output on the motor controller, depending on the mode.
@@ -73,7 +81,9 @@ public interface MotorController extends BasicMotorController {
      * Stops motor movement. Motor can be moved again by calling set without having
      * to re-enable the motor.
      */
-    void stopMotor();
+    default void stopMotor() {
+        set(ControlMode.PercentOutput, 0);
+    }
 
     /**
      * Read the motor position from the sensor attached to the motor controller.

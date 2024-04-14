@@ -6,17 +6,16 @@ import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
 import com.team766.hal.CameraReader;
 import com.team766.hal.Clock;
-import com.team766.hal.ControlInputReader;
 import com.team766.hal.DigitalInputReader;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.JoystickReader;
-import com.team766.hal.LocalMotorController;
 import com.team766.hal.MotorController;
 import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
+import com.team766.hal.SystemClock;
 import com.team766.hal.TimeOfFlightReader;
 import com.team766.hal.mock.MockBeaconSensor;
 import com.team766.hal.mock.MockEncoder;
@@ -104,9 +103,6 @@ public class WPIRobotProvider extends RobotProvider {
         }
     }
 
-    private MotorController[][] motors =
-            new MotorController[MotorController.Type.values().length][64];
-
     // The presence of this object allows the compressor to run before we've declared any solenoids.
     @SuppressWarnings("unused")
     private PneumaticsControlModule pcm = new PneumaticsControlModule();
@@ -119,59 +115,33 @@ public class WPIRobotProvider extends RobotProvider {
 
     @Override
     public MotorController getMotor(
-            final int index,
-            final String configPrefix,
-            final MotorController.Type type,
-            ControlInputReader localSensor) {
-        if (motors[type.ordinal()][index] != null) {
-            return motors[type.ordinal()][index];
-        }
-        MotorController motor = null;
+            final int index, final String configPrefix, final MotorController.Type type) {
         switch (type) {
-            case SparkMax:
+            case SparkMax -> {
                 try {
-                    motor = new CANSparkMaxMotorController(configPrefix, index);
+                    return new CANSparkMaxMotorController(configPrefix, index);
                 } catch (Exception ex) {
                     LoggerExceptionUtils.logException(ex);
-                    motor =
-                            new LocalMotorController(
-                                    configPrefix, new MockMotorController(index), localSensor);
-                    localSensor = null;
+                    return new MockMotorController(index);
                 }
-                break;
-            case TalonSRX:
-                motor = new CANTalonMotorController(configPrefix, index);
-                break;
-            case VictorSPX:
-                motor = new CANVictorMotorController(index);
-                break;
-            case TalonFX:
+            }
+            case TalonSRX -> {
+                return new CANTalonMotorController(configPrefix, index);
+            }
+            case VictorSPX -> {
+                return new CANVictorMotorController(index);
+            }
+            case TalonFX -> {
                 final ValueProvider<String> canBus =
                         ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
-                motor =
-                        new CANTalonFxMotorController(
-                                configPrefix, index, getStringOrEmpty(canBus));
-                break;
-            case VictorSP:
-                motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);
-                localSensor = null;
-                break;
-            default:
-                break;
+                return new CANTalonFxMotorController(configPrefix, index, getStringOrEmpty(canBus));
+            }
+            default -> {
+                LoggerExceptionUtils.logException(
+                        new IllegalArgumentException("Unsupported motor type " + type));
+                return new MockMotorController(index);
+            }
         }
-        if (motor == null) {
-            LoggerExceptionUtils.logException(
-                    new IllegalArgumentException("Unsupported motor type " + type));
-            motor =
-                    new LocalMotorController(
-                            configPrefix, new MockMotorController(index), localSensor);
-            localSensor = null;
-        }
-        if (localSensor != null) {
-            motor = new LocalMotorController(configPrefix, motor, localSensor);
-        }
-        motors[type.ordinal()][index] = motor;
-        return motor;
     }
 
     @Override
