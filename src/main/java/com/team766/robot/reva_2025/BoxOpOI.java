@@ -40,8 +40,7 @@ public class BoxOpOI extends RuleGroup {
 
         addRule(
                         "Control Climber",
-                        new Conditions.Toggle(
-                                () -> boxopGamepad.getButtonPressed(InputConstants.BUTTON_CLIMB)),
+                        new Conditions.Toggle(boxopGamepad.whenButton(InputConstants.BUTTON_CLIMB)),
                         ONCE_AND_HOLD,
                         Set.of(algaeIntake, wrist, elevator),
                         () -> {

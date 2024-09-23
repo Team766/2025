@@ -65,9 +65,7 @@ public interface JoystickReader {
     void setAllAxisDeadzone(double deadzone);
 
     /**
-     * Get the button value (starting at button 1)
-     *
-     * The appropriate button is returned as a boolean value.
+     * Get the state of a button (starting at button 1)
      *
      * @param button The button number to be read (starting at 1).
      * @return The state of the button.
@@ -123,25 +121,12 @@ public interface JoystickReader {
     }
 
     /**
-     * Whether the button was pressed since the last check. Button indexes begin at 1.
+     * Get the angle in degrees of the POV.
      *
-     * @param button The button index, beginning at 1.
-     * @return Whether the button was pressed since the last check.
-     */
-    boolean getButtonPressed(int button);
-
-    /**
-     * Whether the button was released since the last check. Button indexes begin at 1.
+     * <p>The POV angles start at 0 in the up direction, and increase clockwise (e.g. right is 90,
+     * upper-left is 315).
      *
-     * @param button The button index, beginning at 1.
-     * @return Whether the button was released since the last check.
-     */
-    boolean getButtonReleased(int button);
-
-    /**
-     * Get the value of the POV
-     *
-     * @return the value of the POV
+     * @return the angle of the POV in degrees, or -1 if the POV is not pressed.
      */
     int getPOV();
 }

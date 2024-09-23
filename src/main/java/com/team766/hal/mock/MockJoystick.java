@@ -9,7 +9,6 @@ public class MockJoystick implements JoystickReader {
 
     private double[] axisValues;
     private boolean[] buttonValues;
-    private boolean[] prevButtonValues;
     private int povValue;
 
     private final Map<Integer, Double> axisDeadzoneMap = new HashMap<>();
@@ -18,7 +17,6 @@ public class MockJoystick implements JoystickReader {
     public MockJoystick() {
         axisValues = new double[12];
         buttonValues = new boolean[20];
-        prevButtonValues = new boolean[20];
     }
 
     @Override
@@ -58,7 +56,6 @@ public class MockJoystick implements JoystickReader {
 
     public void setButton(final int button, final boolean val) {
         // Button indexes begin at 1 in WPILib, so match that here
-        prevButtonValues[button - 1] = buttonValues[button - 1];
         buttonValues[button - 1] = val;
     }
 
@@ -69,23 +66,5 @@ public class MockJoystick implements JoystickReader {
 
     public void setPOV(final int value) {
         povValue = value;
-    }
-
-    @Override
-    public boolean getButtonPressed(final int button) {
-        // Button indexes begin at 1 in WPILib, so match that here
-        if (button <= 0) {
-            return false;
-        }
-        return buttonValues[button - 1] && !prevButtonValues[button - 1];
-    }
-
-    @Override
-    public boolean getButtonReleased(final int button) {
-        // Button indexes begin at 1 in WPILib, so match that here
-        if (button <= 0) {
-            return false;
-        }
-        return !buttonValues[button - 1] && prevButtonValues[button - 1];
     }
 }
