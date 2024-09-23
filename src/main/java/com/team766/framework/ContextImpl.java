@@ -280,7 +280,7 @@ import java.util.function.BooleanSupplier;
             waitForControl(ControlOwner.SUBROUTINE);
 
             // Call into the user's code.
-            m_procedure.run(this);
+            m_procedure.execute(this);
             Logger.get(Category.FRAMEWORK)
                     .logRaw(Severity.DEBUG, "Context " + getContextName() + " finished");
         } catch (ContextStoppedException ex) {
@@ -330,7 +330,7 @@ import java.util.function.BooleanSupplier;
     @Override
     public void runSync(final Procedure procedure) {
         checkProcedureReservationsSubset(procedure);
-        procedure.run(this);
+        procedure.execute(this);
     }
 
     @Override
@@ -342,7 +342,7 @@ import java.util.function.BooleanSupplier;
             contexts[i] = procedure.createCommandToRunProcedure();
         }
         // NOTE: Commands.parallel will ensure procedures' reservations are disjoint.
-        new WPILibCommandProcedure(Commands.parallel(contexts)).run(this);
+        new WPILibCommandProcedure(Commands.parallel(contexts)).execute(this);
     }
 
     @Override
@@ -354,7 +354,7 @@ import java.util.function.BooleanSupplier;
             contexts[i] = procedure.createCommandToRunProcedure();
         }
         // NOTE: Commands.race will ensure procedures' reservations are disjoint.
-        new WPILibCommandProcedure(Commands.race(contexts)).run(this);
+        new WPILibCommandProcedure(Commands.race(contexts)).execute(this);
     }
 
     private void checkProcedureReservationsSubset(Procedure procedure) {

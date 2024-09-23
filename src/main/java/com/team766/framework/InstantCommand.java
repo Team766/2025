@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
     public void execute() {
         ReservingCommand.enterCommand(this);
         try {
-            procedure.run();
+            procedure.execute(null);
         } finally {
             ReservingCommand.exitCommand(this);
         }

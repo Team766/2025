@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public abstract class MechanismWithStatus<S extends Record & Status> extends Mechanism
-        implements StatusSource<S> {
+        implements StatusSource {
     private final RateLimiter statusRateLimiter = new RateLimiter(1.0);
     private S status = null;
 
@@ -17,12 +17,17 @@ public abstract class MechanismWithStatus<S extends Record & Status> extends Mec
     }
 
     @Override
+    public boolean isStatusActive() {
+        return true;
+    }
+
+    @Override
     /* package */ final void publishStatus() {
         S newStatus = updateStatus();
         // Only publish the status if it has changed or if enough time has elapsed since the last
         // publish
         if (statusRateLimiter.next() || !Objects.equals(status, newStatus)) {
-            StatusBus.getInstance().publishStatus(newStatus);
+            StatusBus.getInstance().publishStatus(newStatus, this);
         }
         status = newStatus;
     }

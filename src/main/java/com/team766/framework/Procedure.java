@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Collection;
 import java.util.Set;
 
-public abstract class Procedure implements StatusesMixin, LoggingBase {
+public abstract class Procedure implements StatusesMixin, LoggingBase, StatusSource {
     // A reusable Procedure that does nothing.
     private static final class NoOpProcedure extends InstantProcedure {
         @Override
-        public void run() {}
+        protected void run() {}
     }
 
     public static final InstantProcedure NO_OP = new NoOpProcedure();
@@ -23,6 +23,8 @@ public abstract class Procedure implements StatusesMixin, LoggingBase {
 
     private final String name;
     private final Set<Reservable> reservations;
+
+    private boolean isStatusActive = false;
 
     protected Procedure() {
         this.name = createName();
@@ -39,7 +41,16 @@ public abstract class Procedure implements StatusesMixin, LoggingBase {
         this.reservations = reservations;
     }
 
-    public abstract void run(Context context);
+    protected abstract void run(Context context);
+
+    public final void execute(Context context) {
+        try {
+            isStatusActive = true;
+            run(context);
+        } finally {
+            isStatusActive = false;
+        }
+    }
 
     public Command createCommandToRunProcedure() {
         return new ContextImpl(this);
@@ -47,6 +58,11 @@ public abstract class Procedure implements StatusesMixin, LoggingBase {
 
     private String createName() {
         return this.getClass().getName() + "/" + createNewId();
+    }
+
+    @Override
+    public final boolean isStatusActive() {
+        return isStatusActive;
     }
 
     @Override

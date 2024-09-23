@@ -7,13 +7,6 @@ import java.util.function.Predicate;
 
 public interface StatusesMixin {
     /**
-     * Alias for {@link StatusBus#publishStatus(Record)}
-     */
-    default <S extends Record & Status> StatusBus.Entry<S> publishStatus(S status) {
-        return StatusBus.getInstance().publishStatus(status);
-    }
-
-    /**
      * Alias for {@link StatusBus#getStatusEntry(Class)}
      */
     default <S extends Status> Optional<StatusBus.Entry<S>> getStatusEntry(Class<S> statusClass) {

@@ -1,6 +1,7 @@
 package com.team766.framework;
 
 import com.team766.hal.RobotProvider;
+import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -32,9 +33,19 @@ public class StatusBus {
      * @param status The {@link Status} that was published
      * @param timestamp The time at which the Status was published
      */
-    public record Entry<T extends Status>(T status, double timestamp) {
+    public record Entry<T extends Status>(
+            T status, double timestamp, WeakReference<StatusSource> source) {
         public double age() {
             return RobotProvider.instance.getClock().getTime() - timestamp;
+        }
+
+        public boolean isFresh() {
+            var src = source.get();
+            return src != null && src.isStatusActive();
+        }
+
+        public boolean isFreshOrAgeLessThan(double maxAge) {
+            return isFresh() || age() < maxAge;
         }
     }
 
@@ -51,9 +62,13 @@ public class StatusBus {
      *
      * This method also logs the Status to diagnostic logs.
      */
-    public <S extends Record & Status> Entry<S> publishStatus(S status) {
+    public <S extends Record & Status> Entry<S> publishStatus(S status, StatusSource source) {
         Objects.requireNonNull(status);
-        var entry = new Entry<>(status, RobotProvider.instance.getClock().getTime());
+        var entry =
+                new Entry<>(
+                        status,
+                        RobotProvider.instance.getClock().getTime(),
+                        new WeakReference<>(source));
         statuses.put(status.getClass(), entry);
         org.littletonrobotics.junction.Logger.recordOutput(
                 "Statuses/" + status.getClass().getName(), status);
