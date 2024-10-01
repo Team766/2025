@@ -21,7 +21,7 @@ import java.util.function.BooleanSupplier;
  * one of threads is actually running at once (the others will be sleeping,
  * waiting for the baton to be passed to them).
  */
-/* package */ class ContextImpl extends Command implements Context, LaunchedContext {
+/* package */ class ContextImpl extends Command implements Context {
     // Maintains backward compatibility with the behavior of the old Maroon Framework scheduler.
     // TODO(MF3): Re-evaluate whether this should use the default Command behavior (return false).
     private static final boolean RUNS_WHEN_DISABLED = true;

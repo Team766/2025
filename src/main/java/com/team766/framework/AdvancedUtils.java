@@ -7,12 +7,12 @@ public class AdvancedUtils {
      * calling Procedure.
      * In most cases, you want to use Context.runParallel instead of startAsync.
      */
-    public static LaunchedContext startAsync(
+    public static LaunchedCommand startAsync(
             final Context callingContext, final Procedure procedure) {
         checkProcedureReservationsDisjoint((ContextImpl) callingContext, procedure);
-        var context = new ContextImpl(procedure);
-        context.schedule();
-        return context;
+        var command = procedure.createCommandToRunProcedure();
+        command.schedule();
+        return new LaunchedCommand(command);
     }
 
     private static void checkProcedureReservationsDisjoint(

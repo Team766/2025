@@ -27,7 +27,7 @@ public class AdvancedUtilsTest extends TestCase {
                                 context.yield();
                             }
                         });
-        var context = new ContextImpl(proc1);
+        var context = proc1.createCommandToRunProcedure();
 
         // Schedule the Context for execution by the scheduler.
         context.schedule();
@@ -83,7 +83,7 @@ public class AdvancedUtilsTest extends TestCase {
                                 thrownException.set(ex.getMessage());
                             }
                         });
-        var context = new ContextImpl(proc1);
+        var context = proc1.createCommandToRunProcedure();
 
         context.schedule();
         step();
