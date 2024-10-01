@@ -1,4 +1,4 @@
-package com.team766.framework;
+package com.team766.framework3;
 
 import static org.junit.jupiter.api.Assertions.*;
 

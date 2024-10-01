@@ -2,11 +2,11 @@ package com.team766.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.team766.TestCase;
+import com.team766.TestCase3;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
-public class ConfigFileReaderTest extends TestCase {
+public class ConfigFileReaderTest extends TestCase3 {
     @Test
     public void getJsonStringFromEmptyConfigFile() throws IOException {
         loadConfig("{}");

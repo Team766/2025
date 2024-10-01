@@ -1,10 +1,9 @@
 package com.team766.framework3;
 
-import com.team766.web.AutonomousSelector;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.Supplier;
 
-public class AutonomousMode implements AutonomousSelector.Selectable<AutonomousMode> {
+public class AutonomousMode {
     private final Supplier<Command> m_constructor;
     private final String m_name;
 
