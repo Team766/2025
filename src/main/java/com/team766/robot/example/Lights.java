@@ -1,6 +1,6 @@
 package com.team766.robot.example;
 
-import com.team766.framework3.RuleEngine;
+import com.team766.framework.RuleEngine;
 import com.team766.logging.Category;
 import com.team766.robot.common.mechanisms.LEDString;
 

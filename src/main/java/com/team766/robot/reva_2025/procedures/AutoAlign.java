@@ -1,8 +1,8 @@
 package com.team766.robot.reva_2025.procedures;
 
 import com.team766.controllers.PIDController;
-import com.team766.framework3.Context;
-import com.team766.framework3.Procedure;
+import com.team766.framework.Context;
+import com.team766.framework.Procedure;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 import edu.wpi.first.math.geometry.Pose2d;

@@ -1,8 +1,8 @@
 package com.team766.robot.reva.procedures;
 
-import com.team766.framework3.Context;
-import com.team766.framework3.Procedure;
-import com.team766.framework3.Status;
+import com.team766.framework.Context;
+import com.team766.framework.Procedure;
+import com.team766.framework.Status;
 import com.team766.robot.reva.mechanisms.Intake;
 
 public class IntakeUntilIn extends Procedure {

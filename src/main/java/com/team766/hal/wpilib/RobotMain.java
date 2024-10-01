@@ -3,7 +3,7 @@ package com.team766.hal.wpilib;
 import com.team766.BuildConstants;
 import com.team766.config.ConfigFileReader;
 import com.team766.hal.CanivPoller;
-import com.team766.hal.GenericRobotMain3;
+import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -25,7 +25,7 @@ public class RobotMain extends LoggedRobot {
     private static final String USB_CONFIG_FILE = "/U/config/robotConfig.txt";
     private static final String INTERNAL_CONFIG_FILE = "/home/lvuser/robotConfig.txt";
 
-    private GenericRobotMain3 robot;
+    private GenericRobotMain robot;
 
     public static void main(final String... args) {
         Supplier<RobotMain> supplier =
@@ -98,7 +98,7 @@ public class RobotMain extends LoggedRobot {
             ConfigFileReader.instance =
                     new ConfigFileReader(filename, configFromUSB ? INTERNAL_CONFIG_FILE : null);
             RobotProvider.instance = new WPIRobotProvider();
-            robot = new GenericRobotMain3();
+            robot = new GenericRobotMain();
 
             DriverStation.startDataLog(DataLogManager.getLog());
 

@@ -1,10 +1,10 @@
 package com.team766.robot.reva_2025;
 
-import static com.team766.framework3.RulePersistence.*;
+import static com.team766.framework.RulePersistence.*;
 
-import com.team766.framework3.Conditions;
-import com.team766.framework3.Conditions.LogicalAnd;
-import com.team766.framework3.RuleGroup;
+import com.team766.framework.Conditions;
+import com.team766.framework.Conditions.LogicalAnd;
+import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.reva_2025.OI.QueuedControl;

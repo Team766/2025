@@ -4,10 +4,10 @@ import static com.team766.math.Math.normalizeAngleDegrees;
 import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.team766.controllers.PIDController;
-import com.team766.framework3.MechanismWithStatus;
-import com.team766.framework3.NoReservationRequired;
-import com.team766.framework3.Status;
-import com.team766.framework3.StatusBus;
+import com.team766.framework.MechanismWithStatus;
+import com.team766.framework.NoReservationRequired;
+import com.team766.framework.Status;
+import com.team766.framework.StatusBus;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;

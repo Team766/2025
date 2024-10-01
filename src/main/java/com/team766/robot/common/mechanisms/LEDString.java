@@ -4,7 +4,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework3.Mechanism;
+import com.team766.framework.Mechanism;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Severity;
