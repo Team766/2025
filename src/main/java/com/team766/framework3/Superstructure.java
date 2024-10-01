@@ -13,7 +13,7 @@ import java.util.Objects;
  * Superstructure should set requests on its constituent Mechanisms (in its
  * {@link #run(R, boolean)} method).
  */
-public abstract class Superstructure<R extends Request<?>> extends Mechanism<R> {
+public abstract class Superstructure<R extends Request> extends Mechanism<R> {
     private ArrayList<Mechanism<?>> submechanisms = new ArrayList<>();
 
     @Override
