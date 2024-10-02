@@ -49,25 +49,81 @@ public class Rule {
         FINISHED
     }
 
+    /** Policy for canceling actions when the rule is in a given state. */
+    enum Cancellation {
+        /** Do not cancel any previous actions. */
+        DO_NOT_CANCEL,
+        /** Cancel the action previously scheduled when the rule was in the NEWLY state. */
+        CANCEL_NEWLY_ACTION,
+    }
+
     private final String name;
     private final BooleanSupplier predicate;
     private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
     private final Map<TriggerType, Set<Mechanism<?>>> triggerReservations =
             Maps.newEnumMap(TriggerType.class);
+    private final Cancellation cancellationOnFinish;
 
     private TriggerType currentTriggerType = TriggerType.NONE;
     private boolean sealed = false;
 
     /* package */ Rule(
-            String name, BooleanSupplier predicate, Supplier<Procedure> newlyTriggeringProcedure) {
+            String name,
+            BooleanSupplier predicate,
+            RulePersistence rulePersistence,
+            Supplier<Procedure> onTriggeringProcedure) {
         if (predicate == null) {
             throw new IllegalArgumentException("Rule predicate has not been set.");
         }
 
-        if (newlyTriggeringProcedure == null) {
-            throw new IllegalArgumentException("Newly triggering Procedure is not defined.");
+        if (onTriggeringProcedure == null) {
+            throw new IllegalArgumentException("On-triggering Procedure is not defined.");
         }
+
+        final Supplier<Procedure> newlyTriggeringProcedure =
+                switch (rulePersistence) {
+                    case ONCE -> {
+                        this.cancellationOnFinish = Cancellation.DO_NOT_CANCEL;
+                        yield onTriggeringProcedure;
+                    }
+                    case ONCE_AND_HOLD -> {
+                        this.cancellationOnFinish = Cancellation.CANCEL_NEWLY_ACTION;
+                        yield () -> {
+                            final Procedure procedure = onTriggeringProcedure.get();
+                            if (procedure == null) {
+                                return null;
+                            }
+                            return new FunctionalProcedure(
+                                    procedure.getName(),
+                                    procedure.reservations(),
+                                    context -> {
+                                        procedure.run(context);
+                                        context.waitFor(() -> false);
+                                    });
+                        };
+                    }
+                    case REPEATEDLY -> {
+                        this.cancellationOnFinish = Cancellation.CANCEL_NEWLY_ACTION;
+                        yield () -> {
+                            final Procedure procedure = onTriggeringProcedure.get();
+                            if (procedure == null) {
+                                return null;
+                            }
+                            return new FunctionalProcedure(
+                                    procedure.getName(),
+                                    procedure.reservations(),
+                                    context -> {
+                                        Procedure currentProcedure = procedure;
+                                        while (currentProcedure != null) {
+                                            context.runSync(currentProcedure);
+                                            context.yield();
+                                            currentProcedure = onTriggeringProcedure.get();
+                                        }
+                                    });
+                        };
+                    }
+                };
 
         this.name = name;
         this.predicate = predicate;
@@ -95,7 +151,7 @@ public class Rule {
                 () -> new FunctionalInstantProcedure(reservations, action));
     }
 
-    private Set<Mechanism<?>> getReservationsForProcedure(Supplier<Procedure> supplier) {
+    private static Set<Mechanism<?>> getReservationsForProcedure(Supplier<Procedure> supplier) {
         if (supplier != null) {
             Procedure procedure = supplier.get();
             if (procedure != null) {
@@ -142,10 +198,11 @@ public class Rule {
     }
 
     /* package */ Set<Mechanism<?>> getMechanismsToReserve() {
-        if (triggerReservations.containsKey(currentTriggerType)) {
-            return triggerReservations.get(currentTriggerType);
-        }
-        return Collections.emptySet();
+        return triggerReservations.getOrDefault(currentTriggerType, Collections.emptySet());
+    }
+
+    /* package */ Cancellation getCancellationOnFinish() {
+        return cancellationOnFinish;
     }
 
     /* package */ Procedure getProcedureToRun() {

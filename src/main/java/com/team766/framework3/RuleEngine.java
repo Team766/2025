@@ -1,5 +1,7 @@
 package com.team766.framework3;
 
+import static com.team766.framework3.RulePersistence.ONCE_AND_HOLD;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -14,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -43,18 +46,90 @@ public class RuleEngine implements LoggingBase {
         return Category.RULES;
     }
 
-    protected Rule addRule(String name, BooleanSupplier condition, Supplier<Procedure> action) {
-        Rule rule = new Rule(name, condition, action);
+    protected Rule addRule(
+            String name,
+            BooleanSupplier condition,
+            RulePersistence rulePersistence,
+            Supplier<Procedure> action) {
+        Rule rule = new Rule(name, condition, rulePersistence, action);
         rules.put(name, rule);
         int priority = rulePriorities.size();
         rulePriorities.put(rule, priority);
         return rule;
     }
 
+    protected Rule addRule(String name, BooleanSupplier condition, Supplier<Procedure> action) {
+        return addRule(name, condition, ONCE_AND_HOLD, action);
+    }
+
+    protected Rule addRule(
+            String name,
+            BooleanSupplier condition,
+            RulePersistence rulePersistence,
+            Set<Mechanism<?>> mechanisms,
+            Consumer<Context> action) {
+        return addRule(
+                name,
+                condition,
+                rulePersistence,
+                () -> new FunctionalProcedure(mechanisms, action));
+    }
+
+    protected Rule addRule(
+            String name,
+            BooleanSupplier condition,
+            Set<Mechanism<?>> mechanisms,
+            Consumer<Context> action) {
+        return addRule(name, condition, ONCE_AND_HOLD, mechanisms, action);
+    }
+
+    protected Rule addRule(
+            String name,
+            BooleanSupplier condition,
+            RulePersistence rulePersistence,
+            Mechanism<?> mechanism,
+            Consumer<Context> action) {
+        return addRule(name, condition, rulePersistence, Set.of(mechanism), action);
+    }
+
+    protected Rule addRule(
+            String name,
+            BooleanSupplier condition,
+            Mechanism<?> mechanism,
+            Consumer<Context> action) {
+        return addRule(name, condition, ONCE_AND_HOLD, mechanism, action);
+    }
+
+    protected Rule addRule(
+            String name,
+            BooleanSupplier condition,
+            RulePersistence rulePersistence,
+            Set<Mechanism<?>> mechanisms,
+            Runnable action) {
+        return addRule(
+                name,
+                condition,
+                rulePersistence,
+                () -> new FunctionalInstantProcedure(mechanisms, action));
+    }
+
+    protected Rule addRule(
+            String name, BooleanSupplier condition, Set<Mechanism<?>> mechanisms, Runnable action) {
+        return addRule(name, condition, ONCE_AND_HOLD, mechanisms, action);
+    }
+
+    protected Rule addRule(
+            String name,
+            BooleanSupplier condition,
+            RulePersistence rulePersistence,
+            Mechanism<?> mechanism,
+            Runnable action) {
+        return addRule(name, condition, rulePersistence, Set.of(mechanism), action);
+    }
+
     protected Rule addRule(
             String name, BooleanSupplier condition, Mechanism<?> mechanism, Runnable action) {
-        return addRule(
-                name, condition, () -> new FunctionalInstantProcedure(Set.of(mechanism), action));
+        return addRule(name, condition, ONCE_AND_HOLD, mechanism, action);
     }
 
     @VisibleForTesting
@@ -107,7 +182,7 @@ public class RuleEngine implements LoggingBase {
                 rule.evaluate();
 
                 // see if the rule is triggering
-                Rule.TriggerType triggerType = rule.getCurrentTriggerType();
+                final Rule.TriggerType triggerType = rule.getCurrentTriggerType();
                 if (triggerType != Rule.TriggerType.NONE) {
                     log(Severity.INFO, "Rule " + rule.getName() + " triggering: " + triggerType);
 
@@ -169,6 +244,17 @@ public class RuleEngine implements LoggingBase {
                     }
 
                     // we're good to proceed
+
+                    if (triggerType == Rule.TriggerType.FINISHED
+                            && rule.getCancellationOnFinish()
+                                    == Rule.Cancellation.CANCEL_NEWLY_ACTION) {
+                        var newlyCommand =
+                                ruleMap.inverse().get(new RuleAction(rule, Rule.TriggerType.NEWLY));
+                        if (newlyCommand != null) {
+                            newlyCommand.cancel();
+                        }
+                    }
+
                     Procedure procedure = rule.getProcedureToRun();
                     if (procedure == null) {
                         continue;
