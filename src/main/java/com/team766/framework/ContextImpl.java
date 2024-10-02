@@ -9,6 +9,8 @@ import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import java.lang.StackWalker.StackFrame;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -99,6 +101,15 @@ import java.util.function.BooleanSupplier;
         }
     }
 
+    private static ExecutorService threadPool = null;
+
+    private static ExecutorService getThreadPool() {
+        if (threadPool == null) {
+            threadPool = Executors.newCachedThreadPool();
+        }
+        return threadPool;
+    }
+
     /**
      * The top-level procedure being run by this Context.
      */
@@ -178,10 +189,12 @@ import java.util.function.BooleanSupplier;
     }
 
     public String getStackTrace() {
-        if (m_thread != null) {
-            return StackTraceUtils.getStackTrace(m_thread);
-        } else {
-            return "";
+        synchronized (m_threadSync) {
+            if (m_thread != null) {
+                return StackTraceUtils.getStackTrace(m_thread);
+            } else {
+                return "";
+            }
         }
     }
 
@@ -275,6 +288,9 @@ import java.util.function.BooleanSupplier;
      */
     private void threadFunction() {
         try {
+            m_thread = Thread.currentThread();
+            m_thread.setName(getContextName());
+
             // OS threads run independently of one another, so we need to wait until
             // the baton is passed to us before we can start running the user's code
             waitForControl(ControlOwner.SUBROUTINE);
@@ -294,6 +310,7 @@ import java.util.function.BooleanSupplier;
         } finally {
             synchronized (m_threadSync) {
                 m_state = State.DONE;
+                m_thread = null;
                 m_threadSync.notifyAll();
             }
         }
@@ -373,11 +390,11 @@ import java.util.function.BooleanSupplier;
         }
     }
 
+    @SuppressWarnings("FutureReturnValueIgnored")
     @Override
     public void initialize() {
         m_state = State.RUNNING;
-        m_thread = new Thread(this::threadFunction, getContextName());
-        m_thread.start();
+        getThreadPool().submit(this::threadFunction);
     }
 
     @Override
