@@ -228,6 +228,10 @@ public class SwerveModule {
         encoderSimState.setRawPosition(sim.getAzimuthEncoderPositionRev());
         encoderSimState.setVelocity(sim.getAzimuthEncoderVelocityRPM() / 60.);
 
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + "CANCoder",
+                encoder.getAbsolutePosition().getValueAsDouble() * 360);
+
         sim.setInputVoltages(
                 driveSimState.getMotorVoltage(),
                 steerSimState.getMotorVoltage());

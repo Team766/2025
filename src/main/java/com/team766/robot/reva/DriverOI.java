@@ -48,7 +48,7 @@ public class DriverOI extends OIFragment {
         this.shooter = shooter;
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
-        visionSpeakerHelper = new VisionSpeakerHelper(drive);
+        // visionSpeakerHelper = new VisionSpeakerHelper(drive);
 
         movingJoysticks =
                 new OICondition(
@@ -97,7 +97,7 @@ public class DriverOI extends OIFragment {
         //     isCross = !isCross;
         // }
 
-        visionSpeakerHelper.update();
+        // visionSpeakerHelper.update();
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
 
