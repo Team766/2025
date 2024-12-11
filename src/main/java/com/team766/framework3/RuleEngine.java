@@ -34,18 +34,19 @@ public class RuleEngine implements LoggingBase {
     private final Map<Rule, Integer> rulePriorities = new HashMap<>();
     private BiMap<Command, RuleAction> ruleMap = HashBiMap.create();
 
-    protected RuleEngine() {}
+    public RuleEngine() {}
 
     @Override
     public Category getLoggerCategory() {
         return Category.RULES;
     }
 
-    protected void addRule(Rule.Builder builder) {
-        Rule rule = builder.build();
-        rules.add(rule);
-        int priority = rulePriorities.size();
-        rulePriorities.put(rule, priority);
+    public void addRule(Rule.Builder builder) {
+        for (Rule rule : builder.build()) {
+            rules.add(rule);
+            int priority = rulePriorities.size();
+            rulePriorities.put(rule, priority);
+        }
     }
 
     @VisibleForTesting
