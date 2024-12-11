@@ -45,7 +45,9 @@ public class RuleTest {
 
     @Test
     public void testCreate() {
-        Rule alwaysTrue = new Rule("always true", () -> true, ONCE, () -> Procedure.NO_OP);
+        Rule alwaysTrue =
+                new Rule(null, "always true", () -> true)
+                        .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP);
         assertNotNull(alwaysTrue);
         assertEquals("always true", alwaysTrue.getName());
     }
@@ -53,7 +55,9 @@ public class RuleTest {
     @Test
     public void testEvaluate() {
         // start with simple test of a NONE->NEWLY->CONTINUING->CONTINUING sequence
-        Rule alwaysTrue = new Rule("always true", () -> true, ONCE, () -> Procedure.NO_OP);
+        Rule alwaysTrue =
+                new Rule(null, "always true", () -> true)
+                        .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP);
         assertEquals(Rule.TriggerType.NONE, alwaysTrue.getCurrentTriggerType());
         alwaysTrue.evaluate();
         assertEquals(TriggerType.NEWLY, alwaysTrue.getCurrentTriggerType());
@@ -64,11 +68,8 @@ public class RuleTest {
 
         // test a full cycle: NONE->NEWLY->CONTINUING->FINISHED->NONE->NEWLY->...
         Rule duckDuckGooseGoose =
-                new Rule(
-                        "duck duck goose goose",
-                        new DuckDuckGooseGoosePredicate(),
-                        ONCE,
-                        () -> Procedure.NO_OP);
+                new Rule(null, "duck duck goose goose", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP);
         assertEquals(Rule.TriggerType.NONE, duckDuckGooseGoose.getCurrentTriggerType());
         duckDuckGooseGoose.evaluate();
         assertEquals(TriggerType.NEWLY, duckDuckGooseGoose.getCurrentTriggerType());
@@ -85,28 +86,19 @@ public class RuleTest {
     @Test
     public void testGetCancellation() {
         Rule ruleWithOnce =
-                new Rule(
-                        "always true",
-                        new DuckDuckGooseGoosePredicate(),
-                        ONCE,
-                        () -> Procedure.NO_OP);
+                new Rule(null, "always true", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP);
         assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithOnce.getCancellationOnFinish());
 
         Rule ruleWithOnceAndHold =
-                new Rule(
-                        "always true",
-                        new DuckDuckGooseGoosePredicate(),
-                        ONCE_AND_HOLD,
-                        () -> Procedure.NO_OP);
+                new Rule(null, "always true", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(ONCE_AND_HOLD, () -> Procedure.NO_OP);
         assertEquals(
                 Cancellation.CANCEL_NEWLY_ACTION, ruleWithOnceAndHold.getCancellationOnFinish());
 
         Rule ruleWithRepeatedly =
-                new Rule(
-                        "always true",
-                        new DuckDuckGooseGoosePredicate(),
-                        REPEATEDLY,
-                        () -> Procedure.NO_OP);
+                new Rule(null, "always true", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(REPEATEDLY, () -> Procedure.NO_OP);
         assertEquals(
                 Cancellation.CANCEL_NEWLY_ACTION, ruleWithRepeatedly.getCancellationOnFinish());
     }
@@ -117,9 +109,8 @@ public class RuleTest {
         final Set<Mechanism> finishedMechanisms = Set.of(new FakeMechanism());
 
         Rule duckDuckGooseGoose =
-                new Rule(
-                                "duck duck goose goose",
-                                new DuckDuckGooseGoosePredicate(),
+                new Rule(null, "duck duck goose goose", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(
                                 ONCE,
                                 () -> new FunctionalInstantProcedure(newlyMechanisms, () -> {}))
                         .withFinishedTriggeringProcedure(finishedMechanisms, () -> {});
@@ -152,11 +143,8 @@ public class RuleTest {
     @Test
     public void testGetProcedureToRun() {
         Rule duckDuckGooseGoose =
-                new Rule(
-                                "duck duck goose goose",
-                                new DuckDuckGooseGoosePredicate(),
-                                ONCE,
-                                () -> new TrivialProcedure("newly"))
+                new Rule(null, "duck duck goose goose", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(ONCE, () -> new TrivialProcedure("newly"))
                         .withFinishedTriggeringProcedure(() -> new TrivialProcedure("finished"));
 
         // NONE

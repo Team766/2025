@@ -57,28 +57,36 @@ public class Rule {
         CANCEL_NEWLY_ACTION,
     }
 
+    private RuleGroupBase container;
     private final String name;
-    private final BooleanSupplier predicate;
+    private BooleanSupplier predicate;
     private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
     private final Map<TriggerType, Set<Mechanism>> triggerReservations =
             Maps.newEnumMap(TriggerType.class);
-    private final Cancellation cancellationOnFinish;
+    private Cancellation cancellationOnFinish;
 
     private TriggerType currentTriggerType = TriggerType.NONE;
     private boolean sealed = false;
 
-    /* package */ Rule(
-            String name,
-            BooleanSupplier predicate,
-            RulePersistence rulePersistence,
-            Supplier<Procedure> onTriggeringProcedure) {
+    /* package */ Rule(RuleGroupBase container, String name, BooleanSupplier predicate) {
         if (predicate == null) {
             throw new IllegalArgumentException("Rule predicate has not been set.");
         }
 
-        if (onTriggeringProcedure == null) {
-            throw new IllegalArgumentException("On-triggering Procedure is not defined.");
+        this.container = container;
+        this.name = name;
+        this.predicate = predicate;
+    }
+
+    public Rule withOnTriggeringProcedure(
+            RulePersistence rulePersistence, Supplier<Procedure> onTriggeringProcedure) {
+        if (sealed) {
+            throw new IllegalStateException(
+                    "Cannot modify rules once they've been evaluated in the RuleEngine");
+        }
+        if (triggerProcedures.containsKey(TriggerType.NEWLY)) {
+            throw new IllegalStateException("This trigger already has an OnTriggering action");
         }
 
         final Supplier<Procedure> newlyTriggeringProcedure =
@@ -125,13 +133,22 @@ public class Rule {
                     }
                 };
 
-        this.name = name;
-        this.predicate = predicate;
-        if (newlyTriggeringProcedure != null) {
-            triggerProcedures.put(TriggerType.NEWLY, newlyTriggeringProcedure);
-            triggerReservations.put(
-                    TriggerType.NEWLY, getReservationsForProcedure(newlyTriggeringProcedure));
-        }
+        triggerProcedures.put(TriggerType.NEWLY, newlyTriggeringProcedure);
+        triggerReservations.put(
+                TriggerType.NEWLY, getReservationsForProcedure(newlyTriggeringProcedure));
+
+        return this;
+    }
+
+    public Rule withOnTriggeringProcedure(
+            RulePersistence rulePersistence, Set<Mechanism> reservations, Runnable action) {
+        return withOnTriggeringProcedure(
+                rulePersistence, () -> new FunctionalInstantProcedure(reservations, action));
+    }
+
+    public Rule withOnTriggeringProcedure(
+            RulePersistence rulePersistence, Mechanism reservation, Runnable action) {
+        return withOnTriggeringProcedure(rulePersistence, Set.of(reservation), action);
     }
 
     /** Specify a creator for the Procedure that should be run when this rule was triggering before and is no longer triggering. */
@@ -139,6 +156,10 @@ public class Rule {
         if (sealed) {
             throw new IllegalStateException(
                     "Cannot modify rules once they've been evaluated in the RuleEngine");
+        }
+        if (triggerProcedures.containsKey(TriggerType.FINISHED)) {
+            throw new IllegalStateException(
+                    "This trigger already has an FinishedTriggering action");
         }
 
         triggerProcedures.put(TriggerType.FINISHED, action);
@@ -149,6 +170,55 @@ public class Rule {
     public Rule withFinishedTriggeringProcedure(Set<Mechanism> reservations, Runnable action) {
         return withFinishedTriggeringProcedure(
                 () -> new FunctionalInstantProcedure(reservations, action));
+    }
+
+    public Rule withFinishedTriggeringProcedure(Mechanism reservation, Runnable action) {
+        return withFinishedTriggeringProcedure(Set.of(reservation), action);
+    }
+
+    /** Specify Rules which should only trigger when this Rule is also triggering. */
+    public Rule whenTriggering(RuleGroup rules) {
+        if (sealed) {
+            throw new IllegalStateException(
+                    "Cannot modify rules once they've been evaluated in the RuleEngine");
+        }
+        rules.mergeInto(container, this, true);
+        return this;
+    }
+
+    /** Specify Rules which should only trigger when this Rule is not triggering. */
+    public Rule whenNotTriggering(RuleGroup rules) {
+        if (sealed) {
+            throw new IllegalStateException(
+                    "Cannot modify rules once they've been evaluated in the RuleEngine");
+        }
+        rules.mergeInto(container, this, false);
+        return this;
+    }
+
+    /* package */ void attachTo(RuleGroupBase container, Rule parent, boolean triggerValue) {
+        if (sealed) {
+            throw new IllegalStateException(
+                    "Cannot modify rules once they've been evaluated in the RuleEngine");
+        }
+        this.container = container;
+        if (parent != null) {
+            final var previousPredicate = this.predicate;
+            this.predicate =
+                    triggerValue
+                            // Important! These composed predicates shouldn't invoke the parent's
+                            // `predicate`. Each Rule's `predicate` should be invoked only once
+                            // per call to RuleEngine.run(), so having all rules in the hierarchy
+                            // call it would not work as expected. Instead, we have the child rules
+                            // query the triggering state of the parent rule.
+                            // Also Important! The order of these conditions matters: we want the
+                            // user's predicate to be invoked only when this rule is active
+                            // (i.e. when its parent condition is satisfied), so we put the user's
+                            // predicate second, so it gets short-circuited when the rule is not
+                            // active.
+                            ? () -> parent.isTriggering() && previousPredicate.getAsBoolean()
+                            : () -> !parent.isTriggering() && previousPredicate.getAsBoolean();
+        }
     }
 
     private static Set<Mechanism> getReservationsForProcedure(Supplier<Procedure> supplier) {
@@ -167,6 +237,15 @@ public class Rule {
 
     /* package */ TriggerType getCurrentTriggerType() {
         return currentTriggerType;
+    }
+
+    /* package */ boolean isTriggering() {
+        return switch (currentTriggerType) {
+            case NEWLY -> true;
+            case CONTINUING -> true;
+            case FINISHED -> false;
+            case NONE -> false;
+        };
     }
 
     /* package */ void seal() {
