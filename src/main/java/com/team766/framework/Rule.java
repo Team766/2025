@@ -17,7 +17,7 @@ import org.littletonrobotics.junction.Logger;
  * "predicate" that will be evaluated in each call to {@link RuleEngine#run}, typically
  * in an OperatorInterface loop or Display (LED lights, etc) loop.  The Rule keeps track of
  * when the predicate starts triggering and has finished triggering, via
- * a {@link TriggerType}, eg when a driver or boxop starts pressing a button and then releases the button.
+ * a {@link TriggerState}, eg when a driver or boxop starts pressing a button and then releases the button.
  * Each Rule has optional {@link Procedure} actions for each of these trigger types, which the
  * {@link RuleEngine} will consider running, after checking if higher priority rules have reserved the
  * same {@link Mechanism}s that the candidate rule would use.
@@ -48,7 +48,7 @@ public class Rule {
      * FINISHED - rule was triggering in the last evaluation and is no longer triggering.
      *
      */
-    enum TriggerType {
+    enum TriggerState {
         NONE,
         NEWLY,
         CONTINUING,
@@ -71,13 +71,13 @@ public class Rule {
     private RuleGroupBase container;
     private String name;
     private BooleanSupplier predicate;
-    private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
-            Maps.newEnumMap(TriggerType.class);
-    private final Map<TriggerType, Set<Subsystem>> triggerReservations =
-            Maps.newEnumMap(TriggerType.class);
+    private final Map<TriggerState, Supplier<Procedure>> triggerProcedures =
+            Maps.newEnumMap(TriggerState.class);
+    private final Map<TriggerState, Set<Subsystem>> triggerReservations =
+            Maps.newEnumMap(TriggerState.class);
     private Cancellation cancellationOnFinish;
 
-    private TriggerType currentTriggerType = TriggerType.NONE;
+    private TriggerState currentTriggerState = TriggerState.NONE;
     private boolean sealed = false;
     private String logValue;
 
@@ -105,7 +105,7 @@ public class Rule {
             throw new IllegalStateException(
                     "Cannot modify rules once they've been evaluated in the RuleEngine");
         }
-        if (triggerProcedures.containsKey(TriggerType.NEWLY)) {
+        if (triggerProcedures.containsKey(TriggerState.NEWLY)) {
             throw new IllegalStateException("This trigger already has an OnTriggering action");
         }
 
@@ -153,9 +153,9 @@ public class Rule {
                     }
                 };
 
-        triggerProcedures.put(TriggerType.NEWLY, newlyTriggeringProcedure);
+        triggerProcedures.put(TriggerState.NEWLY, newlyTriggeringProcedure);
         triggerReservations.put(
-                TriggerType.NEWLY, getReservationsForProcedure(newlyTriggeringProcedure));
+                TriggerState.NEWLY, getReservationsForProcedure(newlyTriggeringProcedure));
 
         return this;
     }
@@ -190,13 +190,13 @@ public class Rule {
             throw new IllegalStateException(
                     "Cannot modify rules once they've been evaluated in the RuleEngine");
         }
-        if (triggerProcedures.containsKey(TriggerType.FINISHED)) {
+        if (triggerProcedures.containsKey(TriggerState.FINISHED)) {
             throw new IllegalStateException(
                     "This trigger already has an FinishedTriggering action");
         }
 
-        triggerProcedures.put(TriggerType.FINISHED, action);
-        triggerReservations.put(TriggerType.FINISHED, getReservationsForProcedure(action));
+        triggerProcedures.put(TriggerState.FINISHED, action);
+        triggerReservations.put(TriggerState.FINISHED, getReservationsForProcedure(action));
         return this;
     }
 
@@ -282,12 +282,12 @@ public class Rule {
         return name;
     }
 
-    /* package */ TriggerType getCurrentTriggerType() {
-        return currentTriggerType;
+    /* package */ TriggerState getCurrentTriggerState() {
+        return currentTriggerState;
     }
 
     /* package */ boolean isTriggering() {
-        return switch (currentTriggerType) {
+        return switch (currentTriggerState) {
             case NEWLY -> true;
             case CONTINUING -> true;
             case FINISHED -> false;
@@ -300,33 +300,33 @@ public class Rule {
     }
 
     /* package */ void reset(ResetReason reason) {
-        currentTriggerType = TriggerType.NONE;
+        currentTriggerState = TriggerState.NONE;
         replaceLog(reason.toString());
     }
 
     /* package */ void evaluate() {
         if (predicate.getAsBoolean()) {
-            currentTriggerType =
-                    switch (currentTriggerType) {
-                        case NONE -> TriggerType.NEWLY;
-                        case NEWLY -> TriggerType.CONTINUING;
-                        case CONTINUING -> TriggerType.CONTINUING;
-                        case FINISHED -> TriggerType.NEWLY;
+            currentTriggerState =
+                    switch (currentTriggerState) {
+                        case NONE -> TriggerState.NEWLY;
+                        case NEWLY -> TriggerState.CONTINUING;
+                        case CONTINUING -> TriggerState.CONTINUING;
+                        case FINISHED -> TriggerState.NEWLY;
                     };
         } else {
-            currentTriggerType =
-                    switch (currentTriggerType) {
-                        case NONE -> TriggerType.NONE;
-                        case NEWLY -> TriggerType.FINISHED;
-                        case CONTINUING -> TriggerType.FINISHED;
-                        case FINISHED -> TriggerType.NONE;
+            currentTriggerState =
+                    switch (currentTriggerState) {
+                        case NONE -> TriggerState.NONE;
+                        case NEWLY -> TriggerState.FINISHED;
+                        case CONTINUING -> TriggerState.FINISHED;
+                        case FINISHED -> TriggerState.NONE;
                     };
         }
         queueLog();
     }
 
     /* package */ Set<Subsystem> getSubsystemsToReserve() {
-        return triggerReservations.getOrDefault(currentTriggerType, Collections.emptySet());
+        return triggerReservations.getOrDefault(currentTriggerState, Collections.emptySet());
     }
 
     /* package */ Cancellation getCancellationOnFinish() {
@@ -334,9 +334,9 @@ public class Rule {
     }
 
     /* package */ Procedure getProcedureToRun() {
-        if (currentTriggerType != TriggerType.NONE) {
-            if (triggerProcedures.containsKey(currentTriggerType)) {
-                Supplier<Procedure> supplier = triggerProcedures.get(currentTriggerType);
+        if (currentTriggerState != TriggerState.NONE) {
+            if (triggerProcedures.containsKey(currentTriggerState)) {
+                Supplier<Procedure> supplier = triggerProcedures.get(currentTriggerState);
                 if (supplier != null) {
                     return supplier.get();
                 }
@@ -349,7 +349,7 @@ public class Rule {
         if (!Strings.isNullOrEmpty(logValue)) {
             return;
         }
-        logValue = currentTriggerType.toString();
+        logValue = currentTriggerState.toString();
     }
 
     private void replaceLog(String value) {
@@ -374,8 +374,8 @@ public class Rule {
         builder.append(cancellationOnFinish);
         builder.append(", predicate: ");
         builder.append(predicate);
-        builder.append(", currentTriggerType: ");
-        builder.append(currentTriggerType);
+        builder.append(", currentTriggerState: ");
+        builder.append(currentTriggerState);
         builder.append("]");
         return builder.toString();
     }

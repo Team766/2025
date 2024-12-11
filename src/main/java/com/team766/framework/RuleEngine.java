@@ -29,7 +29,7 @@ import java.util.function.Supplier;
  */
 public class RuleEngine extends RuleGroupBase {
 
-    private static record RuleAction(Rule rule, Rule.TriggerType triggerType) {}
+    private static record RuleAction(Rule rule, Rule.TriggerState triggerState) {}
 
     private final LinkedHashMap<String, Rule> rules = new LinkedHashMap<>();
     private final Map<Rule, Integer> rulePriorities = new HashMap<>();
@@ -99,8 +99,8 @@ public class RuleEngine extends RuleGroupBase {
                 rule.evaluate();
 
                 // see if the rule is triggering
-                final Rule.TriggerType triggerType = rule.getCurrentTriggerType();
-                if (triggerType != Rule.TriggerType.NONE) {
+                final Rule.TriggerState triggerState = rule.getCurrentTriggerState();
+                if (triggerState != Rule.TriggerState.NONE) {
                     int priority = getPriorityForRule(rule);
 
                     // see if there are mechanisms a potential procedure would want to reserve
@@ -136,11 +136,12 @@ public class RuleEngine extends RuleGroupBase {
                     }
 
                     // we're good to proceed
-                    if (triggerType == Rule.TriggerType.FINISHED
+                    if (triggerState == Rule.TriggerState.FINISHED
                             && rule.getCancellationOnFinish()
                                     == Rule.Cancellation.CANCEL_NEWLY_ACTION) {
                         var newlyCommand =
-                                ruleMap.inverse().get(new RuleAction(rule, Rule.TriggerType.NEWLY));
+                                ruleMap.inverse()
+                                        .get(new RuleAction(rule, Rule.TriggerState.NEWLY));
                         if (newlyCommand != null) {
                             newlyCommand.cancel();
                         }
@@ -155,7 +156,7 @@ public class RuleEngine extends RuleGroupBase {
                             "Rule "
                                     + rule.getName()
                                     + " triggered ("
-                                    + rule.getCurrentTriggerType()
+                                    + rule.getCurrentTriggerState()
                                     + ").  Running Procedure "
                                     + procedure.getName()
                                     + " with reservations "
@@ -164,7 +165,7 @@ public class RuleEngine extends RuleGroupBase {
                     // TODO(MF3): check that the reservations have not changed
                     Command command = procedure.createCommandToRunProcedure();
                     subsystemsToUse.addAll(reservations);
-                    ruleMap.forcePut(command, new RuleAction(rule, triggerType));
+                    ruleMap.forcePut(command, new RuleAction(rule, triggerState));
                     command.schedule();
                 }
             } catch (Exception ex) {
