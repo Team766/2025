@@ -1,6 +1,6 @@
 package com.team766.robot.burro_elevator;
 
-import com.team766.framework.AutonomousMode;
+import com.team766.framework3.AutonomousMode;
 import com.team766.robot.burro_elevator.procedures.*;
 
 public class AutonomousModes {
