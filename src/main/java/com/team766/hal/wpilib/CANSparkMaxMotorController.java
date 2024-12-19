@@ -8,6 +8,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAnalogSensor;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorControllerCommandFailedException;
+import com.team766.hal.PIDConfig;
 import com.team766.logging.LoggerExceptionUtils;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -19,6 +20,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     private Function<Double, REVLibError> sensorPositionSetter;
     private Function<Boolean, REVLibError> sensorInvertedSetter;
     private boolean sensorInverted = false;
+    private final PIDConfig pidConfig = new PIDConfig();
 
     public CANSparkMaxMotorController(final int deviceId) {
         super(deviceId, MotorType.kBrushless);
@@ -60,22 +62,30 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     }
 
     @Override
-    public void set(final ControlMode mode, final double value) {
+    public void set(final ControlMode mode, final double value, double arbitraryFeedForward) {
         switch (mode) {
             case Disabled:
                 disable();
                 break;
             case PercentOutput:
-                getPIDController().setReference(value, CANSparkMax.ControlType.kDutyCycle);
+                getPIDController()
+                        .setReference(
+                                value, CANSparkMax.ControlType.kDutyCycle, 0, arbitraryFeedForward);
                 break;
             case Position:
-                getPIDController().setReference(value, CANSparkMax.ControlType.kPosition);
+                getPIDController()
+                        .setReference(
+                                value, CANSparkMax.ControlType.kPosition, 0, arbitraryFeedForward);
                 break;
             case Velocity:
-                getPIDController().setReference(value, CANSparkMax.ControlType.kVelocity);
+                getPIDController()
+                        .setReference(
+                                value, CANSparkMax.ControlType.kVelocity, 0, arbitraryFeedForward);
                 break;
             case Voltage:
-                getPIDController().setReference(value, CANSparkMax.ControlType.kVoltage);
+                getPIDController()
+                        .setReference(
+                                value, CANSparkMax.ControlType.kVoltage, 0, arbitraryFeedForward);
             default:
                 throw new IllegalArgumentException("Unsupported control mode " + mode);
         }
@@ -111,6 +121,11 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
                         new IllegalArgumentException("Unsupported neutral mode " + neutralMode));
                 break;
         }
+    }
+
+    @Override
+    public PIDConfig getPIDConfig() {
+        return pidConfig;
     }
 
     @Override

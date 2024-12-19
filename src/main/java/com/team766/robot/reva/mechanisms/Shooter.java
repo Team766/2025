@@ -1,18 +1,19 @@
 package com.team766.robot.reva.mechanisms;
 
-import static com.team766.framework3.Conditions.checkForStatusWith;
 import static com.team766.robot.reva.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
 import com.team766.framework3.Mechanism;
+import com.team766.framework3.MultiRequest;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
+import com.team766.framework3.requests.RequestForStop;
+import com.team766.framework3.requests.RequestForVelocityControl;
 import com.team766.hal.MotorController;
-import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 
-public class Shooter extends Mechanism<Shooter.ShooterRequest, Shooter.ShooterStatus> {
+public class Shooter extends Mechanism<Shooter, Shooter.ShooterStatus> {
     public record ShooterStatus(
             double targetSpeed, double shooterSpeedTop, double shooterSpeedBottom)
             implements Status {
@@ -26,37 +27,38 @@ public class Shooter extends Mechanism<Shooter.ShooterRequest, Shooter.ShooterSt
         }
     }
 
-    public sealed interface ShooterRequest extends Request {}
+    public Request<Shooter> requestForStop() {
+        return new MultiRequest<Shooter>(
+                new RequestForStop<>(shooterMotorTop), new RequestForStop<>(shooterMotorBottom));
+    }
 
-    public record Stop() implements ShooterRequest {
-        @Override
-        public boolean isDone() {
-            return true;
+    public Request<Shooter> requestForNudgeUp() {
+        final double previousTarget = getStatus().targetSpeed();
+        return requestForSpeed(Math.min(previousTarget + NUDGE_INCREMENT, MAX_SPEED));
+    }
+
+    public Request<Shooter> requestForNudgeDown() {
+        final double previousTarget = targetSpeed;
+        return requestForSpeed(Math.max(previousTarget - NUDGE_INCREMENT, MIN_SPEED));
+    }
+
+    public Request<Shooter> requestForSpeed(double speed) {
+        targetSpeed = com.team766.math.Math.clamp(speed, MIN_SPEED, MAX_SPEED);
+        if (targetSpeed == 0.0) {
+            return requestForStop();
         }
+        return new MultiRequest<Shooter>(
+                new RequestForVelocityControl<>(shooterMotorTop, targetSpeed, SPEED_TOLERANCE),
+                new RequestForVelocityControl<>(shooterMotorBottom, targetSpeed, SPEED_TOLERANCE));
     }
 
-    public static ShooterRequest makeNudgeUp() {
-        final double previousTarget = getStatusOrThrow(ShooterStatus.class).targetSpeed();
-        return new ShootAtSpeed(Math.min(previousTarget + NUDGE_INCREMENT, MAX_SPEED));
+    public Request<Shooter> requestForShooterAssistSpeed() {
+        return requestForSpeed(4000.0);
     }
 
-    public static ShooterRequest makeNudgeDown() {
-        final double previousTarget = getStatusOrThrow(ShooterStatus.class).targetSpeed();
-        return new ShootAtSpeed(Math.max(previousTarget - NUDGE_INCREMENT, MIN_SPEED));
-    }
-
-    public record ShootAtSpeed(double speed) implements ShooterRequest {
-        public static final ShootAtSpeed SHOOTER_ASSIST_SPEED = new ShootAtSpeed(4000.0);
-
-        @Override
-        public boolean isDone() {
-            return checkForStatusWith(ShooterStatus.class, s -> s.isCloseToSpeed(this.speed()));
-        }
-    }
-
-    public static ShooterRequest makeShoot() {
-        final double previousTarget = getStatusOrThrow(ShooterStatus.class).targetSpeed();
-        return new ShootAtSpeed(previousTarget);
+    public Request<Shooter> requestForResumeShoot() {
+        final double previousTarget = getStatus().targetSpeed();
+        return requestForSpeed(previousTarget);
     }
 
     public static final double DEFAULT_SPEED =
@@ -88,35 +90,12 @@ public class Shooter extends Mechanism<Shooter.ShooterRequest, Shooter.ShooterSt
     }
 
     @Override
-    protected ShooterRequest getInitialRequest() {
-        return new Stop();
+    protected Request<Shooter> getIdleRequest() {
+        return requestForStop();
     }
 
     @Override
-    protected ShooterRequest getIdleRequest() {
-        return new Stop();
-    }
-
-    @Override
-    protected ShooterStatus run(ShooterRequest request, boolean isRequestNew) {
-        if (isRequestNew) {
-            switch (request) {
-                case ShootAtSpeed g -> {
-                    targetSpeed = com.team766.math.Math.clamp(g.speed(), MIN_SPEED, MAX_SPEED);
-                    if (targetSpeed == 0.0) {
-                        setRequest(new Stop());
-                        break;
-                    }
-                    shooterMotorTop.set(ControlMode.Velocity, targetSpeed);
-                    shooterMotorBottom.set(ControlMode.Velocity, targetSpeed);
-                }
-                case Stop g -> {
-                    shooterMotorTop.stopMotor();
-                    shooterMotorBottom.stopMotor();
-                }
-            }
-        }
-
+    protected ShooterStatus reportStatus() {
         // SmartDashboard.putNumber(
         //         "[SHOOTER] Top Motor Current", MotorUtil.getCurrentUsage(shooterMotorTop));
         // SmartDashboard.putNumber(

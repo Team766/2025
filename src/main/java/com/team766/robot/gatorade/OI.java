@@ -48,13 +48,13 @@ public class OI extends RuleEngine {
                                 Set.of(intake),
                                 () ->
                                         intake.setRequest(
-                                                new Intake.IntakeState(
+                                                intake.requestForIntake(
                                                         gamePieceType, Intake.MotorState.OUT)))
                         .withFinishedTriggeringProcedure(
                                 Set.of(intake),
                                 () ->
                                         intake.setRequest(
-                                                new Intake.IntakeState(
+                                                intake.requestForIntake(
                                                         gamePieceType, Intake.MotorState.STOP))));
 
         // Respond to boxop commands
@@ -148,13 +148,13 @@ public class OI extends RuleEngine {
                                 Set.of(intake),
                                 () ->
                                         intake.setRequest(
-                                                new Intake.IntakeState(
+                                                intake.requestForIntake(
                                                         gamePieceType, Intake.MotorState.IN)))
                         .withFinishedTriggeringProcedure(
                                 Set.of(intake),
                                 () ->
                                         intake.setRequest(
-                                                new Intake.IntakeState(
+                                                intake.requestForIntake(
                                                         gamePieceType, Intake.MotorState.IDLE))));
 
         addRule(
@@ -166,7 +166,7 @@ public class OI extends RuleEngine {
                                 Set.of(intake),
                                 () ->
                                         intake.setRequest(
-                                                new Intake.IntakeState(
+                                                intake.requestForIntake(
                                                         gamePieceType, Intake.MotorState.STOP))));
 
         // look for button hold to extend intake/wrist/elevator superstructure,
@@ -183,17 +183,17 @@ public class OI extends RuleEngine {
                                 () -> {
                                     if (placementPosition != PlacementPosition.NONE) {
                                         arm.setRequest(
-                                                Arm.MoveToPosition.Extended(
+                                                arm.requestForExtended(
                                                         placementPosition, gamePieceType));
                                     }
                                 })
                         .withFinishedTriggeringProcedure(
                                 Set.of(arm, intake),
                                 () -> {
-                                    arm.setRequest(Arm.MoveToPosition.RETRACTED);
+                                    arm.setRequest(arm.requestForRetraced());
                                     if (placementPosition == PlacementPosition.HUMAN_PLAYER) {
                                         intake.setRequest(
-                                                new Intake.IntakeState(
+                                                intake.requestForIntake(
                                                         gamePieceType, Intake.MotorState.IDLE));
                                     }
                                 }));
@@ -223,9 +223,9 @@ public class OI extends RuleEngine {
                                     // elevator.setRequest(new
                                     // Elevator.NudgeNoPID(elevatorNudgeAxis)));
                                     if (elevatorNudgeAxis > 0) {
-                                        arm.setRequest(Arm.makeNudgeElevatorUp());
+                                        arm.setRequest(arm.requestForNudgeElevatorUp());
                                     } else {
-                                        arm.setRequest(Arm.makeNudgeElevatorDown());
+                                        arm.setRequest(arm.requestForNudgeElevatorDown());
                                     }
                                 }));
         // look for wrist nudges
@@ -247,9 +247,9 @@ public class OI extends RuleEngine {
                                                             InputConstants.AXIS_WRIST_MOVEMENT);
                                     // wrist.setRequest(new Wrist.NudgeNoPID(wristNudgeAxis));
                                     if (wristNudgeAxis > 0) {
-                                        arm.setRequest(Arm.makeNudgeWristUp());
+                                        arm.setRequest(arm.requestForNudgeWristUp());
                                     } else {
-                                        arm.setRequest(Arm.makeNudgeWristDown());
+                                        arm.setRequest(arm.requestForNudgeWristDown());
                                     }
                                 }));
     }

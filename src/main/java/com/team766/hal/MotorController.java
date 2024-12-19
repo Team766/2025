@@ -2,6 +2,7 @@ package com.team766.hal;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team766.library.ValueProvider;
 
 /**
  * Interface for motor controlling devices.
@@ -44,7 +45,11 @@ public interface MotorController extends BasicMotorController {
      *
      * @param value The setpoint value, as described above.
      */
-    void set(ControlMode mode, double value);
+    default void set(ControlMode mode, double value) {
+        set(mode, value, 0.0);
+    }
+
+    void set(ControlMode mode, double value, double arbitraryFeedForward);
 
     /**
      * Common interface for inverting direction of a motor controller.
@@ -92,13 +97,35 @@ public interface MotorController extends BasicMotorController {
 
     void setNeutralMode(NeutralMode neutralMode);
 
+    PIDConfig getPIDConfig();
+
+    default void applyPIDConfig() {
+        getPIDConfig().apply(this);
+    }
+
     void setP(double value);
+
+    default void setP(ValueProvider<Double> value) {
+        getPIDConfig().setP(value);
+    }
 
     void setI(double value);
 
+    default void setI(ValueProvider<Double> value) {
+        getPIDConfig().setI(value);
+    }
+
     void setD(double value);
 
+    default void setD(ValueProvider<Double> value) {
+        getPIDConfig().setD(value);
+    }
+
     void setFF(double value);
+
+    default void setFF(ValueProvider<Double> value) {
+        getPIDConfig().setFF(value);
+    }
 
     void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice);
 
@@ -113,6 +140,10 @@ public interface MotorController extends BasicMotorController {
     void setSensorInverted(boolean inverted);
 
     void setOutputRange(double minOutput, double maxOutput);
+
+    default void setOutputRange(ValueProvider<Double> minOutput, ValueProvider<Double> maxOutput) {
+        getPIDConfig().setOutputRange(minOutput, maxOutput);
+    }
 
     void setCurrentLimit(double ampsLimit);
 

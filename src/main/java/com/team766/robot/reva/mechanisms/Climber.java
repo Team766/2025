@@ -1,54 +1,75 @@
 package com.team766.robot.reva.mechanisms;
 
-import static com.team766.framework3.Conditions.checkForStatusWith;
 import static com.team766.robot.reva.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.framework3.Mechanism;
+import com.team766.framework3.MultiRequest;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
+import com.team766.framework3.requests.RequestForStop;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
-public class Climber extends Mechanism<Climber.ClimberRequest, Climber.ClimberStatus> {
-
-    public record ClimberStatus(double heightLeft, double heightRight) implements Status {
-        public boolean isLeftNear(MoveToPosition position) {
-            return Math.abs(heightLeft() - position.height()) < POSITION_LOCATION_THRESHOLD;
-        }
-
-        public boolean isRightNear(MoveToPosition position) {
-            return Math.abs(heightRight() - position.height()) < POSITION_LOCATION_THRESHOLD;
-        }
-    }
-
-    public sealed interface ClimberRequest extends Request {}
-
-    public record Stop() implements ClimberRequest {
-        @Override
-        public boolean isDone() {
-            return true;
-        }
-    }
-
-    public record MotorPowers(double powerLeft, double powerRight, boolean overrideSoftLimits)
-            implements ClimberRequest {
-        @Override
-        public boolean isDone() {
-            return true;
-        }
-    }
-
-    public record MoveToPosition(double height) implements ClimberRequest {
+public class Climber extends Mechanism<Climber, Climber.ClimberStatus> {
+    public static class Position {
         // A very rough measurement, and was being very safe.
         // TODO: Needs to be measured more accurately.
-        public static final MoveToPosition TOP = new MoveToPosition(43.18);
-        public static final MoveToPosition BOTTOM = new MoveToPosition(0);
-        public static final MoveToPosition BELOW_ARM =
-                new MoveToPosition(15); // TODO: Find actual value
+        public static final double TOP = 43.18;
+        public static final double BOTTOM = 0;
+        public static final double BELOW_ARM = 15; // TODO: Find actual value
+    }
 
-        public double getRotations() {
-            return heightToRotations(height);
+    public record ClimberStatus(double heightLeft, double heightRight) implements Status {
+        public boolean isLeftNear(double position) {
+            return Math.abs(heightLeft() - position) < POSITION_LOCATION_THRESHOLD;
+        }
+
+        public boolean isRightNear(double position) {
+            return Math.abs(heightRight() - position) < POSITION_LOCATION_THRESHOLD;
+        }
+    }
+
+    public Request<Climber> requestForStop() {
+        return new MultiRequest<Climber>(
+                new RequestForStop<>(leftMotor), new RequestForStop<>(rightMotor));
+    }
+
+    public Request<Climber> requestForMotorPowers(
+            double powerLeft, double powerRight, boolean overrideSoftLimits) {
+        boolean enableSoftLimits = !g.overrideSoftLimits();
+        if (enableSoftLimits != softLimitsEnabled) {
+            enableSoftLimits(enableSoftLimits);
+        }
+        leftMotor.set(com.team766.math.Math.clamp(g.powerLeft(), -1, 1));
+        rightMotor.set(com.team766.math.Math.clamp(g.powerRight(), -1, 1));
+    }
+
+    public Request<Climber> requestForPosition(double height) {
+        if (!softLimitsEnabled) {
+            enableSoftLimits(true);
+        }
+
+        // Control left motor
+        if (status.isLeftNear(g)) {
+            leftMotor.stopMotor();
+        } else if (status.heightLeft() > g.height()) {
+            // Move down
+            leftMotor.set(0.25);
+        } else {
+            // Move up
+            leftMotor.set(-0.25);
+        }
+
+        // Control right motor
+        if (status.isRightNear(g)) {
+            rightMotor.stopMotor();
+        } else if (status.heightRight() > g.height()) {
+            // Move down
+            rightMotor.set(0.25);
+        } else {
+            // Move up
+            rightMotor.set(-0.25);
         }
 
         @Override
@@ -112,12 +133,7 @@ public class Climber extends Mechanism<Climber.ClimberRequest, Climber.ClimberSt
     }
 
     @Override
-    protected ClimberRequest getInitialRequest() {
-        return new Stop();
-    }
-
-    @Override
-    protected ClimberStatus run(ClimberRequest request, boolean isRequestNew) {
+    protected ClimberStatus reportStatus() {
         // SmartDashboard.putNumber("[CLIMBER] Left Rotations", leftMotor.getSensorPosition());
         // SmartDashboard.putNumber("[CLIMBER] Right Rotations", rightMotor.getSensorPosition());
         // SmartDashboard.putNumber("[CLIMBER] Left Height", getHeightLeft());
@@ -134,53 +150,8 @@ public class Climber extends Mechanism<Climber.ClimberRequest, Climber.ClimberSt
         // SmartDashboard.putNumber(
         //         "[CLIMBER] Right Motor Stator Current",
         //         MotorUtil.getStatorCurrentUsage(rightMotor));
-        final var status =
-                new ClimberStatus(
-                        rotationsToHeight(leftMotor.getSensorPosition()),
-                        rotationsToHeight(rightMotor.getSensorPosition()));
-
-        switch (request) {
-            case Stop g -> {
-                leftMotor.stopMotor();
-                rightMotor.stopMotor();
-            }
-            case MotorPowers g -> {
-                boolean enableSoftLimits = !g.overrideSoftLimits();
-                if (enableSoftLimits != softLimitsEnabled) {
-                    enableSoftLimits(enableSoftLimits);
-                }
-                leftMotor.set(com.team766.math.Math.clamp(g.powerLeft(), -1, 1));
-                rightMotor.set(com.team766.math.Math.clamp(g.powerRight(), -1, 1));
-            }
-            case MoveToPosition g -> {
-                if (!softLimitsEnabled) {
-                    enableSoftLimits(true);
-                }
-
-                // Control left motor
-                if (status.isLeftNear(g)) {
-                    leftMotor.stopMotor();
-                } else if (status.heightLeft() > g.height()) {
-                    // Move down
-                    leftMotor.set(0.25);
-                } else {
-                    // Move up
-                    leftMotor.set(-0.25);
-                }
-
-                // Control right motor
-                if (status.isRightNear(g)) {
-                    rightMotor.stopMotor();
-                } else if (status.heightRight() > g.height()) {
-                    // Move down
-                    rightMotor.set(0.25);
-                } else {
-                    // Move up
-                    rightMotor.set(-0.25);
-                }
-            }
-        }
-
-        return status;
+        return new ClimberStatus(
+                rotationsToHeight(leftMotor.getSensorPosition()),
+                rotationsToHeight(rightMotor.getSensorPosition()));
     }
 }

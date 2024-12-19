@@ -20,6 +20,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorControllerCommandFailedException;
+import com.team766.hal.PIDConfig;
 import com.team766.logging.LoggerExceptionUtils;
 
 public class CANTalonFxMotorController extends TalonFX implements MotorController {
@@ -28,6 +29,8 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     // out of paranoia, in case some code casts this MotorController to a TalonFX directly
     // and changes a configuration, bypassing this code.
     private TalonFXConfiguration talonFXConfig = new TalonFXConfiguration();
+
+    private final PIDConfig pidConfig = new PIDConfig();
 
     // TODO: add support for taking a CANcoder as a ctor parameter
     public CANTalonFxMotorController(final int deviceNumber, final String canBus) {
@@ -66,7 +69,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
-    public void set(final ControlMode mode, double value) {
+    public void set(final ControlMode mode, double value, double arbitraryFeedForward) {
         switch (mode) {
             case Disabled:
                 super.disable();
@@ -77,10 +80,12 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
                 break;
             case Position:
                 PositionDutyCycle position = new PositionDutyCycle(value);
+                position.FeedForward = arbitraryFeedForward;
                 super.setControl(position);
                 break;
             case Velocity:
                 VelocityDutyCycle velocity = new VelocityDutyCycle(value);
+                velocity.FeedForward = arbitraryFeedForward;
                 super.setControl(velocity);
                 break;
             case Voltage:
@@ -148,6 +153,11 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
         talonFXConfig.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = secondsFromNeutralToFull;
         statusCodeToException(
                 ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.ClosedLoopRamps));
+    }
+
+    @Override
+    public PIDConfig getPIDConfig() {
+        return pidConfig;
     }
 
     @Override

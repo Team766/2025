@@ -49,26 +49,26 @@ public class OI extends RuleEngine {
                         .withOnTriggeringProcedure(
                                 ONCE,
                                 Set.of(elevator),
-                                () -> elevator.setRequest(Elevator.makeNudgeUp())));
+                                () -> elevator.setRequest(elevator.requestForNudgeUp())));
         addRule(
                 Rule.create("Elevator Down", () -> joystick0.getButton(BUTTON_ELEVATOR_DOWN))
                         .withOnTriggeringProcedure(
                                 ONCE,
                                 Set.of(elevator),
-                                () -> elevator.setRequest(Elevator.makeNudgeDown())));
+                                () -> elevator.setRequest(elevator.requestForNudgeDown())));
 
         addRule(
                 Rule.create("Intake", () -> joystick0.getButton(BUTTON_INTAKE))
                         .withOnTriggeringProcedure(
                                 ONCE_AND_HOLD,
                                 Set.of(gripper),
-                                () -> gripper.setRequest(new Gripper.Intake())));
+                                () -> gripper.setRequest(gripper.requestForIntake())));
         addRule(
                 Rule.create("Outtake", () -> joystick0.getButton(BUTTON_OUTTAKE))
                         .withOnTriggeringProcedure(
                                 ONCE_AND_HOLD,
                                 Set.of(gripper),
-                                () -> gripper.setRequest(new Gripper.Outtake())));
+                                () -> gripper.setRequest(gripper.requestForOuttake())));
     }
 
     @Override

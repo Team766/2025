@@ -10,14 +10,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public abstract class Mechanism<R extends Request, S extends Record & Status> extends SubsystemBase
-        implements StatusBusMixin, LoggingBase {
+public abstract class Mechanism<M extends Mechanism<M, S>, S extends Record & Status>
+        extends SubsystemBase implements LoggingBase {
     private boolean isRunningPeriodic = false;
 
     private Superstructure<?, ?> superstructure = null;
 
-    private R request = null;
-    private boolean isRequestNew = false;
+    private Request<M> request = null;
     private S status = null;
 
     /**
@@ -85,27 +84,16 @@ public abstract class Mechanism<R extends Request, S extends Record & Status> ex
         this.superstructure = superstructure;
     }
 
-    public final void setRequest(R request) {
+    public final void setRequest(Request<M> request) {
         Objects.requireNonNull(request);
+        request.reset();
+        if (this.request != null) {
+            this.request.reset();
+        }
         checkContextReservation();
         this.request = request;
-        isRequestNew = true;
         log(this.getClass().getName() + " processing request: " + request);
     }
-
-    /**
-     * The request returned by this method will be set as the request for this Mechanism when the
-     * Mechanism is first created.
-     *
-     * If this Mechanism defines getIdleRequest(), then this Initial request will only be passed to
-     * the first call to run() (after that, the Idle request may take over). Otherwise, this Initial
-     * request will be passed to run() until something calls setRequest() on this Mechanism.
-     *
-     * This method will only be called once, immediately before the first call to run(). Because it
-     * is called before run(), it cannot call getMechanismStatus() or otherwise depend on the Status
-     * published by this Mechanism.
-     */
-    protected abstract R getInitialRequest();
 
     /**
      * The request returned by this method will be set as the request for this Mechanism when no
@@ -115,7 +103,7 @@ public abstract class Mechanism<R extends Request, S extends Record & Status> ex
      * getIdleRequest is especially in the latter case, because it can help to "clean up" after the
      * cancelled Procedure, returning this Mechanism back to some safe state.
      */
-    protected R getIdleRequest() {
+    protected Request<M> getIdleRequest() {
         return null;
     }
 
@@ -146,7 +134,7 @@ public abstract class Mechanism<R extends Request, S extends Record & Status> ex
         ReservingCommand.checkCurrentCommandHasReservation(this);
     }
 
-    public S getMechanismStatus() {
+    public S getStatus() {
         if (status == null) {
             throw new NoSuchElementException(getName() + " has not published a status yet");
         }
@@ -168,13 +156,9 @@ public abstract class Mechanism<R extends Request, S extends Record & Status> ex
     /* package */ void periodicInternal() {
         try {
             isRunningPeriodic = true;
-            if (request == null) {
-                setRequest(getInitialRequest());
-            }
-            boolean wasRequestNew = isRequestNew;
-            isRequestNew = false;
-            status = run(request, wasRequestNew);
-            publishStatus(status);
+            status = reportStatus();
+            StatusBus.getInstance().publishStatus(status);
+            request.execute();
         } catch (Exception ex) {
             ex.printStackTrace();
             LoggerExceptionUtils.logException(ex);
@@ -183,5 +167,5 @@ public abstract class Mechanism<R extends Request, S extends Record & Status> ex
         }
     }
 
-    protected abstract S run(R request, boolean isRequestNew);
+    protected abstract S reportStatus();
 }

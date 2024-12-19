@@ -6,64 +6,54 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 import com.team766.config.ConfigFileReader;
+import com.team766.framework3.AbstractRequest;
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
+import com.team766.framework3.requests.RequestForPercentOutput;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
 
-public class Intake extends Mechanism<Intake.IntakeRequest, Intake.IntakeStatus> {
+public class Intake extends Mechanism<Intake, Intake.IntakeStatus> {
     public record IntakeStatus(double motorPower, boolean hasNoteInIntake, boolean isNoteClose)
             implements Status {}
 
-    public sealed interface IntakeRequest extends Request {}
+    public Request<Intake> setMotorPower(double power) {
+        return new RequestForPercentOutput<Intake>(intakeMotor, power);
+    }
 
-    public record In() implements IntakeRequest {
+    public Request<Intake> in() {
+        return setMotorPower(DEFAULT_POWER);
+    }
+
+    public Request<Intake> out() {
+        return setMotorPower(-1 * DEFAULT_POWER);
+    }
+
+    public Request<Intake> stop() {
+        return setMotorPower(0.0);
+    }
+
+    public Request<Intake> nudgeUp() {
+        return setMotorPower(
+                Math.min(getMechanismStatus().motorPower() + NUDGE_INCREMENT, MAX_POWER));
+    }
+
+    public Request<Intake> nudgeDown() {
+        return setMotorPower(
+                Math.max(getMechanismStatus().motorPower() - NUDGE_INCREMENT, MIN_POWER));
+    }
+
+    public class SetPowerForSensorDistance extends AbstractRequest<Intake> {
         @Override
-        public boolean isDone() {
-            return true;
-        }
-    }
-
-    public record Out() implements IntakeRequest {
-        @Override
-        public boolean isDone() {
-            return true;
-        }
-    }
-
-    public record Stop() implements IntakeRequest {
-        @Override
-        public boolean isDone() {
-            return true;
-        }
-    }
-
-    public static IntakeRequest makeNudgeUp() {
-        return new SetMotorPower(
-                Math.min(
-                        getStatusOrThrow(IntakeStatus.class).motorPower() + NUDGE_INCREMENT,
-                        MAX_POWER));
-    }
-
-    public static IntakeRequest makeNudgeDown() {
-        return new SetMotorPower(
-                Math.max(
-                        getStatusOrThrow(IntakeStatus.class).motorPower() - NUDGE_INCREMENT,
-                        MIN_POWER));
-    }
-
-    public record SetMotorPower(double power) implements IntakeRequest {
-        @Override
-        public boolean isDone() {
-            return true;
-        }
-    }
-
-    public record SetPowerForSensorDistance() implements IntakeRequest {
-        @Override
-        public boolean isDone() {
+        public boolean run() {
+            intakeMotor.set(
+                    com.team766.math.Math.interpolate(
+                            positions,
+                            sensor.getRange(),
+                            IntakePosition::proximityValue,
+                            IntakePosition::intakePower));
             return true;
         }
     }
@@ -104,47 +94,15 @@ public class Intake extends Mechanism<Intake.IntakeRequest, Intake.IntakeStatus>
     }
 
     @Override
-    protected IntakeRequest getInitialRequest() {
-        return new Stop();
+    protected Request<Intake> getIdleRequest() {
+        return stop();
     }
 
     @Override
-    protected IntakeRequest getIdleRequest() {
-        return new Stop();
-    }
-
-    @Override
-    protected IntakeStatus run(IntakeRequest request, boolean isRequestNew) {
+    protected IntakeStatus reportStatus() {
         // SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
         // SmartDashboard.putNumber("[INTAKE] Current", MotorUtil.getCurrentUsage(intakeMotor));
         // SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
-
-        switch (request) {
-            case In g -> {
-                if (!isRequestNew) break;
-                intakeMotor.set(DEFAULT_POWER);
-            }
-            case Out g -> {
-                if (!isRequestNew) break;
-                intakeMotor.set(-1 * DEFAULT_POWER);
-            }
-            case Stop g -> {
-                if (!isRequestNew) break;
-                intakeMotor.set(0.0);
-            }
-            case SetMotorPower g -> {
-                if (!isRequestNew) break;
-                intakeMotor.set(g.power());
-            }
-            case SetPowerForSensorDistance g -> {
-                intakeMotor.set(
-                        com.team766.math.Math.interpolate(
-                                positions,
-                                sensor.getRange(),
-                                IntakePosition::proximityValue,
-                                IntakePosition::intakePower));
-            }
-        }
 
         return new IntakeStatus(
                 intakeMotor.get(),

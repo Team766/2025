@@ -116,7 +116,7 @@ public class Conditions {
     /**
      * Suspend the Procedure until {@link Request#isDone} returns true.
      */
-    public static void waitForRequest(Context context, Request request) {
+    public static void waitForRequest(Context context, Request<?> request) {
         context.waitFor(request::isDone);
     }
 
@@ -125,7 +125,7 @@ public class Conditions {
      * {@code timeoutSeconds}. Returns true if the Request is done; false otherwise.
      */
     public static boolean waitForRequestOrTimeout(
-            Context context, Request request, double timeoutSeconds) {
+            Context context, Request<?> request, double timeoutSeconds) {
         return context.waitForConditionOrTimeout(request::isDone, timeoutSeconds);
     }
 

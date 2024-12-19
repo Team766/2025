@@ -9,12 +9,15 @@ package com.team766.framework3;
  *
  * Each Mechanism will have its own implementation of the {@link Request} marker interface.
  */
-public interface Request {
-
+public interface Request<M extends Mechanism<M, ?>> {
     /**
      * Checks whether or not this request has been fulfilled.
      */
     boolean isDone();
+
+    void execute();
+
+    void reset();
 
     // TODO(MF3): do we need any way of checking if the request has been bumped/canceled?
 }

@@ -1,11 +1,12 @@
 package com.team766.robot.gatorade.mechanisms;
 
-import static com.team766.framework3.Conditions.checkForStatusWith;
 import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
+import com.team766.framework3.requests.RequestForPercentOutput;
+import com.team766.framework3.requests.RequestForStop;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
@@ -20,7 +21,7 @@ import com.team766.hal.RobotProvider;
  * intake or outtake.  This is because the motor must spin in opposite directions to intake cubes
  * versus cones.
  */
-public class Intake extends Mechanism<Intake.IntakeState, Intake.IntakeState> {
+public class Intake extends Mechanism<Intake, Intake.IntakeStatus> {
 
     private static final double POWER_IN = 0.3;
     private static final double POWER_OUT = 0.25;
@@ -56,13 +57,7 @@ public class Intake extends Mechanism<Intake.IntakeState, Intake.IntakeState> {
         OUT
     }
 
-    public record IntakeState(GamePieceType gamePieceType, MotorState state)
-            implements Request, Status {
-        @Override
-        public boolean isDone() {
-            return checkForStatusWith(IntakeState.class, this::equals);
-        }
-    }
+    public record IntakeStatus() implements Status {}
 
     private final MotorController motor;
 
@@ -71,43 +66,24 @@ public class Intake extends Mechanism<Intake.IntakeState, Intake.IntakeState> {
      */
     public Intake() {
         motor = RobotProvider.instance.getMotor(INTAKE_MOTOR);
+
+        setRequest(requestForIntake(GamePieceType.CONE, MotorState.STOP));
+    }
+
+    public Request<Intake> requestForIntake(GamePieceType gamePieceType, MotorState motorState) {
+        return switch (motorState) {
+            case IN -> new RequestForPercentOutput<>(
+                    motor, (gamePieceType == GamePieceType.CONE) ? POWER_IN : (-1 * POWER_IN));
+            case OUT -> new RequestForPercentOutput<>(
+                    motor, (gamePieceType == GamePieceType.CONE) ? (-1 * POWER_OUT) : POWER_OUT);
+            case STOP -> new RequestForStop<>(motor);
+            case IDLE -> new RequestForPercentOutput<>(
+                    motor, (gamePieceType == GamePieceType.CONE) ? POWER_IDLE : (-1 * POWER_IDLE));
+        };
     }
 
     @Override
-    protected IntakeState getInitialRequest() {
-        return new IntakeState(GamePieceType.CONE, MotorState.STOP);
-    }
-
-    @Override
-    protected IntakeState run(IntakeState request, boolean isRequestNew) {
-        if (isRequestNew) {
-            switch (request.state) {
-                case IN -> {
-                    double power =
-                            (request.gamePieceType == GamePieceType.CONE)
-                                    ? POWER_IN
-                                    : (-1 * POWER_IN);
-                    motor.set(power);
-                }
-                case OUT -> {
-                    double power =
-                            (request.gamePieceType == GamePieceType.CONE)
-                                    ? (-1 * POWER_OUT)
-                                    : POWER_OUT;
-                    motor.set(power);
-                }
-                case STOP -> {
-                    motor.set(0.0);
-                }
-                case IDLE -> {
-                    double power =
-                            (request.gamePieceType == GamePieceType.CONE)
-                                    ? POWER_IDLE
-                                    : (-1 * POWER_IDLE);
-                    motor.set(power);
-                }
-            }
-        }
-        return request;
+    protected IntakeStatus reportStatus() {
+        return new IntakeStatus();
     }
 }

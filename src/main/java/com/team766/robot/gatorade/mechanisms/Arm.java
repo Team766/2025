@@ -1,136 +1,20 @@
 package com.team766.robot.gatorade.mechanisms;
 
-import static com.team766.framework3.Conditions.checkForStatusWith;
+import static com.team766.framework3.RulePersistence.ONCE;
 
+import com.team766.framework3.MultiRequest;
 import com.team766.framework3.Request;
+import com.team766.framework3.RequestForSubmechanism;
+import com.team766.framework3.Rule;
+import com.team766.framework3.RuleEngine;
 import com.team766.framework3.Status;
 import com.team766.framework3.Superstructure;
 import com.team766.robot.gatorade.PlacementPosition;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
+import java.util.Set;
 
-public class Arm extends Superstructure<Arm.ArmRequest, Arm.ArmStatus> {
+public class Arm extends Superstructure<Arm, Arm.ArmStatus> {
     public record ArmStatus() implements Status {}
-
-    public sealed interface ArmRequest extends Request {}
-
-    // NOTE: This request type is private because we don't want to expose the ability
-    // to send arbitrary requests to the individual mechanisms.
-    private record SimpleRequest(
-            Shoulder.ShoulderRequest shoulderRequest,
-            Elevator.ElevatorRequest elevatorRequest,
-            Wrist.WristRequest wristRequest)
-            implements ArmRequest {
-        @Override
-        public boolean isDone() {
-            return shoulderRequest().isDone()
-                    && elevatorRequest().isDone()
-                    && wristRequest().isDone();
-        }
-    }
-
-    public ArmRequest makeStop() {
-        return new SimpleRequest(new Shoulder.Stop(), new Elevator.Stop(), new Wrist.Stop());
-    }
-
-    public ArmRequest makeHoldPosition() {
-        return new SimpleRequest(
-                Shoulder.makeHoldPosition(), Elevator.makeHoldPosition(), Wrist.makeHoldPosition());
-    }
-
-    public static ArmRequest makeNudgeShoulderUp() {
-        return new SimpleRequest(
-                Shoulder.makeNudgeUp(), Elevator.makeHoldPosition(), Wrist.makeHoldPosition());
-    }
-
-    public static ArmRequest makeNudgeShoulderDown() {
-        return new SimpleRequest(
-                Shoulder.makeNudgeDown(), Elevator.makeHoldPosition(), Wrist.makeHoldPosition());
-    }
-
-    public static ArmRequest makeNudgeElevatorUp() {
-        return new SimpleRequest(
-                Shoulder.makeHoldPosition(), Elevator.makeNudgeUp(), Wrist.makeHoldPosition());
-    }
-
-    public static ArmRequest makeNudgeElevatorDown() {
-        return new SimpleRequest(
-                Shoulder.makeHoldPosition(), Elevator.makeNudgeDown(), Wrist.makeHoldPosition());
-    }
-
-    public static ArmRequest makeNudgeWristUp() {
-        return new SimpleRequest(
-                Shoulder.makeHoldPosition(), Elevator.makeHoldPosition(), Wrist.makeNudgeUp());
-    }
-
-    public static ArmRequest makeNudgeWristDown() {
-        return new SimpleRequest(
-                Shoulder.makeHoldPosition(), Elevator.makeHoldPosition(), Wrist.makeNudgeDown());
-    }
-
-    public record MoveToPosition(
-            Shoulder.RotateToPosition shoulderSetpoint,
-            Elevator.MoveToPosition elevatorSetpoint,
-            Wrist.RotateToPosition wristSetpoint)
-            implements ArmRequest {
-        public static final MoveToPosition RETRACTED =
-                new MoveToPosition(
-                        Shoulder.RotateToPosition.BOTTOM,
-                        Elevator.MoveToPosition.RETRACTED,
-                        Wrist.RotateToPosition.RETRACTED);
-
-        public static final MoveToPosition EXTENDED_TO_LOW =
-                new MoveToPosition(
-                        Shoulder.RotateToPosition.FLOOR,
-                        Elevator.MoveToPosition.LOW,
-                        Wrist.RotateToPosition.LEVEL);
-
-        public static final MoveToPosition EXTENDED_TO_MID =
-                new MoveToPosition(
-                        Shoulder.RotateToPosition.RAISED,
-                        Elevator.MoveToPosition.MID,
-                        Wrist.RotateToPosition.MID_NODE);
-
-        public static final MoveToPosition EXTENDED_TO_HIGH =
-                new MoveToPosition(
-                        Shoulder.RotateToPosition.RAISED,
-                        Elevator.MoveToPosition.HIGH,
-                        Wrist.RotateToPosition.HIGH_NODE);
-
-        public static final MoveToPosition EXTENDED_TO_HUMAN_PLAYER_CONE =
-                new MoveToPosition(
-                        Shoulder.RotateToPosition.RAISED,
-                        Elevator.MoveToPosition.HUMAN_CONES,
-                        Wrist.RotateToPosition.HUMAN_CONES);
-
-        public static final MoveToPosition EXTENDED_TO_HUMAN_PLAYER_CUBE =
-                new MoveToPosition(
-                        Shoulder.RotateToPosition.RAISED,
-                        Elevator.MoveToPosition.HUMAN_CUBES,
-                        Wrist.RotateToPosition.HUMAN_CUBES);
-
-        @Override
-        public boolean isDone() {
-            return checkForStatusWith(
-                            Shoulder.ShoulderStatus.class, s -> s.isNearTo(shoulderSetpoint))
-                    && checkForStatusWith(
-                            Elevator.ElevatorStatus.class, s -> s.isNearTo(elevatorSetpoint))
-                    && checkForStatusWith(Wrist.WristStatus.class, s -> s.isNearTo(wristSetpoint));
-        }
-
-        public static MoveToPosition Extended(
-                PlacementPosition position, GamePieceType gamePieceType) {
-            return switch (position) {
-                case NONE -> throw new IllegalArgumentException();
-                case HIGH_NODE -> EXTENDED_TO_HIGH;
-                case HUMAN_PLAYER -> switch (gamePieceType) {
-                    case CONE -> EXTENDED_TO_HUMAN_PLAYER_CONE;
-                    case CUBE -> EXTENDED_TO_HUMAN_PLAYER_CUBE;
-                };
-                case LOW_NODE -> EXTENDED_TO_LOW;
-                case MID_NODE -> EXTENDED_TO_MID;
-            };
-        }
-    }
 
     private final Shoulder shoulder;
     private final Elevator elevator;
@@ -142,86 +26,236 @@ public class Arm extends Superstructure<Arm.ArmRequest, Arm.ArmStatus> {
         this.wrist = addMechanism(new Wrist());
     }
 
-    @Override
-    protected ArmRequest getInitialRequest() {
-        return makeStop();
+    // NOTE: This is private because we don't want to expose the ability
+    // to send arbitrary requests to the individual mechanisms.
+    private Request<Arm> simpleRequest(
+            Request<Shoulder> shoulderRequest,
+            Request<Elevator> elevatorRequest,
+            Request<Wrist> wristRequest) {
+        return new MultiRequest<Arm>(
+                new RequestForSubmechanism<>(shoulder, shoulderRequest),
+                new RequestForSubmechanism<>(elevator, elevatorRequest),
+                new RequestForSubmechanism<>(wrist, wristRequest));
     }
 
-    protected ArmRequest getIdleRequest() {
-        return makeHoldPosition();
+    public Request<Arm> requestForStop() {
+        return simpleRequest(
+                shoulder.requestForStop(), elevator.requestForStop(), wrist.requestForStop());
     }
 
-    @Override
-    protected ArmStatus run(ArmRequest request, boolean isRequestNew) {
-        switch (request) {
-            case SimpleRequest g -> {
-                if (!isRequestNew) break;
-                shoulder.setRequest(g.shoulderRequest());
-                elevator.setRequest(g.elevatorRequest());
-                wrist.setRequest(g.wristRequest());
-            }
-            case MoveToPosition g -> {
-                enum MovePhase {
-                    PREPARE_TO_MOVE_ELEVATOR,
-                    MOVING_ELEVATOR,
-                    ELEVATOR_IN_POSITION
-                }
+    public Request<Arm> requestForHoldPosition() {
+        return simpleRequest(
+                shoulder.requestForHoldPosition(),
+                elevator.requestForHoldPosition(),
+                wrist.requestForHoldPosition());
+    }
 
-                final boolean raisingShoulder =
-                        g.shoulderSetpoint.angle()
-                                > getStatusOrThrow(Shoulder.ShoulderStatus.class).angle();
+    public Request<Arm> requestForNudgeShoulderUp() {
+        return simpleRequest(
+                shoulder.requestForNudgeUp(),
+                elevator.requestForHoldPosition(),
+                wrist.requestForHoldPosition());
+    }
 
-                MovePhase phase;
-                if (getStatusOrThrow(Elevator.ElevatorStatus.class).isNearTo(g.elevatorSetpoint)) {
-                    phase = MovePhase.ELEVATOR_IN_POSITION;
-                } else {
-                    phase = MovePhase.MOVING_ELEVATOR;
-                    // Always retract the wrist before moving the elevator.
-                    // It might already be retracted, so it's possible that this step finishes
-                    // instantaneously.
-                    if (!getStatusOrThrow(Wrist.WristStatus.class)
-                            .isNearTo(Wrist.RotateToPosition.RETRACTED)) {
-                        phase = MovePhase.PREPARE_TO_MOVE_ELEVATOR;
-                    }
-                    // If raising the shoulder, do that before the elevator
-                    // (else, lower it after the elevator).
-                    if (raisingShoulder
-                            && !getStatusOrThrow(Shoulder.ShoulderStatus.class)
-                                    .isNearTo(g.shoulderSetpoint)) {
-                        phase = MovePhase.PREPARE_TO_MOVE_ELEVATOR;
-                    }
-                }
+    public Request<Arm> requestForNudgeShoulderDown() {
+        return simpleRequest(
+                shoulder.requestForNudgeDown(),
+                elevator.requestForHoldPosition(),
+                wrist.requestForHoldPosition());
+    }
 
-                switch (phase) {
-                    case PREPARE_TO_MOVE_ELEVATOR -> {
-                        shoulder.setRequest(
-                                raisingShoulder ? g.shoulderSetpoint : Shoulder.makeHoldPosition());
+    public Request<Arm> requestForNudgeElevatorUp() {
+        return simpleRequest(
+                shoulder.requestForHoldPosition(),
+                elevator.requestForNudgeUp(),
+                wrist.requestForHoldPosition());
+    }
 
-                        elevator.setRequest(Elevator.makeHoldPosition());
+    public Request<Arm> requestForNudgeElevatorDown() {
+        return simpleRequest(
+                shoulder.requestForHoldPosition(),
+                elevator.requestForNudgeDown(),
+                wrist.requestForHoldPosition());
+    }
 
-                        wrist.setRequest(Wrist.RotateToPosition.RETRACTED);
-                    }
-                    case MOVING_ELEVATOR -> {
-                        shoulder.setRequest(
-                                raisingShoulder ? g.shoulderSetpoint : Shoulder.makeHoldPosition());
+    public Request<Arm> requestForNudgeWristUp() {
+        return simpleRequest(
+                shoulder.requestForHoldPosition(),
+                elevator.requestForHoldPosition(),
+                wrist.requestForNudgeUp());
+    }
 
-                        // Move the elevator until it gets near the target position.
-                        elevator.setRequest(g.elevatorSetpoint);
+    public Request<Arm> requestForNudgeWristDown() {
+        return simpleRequest(
+                shoulder.requestForHoldPosition(),
+                elevator.requestForHoldPosition(),
+                wrist.requestForNudgeDown());
+    }
 
-                        wrist.setRequest(Wrist.RotateToPosition.RETRACTED);
-                    }
-                    case ELEVATOR_IN_POSITION -> {
-                        // If lowering the shoulder, do that after the elevator.
-                        shoulder.setRequest(g.shoulderSetpoint);
+    public class RequestForPosition implements Request<Arm> {
+        private final double shoulderSetpoint;
+        private final Request<Shoulder> shoulderSetpointRequest;
+        private final Request<Elevator> elevatorSetpointRequest;
+        private final Request<Wrist> wristSetpointRequest;
+        private final RuleEngine ruleEngine;
 
-                        elevator.setRequest(g.elevatorSetpoint);
+        public RequestForPosition(
+                double shoulderSetpoint, double elevatorSetpoint, double wristSetpoint) {
+            this.shoulderSetpoint = shoulderSetpoint;
+            shoulderSetpointRequest = shoulder.requestForPosition(shoulderSetpoint);
+            elevatorSetpointRequest = elevator.requestForPosition(elevatorSetpoint);
+            wristSetpointRequest = wrist.requestForPosition(wristSetpoint);
 
-                        // Lastly, move the wrist.
-                        wrist.setRequest(g.wristSetpoint);
-                    }
-                }
-            }
+            ruleEngine = new RuleEngine();
+            ruleEngine.addRule(
+                    Rule.create(
+                                    "ELEVATOR_IN_POSITION",
+                                    () -> elevator.getStatus().isNearTo(elevatorSetpoint))
+                            .withOnTriggeringProcedure(
+                                    ONCE,
+                                    Set.of(shoulder, elevator, wrist),
+                                    () -> {
+                                        // If lowering the shoulder, do that after
+                                        // the elevator.
+                                        shoulder.setRequest(shoulderSetpointRequest);
+
+                                        elevator.setRequest(elevatorSetpointRequest);
+
+                                        // Lastly, move the wrist.
+                                        wrist.setRequest(wristSetpointRequest);
+                                    }));
+
+            ruleEngine.addRule(
+                    Rule.create(
+                                    "PREPARE_TO_MOVE_ELEVATOR",
+                                    () ->
+                                            // Always retract the wrist before
+                                            // moving the elevator.
+                                            // It might already be retracted, so
+                                            // it's possible that this step finishes
+                                            // instantaneously.
+                                            !wrist.getStatus().isNearTo(Wrist.Position.RETRACTED)
+                                                    ||
+                                                    // If raising the shoulder, do
+                                                    // that before the elevator
+                                                    // (else, lower it after the
+                                                    // elevator).
+                                                    (isRaisingShoulder()
+                                                            && !shoulder.getStatus()
+                                                                    .isNearTo(shoulderSetpoint)))
+                            .withOnTriggeringProcedure(
+                                    ONCE,
+                                    Set.of(shoulder, elevator, wrist),
+                                    () -> {
+                                        shoulder.setRequest(
+                                                isRaisingShoulder()
+                                                        ? shoulder.requestForPosition(
+                                                                shoulderSetpoint)
+                                                        : shoulder.requestForHoldPosition());
+
+                                        elevator.setRequest(elevator.requestForHoldPosition());
+
+                                        wrist.setRequest(
+                                                wrist.requestForPosition(Wrist.Position.RETRACTED));
+                                    }));
+
+            ruleEngine.addRule(
+                    Rule.create("MOVING_ELEVATOR", () -> true)
+                            .withOnTriggeringProcedure(
+                                    ONCE,
+                                    Set.of(shoulder, elevator, wrist),
+                                    () -> {
+                                        shoulder.setRequest(
+                                                isRaisingShoulder()
+                                                        ? shoulder.requestForPosition(
+                                                                shoulderSetpoint)
+                                                        : shoulder.requestForHoldPosition());
+
+                                        // Move the elevator until it gets near the
+                                        // target position.
+                                        elevator.setRequest(
+                                                elevator.requestForPosition(elevatorSetpoint));
+
+                                        wrist.setRequest(
+                                                wrist.requestForPosition(Wrist.Position.RETRACTED));
+                                    }));
         }
+
+        private boolean isRaisingShoulder() {
+            return shoulderSetpoint > shoulder.getStatus().angle();
+        }
+
+        @Override
+        public boolean isDone() {
+            return shoulderSetpointRequest.isDone()
+                    && elevatorSetpointRequest.isDone()
+                    && wristSetpointRequest.isDone();
+        }
+
+        @Override
+        public void execute() {
+            ruleEngine.run();
+        }
+
+        @Override
+        public void reset() {}
+    }
+
+    public Request<Arm> requestForRetraced() {
+        return new RequestForPosition(
+                Shoulder.Position.BOTTOM, Elevator.Position.RETRACTED, Wrist.Position.RETRACTED);
+    }
+
+    public Request<Arm> requestForExtendedToLow() {
+        return new RequestForPosition(
+                Shoulder.Position.FLOOR, Elevator.Position.LOW, Wrist.Position.LEVEL);
+    }
+
+    public Request<Arm> requestForExtendedToMid() {
+        return new RequestForPosition(
+                Shoulder.Position.RAISED, Elevator.Position.MID, Wrist.Position.MID_NODE);
+    }
+
+    public Request<Arm> requestForExtendedToHigh() {
+        return new RequestForPosition(
+                Shoulder.Position.RAISED, Elevator.Position.HIGH, Wrist.Position.HIGH_NODE);
+    }
+
+    public Request<Arm> requestForExtendedToHumanPlayerCone() {
+        return new RequestForPosition(
+                Shoulder.Position.RAISED,
+                Elevator.Position.HUMAN_CONES,
+                Wrist.Position.HUMAN_CONES);
+    }
+
+    public Request<Arm> requestForExtendedToHumanPlayerCube() {
+        return new RequestForPosition(
+                Shoulder.Position.RAISED,
+                Elevator.Position.HUMAN_CUBES,
+                Wrist.Position.HUMAN_CUBES);
+    }
+
+    public Request<Arm> requestForExtended(
+            PlacementPosition position, GamePieceType gamePieceType) {
+        return switch (position) {
+            case NONE -> throw new IllegalArgumentException();
+            case HIGH_NODE -> requestForExtendedToHigh();
+            case HUMAN_PLAYER -> switch (gamePieceType) {
+                case CONE -> requestForExtendedToHumanPlayerCone();
+                case CUBE -> requestForExtendedToHumanPlayerCube();
+            };
+            case LOW_NODE -> requestForExtendedToLow();
+            case MID_NODE -> requestForExtendedToMid();
+        };
+    }
+
+    @Override
+    protected Request<Arm> getIdleRequest() {
+        return requestForHoldPosition();
+    }
+
+    @Override
+    protected ArmStatus reportStatus() {
         return new ArmStatus();
     }
 }

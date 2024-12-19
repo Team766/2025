@@ -163,40 +163,16 @@ public abstract class RobotProvider {
     }
 
     private void configurePID(final String configName, MotorController motor) {
-        ValueProvider<Double> pValue =
-                ConfigFileReader.getInstance().getDouble(configName + PIDController.P_GAIN_KEY);
-        ValueProvider<Double> iValue =
-                ConfigFileReader.getInstance().getDouble(configName + PIDController.I_GAIN_KEY);
-        ValueProvider<Double> dValue =
-                ConfigFileReader.getInstance().getDouble(configName + PIDController.D_GAIN_KEY);
-        ValueProvider<Double> ffValue =
-                ConfigFileReader.getInstance().getDouble(configName + PIDController.FF_GAIN_KEY);
-        ValueProvider<Double> outputMaxLowValue =
+        motor.setP(ConfigFileReader.getInstance().getDouble(configName + PIDController.P_GAIN_KEY));
+        motor.setI(ConfigFileReader.getInstance().getDouble(configName + PIDController.I_GAIN_KEY));
+        motor.setD(ConfigFileReader.getInstance().getDouble(configName + PIDController.D_GAIN_KEY));
+        motor.setFF(
+                ConfigFileReader.getInstance().getDouble(configName + PIDController.FF_GAIN_KEY));
+        motor.setOutputRange(
                 ConfigFileReader.getInstance()
-                        .getDouble(configName + PIDController.OUTPUT_MAX_LOW_KEY);
-        ValueProvider<Double> outputMaxHighValue =
+                        .getDouble(configName + PIDController.OUTPUT_MAX_LOW_KEY),
                 ConfigFileReader.getInstance()
-                        .getDouble(configName + PIDController.OUTPUT_MAX_HIGH_KEY);
-
-        if (pValue.hasValue()) {
-            motor.setP(pValue.get());
-        }
-
-        if (iValue.hasValue()) {
-            motor.setI(iValue.get());
-        }
-
-        if (dValue.hasValue()) {
-            motor.setD(dValue.get());
-        }
-
-        if (ffValue.hasValue()) {
-            motor.setFF(ffValue.get());
-        }
-
-        if (outputMaxLowValue.hasValue() || outputMaxHighValue.hasValue()) {
-            motor.setOutputRange(outputMaxLowValue.valueOr(-1.0), outputMaxHighValue.valueOr(1.0));
-        }
+                        .getDouble(configName + PIDController.OUTPUT_MAX_HIGH_KEY));
     }
 
     public EncoderReader getEncoder(final String configName) {

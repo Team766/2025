@@ -1,6 +1,7 @@
 package com.team766.robot.reva.VisionUtil;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
+import com.team766.framework3.StatusBusMixin;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.constants.VisionConstants;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
@@ -11,7 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 
-public class VisionSpeakerHelper {
+public class VisionSpeakerHelper implements StatusBusMixin {
 
     double angle;
     private ForwardApriltagCamera.ApriltagCameraStatus cameraStatus;

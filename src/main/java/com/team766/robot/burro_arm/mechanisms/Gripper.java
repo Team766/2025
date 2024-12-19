@@ -1,36 +1,48 @@
 package com.team766.robot.burro_arm.mechanisms;
 
 import com.team766.config.ConfigFileReader;
+import com.team766.framework3.InstantRequest;
 import com.team766.framework3.Mechanism;
+import com.team766.framework3.MultiRequest;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
+import com.team766.framework3.requests.RequestForPercentOutput;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
-public class Gripper extends Mechanism<Gripper.GripperRequest, Gripper.GripperStatus> {
+public class Gripper extends Mechanism<Gripper, Gripper.GripperStatus> {
     public record GripperStatus() implements Status {}
 
-    public sealed interface GripperRequest extends Request {}
+    private class RequestForMotorPower extends InstantRequest<Gripper> {
+        private double power;
 
-    public record Idle() implements GripperRequest {
+        public RequestForMotorPower(double power) {
+            this.power = power;
+        }
+
         @Override
-        public boolean isDone() {
-            return true;
+        protected void runOnce() {
+            leftMotor.set(power);
+            rightMotor.set(power);
         }
     }
 
-    public record Intake() implements GripperRequest {
-        @Override
-        public boolean isDone() {
-            return true;
-        }
+    private Request<Gripper> requestForMotorPower(double power) {
+        return new MultiRequest<Gripper>(
+                new RequestForPercentOutput<>(leftMotor, power),
+                new RequestForPercentOutput<>(rightMotor, power));
     }
 
-    public record Outtake() implements GripperRequest {
-        @Override
-        public boolean isDone() {
-            return true;
-        }
+    public Request<Gripper> requestForIdle() {
+        return new RequestForMotorPower(idlePower);
+    }
+
+    public Request<Gripper> requestForIntake() {
+        return new RequestForMotorPower(intakePower);
+    }
+
+    public Request<Gripper> requestForOuttake() {
+        return new RequestForMotorPower(outtakePower);
     }
 
     private final MotorController leftMotor;
@@ -48,33 +60,12 @@ public class Gripper extends Mechanism<Gripper.GripperRequest, Gripper.GripperSt
     }
 
     @Override
-    protected GripperRequest getInitialRequest() {
-        return new Idle();
+    protected Request<Gripper> getIdleRequest() {
+        return requestForIdle();
     }
 
     @Override
-    protected GripperRequest getIdleRequest() {
-        return new Idle();
-    }
-
-    @Override
-    protected GripperStatus run(GripperRequest request, boolean isRequestNew) {
-        switch (request) {
-            case Idle g -> {
-                setMotorPower(idlePower);
-            }
-            case Intake g -> {
-                setMotorPower(intakePower);
-            }
-            case Outtake g -> {
-                setMotorPower(outtakePower);
-            }
-        }
+    protected GripperStatus reportStatus() {
         return new GripperStatus();
-    }
-
-    private void setMotorPower(final double power) {
-        leftMotor.set(power);
-        rightMotor.set(power);
     }
 }
