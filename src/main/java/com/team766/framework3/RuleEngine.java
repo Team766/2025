@@ -14,6 +14,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * {@link RuleEngine}s manage and process a set of {@link Rule}s.  Subclasses should add rules via
@@ -49,6 +51,40 @@ public class RuleEngine implements StatusBusMixin, LoggingBase {
         }
     }
 
+    public void addRule(
+            String name,
+            BooleanSupplier predicate,
+            RulePersistence rulePersistence,
+            Set<Mechanism<?>> reservations,
+            Runnable action) {
+        addRule(
+                Rule.create(name, predicate)
+                        .withOnTriggeringProcedure(
+                                rulePersistence, reservations, () -> action.run()));
+    }
+
+    public <S extends Record & Status> void addRule(
+            String name,
+            BooleanSupplier predicate,
+            RulePersistence rulePersistence,
+            Mechanism<S> reservation,
+            Supplier<Request<? super S>> requestSupplier) {
+        addRule(
+                Rule.create(name, predicate)
+                        .withOnTriggeringProcedure(
+                                rulePersistence,
+                                Set.of(reservation),
+                                () -> reservation.setRequest(requestSupplier.get())));
+    }
+
+    public <S extends Record & Status> void addRule(
+            String name,
+            BooleanSupplier predicate,
+            Mechanism<S> reservation,
+            Supplier<Request<? super S>> requestSupplier) {
+        addRule(name, predicate, RulePersistence.ONCE_AND_HOLD, reservation, requestSupplier);
+    }
+
     @VisibleForTesting
     /* package */ Map<String, Rule> getRuleNameMap() {
         Map<String, Rule> namedRules = new HashMap<>();
@@ -75,7 +111,7 @@ public class RuleEngine implements StatusBusMixin, LoggingBase {
     }
 
     public final void run() {
-        Set<Mechanism<?, ?>> mechanismsToUse = new HashSet<>();
+        Set<Mechanism<?>> mechanismsToUse = new HashSet<>();
 
         // TODO(MF3): when creating a Procedure, check that the reservations are the same as
         // what the Rule pre-computed.
@@ -94,9 +130,9 @@ public class RuleEngine implements StatusBusMixin, LoggingBase {
                     int priority = getPriorityForRule(rule);
 
                     // see if there are mechanisms a potential procedure would want to reserve
-                    Set<Mechanism<?, ?>> reservations = rule.getMechanismsToReserve();
+                    Set<Mechanism<?>> reservations = rule.getMechanismsToReserve();
                     log(Severity.INFO, "Rule " + rule.getName() + " would reserve " + reservations);
-                    for (Mechanism<?, ?> mechanism : reservations) {
+                    for (Mechanism<?> mechanism : reservations) {
                         // see if any of the mechanisms higher priority rules will use would also be
                         // used by this lower priority rule's procedure.
                         if (mechanismsToUse.contains(mechanism)) {

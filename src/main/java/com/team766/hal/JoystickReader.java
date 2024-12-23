@@ -1,5 +1,7 @@
 package com.team766.hal;
 
+import java.util.function.BooleanSupplier;
+
 public interface JoystickReader {
     /**
      * Get the value of the axis.
@@ -46,6 +48,10 @@ public interface JoystickReader {
      * @return The state of the button.
      */
     boolean getButton(int button);
+
+    default BooleanSupplier whenButton(int button) {
+        return () -> getButton(button);
+    }
 
     /**
      * Whether the button was pressed since the last check. Button indexes begin at 1.

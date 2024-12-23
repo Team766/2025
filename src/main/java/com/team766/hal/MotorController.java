@@ -2,6 +2,12 @@ package com.team766.hal;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team766.framework3.requests.PercentOutputRequest;
+import com.team766.framework3.requests.PositionRequest;
+import com.team766.framework3.requests.PositionStatus;
+import com.team766.framework3.requests.VelocityRequest;
+import com.team766.framework3.requests.VelocityStatus;
+import com.team766.framework3.requests.VoltageRequest;
 import com.team766.library.ValueProvider;
 
 /**
@@ -24,6 +30,10 @@ public interface MotorController extends BasicMotorController {
         Voltage,
         Disabled,
     }
+
+    record MotorControllerStatus(
+            double position, double positionTolerance, double velocity, double velocityTolerance)
+            implements PositionStatus, VelocityStatus {}
 
     /**
      * Common interface for setting the power outputu by a motor controller.
@@ -152,4 +162,36 @@ public interface MotorController extends BasicMotorController {
     void setOpenLoopRamp(double secondsFromNeutralToFull);
 
     void setClosedLoopRamp(double secondsFromNeutralToFull);
+
+    double getSensorPositionTolerance();
+
+    void setSensorPositionTolerance(double tolerance);
+
+    double getSensorVelocityTolerance();
+
+    void setSensorVelocityTolerance(double tolerance);
+
+    default void setRequest(PercentOutputRequest request) {
+        set(ControlMode.PercentOutput, request.targetPercentOutput());
+    }
+
+    default void setRequest(VoltageRequest request) {
+        set(ControlMode.Voltage, request.targetVoltage());
+    }
+
+    default void setRequest(VelocityRequest request) {
+        set(ControlMode.Velocity, request.targetVelocity());
+    }
+
+    default void setRequest(PositionRequest request) {
+        set(ControlMode.Position, request.targetPosition());
+    }
+
+    default MotorControllerStatus getStatus() {
+        return new MotorControllerStatus(
+                getSensorPosition(),
+                getSensorPositionTolerance(),
+                getSensorVelocity(),
+                getSensorVelocityTolerance());
+    }
 }

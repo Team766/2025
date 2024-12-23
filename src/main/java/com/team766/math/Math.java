@@ -17,6 +17,14 @@ public class Math {
         return java.lang.Math.abs(value) >= deadzone ? value : 0;
     }
 
+    public static double absMax(double a, double b) {
+        return java.lang.Math.abs(a) > java.lang.Math.abs(b) ? a : b;
+    }
+
+    public static double absMin(double a, double b) {
+        return java.lang.Math.abs(a) < java.lang.Math.abs(b) ? a : b;
+    }
+
     /**
      * Returns the given angle, normalized to be within the range [-180, 180)
      */

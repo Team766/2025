@@ -132,9 +132,7 @@ public class Rule {
 
         /** Specify a creator for the Procedure that should be run when this rule starts triggering. */
         public Builder withOnTriggeringProcedure(
-                RulePersistence rulePersistence,
-                Set<Mechanism<?, ?>> reservations,
-                Runnable action) {
+                RulePersistence rulePersistence, Set<Mechanism<?>> reservations, Runnable action) {
             applyRulePersistence(
                     rulePersistence, () -> new FunctionalInstantProcedure(reservations, action));
             return this;
@@ -143,7 +141,7 @@ public class Rule {
         /** Specify a creator for the Procedure that should be run when this rule starts triggering. */
         public Builder withOnTriggeringProcedure(
                 RulePersistence rulePersistence,
-                Set<Mechanism<?, ?>> reservations,
+                Set<Mechanism<?>> reservations,
                 Consumer<Context> action) {
             applyRulePersistence(
                     rulePersistence, () -> new FunctionalProcedure(reservations, action));
@@ -158,7 +156,7 @@ public class Rule {
 
         /** Specify a creator for the Procedure that should be run when this rule was triggering before and is no longer triggering. */
         public Builder withFinishedTriggeringProcedure(
-                Set<Mechanism<?, ?>> reservations, Runnable action) {
+                Set<Mechanism<?>> reservations, Runnable action) {
             this.finishedTriggeringProcedure =
                     () -> new FunctionalInstantProcedure(reservations, action);
             return this;
@@ -223,7 +221,7 @@ public class Rule {
     private final BooleanSupplier predicate;
     private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
-    private final Map<TriggerType, Set<Mechanism<?, ?>>> triggerReservations =
+    private final Map<TriggerType, Set<Mechanism<?>>> triggerReservations =
             Maps.newEnumMap(TriggerType.class);
     private final Cancellation cancellationOnFinish;
 
@@ -264,7 +262,7 @@ public class Rule {
         }
     }
 
-    private static Set<Mechanism<?, ?>> getReservationsForProcedure(Supplier<Procedure> supplier) {
+    private static Set<Mechanism<?>> getReservationsForProcedure(Supplier<Procedure> supplier) {
         if (supplier != null) {
             Procedure procedure = supplier.get();
             if (procedure != null) {
@@ -315,7 +313,7 @@ public class Rule {
         }
     }
 
-    /* package */ Set<Mechanism<?, ?>> getMechanismsToReserve() {
+    /* package */ Set<Mechanism<?>> getMechanismsToReserve() {
         return triggerReservations.getOrDefault(currentTriggerType, Collections.emptySet());
     }
 

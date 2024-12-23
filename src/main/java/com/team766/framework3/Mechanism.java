@@ -7,16 +7,24 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.lang.invoke.LambdaMetafactory;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-public abstract class Mechanism<M extends Mechanism<M, S>, S extends Record & Status>
-        extends SubsystemBase implements LoggingBase {
+public abstract class Mechanism<S extends Record & Status> extends SubsystemBase
+        implements StatusSource<S>, LoggingBase {
     private boolean isRunningPeriodic = false;
 
-    private Superstructure<?, ?> superstructure = null;
+    private HashMap<Class<?>, Consumer<Object>> runRequestOverloads = new HashMap<>();
 
-    private Request<M> request = null;
+    private Superstructure<?> superstructure = null;
+
+    private Request<? super S> request = null;
     private S status = null;
 
     /**
@@ -53,7 +61,50 @@ public abstract class Mechanism<M extends Mechanism<M, S>, S extends Record & St
     }
 
     public Mechanism() {
+        populateSetRequestOverloads();
+
         setDefaultCommand(new IdleCommand());
+    }
+
+    private void populateSetRequestOverloads() {
+        var lookup = MethodHandles.lookup();
+
+        for (final var method : getClass().getMethods()) {
+            final var params = method.getParameterTypes();
+            if (method.getName() != "runRequest" || params.length != 1) {
+                continue;
+            }
+            @SuppressWarnings("rawtypes")
+            final Class<? extends Request> requestParam;
+            try {
+                requestParam = params[0].asSubclass(Request.class);
+            } catch (ClassCastException ex) {
+                continue;
+            }
+
+            try {
+                final var methodHandle = lookup.unreflect(method);
+                final var site =
+                        LambdaMetafactory.metafactory(
+                                lookup,
+                                // Name of the method in the functional interface (Consumer)
+                                "accept",
+                                // MethodType of the functional interface
+                                MethodType.methodType(Consumer.class),
+                                // Signature of the functional interface method (Consumer.accept)
+                                // after
+                                // type erasure
+                                MethodType.methodType(void.class, Object.class),
+                                // Handle to the method that's being wrapped
+                                methodHandle,
+                                // Signature of the method that's being wrapped
+                                methodHandle.type());
+                runRequestOverloads.put(
+                        requestParam, (Consumer<Object>) site.getTarget().invokeExact());
+            } catch (Throwable ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     @Override
@@ -70,7 +121,7 @@ public abstract class Mechanism<M extends Mechanism<M, S>, S extends Record & St
      *
      * @param superstructure The superstructure this Mechanism is part of.
      */
-    /* package */ void setSuperstructure(Superstructure<?, ?> superstructure) {
+    /* package */ void setSuperstructure(Superstructure<?> superstructure) {
         Objects.requireNonNull(superstructure);
         if (this.superstructure != null) {
             throw new IllegalStateException("Mechanism is already part of a superstructure");
@@ -84,11 +135,17 @@ public abstract class Mechanism<M extends Mechanism<M, S>, S extends Record & St
         this.superstructure = superstructure;
     }
 
-    public final void setRequest(Request<M> request) {
+    public final void setRequest(Request<? super S> request) {
         Objects.requireNonNull(request);
-        request.reset();
-        if (this.request != null) {
-            this.request.reset();
+        if (!runRequestOverloads.containsKey(request.getClass())) {
+            throw new IllegalArgumentException(
+                    this.getName()
+                            + " doesn't support requests of type "
+                            + request.getClass().getName()
+                            + " . Supported request types are "
+                            + runRequestOverloads.keySet().stream()
+                                    .map(Class::getName)
+                                    .collect(Collectors.joining(", ")));
         }
         checkContextReservation();
         this.request = request;
@@ -103,7 +160,7 @@ public abstract class Mechanism<M extends Mechanism<M, S>, S extends Record & St
      * getIdleRequest is especially in the latter case, because it can help to "clean up" after the
      * cancelled Procedure, returning this Mechanism back to some safe state.
      */
-    protected Request<M> getIdleRequest() {
+    protected Request<? super S> getIdleRequest() {
         return null;
     }
 
@@ -158,13 +215,20 @@ public abstract class Mechanism<M extends Mechanism<M, S>, S extends Record & St
             isRunningPeriodic = true;
             status = reportStatus();
             StatusBus.getInstance().publishStatus(status);
-            request.execute();
+            runRequest();
         } catch (Exception ex) {
             ex.printStackTrace();
             LoggerExceptionUtils.logException(ex);
         } finally {
             isRunningPeriodic = false;
         }
+    }
+
+    private void runRequest() {
+        if (request == null) {
+            return;
+        }
+        runRequestOverloads.get(request.getClass()).accept(request);
     }
 
     protected abstract S reportStatus();

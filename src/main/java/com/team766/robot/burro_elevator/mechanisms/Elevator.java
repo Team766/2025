@@ -2,44 +2,34 @@ package com.team766.robot.burro_elevator.mechanisms;
 
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
-import com.team766.framework3.Status;
-import com.team766.framework3.requests.RequestForPercentOutput;
-import com.team766.framework3.requests.RequestForPositionControl;
+import com.team766.framework3.requests.PercentOutputRequest;
+import com.team766.framework3.requests.PositionRequest;
+import com.team766.framework3.requests.PositionStatus;
+import com.team766.framework3.requests.VelocityStatus;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
 
-public class Elevator extends Mechanism<Elevator, Elevator.ElevatorStatus> {
+public class Elevator extends Mechanism<Elevator.ElevatorStatus> {
     public static final double BOTTOM_POSITION = 100.0; // set this proper
     public static final double TOP_POSITION = 0.0; // set this proper
 
-    public record ElevatorStatus(double position) implements Status {}
+    public record ElevatorStatus(
+            double position, double positionTolerance, double velocity, double velocityTolerance)
+            implements PositionStatus, VelocityStatus {}
 
-    public Request<Elevator> requestForPower(double power) {
-        return new RequestForPercentOutput<Elevator>(motor, power);
+    public void setRequestToHoldPosition() {
+        checkContextReservation();
+        setRequest(new PositionRequest(getStatus().position()));
     }
 
-    public Request<Elevator> requestForPosition(double position) {
-        return new RequestForPositionControl<Elevator>(
-                motor,
-                position / MOTOR_ROTATIONS_TO_ELEVATOR_POSITION,
-                POSITION_TOLERANCE / MOTOR_ROTATIONS_TO_ELEVATOR_POSITION,
-                STOPPED_SPEED_THRESHOLD / MOTOR_ROTATIONS_TO_ELEVATOR_POSITION * 60 /* RPMs */,
-                0.0);
+    public void setRequestToNudgeUp() {
+        checkContextReservation();
+        setRequest(new PositionRequest(getStatus().position() + NUDGE_UP_INCREMENT));
     }
 
-    public Request<Elevator> requestForHoldPosition() {
-        final double currentPosition = getStatus().position();
-        return requestForPosition(currentPosition);
-    }
-
-    public Request<Elevator> requestForNudgeUp() {
-        final double currentPosition = getStatus().position();
-        return requestForPosition(currentPosition + NUDGE_UP_INCREMENT);
-    }
-
-    public Request<Elevator> requestForNudgeDown() {
-        final double currentPosition = getStatus().position();
-        return requestForPosition(currentPosition - NUDGE_DOWN_INCREMENT);
+    public void setRequestToNudgeDown() {
+        checkContextReservation();
+        setRequest(new PositionRequest(getStatus().position() - NUDGE_DOWN_INCREMENT));
     }
 
     private static final double NUDGE_UP_INCREMENT = 1.0; // inches
@@ -61,12 +51,26 @@ public class Elevator extends Mechanism<Elevator, Elevator.ElevatorStatus> {
     }
 
     @Override
-    protected Request<Elevator> getIdleRequest() {
-        return requestForHoldPosition();
+    protected Request<? super ElevatorStatus> getIdleRequest() {
+        return new PositionRequest(getStatus().position());
+    }
+
+    protected void runRequest(PercentOutputRequest request) {
+        motor.setRequest(request);
+    }
+
+    protected void runRequest(PositionRequest request) {
+        motor.setRequest(
+                new PositionRequest(
+                        request.targetPosition() / MOTOR_ROTATIONS_TO_ELEVATOR_POSITION));
     }
 
     @Override
     protected ElevatorStatus reportStatus() {
-        return new ElevatorStatus(motor.getSensorPosition() * MOTOR_ROTATIONS_TO_ELEVATOR_POSITION);
+        return new ElevatorStatus(
+                motor.getSensorPosition() * MOTOR_ROTATIONS_TO_ELEVATOR_POSITION,
+                POSITION_TOLERANCE,
+                motor.getSensorVelocity() /* RPMs */ / 60.0 * MOTOR_ROTATIONS_TO_ELEVATOR_POSITION,
+                STOPPED_SPEED_THRESHOLD);
     }
 }

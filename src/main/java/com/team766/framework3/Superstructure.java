@@ -13,9 +13,8 @@ import java.util.Objects;
  * Superstructure should set requests on its constituent Mechanisms (in its
  * {@link #run(R, boolean)} method).
  */
-public abstract class Superstructure<M extends Superstructure<M, S>, S extends Record & Status>
-        extends Mechanism<M, S> {
-    private ArrayList<Mechanism<?, ?>> submechanisms = new ArrayList<>();
+public abstract class Superstructure<S extends Record & Status> extends Mechanism<S> {
+    private ArrayList<Mechanism<?>> submechanisms = new ArrayList<>();
 
     @Override
     /* package */ void periodicInternal() {
@@ -26,7 +25,7 @@ public abstract class Superstructure<M extends Superstructure<M, S>, S extends R
         super.periodicInternal();
     }
 
-    protected <E extends Mechanism<E, ?>> E addMechanism(E submechanism) {
+    protected <M extends Mechanism<?>> M addMechanism(M submechanism) {
         Objects.requireNonNull(submechanism);
         submechanism.setSuperstructure(this);
         submechanisms.add(submechanism);
