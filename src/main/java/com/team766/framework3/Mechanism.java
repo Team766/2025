@@ -6,6 +6,7 @@ import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandles;
@@ -16,8 +17,28 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public abstract class Mechanism<S extends Record & Status> extends SubsystemBase
-        implements StatusSource<S>, LoggingBase {
+public abstract class Mechanism<S extends Record & Status>
+        implements Reservable, StatusSource<S>, LoggingBase {
+    private final SubsystemBase subsystem =
+            new SubsystemBase() {
+                @Override
+                public String getName() {
+                    return Mechanism.this.getName();
+                }
+
+                @Override
+                public final void periodic() {
+                    super.periodic();
+
+                    if (superstructure != null) {
+                        // This Mechanism's periodic() will be run by its superstructure.
+                        return;
+                    }
+
+                    periodicInternal();
+                }
+            };
+
     private boolean isRunningPeriodic = false;
 
     private HashMap<Class<?>, Consumer<Object>> runRequestOverloads = new HashMap<>();
@@ -33,20 +54,20 @@ public abstract class Mechanism<S extends Record & Status> extends SubsystemBase
      */
     private final class IdleCommand extends Command {
         public IdleCommand() {
-            addRequirements(Mechanism.this);
+            addRequirements(subsystem);
         }
 
         @Override
         public void initialize() {
             try {
-                final var r = getIdleRequest();
-                if (r != null) {
-                    ReservingCommand.enterCommand(this);
-                    try {
+                ReservingCommand.enterCommand(this);
+                try {
+                    final var r = getIdleRequest();
+                    if (r != null) {
                         setRequest(r);
-                    } finally {
-                        ReservingCommand.exitCommand(this);
                     }
+                } finally {
+                    ReservingCommand.exitCommand(this);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -63,7 +84,7 @@ public abstract class Mechanism<S extends Record & Status> extends SubsystemBase
     public Mechanism() {
         populateSetRequestOverloads();
 
-        setDefaultCommand(new IdleCommand());
+        subsystem.setDefaultCommand(new IdleCommand());
     }
 
     private void populateSetRequestOverloads() {
@@ -149,7 +170,7 @@ public abstract class Mechanism<S extends Record & Status> extends SubsystemBase
         }
         checkContextReservation();
         this.request = request;
-        log(this.getClass().getName() + " processing request: " + request);
+        log(this.getName() + " processing request: " + request);
     }
 
     /**
@@ -168,7 +189,7 @@ public abstract class Mechanism<S extends Record & Status> extends SubsystemBase
         return isRunningPeriodic;
     }
 
-    protected void checkContextReservation() {
+    public void checkContextReservation() {
         if (isRunningPeriodic()) {
             return;
         }
@@ -188,33 +209,32 @@ public abstract class Mechanism<S extends Record & Status> extends SubsystemBase
             }
             return;
         }
-        ReservingCommand.checkCurrentCommandHasReservation(this);
+        ReservingCommand.checkCurrentCommandHasReservation(subsystem);
     }
 
-    public S getStatus() {
+    @Override
+    public final Subsystem getSubsystem() {
+        return subsystem;
+    }
+
+    @Override
+    public final S getStatus() {
         if (status == null) {
             throw new NoSuchElementException(getName() + " has not published a status yet");
         }
         return status;
     }
 
-    @Override
-    public final void periodic() {
-        super.periodic();
-
-        if (superstructure != null) {
-            // This Mechanism's periodic() will be run by its superstructure.
-            return;
-        }
-
-        periodicInternal();
+    public final Request<? super S> getRequest() {
+        return request;
     }
 
     /* package */ void periodicInternal() {
         try {
-            isRunningPeriodic = true;
             status = reportStatus();
             StatusBus.getInstance().publishStatus(status);
+
+            isRunningPeriodic = true;
             runRequest();
         } catch (Exception ex) {
             ex.printStackTrace();
