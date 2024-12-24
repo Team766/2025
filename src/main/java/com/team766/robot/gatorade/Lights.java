@@ -1,7 +1,5 @@
 package com.team766.robot.gatorade;
 
-import static com.team766.framework3.Conditions.checkForStatus;
-import static com.team766.framework3.Conditions.checkForStatusEntryWith;
 import static com.team766.framework3.RulePersistence.*;
 
 import com.ctre.phoenix.led.Animation;

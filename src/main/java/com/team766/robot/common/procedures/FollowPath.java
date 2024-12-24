@@ -1,7 +1,5 @@
 package com.team766.robot.common.procedures;
 
-import static com.team766.framework3.Conditions.waitForStatus;
-
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.ReplanningConfig;

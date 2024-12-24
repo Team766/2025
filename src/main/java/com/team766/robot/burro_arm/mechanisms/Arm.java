@@ -1,7 +1,5 @@
 package com.team766.robot.burro_arm.mechanisms;
 
-import static com.team766.framework3.Conditions.checkForStatusWith;
-
 import com.team766.config.ConfigFileReader;
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;

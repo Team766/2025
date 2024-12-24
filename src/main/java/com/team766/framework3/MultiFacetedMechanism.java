@@ -31,7 +31,7 @@ public abstract class MultiFacetedMechanism<S extends Record & Status> implement
     /* package */ void periodicInternal() {
         try {
             status = reportStatus();
-            StatusBus.getInstance().publishStatus(status);
+            publishStatus(status);
 
             run();
         } catch (Exception ex) {

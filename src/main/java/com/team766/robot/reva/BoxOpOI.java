@@ -1,6 +1,5 @@
 package com.team766.robot.reva;
 
-import static com.team766.framework3.Conditions.checkForStatusWith;
 import static com.team766.framework3.RulePersistence.*;
 
 import com.team766.framework3.Rule;

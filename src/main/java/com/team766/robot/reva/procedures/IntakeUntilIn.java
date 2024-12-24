@@ -1,7 +1,5 @@
 package com.team766.robot.reva.procedures;
 
-import static com.team766.framework3.Conditions.waitForStatusWith;
-
 import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
 import com.team766.framework3.Status;

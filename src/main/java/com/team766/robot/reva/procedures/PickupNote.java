@@ -1,7 +1,5 @@
 package com.team766.robot.reva.procedures;
 
-import static com.team766.framework3.Conditions.checkForStatusWith;
-
 import com.team766.framework3.Context;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;

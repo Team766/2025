@@ -3,7 +3,6 @@ package com.team766.framework3;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -39,78 +38,6 @@ public class Conditions {
                 },
                 timeoutSeconds);
         return result.get();
-    }
-
-    /**
-     * Predicate that checks whether or not a {@link Status} with the given class has been published
-     */
-    public static <S extends Status> boolean checkForStatus(Class<S> statusClass) {
-        return StatusBus.getInstance().getStatusEntry(statusClass).isPresent();
-    }
-
-    /**
-     * Predicate that checks whether or not the latest {@link Status} with the given class passes
-     * the check provided by {@code predicate}.
-     */
-    public static <S extends Status> boolean checkForStatusWith(
-            Class<S> statusClass, Predicate<S> predicate) {
-        return StatusBus.getInstance().getStatusValue(statusClass, predicate::test).orElse(false);
-    }
-
-    /**
-     * Predicate that checks whether or not the latest {@link Status} with the given class passes
-     * the check provided by {@code predicate}, including additional metadata about how the Status
-     * was published.
-     */
-    public static <S extends Status> boolean checkForStatusEntryWith(
-            Class<S> statusClass, Predicate<StatusBus.Entry<S>> predicate) {
-        return StatusBus.getInstance()
-                .getStatusEntry(statusClass)
-                .map(predicate::test)
-                .orElse(false);
-    }
-
-    /**
-     * Suspend the Procedure until a {@link Status} with the given class has been published, then
-     * return that Status.
-     */
-    public static <T extends Status> T waitForStatus(Context context, Class<T> statusClass) {
-        return waitForValue(context, () -> StatusBus.getInstance().getStatus(statusClass));
-    }
-
-    /**
-     * Suspend the Procedure until a {@link Status} with the given class has been published, or
-     * we've waited for at least {@code timeoutSeconds}. Returns an Optional containing the Status
-     * if one was published, or return an empty Optional if the timeout was reached.
-     */
-    public static <T extends Status> Optional<T> waitForStatusOrTimeout(
-            Context context, Class<T> statusClass, double timeoutSeconds) {
-        return waitForValueOrTimeout(
-                context, () -> StatusBus.getInstance().getStatus(statusClass), timeoutSeconds);
-    }
-
-    /**
-     * Suspend the Procedure until a {@link Status} with the given class has been published that
-     * passes the check provided by {@code predicate}, then return that Status.
-     */
-    public static <T extends Status> T waitForStatusWith(
-            Context context, Class<T> statusClass, Predicate<T> predicate) {
-        return waitForValue(
-                context, () -> StatusBus.getInstance().getStatus(statusClass).filter(predicate));
-    }
-
-    /**
-     * Suspend the Procedure until a {@link Status} with the given class has been published that
-     * passes the check provided by {@code predicate}, or we've waited for at least
-     * {@code timeoutSeconds}. Returns an Optional containing the Status if one was published, or
-     * return an empty Optional if the timeout was reached.
-     */
-    public static <T extends Status> Optional<T> waitForStatusWithOrTimeout(
-            Context context, Class<T> statusClass, Predicate<T> predicate, double timeoutSeconds) {
-        return waitForValueOrTimeout(
-                context,
-                () -> StatusBus.getInstance().getStatus(statusClass).filter(predicate),
-                timeoutSeconds);
     }
 
     /**

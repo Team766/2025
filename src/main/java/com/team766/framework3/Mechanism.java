@@ -232,7 +232,7 @@ public abstract class Mechanism<S extends Record & Status>
     /* package */ void periodicInternal() {
         try {
             status = reportStatus();
-            StatusBus.getInstance().publishStatus(status);
+            publishStatus(status);
 
             isRunningPeriodic = true;
             runRequest();
