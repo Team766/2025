@@ -25,7 +25,7 @@ public class PathSequenceAuto extends Procedure {
     private final SwerveDrive drive;
     private final Pose2d initialPosition;
     private final PPHolonomicDriveController controller;
-    private VisionSpeakerHelper visionSpeakerHelper;
+    // private VisionSpeakerHelper visionSpeakerHelper;
 
     /**
      * Sequencer for using path following with other procedures
@@ -37,7 +37,7 @@ public class PathSequenceAuto extends Procedure {
         this.drive = drive;
         this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
-        visionSpeakerHelper = new VisionSpeakerHelper(drive);
+        // visionSpeakerHelper = new VisionSpeakerHelper(drive);
     }
 
     private PPHolonomicDriveController createDriveController(SwerveDrive drive) {

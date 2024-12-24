@@ -11,6 +11,8 @@ import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -22,6 +24,9 @@ public class FollowPath extends Procedure {
     private final PPHolonomicDriveController controller;
     private final Timer timer = new Timer();
     private PathPlannerTrajectory generatedTrajectory;
+
+    private final StructPublisher<Pose2d> pathPlannerPosePublisher =
+            NetworkTableInstance.getDefault().getStructTopic("PathPlannerTargetPose", Pose2d.struct).publish();
 
     public FollowPath(
             PathPlannerPath path,
@@ -108,6 +113,7 @@ public class FollowPath extends Procedure {
                     "input rotational velocity", targetSpeeds.omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput(
                     "targetState", targetState.getTargetHolonomicPose());
+            pathPlannerPosePublisher.set(targetState.getTargetHolonomicPose());
             drive.controlRobotOriented(targetSpeeds);
             context.yield();
         }

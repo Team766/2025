@@ -513,13 +513,13 @@ public class SwerveDrive extends Mechanism {
             simPrevPoses.remove(simPrevPoses.firstKey()); // delete old values
         } 
 
-        kalmanFilter.updateWithOdometry(swerveOdometry.predictCurrentPositionChange(), now - dt, now);
+        // kalmanFilter.updateWithOdometry(swerveOdometry.predictCurrentPositionChange(), now - dt, now);
 
-        if (Math.random() < 0.03) {
-            double delay = Math.random() * 0.5;
+        if (Math.random() < 0.5) {
+            double delay = 0.05; // Math.random() * 0.5;
             Pose2d prevPose = simPrevPoses.ceilingEntry(now - delay).getValue();
-            double randX = prevPose.getX() + 0.2 * (Math.random() - 0.5);
-            double randY = prevPose.getY() + 0.2 * (Math.random() - 0.5);
+            double randX = prevPose.getX() + 0.1 * (Math.random() - 0.5);
+            double randY = prevPose.getY() + 0.1 * (Math.random() - 0.5);
             kalmanFilter.updateWithVisionMeasurement(new Translation2d(randX, randY), now - delay /* - 0.1 * Math.random() */);
             SmartDashboard.putNumber("sensor X measurement", randX);
         }

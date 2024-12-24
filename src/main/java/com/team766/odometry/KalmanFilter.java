@@ -21,64 +21,76 @@ public class KalmanFilter {
     private Matrix<N2, N2> odometryCovariancePerDist;
     private Matrix<N2, N2> visionCovariance;
     private TreeMap<Double, Translation2d> inputLog; 
+    private double velocityInputDeletionTime; // in seconds
 
-    private Matrix<N2, N4> observationMatrix = MatBuilder.fill(Nat.N2(), Nat.N4(), 
-1, 0, 0, 0,
-        0, 1, 0, 0);
+    private static final Matrix<N4, N1> CUR_STATE_DEFAULT = MatBuilder.fill(Nat.N4(), Nat.N1(), 0, 0, 0, 0);
 
-    private final double VELOCITY_INPUT_DELETION_TIME = 1;
+    private static final Matrix<N4, N4> COVARIANCE_DEFAULT = Matrix.eye(Nat.N4());
+
+    private static final Matrix<N4, N4> NOISE_COVARIANCE_DEFAULT = MatBuilder.fill(Nat.N4(), Nat.N4(), 
+        0.03, 0, 0, 0,
+                0, 0.03, 0, 0,
+                0, 0, 0.01, 0,
+                0, 0, 0, 0.01);
+
+    private static final Matrix<N2, N2> ODOMETRY_COVARIANCE_DEFAULT = MatBuilder.fill(Nat.N2(), Nat.N2(), 
+        0.2, 0, 
+                0, 0.05);
+
+    private static final Matrix<N2, N2> VISION_COVARIANCE_DEFAULT = MatBuilder.fill(Nat.N2(), Nat.N2(), 
+        0.1, 0, 
+                0, 0.1);
+        
+    private static final Matrix<N2, N4> OBSERVATION_MATRIX = MatBuilder.fill(Nat.N2(), Nat.N4(), 
+        1, 0, 0, 0,
+                0, 1, 0, 0);
     
-    public KalmanFilter(Matrix<N4, N1> curState, Matrix<N4, N4> covariance, Matrix<N2, N2> odometryCovariancePerDist, Matrix<N2, N2> visionCovariance) {
+    private static final double VELOCITY_INPUT_DELETION_TIME_DEFAULT = 1; // in seconds
+    
+    public KalmanFilter(Matrix<N4, N1> curState, Matrix<N4, N4> covariance, Matrix<N2, N2> odometryCovariancePerDist, Matrix<N2, N2> visionCovariance, Matrix<N4, N4> noiseCovariance, double velocityInputDeletionTime) {
         this.curState = curState;
         this.curCovariance = covariance;
         this.odometryCovariancePerDist = odometryCovariancePerDist;
         this.visionCovariance = visionCovariance;
-        noiseCovariance = MatBuilder.fill(Nat.N4(), Nat.N4(), 
-    0.0003, 0, 0, 0,
-            0, 0.0003, 0, 0,
-            0, 0, 0.0001, 0,
-            0, 0, 0, 0.0001);
+        this.noiseCovariance = noiseCovariance;
+        this.velocityInputDeletionTime = velocityInputDeletionTime;
         inputLog = new TreeMap<>();
     }
 
-    public KalmanFilter(Matrix<N4, N1> curState, Matrix<N4, N4> covariance, Matrix<N2, N2> visionCovariance) {
-        this(curState, 
-            covariance, 
-            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.2, 0, 0, 0.05), 
-            visionCovariance);
+    public KalmanFilter(Matrix<N4, N1> curState, Matrix<N4, N4> covariance, Matrix<N2, N2> odometryCovariancePerDist, Matrix<N2, N2> visionCovariance) {
+        this(curState, covariance, odometryCovariancePerDist, visionCovariance, NOISE_COVARIANCE_DEFAULT, VELOCITY_INPUT_DELETION_TIME_DEFAULT);
     }
 
-    public KalmanFilter(Matrix<N4, N1> curState, Matrix<N4, N4> covariance) {
-        this(curState, 
-            covariance, 
-            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.05, 0, 0, 0.05));
+    public KalmanFilter(Matrix<N2, N2> odometryCovariancePerDist, Matrix<N2, N2> visionCovariance) {
+        this(CUR_STATE_DEFAULT, COVARIANCE_DEFAULT, odometryCovariancePerDist, visionCovariance);
     }
 
     public KalmanFilter() {
-        this(MatBuilder.fill(Nat.N4(), Nat.N1(), 0, 0, 0, 0), Matrix.eye(Nat.N4()));
+        this(ODOMETRY_COVARIANCE_DEFAULT, VISION_COVARIANCE_DEFAULT);
     }
 
     public void addVelocityInput(Translation2d velocityInput, double time) {
         inputLog.put(time, velocityInput);
         predictCurrentState(inputLog.lowerKey(time));
 
-        if(time - inputLog.firstKey() > VELOCITY_INPUT_DELETION_TIME) {
+        if(time - inputLog.firstKey() > velocityInputDeletionTime) {
             inputLog.remove(inputLog.firstKey()); // delete old velocityInput values
         } 
-        SmartDashboard.putNumber("Cur input x velocity", velocityInput.getX());
-        SmartDashboard.putNumber("Cur State x velocity", curState.get(2, 0));
-        SmartDashboard.putNumber("Number of entries inputLog", inputLog.size());
-        Logger.get(Category.ODOMETRY).logRaw(Severity.INFO, "pos cov: " + getCovariance().toString());
-        SmartDashboard.putString("Pos Covariance", "time: " + time + ", gain: " + getCovariance().toString());
-        SmartDashboard.putString("Full Covariance", "time: " + time + ", gain: " + curCovariance);
+
+        // SmartDashboard.putNumber("Cur input x velocity", velocityInput.getX());
+        // SmartDashboard.putNumber("Cur State x velocity", curState.get(2, 0));
+        // SmartDashboard.putNumber("Number of entries inputLog", inputLog.size());
+        // Logger.get(Category.LOCALIZATION).logRaw(Severity.INFO, "pos cov: " + getCovariance().toString());
+        // SmartDashboard.putString("Pos Covariance", "time: " + time + ", gain: " + getCovariance().toString());
+        // SmartDashboard.putString("Full Covariance", "time: " + time + ", gain: " + curCovariance);
     }
 
     private void predict(double time, double nextStepTime, double dt) {
         Translation2d velocityChange; 
         if (inputLog.containsKey(time)) {
-            velocityChange = inputLog.get(nextStepTime).minus(inputLog.get(time)); // scalar multiplied to account for decreased velocity change if input targetTime is between two input entries
+            velocityChange = inputLog.get(nextStepTime).minus(getVelocity()); 
         } else {
-            velocityChange = inputLog.get(nextStepTime).minus(getVelocity()).times(dt/(nextStepTime - time)); 
+            velocityChange = inputLog.get(nextStepTime).minus(getVelocity()).times(dt/(nextStepTime - time)); // scalar multiplied to account for decreased velocity change if input targetTime is between two input entries
         }
         
         Matrix<N4, N4> transition = MatBuilder.fill(Nat.N4(), Nat.N4(), 
@@ -101,7 +113,7 @@ public class KalmanFilter {
      * changes curState and curCovariance to what it was at targetTime through backcalculation
      * @param targetTime in seconds
      */
-    public void findPrevState(double targetTime) {
+    private void findPrevState(double targetTime) {
         double time = inputLog.lastKey();
         double prevTime;
         double dt; 
@@ -113,12 +125,9 @@ public class KalmanFilter {
 
                 predict(time, prevTime, dt);
 
-                // curState = transition.inv().times(curState.minus(input)); // can also do using inverse
-                // curCovariance = transition.inv().times(curCovariance.minus(noiseCovariance).times(transition.transpose().inv()));
-
                 time += dt;
             } catch (Exception e) {
-                Logger.get(Category.JAVA_EXCEPTION).logRaw(Severity.ERROR, "kalman filter inputTimes too short");
+                Logger.get(Category.ODOMETRY).logRaw(Severity.ERROR, "inputLog does not go back far enough");
                 break;
             } 
         }
@@ -128,103 +137,88 @@ public class KalmanFilter {
      * predicts the current state based on the input time of a previous state
      * @param initialTime in seconds
      */
-    public void predictCurrentState(double initialTime) {
+    private void predictCurrentState(double initialTime) {
         double time = initialTime;
-        // try {
-        //     time = inputLog.ceilingKey(initialTime);
-        // } catch (Exception e) {
-        //     Logger.get(Category.JAVA_EXCEPTION).logRaw(Severity.WARNING, "no ceiling key");
-        //     time = inputLog.floorKey(initialTime); // for updates, the time is sometimes slightly after the most recent velocity is input
-        // }
-        
         double currentTime = inputLog.lastKey();
         double nextTime;
         double dt; 
-        double counter = 0;
 
         while (time < currentTime) {
             try {
                 nextTime = inputLog.higherKey(time);
                 
-                dt = nextTime - time; // going forward, the target time (currentTime) will always be a key exactly since it is defined that way
+                // going forward, the target time (currentTime) will always be a key exactly since it is defined as the last key
+                // that means that finding the minimum between current time and next time, similar to in findPrevState, is not necessary
+                dt = nextTime - time;
 
                 predict(time, nextTime, dt);
 
                 time += dt;
-                counter++;
             } catch (Exception e) {
-                e.printStackTrace();
-                Logger.get(Category.JAVA_EXCEPTION).logRaw(Severity.ERROR, "no higher key, counter: " + counter + ", execption: " + e.toString());
-                SmartDashboard.putString("predictCurrentState error", e.toString());
+                Logger.get(Category.ODOMETRY).logRaw(Severity.ERROR, "no higher key");
                 break;
             }
         }
-        SmartDashboard.putNumber("predictCurrentState iterations", counter);
     }
 
     /**
-     * 
-     * @param measurement
-     * @param measurementCovariance
-     * @param time in seconds
+     * Updates the esimated position using any sensor measurement returning an x and y position
+     * @param measurement the position measurement
+     * @param measurementCovariance the covariance matrix of this position measurement
+     * @param time the time that the measurement took place, in seconds
      */
-    public void updateWithPositionMeasurement(Translation2d measurement, Matrix<N2, N2> measurementCovariance, double time) {
+    private void updateWithPositionMeasurement(Translation2d measurement, Matrix<N2, N2> measurementCovariance, double time) {
 
         findPrevState(time);
-        SmartDashboard.putNumber("prev X value", getPos().getX());
-        SmartDashboard.putNumber("Prev state x velocity", curState.get(2, 0));
-        SmartDashboard.putString("prev covariance", getCovariance().toString());
-        Matrix<N4, N2> kalmanGain = curCovariance.times(observationMatrix.transpose().times(
-            observationMatrix.times(curCovariance.times(observationMatrix.transpose())).plus(measurementCovariance).inv()));
-        // Matrix<N2, N2> posKalmanGain = getCovariance().times(getCovariance().plus(measurementCovariance).inv());
-        SmartDashboard.putString("Kalman Gain", "time: " + time + ", gain: " + kalmanGain.toString());
 
-        // curState.assignBlock(0, 0, posKalmanGain.times(measurement.toVector().minus(getPos().toVector())).plus(getPos().toVector())); // updates values for ONLY position
-        // curCovariance.assignBlock(0, 0, Matrix.eye(Nat.N2()).minus(posKalmanGain).times(getCovariance())); // updates values for ONLY position
+        // SmartDashboard.putNumber("prev X value", getPos().getX());
+        // SmartDashboard.putNumber("Prev state x velocity", curState.get(2, 0));
+        // SmartDashboard.putString("prev covariance", getCovariance().toString());
 
-        curState = kalmanGain.times(measurement.toVector().minus(observationMatrix.times(curState))).plus(curState);
-        curCovariance = Matrix.eye(Nat.N4()).minus(kalmanGain.times(observationMatrix)).times(curCovariance.times(Matrix.eye(Nat.N4()).minus(kalmanGain.times(observationMatrix)).transpose())).plus(
+        Matrix<N4, N2> kalmanGain = curCovariance.times(OBSERVATION_MATRIX.transpose().times(
+            OBSERVATION_MATRIX.times(curCovariance.times(OBSERVATION_MATRIX.transpose())).plus(measurementCovariance).inv()));
+        
+        // SmartDashboard.putString("Kalman Gain", "time: " + time + ", gain: " + kalmanGain.toString());
+
+        curState = kalmanGain.times(measurement.toVector().minus(OBSERVATION_MATRIX.times(curState))).plus(curState);
+        curCovariance = Matrix.eye(Nat.N4()).minus(kalmanGain.times(OBSERVATION_MATRIX)).times(curCovariance.times(Matrix.eye(Nat.N4()).minus(kalmanGain.times(OBSERVATION_MATRIX)).transpose())).plus(
             kalmanGain.times(measurementCovariance.times(kalmanGain.transpose())));
-        SmartDashboard.putNumber("Updated prev state x velocity", curState.get(2, 0));
+        
+        // SmartDashboard.putNumber("Updated prev state x velocity", curState.get(2, 0));
 
         predictCurrentState(time);
-        SmartDashboard.putNumber("Predicted Cur State x velocity", curState.get(2, 0));
+
+        // SmartDashboard.putNumber("Predicted Cur State x velocity", curState.get(2, 0));
     }
 
     /**
-     * 
+     * Updates the estimated position using a 
      * @param measurement
      * @param time in seconds
      */
     public void updateWithVisionMeasurement(Translation2d measurement, double time) {
         updateWithPositionMeasurement(measurement, visionCovariance, time);
-        // Logger.get(Category.ODOMETRY).logRaw(Severity.INFO, "cov: " + getCovariance().toString());
-        // SmartDashboard.putString("Covariance", "time: " + time + ", gain: " + getCovariance().toString());
     }
 
     /**
-     * 
-     * @param odometryInput
-     * @param initialTime in seconds
-     * @param finalTime in seconds
+     * Updates the estimated position using a change in position since the last update
+     * Assumes that this update is happening right after the previous velocity input is added and that all odometry calculations have negligible latency 
+     * @param odometryInput change in position between the previous update and now
      */
-    public void updateWithOdometry(Translation2d odometryInput, double initialTime, double finalTime) {
-        
+    public void updateWithOdometry(Translation2d odometryInput) {
+        double initialTime = inputLog.lowerKey(inputLog.lastKey());
+
         findPrevState(initialTime);
         Translation2d curPos = getPos().plus(odometryInput);
         predictCurrentState(initialTime);
-
-        // Logger.get(Category.ODOMETRY).logRaw(Severity.INFO, odometryInput.toString());
-        // Logger.get(Category.ODOMETRY).logRaw(Severity.INFO, curPos.toString());
 
         double angleRad = odometryInput.getAngle().getRadians();
         Matrix<N2, N2> track = MatBuilder.fill(Nat.N2(), Nat.N2(), Math.cos(angleRad), -Math.sin(angleRad), Math.sin(angleRad), Math.cos(angleRad));
         Matrix<N2, N2> odomCovariance = track.times(odometryInput.getNorm()).times(odometryCovariancePerDist.times(track.transpose())).plus(getCovariance());
 
-        // Logger.get(Category.ODOMETRY).logRaw(Severity.INFO, "odom: " + odomCovariance.toString());
-        Logger.get(Category.ODOMETRY).logRaw(Severity.INFO, "cov: " + getCovariance().toString());
+        // Logger.get(Category.ODOMETRY).logRaw(Severity.INFO, "cov: " + getCovariance().toString());
 
-        updateWithPositionMeasurement(curPos, odomCovariance, finalTime);
+        updateWithPositionMeasurement(curPos, odomCovariance, inputLog.lastKey());
     }
 
     public Translation2d getPos() {
