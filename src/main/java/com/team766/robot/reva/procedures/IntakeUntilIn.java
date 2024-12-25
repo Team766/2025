@@ -3,11 +3,9 @@ package com.team766.robot.reva.procedures;
 import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
 import com.team766.framework3.Status;
-import com.team766.framework3.StatusSource;
 import com.team766.robot.reva.mechanisms.Intake;
 
-public class IntakeUntilIn extends Procedure
-        implements StatusSource<IntakeUntilIn.IntakeUntilInStatus> {
+public class IntakeUntilIn extends Procedure {
     public record IntakeUntilInStatus(boolean noteInIntake) implements Status {}
 
     private final Intake intake;
@@ -19,8 +17,8 @@ public class IntakeUntilIn extends Procedure
     public void run(Context context) {
         publishStatus(new IntakeUntilInStatus(false));
         intake.requestPowerForSensorDistance();
-        waitForStatusWith(context, Intake.class, s -> s.hasNoteInIntake());
+        waitForStatusWith(context, Intake.IntakeStatus.class, s -> s.hasNoteInIntake());
         publishStatus(new IntakeUntilInStatus(true));
-        waitForStatusWith(context, Intake.class, s -> s.hasNoteInIntake());
+        waitForStatusWith(context, Intake.IntakeStatus.class, s -> s.hasNoteInIntake());
     }
 }

@@ -111,6 +111,6 @@ public class ShootNow extends VisionPIDProcedure {
     }
 
     private Optional<Transform3d> getTransform3dOfRobotToTag() {
-        return getStatus(ForwardApriltagCamera.class).flatMap(s -> s.speakerTagTransform());
+        return getStatus(ForwardApriltagCamera.ApriltagCameraStatus.class).flatMap(s -> s.speakerTagTransform());
     }
 }

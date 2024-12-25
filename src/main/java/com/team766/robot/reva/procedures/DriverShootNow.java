@@ -105,7 +105,7 @@ public class DriverShootNow extends VisionPIDProcedure {
     }
 
     private Optional<Transform3d> getTransform3dOfRobotToTag() {
-        return getStatus(ForwardApriltagCamera.class)
+        return getStatus(ForwardApriltagCamera.ApriltagCameraStatus.class)
                 .flatMap(s -> s.speakerTagTransform());
     }
 }

@@ -23,12 +23,12 @@ public class Lights extends RuleEngine {
         addRule(
                 Rule.create(
                                 "OI State Updated",
-                                () -> checkForStatusEntryWith(OI.class, s -> s.age() < 1.3))
+                                () -> checkForStatusEntryWith(OI.OIStatus.class, s -> s.age() < 1.3))
                         .withOnTriggeringProcedure(
                                 REPEATEDLY,
                                 Set.of(),
                                 () -> {
-                                    final OI.OIStatus status = getStatusOrThrow(OI.class);
+                                    final OI.OIStatus status = getStatusOrThrow(OI.OIStatus.class);
                                     setLightsForGamePiece(status.gamePieceType());
                                     setLightsForPlacement(
                                             status.placementPosition(), status.gamePieceType());
@@ -43,12 +43,12 @@ public class Lights extends RuleEngine {
                         .withOnTriggeringProcedure(ONCE_AND_HOLD, Set.of(), () -> rainbow()));
 
         addRule(
-                Rule.create("Default display", () -> checkForStatus(OI.class))
+                Rule.create("Default display", () -> checkForStatus(OI.OIStatus.class))
                         .withOnTriggeringProcedure(
                                 REPEATEDLY,
                                 Set.of(),
                                 () -> {
-                                    final OI.OIStatus status = getStatusOrThrow(OI.class);
+                                    final OI.OIStatus status = getStatusOrThrow(OI.OIStatus.class);
                                     setLightsForGamePiece(status.gamePieceType());
                                     setLightsForPlacement(
                                             status.placementPosition(), status.gamePieceType());

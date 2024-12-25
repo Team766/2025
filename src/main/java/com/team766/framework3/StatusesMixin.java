@@ -6,58 +6,58 @@ import static com.team766.framework3.Conditions.waitForValueOrTimeout;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import com.team766.library.ReflectionUtils;
 
 public interface StatusesMixin {
-    default <SH extends Record & Status & StatusHandle<SH>>
-            StatusBus.Entry<SH> publishStatus(SH status) {
-        return StatusBus.getInstance().publishStatus(ReflectionUtils.getClass(status), status);
+    /**
+     * @see StatusBus#publishStatus(Record)
+     */
+    default <S extends Record & Status> StatusBus.Entry<S> publishStatus(S status) {
+        return StatusBus.getInstance().publishStatus(status);
     }
 
     /**
      * @see StatusBus#getStatusEntry(Class)
      */
-    default <H extends StatusHandle<S>, S extends Status>
-            Optional<StatusBus.Entry<S>> getStatusEntry(Class<H> handle) {
-        return StatusBus.getInstance().getStatusEntry(handle);
+    default <S extends Status> Optional<StatusBus.Entry<S>> getStatusEntry(Class<S> statusClass) {
+        return StatusBus.getInstance().getStatusEntry(statusClass);
     }
 
     /**
      * @see StatusBus#getStatus(Class)
      */
-    default <H extends StatusHandle<S>, S extends Status> Optional<S> getStatus(Class<H> handle) {
-        return StatusBus.getInstance().getStatus(handle);
+    default <S extends Status> Optional<S> getStatus(Class<S> statusClass) {
+        return StatusBus.getInstance().getStatus(statusClass);
     }
 
     /**
      * @see StatusBus#getStatusOrThrow(Class)
      */
-    default <H extends StatusHandle<S>, S extends Status> S getStatusOrThrow(Class<H> handle) {
-        return StatusBus.getInstance().getStatusOrThrow(handle);
+    default <S extends Status> S getStatusOrThrow(Class<S> statusClass) {
+        return StatusBus.getInstance().getStatusOrThrow(statusClass);
     }
 
     /**
      * @see StatusBus#getStatusValue(Class, Function)
      */
-    default <H extends StatusHandle<S>, S extends Status, V> Optional<V> getStatusValue(
-            Class<H> handle, Function<S, V> getter) {
-        return StatusBus.getInstance().getStatusValue(handle, getter);
+    default <S extends Status, V> Optional<V> getStatusValue(
+            Class<S> statusClass, Function<S, V> getter) {
+        return StatusBus.getInstance().getStatusValue(statusClass, getter);
     }
 
     /**
      * Predicate that checks whether or not a {@link Status} with the given class has been published
      */
-    default <H extends StatusHandle<S>, S extends Status> boolean checkForStatus(Class<H> handle) {
-        return getStatusEntry(handle).isPresent();
+    default <S extends Status> boolean checkForStatus(Class<S> statusClass) {
+        return getStatusEntry(statusClass).isPresent();
     }
 
     /**
      * Predicate that checks whether or not the latest {@link Status} with the given class passes
      * the check provided by {@code predicate}.
      */
-    default <H extends StatusHandle<S>, S extends Status> boolean checkForStatusWith(
-            Class<H> handle, Predicate<S> predicate) {
-        return getStatusValue(handle, predicate::test).orElse(false);
+    default <S extends Status> boolean checkForStatusWith(
+            Class<S> statusClass, Predicate<S> predicate) {
+        return getStatusValue(statusClass, predicate::test).orElse(false);
     }
 
     /**
@@ -65,18 +65,18 @@ public interface StatusesMixin {
      * the check provided by {@code predicate}, including additional metadata about how the Status
      * was published.
      */
-    default <H extends StatusHandle<S>, S extends Status> boolean checkForStatusEntryWith(
-            Class<H> handle, Predicate<StatusBus.Entry<S>> predicate) {
-        return getStatusEntry(handle).map(predicate::test).orElse(false);
+    default <S extends Status> boolean checkForStatusEntryWith(
+            Class<S> statusClass, Predicate<StatusBus.Entry<S>> predicate) {
+        return getStatusEntry(statusClass).map(predicate::test).orElse(false);
     }
 
     /**
      * Suspend the Procedure until a {@link Status} with the given class has been published, then
      * return that Status.
      */
-    default <H extends StatusHandle<S>, S extends Status> S waitForStatus(
-            Context context, Class<H> handle) {
-        return waitForValue(context, () -> getStatus(handle));
+    default <S extends Status> S waitForStatus(
+            Context context, Class<S> statusClass) {
+        return waitForValue(context, () -> getStatus(statusClass));
     }
 
     /**
@@ -84,18 +84,18 @@ public interface StatusesMixin {
      * we've waited for at least {@code timeoutSeconds}. Returns an Optional containing the Status
      * if one was published, or return an empty Optional if the timeout was reached.
      */
-    default <H extends StatusHandle<S>, S extends Status> Optional<S> waitForStatusOrTimeout(
-            Context context, Class<H> handle, double timeoutSeconds) {
-        return waitForValueOrTimeout(context, () -> getStatus(handle), timeoutSeconds);
+    default <S extends Status> Optional<S> waitForStatusOrTimeout(
+            Context context, Class<S> statusClass, double timeoutSeconds) {
+        return waitForValueOrTimeout(context, () -> getStatus(statusClass), timeoutSeconds);
     }
 
     /**
      * Suspend the Procedure until a {@link Status} with the given class has been published that
      * passes the check provided by {@code predicate}, then return that Status.
      */
-    default <H extends StatusHandle<S>, S extends Status> S waitForStatusWith(
-            Context context, Class<H> handle, Predicate<S> predicate) {
-        return waitForValue(context, () -> getStatus(handle).filter(predicate));
+    default <S extends Status> S waitForStatusWith(
+            Context context, Class<S> statusClass, Predicate<S> predicate) {
+        return waitForValue(context, () -> getStatus(statusClass).filter(predicate));
     }
 
     /**
@@ -104,9 +104,9 @@ public interface StatusesMixin {
      * {@code timeoutSeconds}. Returns an Optional containing the Status if one was published, or
      * return an empty Optional if the timeout was reached.
      */
-    default <H extends StatusHandle<S>, S extends Status> Optional<S> waitForStatusWithOrTimeout(
-            Context context, Class<H> handle, Predicate<S> predicate, double timeoutSeconds) {
+    default <S extends Status> Optional<S> waitForStatusWithOrTimeout(
+            Context context, Class<S> statusClass, Predicate<S> predicate, double timeoutSeconds) {
         return waitForValueOrTimeout(
-                context, () -> getStatus(handle).filter(predicate), timeoutSeconds);
+                context, () -> getStatus(statusClass).filter(predicate), timeoutSeconds);
     }
 }

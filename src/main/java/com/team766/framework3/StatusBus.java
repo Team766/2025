@@ -19,7 +19,7 @@ import java.util.function.Function;
 public class StatusBus {
 
     private static StatusBus s_instance = new StatusBus();
-    private final Map<Class<? extends StatusHandle<?>>, Entry<?>> statuses = new LinkedHashMap<>();
+    private final Map<Class<?>, Entry<?>> statuses = new LinkedHashMap<>();
 
     /**
      * Get the Singleton instance of the {@link StatusBus}.
@@ -51,10 +51,9 @@ public class StatusBus {
      *
      * This method also logs the Status to diagnostic logs.
      */
-    public <H extends StatusHandle<S>, S extends Record & Status> Entry<S> publishStatus(
-            Class<H> handle, S status) {
+    public <S extends Record & Status> Entry<S> publishStatus(S status) {
         var entry = new Entry<>(status, RobotProvider.instance.getClock().getTime());
-        statuses.put(handle, entry);
+        statuses.put(status.getClass(), entry);
         // TODO(MF3): also publish to data logs
         Logger.get(Category.FRAMEWORK)
                 .logRaw(
@@ -79,9 +78,8 @@ public class StatusBus {
      *     Optional if the {@link Status} hasn't been published.
      */
     @SuppressWarnings("unchecked")
-    public <H extends StatusHandle<S>, S extends Status> Optional<Entry<S>> getStatusEntry(
-            Class<H> handle) {
-        return Optional.ofNullable((Entry<S>) statuses.get(handle));
+    public <S extends Status> Optional<Entry<S>> getStatusEntry(Class<S> statusClass) {
+        return Optional.ofNullable((Entry<S>) statuses.get(statusClass));
     }
 
     /**
@@ -96,8 +94,8 @@ public class StatusBus {
      *     The latest published {@link Status} or an empty Optional if the {@link Status} hasn't
      *     been published.
      */
-    public <H extends StatusHandle<S>, S extends Status> Optional<S> getStatus(Class<H> handle) {
-        return getStatusEntry(handle).map(Entry<S>::status);
+    public <S extends Status> Optional<S> getStatus(Class<S> statusClass) {
+        return getStatusEntry(statusClass).map(Entry<S>::status);
     }
 
     /**
@@ -111,8 +109,8 @@ public class StatusBus {
      * @return The latest published {@link Status}
      * @throws NoSuchElementException if the {@link Status} hasn't been published
      */
-    public <H extends StatusHandle<S>, S extends Status> S getStatusOrThrow(Class<H> handle) {
-        return getStatus(handle).orElseThrow();
+    public <S extends Status> S getStatusOrThrow(Class<S> statusClass) {
+        return getStatus(statusClass).orElseThrow();
     }
 
     /**
@@ -128,8 +126,8 @@ public class StatusBus {
      *     The result of the Function applied to the latest published {@link Status} or an empty
      *     Optional if the {@link Status} hasn't been published.
      */
-    public <H extends StatusHandle<S>, S extends Status, V> Optional<V> getStatusValue(
-            Class<H> handle, Function<S, V> getter) {
-        return getStatusEntry(handle).map(s -> getter.apply(s.status()));
+    public <S extends Status, V> Optional<V> getStatusValue(
+            Class<S> statusClass, Function<S, V> getter) {
+        return getStatusEntry(statusClass).map(s -> getter.apply(s.status()));
     }
 }

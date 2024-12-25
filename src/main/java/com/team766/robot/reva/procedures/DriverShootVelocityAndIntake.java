@@ -15,7 +15,7 @@ public class DriverShootVelocityAndIntake extends Procedure {
     public void run(Context context) {
 
         waitForStatusWithOrTimeout(
-                context, Shooter.class, s -> s.isCloseToTargetSpeed(), 1);
+                context, Shooter.ShooterStatus.class, s -> s.isCloseToTargetSpeed(), 1);
 
         intake.requestIn();
 

@@ -46,7 +46,7 @@ public class FollowPath extends Procedure {
 
         // intitialization
 
-        var driveStatus = waitForStatus(context, SwerveDrive.class);
+        var driveStatus = waitForStatus(context, SwerveDrive.DriveStatus.class);
         Pose2d curPose = driveStatus.currentPosition();
         ChassisSpeeds currentSpeeds = driveStatus.chassisSpeeds();
 
@@ -67,7 +67,7 @@ public class FollowPath extends Procedure {
         while (!timer.hasElapsed(generatedTrajectory.getTotalTimeSeconds())) {
             double currentTime = timer.get();
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
-            driveStatus = waitForStatus(context, SwerveDrive.class);
+            driveStatus = waitForStatus(context, SwerveDrive.DriveStatus.class);
             curPose = driveStatus.currentPosition();
             currentSpeeds = driveStatus.chassisSpeeds();
 

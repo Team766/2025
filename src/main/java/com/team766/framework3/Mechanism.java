@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public abstract class Mechanism<S extends Record & Status>
-        implements Reservable, StatusSource<S>, LoggingBase {
+        implements Reservable, LoggingBase {
     @FunctionalInterface
     public interface Directive {
         /**
@@ -205,7 +205,6 @@ public abstract class Mechanism<S extends Record & Status>
         return Set.of(subsystem);
     }
 
-    @Override
     public final S getStatus() {
         if (status == null) {
             throw new NoSuchElementException(getName() + " has not published a status yet");
@@ -216,7 +215,7 @@ public abstract class Mechanism<S extends Record & Status>
     /* package */ void periodicInternal() {
         try {
             status = reportStatus();
-            publishStatus(status);
+            StatusBus.getInstance().publishStatus(status);
 
             isRunningPeriodic = true;
             request.runDirective();

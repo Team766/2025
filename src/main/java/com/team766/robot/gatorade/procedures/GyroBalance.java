@@ -51,8 +51,8 @@ public class GyroBalance extends Procedure {
     }
 
     private double getAbsoluteTilt() {
-        final double pitch = getStatusOrThrow(SwerveDrive.class).pitch();
-        final double roll = getStatusOrThrow(SwerveDrive.class).roll();
+        final double pitch = getStatusOrThrow(SwerveDrive.DriveStatus.class).pitch();
+        final double roll = getStatusOrThrow(SwerveDrive.DriveStatus.class).roll();
         return Math.toDegrees(
                 Math.acos(Math.cos(Math.toRadians(roll) * Math.cos(Math.toRadians(pitch)))));
     }
@@ -62,7 +62,7 @@ public class GyroBalance extends Procedure {
         waitForRequest(context, arm.requestExtendedToMid());
 
         // initialY is robot y position when balancing starts
-        final double initialY = getStatusOrThrow(SwerveDrive.class).currentPosition().getY();
+        final double initialY = getStatusOrThrow(SwerveDrive.DriveStatus.class).currentPosition().getY();
         // Sets movement direction towards desired charge station.
         switch (alliance) {
             case Red:

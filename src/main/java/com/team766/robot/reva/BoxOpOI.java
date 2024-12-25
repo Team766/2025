@@ -107,7 +107,7 @@ public class BoxOpOI implements StatusesMixin {
                                                                 "Spin shooter for assist shot",
                                                                 () ->
                                                                         checkForStatusWith(
-                                                                                Shooter.class,
+                                                                                Shooter.ShooterStatus.class,
                                                                                 s ->
                                                                                         s
                                                                                                         .targetSpeed()

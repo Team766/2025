@@ -5,7 +5,6 @@ import static com.team766.framework3.RulePersistence.*;
 import com.team766.framework3.Rule;
 import com.team766.framework3.RuleEngine;
 import com.team766.framework3.Status;
-import com.team766.framework3.StatusSource;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.common.DriverOI;
@@ -20,7 +19,7 @@ import java.util.Set;
  * This class is the glue that binds the controls on the physical operator interface to the code
  * that allow control of the robot.
  */
-public class OI extends RuleEngine implements StatusSource<OI.OIStatus> {
+public class OI extends RuleEngine {
 
     public record OIStatus(GamePieceType gamePieceType, PlacementPosition placementPosition)
             implements Status {}

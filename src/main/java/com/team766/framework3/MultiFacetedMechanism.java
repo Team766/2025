@@ -1,6 +1,7 @@
 package com.team766.framework3;
 
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import com.team766.framework.StackTraceUtils;
@@ -12,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public abstract class MultiFacetedMechanism<S extends Record & Status>
-        implements StatusSource<S>, Reservable, LoggingBase {
+        implements Reservable, LoggingBase {
     @SuppressWarnings("unused")
     private SubsystemBase outerSubsystem =
             new SubsystemBase() {
@@ -61,6 +62,13 @@ public abstract class MultiFacetedMechanism<S extends Record & Status>
         }
     }
 
+    public final S getStatus() {
+        if (status == null) {
+            throw new NoSuchElementException(getName() + " has not published a status yet");
+        }
+        return status;
+    }
+
     @Override
     public Set<Subsystem> getReservableSubsystems() {
         return facetSubsystems;
@@ -74,7 +82,7 @@ public abstract class MultiFacetedMechanism<S extends Record & Status>
     /* package */ void periodicInternal() {
         try {
             status = reportStatus();
-            publishStatus(status);
+            StatusBus.getInstance().publishStatus(status);
 
             run();
         } catch (Exception ex) {
