@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.team766.hal.MotorController;
+import com.team766.hal.PIDConfig;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
@@ -13,15 +14,15 @@ import com.team766.logging.Severity;
 
 public class CANTalonMotorController extends BaseCTREMotorController implements MotorController {
 
-    private WPI_TalonSRX m_device;
-    private double m_feedForward = 0.0;
+    private final WPI_TalonSRX m_device;
+    private final PIDConfig pidConfig = new PIDConfig();
 
     public CANTalonMotorController(final int deviceNumber) {
         m_device = new WPI_TalonSRX(deviceNumber);
     }
 
     @Override
-    public void set(final ControlMode mode, double value) {
+    public void set(final ControlMode mode, double value, double arbitraryFeedForward) {
         com.ctre.phoenix.motorcontrol.ControlMode ctre_mode = null;
         boolean useFourTermSet = true;
         switch (mode) {
@@ -56,7 +57,7 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
             ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;
         }
         if (useFourTermSet) {
-            m_device.set(ctre_mode, value, DemandType.ArbitraryFeedForward, m_feedForward);
+            m_device.set(ctre_mode, value, DemandType.ArbitraryFeedForward, arbitraryFeedForward);
         } else {
             m_device.set(ctre_mode, value);
         }
@@ -183,5 +184,10 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
     @Override
     public void setNeutralMode(final NeutralMode neutralMode) {
         m_device.setNeutralMode(neutralMode);
+    }
+
+    @Override
+    public PIDConfig getPIDConfig() {
+        return pidConfig;
     }
 }

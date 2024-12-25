@@ -10,10 +10,6 @@ import java.util.function.Supplier;
  * Interface for motor controlling devices.
  */
 public interface MotorController extends BasicMotorController {
-    // Almost all systems on our robot work on the scale of 0-12 V.
-    // 0.1 V seems like a reasonable tolerance for that scale.
-    static final double VOLTAGE_TOLERANCE = 0.1;
-
     enum Type {
         VictorSP,
         VictorSPX,
@@ -158,8 +154,6 @@ public interface MotorController extends BasicMotorController {
 
     void setClosedLoopRamp(double secondsFromNeutralToFull);
 
-    double getOutputVoltage();
-
     default Mechanism.Directive requestStop() {
         return requestPercentOutput(0.0);
     }
@@ -204,10 +198,5 @@ public interface MotorController extends BasicMotorController {
             double targetVelocity, double velocityErrorThreshold) {
         set(MotorController.ControlMode.Velocity, targetVelocity);
         return () -> Math.abs(targetVelocity - getSensorVelocity()) <= velocityErrorThreshold;
-    }
-
-    default Mechanism.Directive requestVoltage(double targetVoltage) {
-        set(MotorController.ControlMode.Voltage, targetVoltage);
-        return () -> Math.abs(targetVoltage - getOutputVoltage()) <= VOLTAGE_TOLERANCE;
     }
 }

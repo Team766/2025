@@ -148,9 +148,4 @@ public class MotorControllerWithSensorScale implements MotorController {
         // TODO: Deduplicate this functionality with the delegate
         return pidConfig;
     }
-
-    @Override
-    public double getOutputVoltage() {
-        return delegate.getOutputVoltage();
-    }
 }

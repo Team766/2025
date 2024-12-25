@@ -10,9 +10,10 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
 public class LocalMotorController implements MotorController {
-    private BasicMotorController motor;
-    private ControlInputReader sensor;
-    private PIDController pidController;
+    private final BasicMotorController motor;
+    private final ControlInputReader sensor;
+    private final PIDController pidController;
+    private final PIDConfig pidConfig = new PIDConfig();
 
     private boolean inverted = false;
     private boolean sensorInverted = false;
@@ -307,15 +308,8 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public double getOutputVoltage() {
-        if (LocalMotorController.this.motor instanceof MotorController) {
-            double voltage = ((MotorController) LocalMotorController.this.motor).getOutputVoltage();
-            if (inverted) {
-                voltage *= -1;
-            }
-            return voltage;
-        } else {
-            return get() * RobotProvider.instance.getBatteryVoltage();
-        }
+    public PIDConfig getPIDConfig() {
+        // TODO: Deduplicate(?) this functionality with pidController
+        return pidConfig;
     }
 }
