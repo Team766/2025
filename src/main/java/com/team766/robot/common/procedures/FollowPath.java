@@ -46,7 +46,7 @@ public class FollowPath extends Procedure {
 
         // intitialization
 
-        var driveStatus = waitForStatus(context, SwerveDrive.DriveStatus.class);
+        var driveStatus = waitForStatus(context, SwerveDrive.class);
         Pose2d curPose = driveStatus.currentPosition();
         ChassisSpeeds currentSpeeds = driveStatus.chassisSpeeds();
 
@@ -67,7 +67,7 @@ public class FollowPath extends Procedure {
         while (!timer.hasElapsed(generatedTrajectory.getTotalTimeSeconds())) {
             double currentTime = timer.get();
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
-            driveStatus = waitForStatus(context, SwerveDrive.DriveStatus.class);
+            driveStatus = waitForStatus(context, SwerveDrive.class);
             curPose = driveStatus.currentPosition();
             currentSpeeds = driveStatus.chassisSpeeds();
 
@@ -97,12 +97,12 @@ public class FollowPath extends Procedure {
                     "input rotational velocity", targetSpeeds.omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput(
                     "targetState", targetState.getTargetHolonomicPose());
-            drive.setRequest(new SwerveDrive.RobotOrientedVelocity(targetSpeeds));
+            drive.requestRobotOrientedVelocity(targetSpeeds);
             context.yield();
         }
 
         if (path.getGoalEndState().getVelocity() < 0.1) {
-            drive.setRequest(new SwerveDrive.SetCross());
+            drive.requestStop();
         }
     }
 

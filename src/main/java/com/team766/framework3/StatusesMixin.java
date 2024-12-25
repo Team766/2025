@@ -6,8 +6,14 @@ import static com.team766.framework3.Conditions.waitForValueOrTimeout;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import com.team766.library.ReflectionUtils;
 
 public interface StatusesMixin {
+    default <SH extends Record & Status & StatusHandle<SH>>
+            StatusBus.Entry<SH> publishStatus(SH status) {
+        return StatusBus.getInstance().publishStatus(ReflectionUtils.getClass(status), status);
+    }
+
     /**
      * @see StatusBus#getStatusEntry(Class)
      */

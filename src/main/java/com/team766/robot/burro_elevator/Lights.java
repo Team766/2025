@@ -31,7 +31,7 @@ public class Lights extends RuleEngine {
                                 "Elevator top",
                                 () ->
                                         checkForStatusWith(
-                                                Elevator.ElevatorStatus.class,
+                                                Elevator.class,
                                                 s -> s.position() >= Elevator.TOP_POSITION))
                         .withOnTriggeringProcedure(ONCE_AND_HOLD, Set.of(), () -> elevatorAtTop()));
 
@@ -40,7 +40,7 @@ public class Lights extends RuleEngine {
                                 "Elevator bottom",
                                 () ->
                                         checkForStatusWith(
-                                                Elevator.ElevatorStatus.class,
+                                                Elevator.class,
                                                 s -> s.position() <= Elevator.BOTTOM_POSITION))
                         .withOnTriggeringProcedure(
                                 ONCE_AND_HOLD, Set.of(), () -> elevatorAtBottom()));

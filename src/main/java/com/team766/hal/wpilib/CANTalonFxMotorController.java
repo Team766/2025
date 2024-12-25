@@ -270,4 +270,16 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
         }
         super.setNeutralMode(neutralModeValue);
     }
+
+    @Override
+    public double getOutputVoltage() {
+        StatusSignal<Double> status = super.getMotorVoltage();
+        StatusCode code = status.getStatus();
+        if (code.isOK()) {
+            return status.getValueAsDouble();
+        } else {
+            statusCodeToException(ExceptionTarget.LOG, code);
+            return 0.0;
+        }
+    }
 }

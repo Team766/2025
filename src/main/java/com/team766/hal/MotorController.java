@@ -2,18 +2,17 @@ package com.team766.hal;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.team766.framework3.requests.PercentOutputRequest;
-import com.team766.framework3.requests.PositionRequest;
-import com.team766.framework3.requests.PositionStatus;
-import com.team766.framework3.requests.VelocityRequest;
-import com.team766.framework3.requests.VelocityStatus;
-import com.team766.framework3.requests.VoltageRequest;
+import com.team766.framework3.Mechanism;
 import com.team766.library.ValueProvider;
+import java.util.function.Supplier;
 
 /**
  * Interface for motor controlling devices.
  */
 public interface MotorController extends BasicMotorController {
+    // Almost all systems on our robot work on the scale of 0-12 V.
+    // 0.1 V seems like a reasonable tolerance for that scale.
+    static final double VOLTAGE_TOLERANCE = 0.1;
 
     enum Type {
         VictorSP,
@@ -30,10 +29,6 @@ public interface MotorController extends BasicMotorController {
         Voltage,
         Disabled,
     }
-
-    record MotorControllerStatus(
-            double position, double positionTolerance, double velocity, double velocityTolerance)
-            implements PositionStatus, VelocityStatus {}
 
     /**
      * Common interface for setting the power outputu by a motor controller.
@@ -163,35 +158,56 @@ public interface MotorController extends BasicMotorController {
 
     void setClosedLoopRamp(double secondsFromNeutralToFull);
 
-    double getSensorPositionTolerance();
+    double getOutputVoltage();
 
-    void setSensorPositionTolerance(double tolerance);
-
-    double getSensorVelocityTolerance();
-
-    void setSensorVelocityTolerance(double tolerance);
-
-    default void setRequest(PercentOutputRequest request) {
-        set(ControlMode.PercentOutput, request.targetPercentOutput());
+    default Mechanism.Directive requestStop() {
+        return requestPercentOutput(0.0);
     }
 
-    default void setRequest(VoltageRequest request) {
-        set(ControlMode.Voltage, request.targetVoltage());
+    default Mechanism.Directive requestPercentOutput(double percentOutput) {
+        set(ControlMode.PercentOutput, percentOutput);
+        return () -> get() == percentOutput;
     }
 
-    default void setRequest(VelocityRequest request) {
-        set(ControlMode.Velocity, request.targetVelocity());
+    default Mechanism.Directive requestPosition(
+            double targetPosition, double positionErrorThreshold, double velocityThreshold) {
+        set(ControlMode.Position, targetPosition);
+        return () ->
+                Math.abs(targetPosition - getSensorPosition()) <= positionErrorThreshold
+                        && Math.abs(getSensorVelocity()) <= velocityThreshold;
     }
 
-    default void setRequest(PositionRequest request) {
-        set(ControlMode.Position, request.targetPosition());
+    default Mechanism.Directive requestPosition(
+            double targetPosition,
+            double positionErrorThreshold,
+            double velocityThreshold,
+            double arbitraryFeedForward) {
+        set(ControlMode.Position, targetPosition, arbitraryFeedForward);
+        return () ->
+                Math.abs(targetPosition - getSensorPosition()) <= positionErrorThreshold
+                        && Math.abs(getSensorVelocity()) <= velocityThreshold;
     }
 
-    default MotorControllerStatus getStatus() {
-        return new MotorControllerStatus(
-                getSensorPosition(),
-                getSensorPositionTolerance(),
-                getSensorVelocity(),
-                getSensorVelocityTolerance());
+    default Mechanism.Directive requestPosition(
+            double targetPosition,
+            double positionErrorThreshold,
+            double velocityThreshold,
+            Supplier<Double> arbitraryFeedForward) {
+        return () -> {
+            set(ControlMode.Position, targetPosition, arbitraryFeedForward.get());
+            return Math.abs(targetPosition - getSensorPosition()) <= positionErrorThreshold
+                    && Math.abs(getSensorVelocity()) <= velocityThreshold;
+        };
+    }
+
+    default Mechanism.Directive requestVelocity(
+            double targetVelocity, double velocityErrorThreshold) {
+        set(MotorController.ControlMode.Velocity, targetVelocity);
+        return () -> Math.abs(targetVelocity - getSensorVelocity()) <= velocityErrorThreshold;
+    }
+
+    default Mechanism.Directive requestVoltage(double targetVoltage) {
+        set(MotorController.ControlMode.Voltage, targetVoltage);
+        return () -> Math.abs(targetVoltage - getOutputVoltage()) <= VOLTAGE_TOLERANCE;
     }
 }

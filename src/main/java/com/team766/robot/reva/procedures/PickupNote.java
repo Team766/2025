@@ -28,11 +28,10 @@ public class PickupNote extends VisionPIDProcedure {
         yawPID.setSetpoint(0.00);
 
         // Run intake the whole time
-        intake.setRequest(new Intake.SetPowerForSensorDistance());
+        intake.requestPowerForSensorDistance();
 
-        while (!checkForStatusWith(Intake.IntakeStatus.class, s -> s.hasNoteInIntake())) {
-            Optional<Double> yawInDegrees =
-                    getStatus(NoteCamera.NoteCameraStatus.class).flatMap(s -> s.yawOfRing());
+        while (!checkForStatusWith(Intake.class, s -> s.hasNoteInIntake())) {
+            Optional<Double> yawInDegrees = getStatus(NoteCamera.class).flatMap(s -> s.yawOfRing());
             if (!yawInDegrees.isPresent()) {
                 break;
             }
@@ -47,9 +46,9 @@ public class PickupNote extends VisionPIDProcedure {
 
             if (Math.abs(power) > 0.045) {
                 // x needs inverted if camera is on front (found out through tests)
-                drive.setRequest(new SwerveDrive.RobotOrientedVelocity(power, 0, 0));
+                drive.requestRobotOrientedVelocity(power, 0, 0);
             } else {
-                drive.setRequest(new SwerveDrive.RobotOrientedVelocity(0, -0.3, 0));
+                drive.requestRobotOrientedVelocity(0, -0.3, 0);
             }
 
             // double pitchInDegrees = Robot.noteDetectorCamera.getCamera().getPitchOfRing();
@@ -57,6 +56,6 @@ public class PickupNote extends VisionPIDProcedure {
 
             context.yield();
         }
-        intake.setRequest(new Intake.Stop());
+        intake.requestStop();
     }
 }

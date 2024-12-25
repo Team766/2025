@@ -5,53 +5,46 @@ import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
 import com.team766.hal.EncoderReader;
-import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
-import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Arm extends Mechanism<Arm.ArmRequest, Arm.ArmStatus> {
+public class Arm extends Mechanism<Arm.ArmStatus> {
     public record ArmStatus(double angle) implements Status {}
 
-    public sealed interface ArmRequest extends Request {}
-
-    public record SetPower(double power) implements ArmRequest {
-        @Override
-        public boolean isDone() {
-            return true;
-        }
+    public Request<Arm> requestPercentOutput(double percentOutput) {
+        return setRequest(motor.requestPercentOutput(percentOutput));
     }
 
-    public record SetAngle(double angle) implements ArmRequest {
-        @Override
-        public boolean isDone() {
-            // TODO: also consider velocity
-            return checkForStatusWith(
-                    ArmStatus.class, s -> Math.abs(s.angle - angle) < ANGLE_TOLERANCE);
-        }
+    public Request<Arm> requestAngle(double targetAngle) {
+        return setRequest(
+                motor.requestPosition(
+                        targetAngle / MOTOR_ROTATIONS_TO_ARM_ANGLE,
+                        ANGLE_TOLERANCE / MOTOR_ROTATIONS_TO_ARM_ANGLE,
+                        STOPPED_SPEED_THRESHOLD / MOTOR_ROTATIONS_TO_ARM_ANGLE * 60 /* RPMs */));
     }
 
-    public static ArmRequest makeHoldPosition() {
-        final double currentAngle = getStatusOrThrow(ArmStatus.class).angle();
-        return new SetAngle(currentAngle);
+    public Request<Arm> requestHoldPosition() {
+        final double currentAngle = getStatus().angle();
+        return requestAngle(currentAngle);
     }
 
-    public static ArmRequest makeNudgeUp() {
-        final double currentAngle = getStatusOrThrow(ArmStatus.class).angle();
-        return new SetAngle(currentAngle + NUDGE_UP_INCREMENT);
+    public Request<Arm> requestNudgeUp() {
+        final double currentAngle = getStatus().angle();
+        return requestAngle(currentAngle + NUDGE_UP_INCREMENT);
     }
 
-    public static ArmRequest makeNudgeDown() {
-        final double currentAngle = getStatusOrThrow(ArmStatus.class).angle();
-        return new SetAngle(currentAngle - NUDGE_DOWN_INCREMENT);
+    public Request<Arm> requestNudgeDown() {
+        final double currentAngle = getStatus().angle();
+        return requestAngle(currentAngle - NUDGE_DOWN_INCREMENT);
     }
 
     private static final double NUDGE_UP_INCREMENT = 5.0; // degrees
     private static final double NUDGE_DOWN_INCREMENT = 5.0; // degrees
 
     private static final double ANGLE_TOLERANCE = 3; // degrees
+    private static final double STOPPED_SPEED_THRESHOLD = 3; // degrees/sec
 
     private static final double ABSOLUTE_ENCODER_TO_ARM_ANGLE =
             (360. /*degrees per rotation*/) * (12. / 54. /*chain reduction*/);
@@ -62,7 +55,6 @@ public class Arm extends Mechanism<Arm.ArmRequest, Arm.ArmStatus> {
     private final EncoderReader absoluteEncoder;
 
     private final ValueProvider<Double> absoluteEncoderOffset;
-    private final RateLimiter dashboardRateLimiter = new RateLimiter(0.1);
 
     private boolean initialized = false;
 
@@ -71,20 +63,17 @@ public class Arm extends Mechanism<Arm.ArmRequest, Arm.ArmStatus> {
         motor.setSmartCurrentLimit(5, 80, 200);
         absoluteEncoder = RobotProvider.instance.getEncoder("arm.AbsoluteEncoder");
         absoluteEncoderOffset = ConfigFileReader.instance.getDouble("arm.AbsoluteEncoderOffset");
+
+        requestPercentOutput(0);
     }
 
     @Override
-    protected ArmRequest getInitialRequest() {
-        return new SetPower(0);
+    protected Request<Arm> applyIdleRequest() {
+        return requestHoldPosition();
     }
 
     @Override
-    protected ArmRequest getIdleRequest() {
-        return makeHoldPosition();
-    }
-
-    @Override
-    public ArmStatus run(ArmRequest request, boolean isRequestNew) {
+    protected ArmStatus reportStatus() {
         if (!initialized && absoluteEncoder.isConnected()) {
             final double absoluteEncoderPosition =
                     Math.IEEEremainder(
@@ -98,18 +87,6 @@ public class Arm extends Mechanism<Arm.ArmRequest, Arm.ArmStatus> {
             initialized = true;
         }
 
-        final ArmStatus status =
-                new ArmStatus(motor.getSensorPosition() * MOTOR_ROTATIONS_TO_ARM_ANGLE);
-
-        switch (request) {
-            case SetPower g -> {
-                motor.set(g.power);
-            }
-            case SetAngle g -> {
-                motor.set(ControlMode.Position, g.angle / MOTOR_ROTATIONS_TO_ARM_ANGLE);
-            }
-        }
-
-        return status;
+        return new ArmStatus(motor.getSensorPosition() * MOTOR_ROTATIONS_TO_ARM_ANGLE);
     }
 }

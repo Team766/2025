@@ -7,11 +7,26 @@ package com.team766.framework3;
  * Request has been fulfilled by querying the {@link Status} published by the Mechanism.  For convenience,
  * the Request can let the caller know when it has been fulfilled via the {@link #isDone} method.
  */
-public interface Request<S extends Status> {
+public abstract class Request<M extends Reservable> {
+    private String provenance = "";
+
     /**
      * Checks whether or not this request has been fulfilled.
      */
-    boolean isDone(S status);
+    public abstract boolean isDone();
 
     // TODO(MF3): do we need any way of checking if the request has been bumped/canceled?
+
+    public void addProvenance(String frame) {
+        if (provenance.isEmpty()) {
+            provenance = frame;
+        } else {
+            provenance = frame + " | " + provenance;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return provenance;
+    }
 }

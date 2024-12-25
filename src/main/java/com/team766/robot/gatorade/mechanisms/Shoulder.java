@@ -7,9 +7,6 @@ import com.team766.config.ConfigFileReader;
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
-import com.team766.framework3.requests.RequestForPercentOutput;
-import com.team766.framework3.requests.RequestForPositionControl;
-import com.team766.framework3.requests.RequestForStop;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
 import com.team766.library.ValueProvider;
@@ -20,7 +17,7 @@ import edu.wpi.first.math.MathUtil;
  * attached {@link Wrist} and {@link Intake}) to reach different positions, from the floor to different
  * heights of nodes.
  */
-public class Shoulder extends Mechanism<Shoulder, Shoulder.ShoulderStatus> {
+public class Shoulder extends Mechanism<Shoulder.ShoulderStatus> {
     public static class Position {
         // TODO: adjust these!
 
@@ -77,46 +74,47 @@ public class Shoulder extends Mechanism<Shoulder, Shoulder.ShoulderStatus> {
         ffGain = ConfigFileReader.getInstance().getDouble(SHOULDER_FFGAIN);
     }
 
-    public Request<Shoulder> requestForNudgeNoPID(double value) {
+    public Request<Shoulder> requestNudgeNoPID(double value) {
         double clampedValue = MathUtil.clamp(value, -1, 1);
         clampedValue *= NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
-        return new RequestForPercentOutput<Shoulder>(leftMotor, clampedValue);
+        return setRequest(leftMotor.requestPercentOutput(clampedValue));
     }
 
-    public Request<Shoulder> requestForStop() {
-        return new RequestForStop<Shoulder>(leftMotor);
+    public Request<Shoulder> requestStop() {
+        return setRequest(leftMotor.requestStop());
     }
 
-    public Request<Shoulder> requestForHoldPosition() {
+    public Request<Shoulder> requestHoldPosition() {
         final double currentAngle = getStatus().angle();
-        return requestForPosition(currentAngle);
+        return requestPosition(currentAngle);
     }
 
-    public Request<Shoulder> requestForNudgeUp() {
+    public Request<Shoulder> requestNudgeUp() {
         final double currentAngle = getStatus().angle();
         final double targetAngle = Math.min(currentAngle + NUDGE_INCREMENT, Position.TOP);
-        return requestForPosition(targetAngle);
+        return requestPosition(targetAngle);
     }
 
-    public Request<Shoulder> requestForNudgeDown() {
+    public Request<Shoulder> requestNudgeDown() {
         final double currentAngle = getStatus().angle();
         final double targetAngle = Math.max(currentAngle - NUDGE_INCREMENT, Position.BOTTOM);
-        return requestForPosition(targetAngle);
+        return requestPosition(targetAngle);
     }
 
     /**
      * Rotates the wrist to the specified angle (in degrees).
      */
-    public Request<Shoulder> requestForPosition(double targetAngle) {
+    public Request<Shoulder> requestPosition(double targetAngle) {
         final double ff = ffGain.get() * Math.cos(Math.toRadians(targetAngle));
 
         // convert the desired target degrees to rotations
-        return new RequestForPositionControl<Shoulder>(
-                leftMotor,
-                EncoderUtils.shoulderDegreesToRotations(targetAngle),
-                EncoderUtils.shoulderDegreesToRotations(NEAR_THRESHOLD),
-                EncoderUtils.shoulderDegreesToRotations(STOPPED_VELOCITY_THRESHOLD) * 60, // RPMs
-                ff);
+        return setRequest(
+                leftMotor.requestPosition(
+                        EncoderUtils.shoulderDegreesToRotations(targetAngle),
+                        EncoderUtils.shoulderDegreesToRotations(NEAR_THRESHOLD),
+                        EncoderUtils.shoulderDegreesToRotations(STOPPED_VELOCITY_THRESHOLD)
+                                * 60, // RPMs
+                        ff));
     }
 
     @Override

@@ -6,10 +6,8 @@ import com.team766.framework3.Rule;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.ArmAndClimber;
-import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
-import com.team766.robot.reva.mechanisms.Shoulder;
 import java.util.Set;
 
 /**
@@ -52,14 +50,14 @@ public class DebugOI {
                                         .withOnTriggeringProcedure(
                                                 ONCE,
                                                 Set.of(ss),
-                                                () -> ss.setRequest(Shoulder.makeNudgeUp())),
+                                                () -> ss.requestShoulderNudgeUp()),
                                 Rule.create(
                                                 "Debug Shoulder Nudge Down",
                                                 () -> macropad.getButton(InputConstants.NUDGE_DOWN))
                                         .withOnTriggeringProcedure(
                                                 ONCE,
                                                 Set.of(ss),
-                                                () -> ss.setRequest(Shoulder.makeNudgeDown())),
+                                                () -> ss.requestShoulderNudgeDown()),
                                 Rule.create(
                                                 "Debug Shoulder Reset",
                                                 () ->
@@ -89,9 +87,8 @@ public class DebugOI {
                                                 ONCE,
                                                 Set.of(ss),
                                                 () ->
-                                                        ss.setRequest(
-                                                                new Climber.MotorPowers(
-                                                                        -0.25, -0.25, true))),
+                                                        ss.requestClimberMotorPowers(
+                                                                -0.25, -0.25, true)),
                                 Rule.create(
                                                 "Debug Climber Nudge Down",
                                                 () -> macropad.getButton(InputConstants.NUDGE_DOWN))
@@ -99,11 +96,10 @@ public class DebugOI {
                                                 ONCE,
                                                 Set.of(ss),
                                                 () ->
-                                                        ss.setRequest(
-                                                                new Climber.MotorPowers(
-                                                                        0.25, 0.25, true))))
+                                                        ss.requestClimberMotorPowers(
+                                                                0.25, 0.25, true)))
                         .withFinishedTriggeringProcedure(
-                                Set.of(ss), () -> ss.setRequest(new Climber.Stop())));
+                                Set.of(ss), () -> ss.requestClimberStop()));
 
         // simple one-button controls for intake
         // used for testing and tuning
@@ -111,15 +107,11 @@ public class DebugOI {
         oi.addRule(
                 Rule.create("Debug Intake In", () -> macropad.getButton(InputConstants.INTAKE_IN))
                         .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(intake),
-                                () -> intake.setRequest(new Intake.In())));
+                                ONCE_AND_HOLD, Set.of(intake), () -> intake.requestIn()));
         oi.addRule(
                 Rule.create("Debug Intake Out", () -> macropad.getButton(InputConstants.INTAKE_OUT))
                         .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(intake),
-                                () -> intake.setRequest(new Intake.Out())));
+                                ONCE_AND_HOLD, Set.of(intake), () -> intake.requestOut()));
 
         // fine-grained controls for shooter
         // used for testing and tuning
@@ -129,9 +121,7 @@ public class DebugOI {
                                 "Debug Control Shooter",
                                 () -> macropad.getButton(InputConstants.CONTROL_SHOOTER))
                         .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(shooter),
-                                () -> shooter.setRequest(Shooter.makeShoot()))
+                                ONCE_AND_HOLD, Set.of(shooter), () -> shooter.requestResumeShoot())
                         .whenTriggering(
                                 Rule.create(
                                                 "Debug Shooter Nudge Up",
@@ -139,15 +129,15 @@ public class DebugOI {
                                         .withOnTriggeringProcedure(
                                                 ONCE,
                                                 Set.of(shooter),
-                                                () -> shooter.setRequest(Shooter.makeNudgeUp())),
+                                                () -> shooter.requestNudgeUp()),
                                 Rule.create(
                                                 "Debug Shooter Nudge Down",
                                                 () -> macropad.getButton(InputConstants.NUDGE_DOWN))
                                         .withOnTriggeringProcedure(
                                                 ONCE,
                                                 Set.of(shooter),
-                                                () -> shooter.setRequest(Shooter.makeNudgeDown())))
+                                                () -> shooter.requestNudgeDown()))
                         .withFinishedTriggeringProcedure(
-                                Set.of(shooter), () -> shooter.setRequest(new Shooter.Stop())));
+                                Set.of(shooter), () -> shooter.requestStop()));
     }
 }

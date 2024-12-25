@@ -19,7 +19,7 @@ public class ShootAtSubwoofer extends Procedure {
     }
 
     public void run(Context context) {
-        superstructure.setRequest(Shoulder.RotateToPosition.SHOOT_LOW);
+        superstructure.requestShoulderPosition(Shoulder.Position.SHOOT_LOW);
         context.runSync(new ShootVelocityAndIntake(shooter, intake));
     }
 }

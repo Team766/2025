@@ -1,11 +1,9 @@
 package com.team766.robot.burro_arm;
 
 import static com.team766.framework3.RulePersistence.ONCE;
-import static com.team766.framework3.RulePersistence.ONCE_AND_HOLD;
 import static com.team766.framework3.RulePersistence.REPEATEDLY;
 import static com.team766.robot.burro_arm.constants.InputConstants.*;
 
-import com.team766.framework3.Rule;
 import com.team766.framework3.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
@@ -13,7 +11,6 @@ import com.team766.logging.Category;
 import com.team766.robot.burro_arm.mechanisms.*;
 import com.team766.robot.burro_arm.procedures.*;
 import com.team766.robot.common.mechanisms.BurroDrive;
-import java.util.Set;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -37,37 +34,37 @@ public class OI extends RuleEngine {
         // Add driver controls here.
 
         addRule(
-                Rule.create("Drive Robot", () -> true)
-                        .withOnTriggeringProcedure(
-                                REPEATEDLY,
-                                Set.of(drive),
-                                () -> {
-                                    drive.setRequest(
-                                            new BurroDrive.ArcadeDrive(
-                                                    -joystick0.getAxis(AXIS_FORWARD_BACKWARD) * 0.5,
-                                                    -joystick0.getAxis(AXIS_TURN) * 0.3));
-                                }));
+                "Drive Robot",
+                () -> true,
+                REPEATEDLY,
+                drive,
+                () ->
+                    drive.requestArcadeDrive(
+                            -joystick0.getAxis(AXIS_FORWARD_BACKWARD) * 0.5,
+                            -joystick0.getAxis(AXIS_TURN) * 0.3));
 
         addRule(
-                Rule.create("Arm Up", () -> joystick0.getButton(BUTTON_ARM_UP))
-                        .withOnTriggeringProcedure(
-                                ONCE, Set.of(arm), () -> arm.setRequest(Arm.makeNudgeUp())));
+                "Arm Up",
+                joystick0.whenButton(BUTTON_ARM_UP),
+                ONCE,
+                arm,
+                arm::requestNudgeUp);
         addRule(
-                Rule.create("Arm Down", () -> joystick0.getButton(BUTTON_ARM_DOWN))
-                        .withOnTriggeringProcedure(
-                                ONCE, Set.of(arm), () -> arm.setRequest(Arm.makeNudgeDown())));
+                "Arm Down",
+                joystick0.whenButton(BUTTON_ARM_DOWN),
+                ONCE,
+                arm,
+                arm::requestNudgeDown);
 
         addRule(
-                Rule.create("Intake", () -> joystick0.getButton(BUTTON_INTAKE))
-                        .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(gripper),
-                                () -> gripper.setRequest(new Gripper.Intake())));
+                "Intake",
+                joystick0.whenButton(BUTTON_INTAKE),
+                gripper,
+                gripper::requestIntake);
         addRule(
-                Rule.create("Outtake", () -> joystick0.getButton(BUTTON_OUTTAKE))
-                        .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(gripper),
-                                () -> gripper.setRequest(new Gripper.Outtake())));
+                "Outtake",
+                joystick0.whenButton(BUTTON_OUTTAKE),
+                gripper,
+                gripper::requestOuttake);
     }
 }

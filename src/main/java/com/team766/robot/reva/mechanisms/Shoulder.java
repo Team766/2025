@@ -9,14 +9,12 @@ import com.team766.config.ConfigFileReader;
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
-import com.team766.framework3.requests.RequestForPositionControl;
-import com.team766.framework3.requests.RequestForStop;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.library.ValueProvider;
 
-public class Shoulder extends Mechanism<Shoulder, Shoulder.ShoulderStatus> {
+public class Shoulder extends Mechanism<Shoulder.ShoulderStatus> {
     public static class Position {
         // TODO: Find actual values.
         public static final double BOTTOM = 0;
@@ -36,33 +34,33 @@ public class Shoulder extends Mechanism<Shoulder, Shoulder.ShoulderStatus> {
         }
     }
 
-    public Request<Shoulder> requestForStop() {
-        return new RequestForStop<>(leftMotor);
+    public Request<Shoulder> requestStop() {
+        return setRequest(leftMotor.requestStop());
     }
 
-    public Request<Shoulder> requestForHoldPosition() {
+    public Request<Shoulder> requestHoldPosition() {
         final double currentAngle = getStatus().angle();
-        return requestForPosition(currentAngle);
+        return requestPosition(currentAngle);
     }
 
-    public Request<Shoulder> requestForNudgeUp() {
+    public Request<Shoulder> requestNudgeUp() {
         final double currentAngle = getStatus().angle();
-        return requestForPosition(currentAngle + NUDGE_AMOUNT);
+        return requestPosition(currentAngle + NUDGE_AMOUNT);
     }
 
-    public Request<Shoulder> requestForNudgeDown() {
+    public Request<Shoulder> requestNudgeDown() {
         final double currentAngle = getStatus().angle();
-        return requestForPosition(currentAngle - NUDGE_AMOUNT);
+        return requestPosition(currentAngle - NUDGE_AMOUNT);
     }
 
-    public Request<Shoulder> requestForPosition(double targetAngle) {
+    public Request<Shoulder> requestPosition(double targetAngle) {
         targetAngle = com.team766.math.Math.clamp(targetAngle, Position.BOTTOM, Position.TOP);
-        return new RequestForPositionControl<>(
-                leftMotor,
-                degreesToRotations(targetAngle),
-                degreesToRotations(NEAR_THRESHOLD),
-                degreesToRotations(STOPPED_VELOCITY_THRESHOLD),
-                () -> ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getStatus().angle())));
+        return setRequest(
+                leftMotor.requestPosition(
+                        degreesToRotations(targetAngle),
+                        degreesToRotations(NEAR_THRESHOLD),
+                        degreesToRotations(STOPPED_VELOCITY_THRESHOLD),
+                        () -> ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getStatus().angle()))));
     }
 
     private static final double NUDGE_AMOUNT = 1; // degrees
@@ -106,7 +104,7 @@ public class Shoulder extends Mechanism<Shoulder, Shoulder.ShoulderStatus> {
     public void reset() {
         checkContextReservation();
         leftMotor.setSensorPosition(0.0);
-        setRequest(requestForStop());
+        requestStop();
     }
 
     @Override

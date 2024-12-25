@@ -94,8 +94,8 @@ public class VisionSpeakerHelper implements StatusesMixin {
     }
 
     public void update() {
-        cameraStatus = getStatusOrThrow(ForwardApriltagCamera.ApriltagCameraStatus.class);
-        driveStatus = getStatusOrThrow(SwerveDrive.DriveStatus.class);
+        cameraStatus = getStatusOrThrow(ForwardApriltagCamera.class);
+        driveStatus = getStatusOrThrow(SwerveDrive.class);
 
         updateAlliance();
         updateTarget();

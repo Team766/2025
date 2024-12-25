@@ -1,5 +1,6 @@
 package com.team766.robot.gatorade.procedures;
 
+import static com.team766.framework3.Conditions.waitForRequest;
 import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
 import com.team766.robot.common.mechanisms.SwerveDrive;
@@ -50,20 +51,18 @@ public class GyroBalance extends Procedure {
     }
 
     private double getAbsoluteTilt() {
-        final double pitch = getStatusOrThrow(SwerveDrive.DriveStatus.class).pitch();
-        final double roll = getStatusOrThrow(SwerveDrive.DriveStatus.class).roll();
+        final double pitch = getStatusOrThrow(SwerveDrive.class).pitch();
+        final double roll = getStatusOrThrow(SwerveDrive.class).roll();
         return Math.toDegrees(
                 Math.acos(Math.cos(Math.toRadians(roll) * Math.cos(Math.toRadians(pitch)))));
     }
 
     public void run(Context context) {
         // extend wristvator to put CG in a place where robot can climb ramp
-        arm.setRequest(Arm.MoveToPosition.EXTENDED_TO_MID);
-        context.waitFor(() -> Arm.MoveToPosition.EXTENDED_TO_MID.isDone());
+        waitForRequest(context, arm.requestExtendedToMid());
 
         // initialY is robot y position when balancing starts
-        final double initialY =
-                getStatusOrThrow(SwerveDrive.DriveStatus.class).currentPosition().getY();
+        final double initialY = getStatusOrThrow(SwerveDrive.class).currentPosition().getY();
         // Sets movement direction towards desired charge station.
         switch (alliance) {
             case Red:
@@ -105,13 +104,13 @@ public class GyroBalance extends Procedure {
         // State: RAMP_TILT
         setDriveSpeed(SPEED_TILT);
         log("Tilt, curState: RAMP_TILT");
-        arm.setRequest(Arm.MoveToPosition.RETRACTED);
+        arm.requestRetracted();
 
         double overshootSpeed = -SPEED_OVERSHOOT;
         while (true) {
             context.waitFor(() -> getAbsoluteTilt() < LEVEL);
 
-            drive.setRequest(new SwerveDrive.SetCross());
+            drive.requestStop();
             context.waitForSeconds(1);
             if (getAbsoluteTilt() < LEVEL) {
                 // State: RAMP_LEVEL
@@ -138,6 +137,6 @@ public class GyroBalance extends Procedure {
         }
 
         // Drives the robot with the calculated speed and direction
-        drive.setRequest(new SwerveDrive.FieldOrientedVelocity(0, driveSpeed, 0));
+        drive.requestFieldOrientedVelocity(0, driveSpeed, 0);
     }
 }

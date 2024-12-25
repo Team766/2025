@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import static com.team766.framework3.Conditions.waitForRequest;
 import java.util.Optional;
 
 public class OnePieceExitCommunity extends Procedure {
@@ -48,8 +49,7 @@ public class OnePieceExitCommunity extends Procedure {
         }
         log("exiting");
         context.runSync(new ScoreHigh(type, arm, intake));
-        arm.setRequest(Arm.MoveToPosition.RETRACTED);
-        context.waitFor(() -> Arm.MoveToPosition.RETRACTED.isDone());
+        waitForRequest(context, arm.requestRetracted());
         context.runSync(new ExitCommunity(drive));
     }
 }

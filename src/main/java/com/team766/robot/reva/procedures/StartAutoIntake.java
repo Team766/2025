@@ -18,9 +18,8 @@ public class StartAutoIntake extends Procedure {
     }
 
     public void run(Context context) {
-        final var armTarget = Shoulder.RotateToPosition.BOTTOM;
-        superstructure.setRequest(armTarget);
-        waitForRequestOrTimeout(context, armTarget, 1.5);
-        intake.setRequest(new Intake.SetPowerForSensorDistance());
+        var armRequest = superstructure.requestShoulderPosition(Shoulder.Position.BOTTOM);
+        waitForRequestOrTimeout(context, armRequest, 1.5);
+        intake.requestPowerForSensorDistance();
     }
 }

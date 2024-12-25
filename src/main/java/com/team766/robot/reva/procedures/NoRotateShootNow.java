@@ -11,7 +11,6 @@ import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import com.team766.robot.reva.mechanisms.ArmAndClimber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
-import com.team766.robot.reva.mechanisms.Shoulder;
 
 public class NoRotateShootNow extends Procedure {
 
@@ -38,29 +37,29 @@ public class NoRotateShootNow extends Procedure {
 
     public void run(Context context) {
         if (!amp) {
-            drive.setRequest(new SwerveDrive.Stop());
+            drive.requestStop();
 
-            Shooter.ShootAtSpeed speedRequest;
-            Shoulder.RotateToPosition armRequest;
+            double speedTarget;
+            double armTarget;
 
             visionSpeakerHelper.update();
 
             try {
-                speedRequest = new Shooter.ShootAtSpeed(visionSpeakerHelper.getShooterPower());
-                armRequest = new Shoulder.RotateToPosition(visionSpeakerHelper.getArmAngle());
+                speedTarget = visionSpeakerHelper.getShooterPower();
+                armTarget = visionSpeakerHelper.getArmAngle();
             } catch (AprilTagGeneralCheckedException e) {
                 LoggerExceptionUtils.logException(e);
                 return;
             }
 
-            superstructure.setRequest(armRequest);
+            var armRequest = superstructure.requestShoulderPosition(armTarget);
 
             // start shooting now while waiting for shoulder, stopped in ShootVelocityAndIntake
-            shooter.setRequest(speedRequest);
+            shooter.requestSpeed(speedTarget);
 
             waitForRequestOrTimeout(context, armRequest, 0.5);
 
-            context.runSync(new ShootVelocityAndIntake(speedRequest.speed(), shooter, intake));
+            context.runSync(new ShootVelocityAndIntake(speedTarget, shooter, intake));
 
         } else {
             // Robot.shooter.shoot(3000);

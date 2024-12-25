@@ -22,6 +22,21 @@ public interface JoystickReader {
      */
     boolean isAxisMoved(int axis);
 
+    default BooleanSupplier whenAxisMoved(int axis) {
+        return () -> isAxisMoved(axis);
+    }
+
+    default BooleanSupplier whenAnyAxisMoved(int... axes) {
+        return () -> {
+            for (int axis : axes) {
+                if (isAxisMoved(axis)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+    }
+
     /**
      * Set the size of the deadzone for the given axis.
      *
@@ -51,6 +66,28 @@ public interface JoystickReader {
 
     default BooleanSupplier whenButton(int button) {
         return () -> getButton(button);
+    }
+
+    default BooleanSupplier whenAnyButton(int... buttons) {
+        return () -> {
+            for (int button : buttons) {
+                if (getButton(button)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+    }
+
+    default BooleanSupplier whenAllButtons(int... buttons) {
+        return () -> {
+            for (int button : buttons) {
+                if (!getButton(button)) {
+                    return false;
+                }
+            }
+            return true;
+        };
     }
 
     /**

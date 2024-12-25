@@ -25,6 +25,10 @@ public abstract class Superstructure<S extends Record & Status> extends Mechanis
         super.periodicInternal();
     }
 
+    protected static Directive submechanismRequest(Request<?> submechanismRequest) {
+        return () -> submechanismRequest.isDone();
+    }
+
     protected <M extends Mechanism<?>> M addMechanism(M submechanism) {
         Objects.requireNonNull(submechanism);
         submechanism.setSuperstructure(this);

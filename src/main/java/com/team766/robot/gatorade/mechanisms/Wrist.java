@@ -7,9 +7,6 @@ import com.team766.config.ConfigFileReader;
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
-import com.team766.framework3.requests.RequestForPercentOutput;
-import com.team766.framework3.requests.RequestForPositionControl;
-import com.team766.framework3.requests.RequestForStop;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
 import com.team766.library.ValueProvider;
@@ -22,7 +19,7 @@ import edu.wpi.first.math.MathUtil;
  * field, human player station), at which point the {@link Intake} can grab or release the game
  * piece as appropriate.
  */
-public class Wrist extends Mechanism<Wrist, Wrist.WristStatus> {
+public class Wrist extends Mechanism<Wrist.WristStatus> {
     public static class Position {
         /** Wrist is in top position.  Starting position. */
         public static final double TOP = -180;
@@ -75,46 +72,47 @@ public class Wrist extends Mechanism<Wrist, Wrist.WristStatus> {
         ffGain = ConfigFileReader.getInstance().getDouble(WRIST_FFGAIN);
     }
 
-    public Request<Wrist> requestForNudgeNoPID(double value) {
+    public Request<Wrist> requestNudgeNoPID(double value) {
         double clampedValue = MathUtil.clamp(value, -1, 1);
         clampedValue *= NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
-        return new RequestForPercentOutput<Wrist>(motor, clampedValue);
+        return setRequest(motor.requestPercentOutput(clampedValue));
     }
 
-    public Request<Wrist> requestForStop() {
-        return new RequestForStop<Wrist>(motor);
+    public Request<Wrist> requestStop() {
+        return setRequest(motor.requestStop());
     }
 
-    public Request<Wrist> requestForHoldPosition() {
-        final double currentAngle = getMechanismStatus().angle();
-        return requestForPosition(currentAngle);
+    public Request<Wrist> requestHoldPosition() {
+        final double currentAngle = getStatus().angle();
+        return requestPosition(currentAngle);
     }
 
-    public Request<Wrist> requestForNudgeUp() {
-        final double currentAngle = getMechanismStatus().angle();
+    public Request<Wrist> requestNudgeUp() {
+        final double currentAngle = getStatus().angle();
         final double targetAngle = Math.max(currentAngle - NUDGE_INCREMENT, Position.TOP);
-        return requestForPosition(targetAngle);
+        return requestPosition(targetAngle);
     }
 
-    public Request<Wrist> requestForNudgeDown() {
-        final double currentAngle = getMechanismStatus().angle();
+    public Request<Wrist> requestNudgeDown() {
+        final double currentAngle = getStatus().angle();
         final double targetAngle = Math.min(currentAngle + NUDGE_INCREMENT, Position.BOTTOM);
-        return requestForPosition(targetAngle);
+        return requestPosition(targetAngle);
     }
 
     /**
      * Starts rotating the wrist to the specified angle.
      */
-    public Request<Wrist> requestForPosition(double targetAngle) {
+    public Request<Wrist> requestPosition(double targetAngle) {
         double ff = ffGain.get() * Math.cos(Math.toRadians(targetAngle));
 
         // convert the desired target degrees to rotations
-        return new RequestForPositionControl<Wrist>(
-                motor,
-                EncoderUtils.wristDegreesToRotations(targetAngle),
-                EncoderUtils.wristDegreesToRotations(NEAR_THRESHOLD),
-                EncoderUtils.wristDegreesToRotations(STOPPED_VELOCITY_THRESHOLD) * 60, // RPMs
-                ff);
+        return setRequest(
+                motor.requestPosition(
+                        EncoderUtils.wristDegreesToRotations(targetAngle),
+                        EncoderUtils.wristDegreesToRotations(NEAR_THRESHOLD),
+                        EncoderUtils.wristDegreesToRotations(STOPPED_VELOCITY_THRESHOLD)
+                                * 60, // RPMs
+                        ff));
     }
 
     @Override

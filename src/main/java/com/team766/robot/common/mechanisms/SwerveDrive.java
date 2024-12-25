@@ -84,75 +84,139 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
         }
     }
 
-    /**
-     * @param x the x value for the translation joystick, positive being forward, in meters/sec
-     * @param y the y value for the translation joystick, positive being left, in meters/sec
-     */
-    public record RobotOrientedTranslation(double x, double y) implements Request<DriveStatus> {
-        @Override
-        public boolean isDone(DriveStatus status) {
-            return status.isAtRobotOrientedSpeeds(new ChassisSpeeds(x, y, 0), false);
-        }
-    }
-
-    /**
-     * @param x the x value for the translation joystick, positive being forward, in meters/sec
-     * @param y the y value for the translation joystick, positive being left, in meters/sec
-     */
-    public record FieldOrientedTranslation(double x, double y) implements Request<DriveStatus> {
-        @Override
-        public boolean isDone(DriveStatus status) {
-            return status.isAtFieldOrientedSpeeds(new ChassisSpeeds(x, y, 0), false);
-        }
-    }
-
-    /**
-     * @param omegaRadiansPerSecond the turn value from the rotation joystick, positive being CCW, in radians/sec
-     */
-    public record RotationVelocity(double omegaRadiansPerSecond) implements Request<DriveStatus> {
-        @Override
-        public boolean isDone(DriveStatus status) {
-            return status.isAtRotationVelocity(omegaRadiansPerSecond);
-        }
-    }
-
-    /**
-     * @param target rotational target as a Rotation2d
-     */
-    public record RotationTarget(Rotation2d target) implements Request<DriveStatus> {
-        @Override
-        public boolean isDone(DriveStatus status) {
-            return status.isAtRotationVelocity(0.0) && status.isAtRotationHeading(target);
-        }
-    }
-
-    /**
-     * Stops the drive motors and turns wheels in a cross formation to prevent robot from moving.
-     */
-    public record SetCross() implements Request<DriveStatus> {
-        @Override
-        public boolean isDone(DriveStatus status) {
-            return status.isCrossed();
-        }
-    }
-
     public class Translation extends Mechanism<DriveStatus> {
-        @Override
-        public Request<DriveStatus> getIdleRequest() {
-            return new SetCross();
+        private Vector2D targetRobotVelocity = Vector2D.ZERO;
+
+        /**
+         * @param x the x value for the translation joystick, positive being forward, in meters/sec
+         * @param y the y value for the translation joystick, positive being left, in meters/sec
+         */
+        public Request<Translation> requestRobotOrientedTranslation(double x, double y) {
+            checkContextReservation();
+            targetRobotVelocity = new Vector2D(x, y);
+
+            return setRequest(
+                    () -> {
+                        return getStatus()
+                                .isAtRobotOrientedSpeeds(new ChassisSpeeds(x, y, 0), false);
+                    });
         }
+
+        /**
+         * @param x the x value for the translation joystick, positive being forward, in meters/sec
+         * @param y the y value for the translation joystick, positive being left, in meters/sec
+         */
+        public Request<Translation> requestFieldOrientedTranslation(double x, double y) {
+            checkContextReservation();
+
+            final Optional<Alliance> alliance = DriverStation.getAlliance();
+
+            return setRequest(
+                    () -> {
+                        final double yawRad =
+                                Math.toRadians(
+                                        gyro.getAngle()
+                                                + (alliance.isPresent()
+                                                                && alliance.get() == Alliance.Blue
+                                                        ? 0
+                                                        : 180));
+
+                        // Applies a rotational translation to controlRobotOriented
+                        // Counteracts the forward direction changing when the robot turns
+                        // TODO: change to inverse rotation matrix (rather than negative angle)
+                        targetRobotVelocity =
+                                new Vector2D(
+                                        Math.cos(-yawRad) * x - Math.sin(-yawRad) * y,
+                                        Math.sin(-yawRad) * x + Math.cos(-yawRad) * y);
+
+                        return getStatus()
+                                .isAtFieldOrientedSpeeds(new ChassisSpeeds(x, y, 0), false);
+                    });
+        }
+
+        /**
+         * Stops the drive moving.
+         */
+        public Request<Translation> requestStop() {
+            checkContextReservation();
+
+            targetRobotVelocity = Vector2D.ZERO;
+
+            return setRequest(
+                    () -> {
+                        return getStatus().isCrossed();
+                    });
+        }
+
+        @Override
+        protected Request<Translation> applyIdleRequest() {
+            return requestStop();
+        }
+
+        @Override
+        protected DriveStatus reportStatus() {}
     }
 
-    public final Translation translation = new Translation();
+    public final Translation translation = addFacet(new Translation());
 
     public class Rotation extends Mechanism<DriveStatus> {
-        @Override
-        public Request<DriveStatus> getIdleRequest() {
-            return new SetCross();
+        private double targetVelocity = 0.0;
+
+        /**
+         * @param omegaRadiansPerSecond the turn value from the rotation joystick, positive being CCW, in radians/sec
+         */
+        public Request<Rotation> requestRotationVelocity(double omegaRadiansPerSecond) {
+            checkContextReservation();
+
+            targetVelocity = omegaRadiansPerSecond;
+
+            return setRequest(
+                    () -> {
+                        return getStatus().isAtRotationVelocity(omegaRadiansPerSecond);
+                    });
         }
+
+        /**
+         * @param target rotational target as a Rotation2d in field-oriented coordinates.
+         */
+        public Request<Rotation> requestRotationTarget(Rotation2d target) {
+            checkContextReservation();
+
+            rotationPID.setSetpoint(target.getDegrees());
+            return setRequest(
+                    () -> {
+                        rotationPID.calculate(gyro.getAngle());
+                        targetVelocity = rotationPID.getOutput();
+
+                        return getStatus().isAtRotationVelocity(0.0)
+                                && getStatus().isAtRotationHeading(target);
+                    });
+        }
+
+        /**
+         * Stops the drive moving.
+         */
+        public Request<Rotation> requestStop() {
+            checkContextReservation();
+
+            targetVelocity = 0.0;
+
+            return setRequest(
+                    () -> {
+                        return getStatus().isCrossed();
+                    });
+        }
+
+        @Override
+        protected Request<Rotation> applyIdleRequest() {
+            return requestStop();
+        }
+
+        @Override
+        protected DriveStatus reportStatus() {}
     }
 
-    public final Rotation rotation = new Rotation();
+    public final Rotation rotation = addFacet(new Rotation());
 
     private final SwerveConfig config;
 
@@ -319,8 +383,7 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
     }
 
     private boolean shouldCrossWheels() {
-        return rotation.getRequest() instanceof SetCross
-                && translation.getRequest() instanceof SetCross;
+        return rotation.targetVelocity == 0.0 && translation.targetRobotVelocity.equals(Vector2D.ZERO);
     }
 
     @Override
@@ -337,38 +400,9 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
             return;
         }
 
-        double turn;
-        if (rotation.getRequest() instanceof RotationTarget g) {
-            rotationPID.setSetpoint(g.target().getDegrees());
-            rotationPID.calculate(gyro.getAngle());
-            turn = rotationPID.getOutput();
-        } else if (rotation.getRequest() instanceof RotationVelocity g) {
-            turn = g.omegaRadiansPerSecond();
-        } else {
-            throw new IllegalArgumentException();
-        }
-
-        double translationX;
-        double translationY;
-        if (translation.getRequest() instanceof RobotOrientedTranslation g) {
-            translationX = g.x();
-            translationY = g.y();
-        } else if (translation.getRequest() instanceof FieldOrientedTranslation g) {
-            final Optional<Alliance> alliance = DriverStation.getAlliance();
-            final double yawRad =
-                    Math.toRadians(
-                            gyro.getAngle()
-                                    + (alliance.isPresent() && alliance.get() == Alliance.Blue
-                                            ? 0
-                                            : 180));
-            // Applies a rotational translation to controlRobotOriented
-            // Counteracts the forward direction changing when the robot turns
-            // TODO: change to inverse rotation matrix (rather than negative angle)
-            translationX = Math.cos(-yawRad) * g.x() - Math.sin(-yawRad) * g.y();
-            translationY = Math.sin(-yawRad) * g.x() + Math.cos(-yawRad) * g.y();
-        } else {
-            throw new IllegalArgumentException();
-        }
+        final double turn = rotation.targetVelocity;
+        final double translationX = translation.targetRobotVelocity.getX();
+        final double translationY = translation.targetRobotVelocity.getY();
 
         // Calculate the necessary turn velocity (m/s) for each motor:
         final double turnVelocity = config.wheelDistanceFromCenter() * turn;
@@ -402,7 +436,7 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
      * Sets to 180 degrees if the driver is on red (facing backwards)
      */
     public void resetGyro() {
-        rotation.checkContextReservation();
+        checkContextReservation();
         final Optional<Alliance> alliance = DriverStation.getAlliance();
         resetGyro(alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180);
     }
@@ -412,21 +446,52 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
      * @param angle in degrees
      */
     public void resetGyro(double angle) {
-        rotation.checkContextReservation();
+        checkContextReservation();
         gyro.setAngle(angle);
     }
 
     public void setCurrentPosition(Pose2d P) {
-        translation.checkContextReservation();
-        rotation.checkContextReservation();
+        checkContextReservation();
         // log("setCurrentPosition(): " + P);
         swerveOdometry.setCurrentPosition(P);
     }
 
     public void resetCurrentPosition() {
-        translation.checkContextReservation();
-        rotation.checkContextReservation();
+        checkContextReservation();
         swerveOdometry.setCurrentPosition(new Pose2d());
+    }
+
+    public Request<SwerveDrive> requestStop() {
+        checkContextReservation();
+        return requestOfFacets(translation.requestStop(), rotation.requestStop());
+    }
+
+    public Request<SwerveDrive> requestRobotOrientedVelocity(double x, double y, double turn) {
+        checkContextReservation();
+        return requestOfFacets(
+                translation.requestRobotOrientedTranslation(x, y),
+                rotation.requestRotationVelocity(turn));
+    }
+
+    public Request<SwerveDrive> requestRobotOrientedVelocity(ChassisSpeeds chassisSpeeds) {
+        return requestRobotOrientedVelocity(
+                chassisSpeeds.vxMetersPerSecond,
+                chassisSpeeds.vyMetersPerSecond,
+                chassisSpeeds.omegaRadiansPerSecond);
+    }
+
+    public Request<SwerveDrive> requestFieldOrientedVelocity(double x, double y, double turn) {
+        checkContextReservation();
+        return requestOfFacets(
+                translation.requestFieldOrientedTranslation(x, y),
+                rotation.requestRotationVelocity(turn));
+    }
+
+    public Request<SwerveDrive> requestFieldOrientedVelocity(ChassisSpeeds chassisSpeeds) {
+        return requestFieldOrientedVelocity(
+                chassisSpeeds.vxMetersPerSecond,
+                chassisSpeeds.vyMetersPerSecond,
+                chassisSpeeds.omegaRadiansPerSecond);
     }
 
     private static Translation2d getPositionForWheel(
@@ -437,7 +502,7 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
 
     // Odometry
     @Override
-    public DriveStatus reportStatus() {
+    protected DriveStatus reportStatus() {
         swerveOdometry.run();
 
         final double heading = gyro.getAngle();

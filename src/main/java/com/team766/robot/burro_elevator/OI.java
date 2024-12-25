@@ -12,7 +12,6 @@ import com.team766.robot.burro_arm.mechanisms.Gripper;
 import com.team766.robot.burro_elevator.mechanisms.*;
 import com.team766.robot.burro_elevator.procedures.*;
 import com.team766.robot.common.mechanisms.BurroDrive;
-import java.util.Set;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -36,7 +35,7 @@ public class OI extends RuleEngine {
                 REPEATEDLY,
                 drive,
                 () ->
-                        new BurroDrive.ArcadeDriveRequest(
+                        drive.requestArcadeDrive(
                                 -joystick0.getAxis(AXIS_FORWARD_BACKWARD) * 0.5,
                                 -joystick0.getAxis(AXIS_TURN) * 0.5));
 
@@ -44,25 +43,17 @@ public class OI extends RuleEngine {
                 "Elevator Up",
                 joystick0.whenButton(BUTTON_ELEVATOR_UP),
                 ONCE,
-                Set.of(elevator),
-                () -> elevator.setRequestToNudgeUp());
+                elevator,
+                elevator::requestNudgeUp);
         addRule(
                 "Elevator Down",
                 joystick0.whenButton(BUTTON_ELEVATOR_DOWN),
                 ONCE,
-                Set.of(elevator),
-                () -> elevator.setRequestToNudgeDown());
+                elevator,
+                elevator::requestNudgeDown);
 
-        addRule(
-                "Intake",
-                joystick0.whenButton(BUTTON_INTAKE),
-                gripper,
-                () -> Gripper.requestForIntake());
-        addRule(
-                "Outtake",
-                joystick0.whenButton(BUTTON_OUTTAKE),
-                gripper,
-                () -> Gripper.requestForOuttake());
+        addRule("Intake", joystick0.whenButton(BUTTON_INTAKE), gripper, gripper::requestIntake);
+        addRule("Outtake", joystick0.whenButton(BUTTON_OUTTAKE), gripper, gripper::requestOuttake);
     }
 
     @Override

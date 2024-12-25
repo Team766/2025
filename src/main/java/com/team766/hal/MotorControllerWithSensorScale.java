@@ -4,7 +4,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class MotorControllerWithSensorScale implements MotorController {
-    private MotorController delegate;
+    private final MotorController delegate;
+    private final PIDConfig pidConfig = new PIDConfig();
     private double scale;
 
     public MotorControllerWithSensorScale(final MotorController delegate_, final double scale_) {
@@ -23,22 +24,22 @@ public class MotorControllerWithSensorScale implements MotorController {
     }
 
     @Override
-    public void set(final ControlMode mode, final double value) {
+    public void set(final ControlMode mode, final double value, double arbitraryFeedForward) {
         switch (mode) {
             case PercentOutput:
-                delegate.set(mode, value);
+                delegate.set(mode, value, arbitraryFeedForward);
                 return;
             case Position:
-                delegate.set(mode, value / scale);
+                delegate.set(mode, value / scale, arbitraryFeedForward);
                 return;
             case Velocity:
-                delegate.set(mode, value / scale);
+                delegate.set(mode, value / scale, arbitraryFeedForward);
                 return;
             case Voltage:
-                delegate.set(mode, value);
+                delegate.set(mode, value, arbitraryFeedForward);
                 return;
             case Disabled:
-                delegate.set(mode, value);
+                delegate.set(mode, value, arbitraryFeedForward);
                 return;
             default:
                 break;
@@ -140,5 +141,16 @@ public class MotorControllerWithSensorScale implements MotorController {
     @Override
     public void set(final double power) {
         delegate.set(power);
+    }
+
+    @Override
+    public PIDConfig getPIDConfig() {
+        // TODO: Deduplicate this functionality with the delegate
+        return pidConfig;
+    }
+
+    @Override
+    public double getOutputVoltage() {
+        return delegate.getOutputVoltage();
     }
 }

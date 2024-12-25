@@ -5,8 +5,6 @@ import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
-import com.team766.framework3.requests.RequestForPercentOutput;
-import com.team766.framework3.requests.RequestForStop;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
@@ -21,7 +19,7 @@ import com.team766.hal.RobotProvider;
  * intake or outtake.  This is because the motor must spin in opposite directions to intake cubes
  * versus cones.
  */
-public class Intake extends Mechanism<Intake, Intake.IntakeStatus> {
+public class Intake extends Mechanism<Intake.IntakeStatus> {
 
     private static final double POWER_IN = 0.3;
     private static final double POWER_OUT = 0.25;
@@ -67,19 +65,22 @@ public class Intake extends Mechanism<Intake, Intake.IntakeStatus> {
     public Intake() {
         motor = RobotProvider.instance.getMotor(INTAKE_MOTOR);
 
-        setRequest(requestForIntake(GamePieceType.CONE, MotorState.STOP));
+        requestIntake(GamePieceType.CONE, MotorState.STOP);
     }
 
-    public Request<Intake> requestForIntake(GamePieceType gamePieceType, MotorState motorState) {
-        return switch (motorState) {
-            case IN -> new RequestForPercentOutput<>(
-                    motor, (gamePieceType == GamePieceType.CONE) ? POWER_IN : (-1 * POWER_IN));
-            case OUT -> new RequestForPercentOutput<>(
-                    motor, (gamePieceType == GamePieceType.CONE) ? (-1 * POWER_OUT) : POWER_OUT);
-            case STOP -> new RequestForStop<>(motor);
-            case IDLE -> new RequestForPercentOutput<>(
-                    motor, (gamePieceType == GamePieceType.CONE) ? POWER_IDLE : (-1 * POWER_IDLE));
-        };
+    public Request<Intake> requestIntake(GamePieceType gamePieceType, MotorState motorState) {
+        final double motorCommand =
+                switch (motorState) {
+                    case IN -> (gamePieceType == GamePieceType.CONE) ? POWER_IN : (-1 * POWER_IN);
+                    case OUT -> (gamePieceType == GamePieceType.CONE)
+                            ? (-1 * POWER_OUT)
+                            : POWER_OUT;
+                    case STOP -> 0.0;
+                    case IDLE -> (gamePieceType == GamePieceType.CONE)
+                            ? POWER_IDLE
+                            : (-1 * POWER_IDLE);
+                };
+        return setRequest(motor.requestPercentOutput(motorCommand));
     }
 
     @Override

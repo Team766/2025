@@ -6,7 +6,7 @@ import com.team766.framework3.Mechanism;
 import com.team766.framework3.Status;
 import java.util.Optional;
 
-public class NoteCamera extends Mechanism<NoteCamera, NoteCamera.NoteCameraStatus> {
+public class NoteCamera extends Mechanism<NoteCamera.NoteCameraStatus> {
     public record NoteCameraStatus(Optional<Double> yawOfRing, Optional<Double> pitchOfRing)
             implements Status {}
 

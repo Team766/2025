@@ -10,32 +10,22 @@ import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 
 public class BurroDrive extends Mechanism<BurroDrive.DriveStatus> {
-    public record DriveStatus(double leftPercentOutput, double rightPercentOutput)
-            implements Status {}
+    public record DriveStatus() implements Status {}
 
-    public record PercentOutputRequest(
-            double leftTargetPercentOutput, double rightTargetPercentOutput)
-            implements Request<DriveStatus> {
-        @Override
-        public boolean isDone(DriveStatus status) {
-            return leftTargetPercentOutput == status.leftPercentOutput()
-                    && rightTargetPercentOutput == status.rightPercentOutput();
-        }
+    public Request<BurroDrive> requestPercentOutput(
+            double leftTargetPercentOutput, double rightTargetPercentOutput) {
+        return setRequest(
+                requestAllOf(
+                        leftMotor.requestPercentOutput(leftTargetPercentOutput),
+                        rightMotor.requestPercentOutput(rightTargetPercentOutput)));
     }
 
     /**
      * @param forward how much power to apply to moving the robot (positive being forward)
      * @param turn how much power to apply to turning the robot (positive being CCW)
      */
-    public record ArcadeDriveRequest(double forward, double turn) implements Request<DriveStatus> {
-        PercentOutputRequest toPercentOutputRequest() {
-            return new PercentOutputRequest(forward - turn, forward + turn);
-        }
-
-        @Override
-        public boolean isDone(DriveStatus status) {
-            return toPercentOutputRequest().isDone(status);
-        }
+    public Request<BurroDrive> requestArcadeDrive(double forward, double turn) {
+        return requestPercentOutput(forward - turn, forward + turn);
     }
 
     private final MotorController leftMotor;
@@ -51,18 +41,13 @@ public class BurroDrive extends Mechanism<BurroDrive.DriveStatus> {
         return Category.DRIVE;
     }
 
-    protected void runRequest(PercentOutputRequest request) {
-        leftMotor.set(request.leftTargetPercentOutput());
-        rightMotor.set(request.rightTargetPercentOutput());
-    }
-
     @Override
-    protected Request<DriveStatus> getIdleRequest() {
-        return new PercentOutputRequest(0, 0);
+    protected Request<BurroDrive> applyIdleRequest() {
+        return requestPercentOutput(0, 0);
     }
 
     @Override
     protected DriveStatus reportStatus() {
-        return new DriveStatus(leftMotor.get(), rightMotor.get());
+        return new DriveStatus();
     }
 }

@@ -4,14 +4,12 @@ import static com.team766.robot.reva.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.framework3.Mechanism;
-import com.team766.framework3.MultiRequest;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
-import com.team766.framework3.requests.RequestForStop;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
-public class Climber extends Mechanism<Climber, Climber.ClimberStatus> {
+public class Climber extends Mechanism<Climber.ClimberStatus> {
     public static class Position {
         // A very rough measurement, and was being very safe.
         // TODO: Needs to be measured more accurately.
@@ -30,53 +28,59 @@ public class Climber extends Mechanism<Climber, Climber.ClimberStatus> {
         }
     }
 
-    public Request<Climber> requestForStop() {
-        return new MultiRequest<Climber>(
-                new RequestForStop<>(leftMotor), new RequestForStop<>(rightMotor));
+    public Request<Climber> requestStop() {
+        return setRequest(requestAllOf(leftMotor.requestStop(), rightMotor.requestStop()));
     }
 
-    public Request<Climber> requestForMotorPowers(
+    public Request<Climber> requestMotorPowers(
             double powerLeft, double powerRight, boolean overrideSoftLimits) {
-        boolean enableSoftLimits = !g.overrideSoftLimits();
+        boolean enableSoftLimits = !overrideSoftLimits;
         if (enableSoftLimits != softLimitsEnabled) {
             enableSoftLimits(enableSoftLimits);
         }
-        leftMotor.set(com.team766.math.Math.clamp(g.powerLeft(), -1, 1));
-        rightMotor.set(com.team766.math.Math.clamp(g.powerRight(), -1, 1));
+        return setRequest(
+                requestAllOf(
+                        leftMotor.requestPercentOutput(
+                                com.team766.math.Math.clamp(powerLeft, -1, 1)),
+                        rightMotor.requestPercentOutput(
+                                com.team766.math.Math.clamp(powerRight, -1, 1))));
     }
 
-    public Request<Climber> requestForPosition(double height) {
+    public Request<Climber> requestPosition(double targetHeight) {
         if (!softLimitsEnabled) {
             enableSoftLimits(true);
         }
 
-        // Control left motor
-        if (status.isLeftNear(g)) {
-            leftMotor.stopMotor();
-        } else if (status.heightLeft() > g.height()) {
-            // Move down
-            leftMotor.set(0.25);
-        } else {
-            // Move up
-            leftMotor.set(-0.25);
-        }
+        return setRequest(
+                () -> {
+                    // Control left motor
+                    boolean isLeftNear = false;
+                    if (getStatus().isLeftNear(targetHeight)) {
+                        leftMotor.stopMotor();
+                        isLeftNear = true;
+                    } else if (getStatus().heightLeft() > targetHeight) {
+                        // Move down
+                        leftMotor.set(0.25);
+                    } else {
+                        // Move up
+                        leftMotor.set(-0.25);
+                    }
 
-        // Control right motor
-        if (status.isRightNear(g)) {
-            rightMotor.stopMotor();
-        } else if (status.heightRight() > g.height()) {
-            // Move down
-            rightMotor.set(0.25);
-        } else {
-            // Move up
-            rightMotor.set(-0.25);
-        }
+                    // Control right motor
+                    boolean isRightNear = false;
+                    if (getStatus().isRightNear(targetHeight)) {
+                        rightMotor.stopMotor();
+                        isRightNear = true;
+                    } else if (getStatus().heightRight() > targetHeight) {
+                        // Move down
+                        rightMotor.set(0.25);
+                    } else {
+                        // Move up
+                        rightMotor.set(-0.25);
+                    }
 
-        @Override
-        public boolean isDone() {
-            return checkForStatusWith(
-                    ClimberStatus.class, s -> s.isLeftNear(this) && s.isRightNear(this));
-        }
+                    return isLeftNear && isRightNear;
+                });
     }
 
     private MotorController leftMotor;

@@ -1,9 +1,11 @@
 package com.team766.framework3;
 
 import com.google.common.collect.Maps;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -132,7 +134,7 @@ public class Rule {
 
         /** Specify a creator for the Procedure that should be run when this rule starts triggering. */
         public Builder withOnTriggeringProcedure(
-                RulePersistence rulePersistence, Set<Mechanism<?>> reservations, Runnable action) {
+                RulePersistence rulePersistence, Set<Reservable> reservations, Runnable action) {
             applyRulePersistence(
                     rulePersistence, () -> new FunctionalInstantProcedure(reservations, action));
             return this;
@@ -141,7 +143,7 @@ public class Rule {
         /** Specify a creator for the Procedure that should be run when this rule starts triggering. */
         public Builder withOnTriggeringProcedure(
                 RulePersistence rulePersistence,
-                Set<Mechanism<?>> reservations,
+                Set<Reservable> reservations,
                 Consumer<Context> action) {
             applyRulePersistence(
                     rulePersistence, () -> new FunctionalProcedure(reservations, action));
@@ -156,7 +158,7 @@ public class Rule {
 
         /** Specify a creator for the Procedure that should be run when this rule was triggering before and is no longer triggering. */
         public Builder withFinishedTriggeringProcedure(
-                Set<Mechanism<?>> reservations, Runnable action) {
+                Set<Reservable> reservations, Runnable action) {
             this.finishedTriggeringProcedure =
                     () -> new FunctionalInstantProcedure(reservations, action);
             return this;
@@ -221,7 +223,7 @@ public class Rule {
     private final BooleanSupplier predicate;
     private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
-    private final Map<TriggerType, Set<Mechanism<?>>> triggerReservations =
+    private final Map<TriggerType, Set<Subsystem>> triggerReservations =
             Maps.newEnumMap(TriggerType.class);
     private final Cancellation cancellationOnFinish;
 
@@ -262,11 +264,15 @@ public class Rule {
         }
     }
 
-    private static Set<Mechanism<?>> getReservationsForProcedure(Supplier<Procedure> supplier) {
+    private static Set<Subsystem> getReservationsForProcedure(Supplier<Procedure> supplier) {
         if (supplier != null) {
             Procedure procedure = supplier.get();
             if (procedure != null) {
-                return procedure.reservations();
+                HashSet<Subsystem> subsystems = new HashSet<>();
+                for (var r : procedure.reservations()) {
+                    subsystems.addAll(r.getReservableSubsystems());
+                }
+                return subsystems;
             }
         }
         return Collections.emptySet();
@@ -313,7 +319,7 @@ public class Rule {
         }
     }
 
-    /* package */ Set<Mechanism<?>> getMechanismsToReserve() {
+    /* package */ Set<Subsystem> getSubsystemsToReserve() {
         return triggerReservations.getOrDefault(currentTriggerType, Collections.emptySet());
     }
 

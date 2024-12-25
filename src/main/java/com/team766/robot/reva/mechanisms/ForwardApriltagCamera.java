@@ -11,8 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 
-public class ForwardApriltagCamera
-        extends Mechanism<ForwardApriltagCamera, ForwardApriltagCamera.ApriltagCameraStatus> {
+public class ForwardApriltagCamera extends Mechanism<ForwardApriltagCamera.ApriltagCameraStatus> {
 
     public record ApriltagCameraStatus(
             boolean isCameraConnected,

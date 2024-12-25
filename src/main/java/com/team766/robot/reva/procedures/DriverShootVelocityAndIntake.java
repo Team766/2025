@@ -15,9 +15,9 @@ public class DriverShootVelocityAndIntake extends Procedure {
     public void run(Context context) {
 
         waitForStatusWithOrTimeout(
-                context, Shooter.ShooterStatus.class, s -> s.isCloseToTargetSpeed(), 1);
+                context, Shooter.class, s -> s.isCloseToTargetSpeed(), 1);
 
-        intake.setRequest(new Intake.In());
+        intake.requestIn();
 
         // Does not stop intake here so driver can stop when button released
     }

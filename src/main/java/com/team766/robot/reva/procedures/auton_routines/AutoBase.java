@@ -27,11 +27,11 @@ public abstract class AutoBase extends PathSequenceAuto {
 
     @Override
     protected final void runSequence(Context context) {
-        superstructure.setRequest(Climber.MoveToPosition.BOTTOM);
+        superstructure.requestClimberPosition(Climber.Position.BOTTOM);
         try {
             runAuto(context);
         } finally {
-            shooter.setRequest(new Shooter.Stop());
+            shooter.requestStop();
         }
     }
 }

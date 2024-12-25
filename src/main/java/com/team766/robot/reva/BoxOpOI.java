@@ -4,18 +4,18 @@ import static com.team766.framework3.RulePersistence.*;
 
 import com.team766.framework3.Rule;
 import com.team766.framework3.RuleEngine;
+import com.team766.framework3.StatusesMixin;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.ArmAndClimber;
-import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.IntakeUntilIn;
 import java.util.Set;
 
-public class BoxOpOI {
+public class BoxOpOI implements StatusesMixin {
     public BoxOpOI(
             RuleEngine oi,
             JoystickReader gamepad,
@@ -37,16 +37,14 @@ public class BoxOpOI {
                                 // move the shoulder out of the way
                                 ONCE,
                                 Set.of(ss),
-                                () -> ss.setRequest(Shoulder.RotateToPosition.TOP))
+                                () -> ss.requestShoulderPosition(Shoulder.Position.TOP))
                         .whenTriggering(
                                 // if the sticks are being moving, move the corresponding climber(s)
                                 Rule.create(
                                                 "Move climbers",
-                                                () ->
-                                                        gamepad.isAxisMoved(
-                                                                        InputConstants.XBOX_LS_Y)
-                                                                || gamepad.isAxisMoved(
-                                                                        InputConstants.XBOX_RS_Y))
+                                                gamepad.whenAnyAxisMoved(
+                                                        InputConstants.XBOX_LS_Y,
+                                                        InputConstants.XBOX_RS_Y))
                                         .withOnTriggeringProcedure(
                                                 REPEATEDLY,
                                                 Set.of(ss),
@@ -55,22 +53,18 @@ public class BoxOpOI {
                                                             gamepad.getButton(InputConstants.XBOX_X)
                                                                     && gamepad.getButton(
                                                                             InputConstants.XBOX_Y);
-                                                    ss.setRequest(
-                                                            new Climber.MotorPowers(
-                                                                    gamepad.getAxis(
-                                                                            InputConstants
-                                                                                    .XBOX_LS_Y),
-                                                                    gamepad.getAxis(
-                                                                            InputConstants
-                                                                                    .XBOX_RS_Y),
-                                                                    overrideSoftLimits));
+                                                    ss.requestClimberMotorPowers(
+                                                            gamepad.getAxis(
+                                                                    InputConstants.XBOX_LS_Y),
+                                                            gamepad.getAxis(
+                                                                    InputConstants.XBOX_RS_Y),
+                                                            overrideSoftLimits);
                                                 })
                                         .withFinishedTriggeringProcedure(
-                                                Set.of(ss),
-                                                () -> ss.setRequest(new Climber.Stop())))
+                                                Set.of(ss), () -> ss.requestClimberStop()))
                         .withFinishedTriggeringProcedure(
                                 // restore the shoulder (and stop the climber)
-                                Set.of(ss), () -> ss.setRequest(new Shoulder.RotateToPosition(85)))
+                                Set.of(ss), () -> ss.requestShoulderPosition(85))
                         .whenNotTriggering(
                                 Rule.create(
                                                 "Shoulder to Intake",
@@ -79,9 +73,8 @@ public class BoxOpOI {
                                                 ONCE,
                                                 Set.of(ss),
                                                 () ->
-                                                        ss.setRequest(
-                                                                Shoulder.RotateToPosition
-                                                                        .INTAKE_FLOOR)),
+                                                        ss.requestShoulderPosition(
+                                                                Shoulder.Position.INTAKE_FLOOR)),
                                 Rule.create(
                                                 "Shoulder to close shot",
                                                 () -> gamepad.getButton(InputConstants.XBOX_B))
@@ -89,16 +82,17 @@ public class BoxOpOI {
                                                 ONCE,
                                                 Set.of(ss),
                                                 () ->
-                                                        ss.setRequest(
-                                                                Shoulder.RotateToPosition
-                                                                        .SHOOT_LOW)),
+                                                        ss.requestShoulderPosition(
+                                                                Shoulder.Position.SHOOT_LOW)),
                                 Rule.create(
                                                 "Shoulder to amp shot",
                                                 () -> gamepad.getButton(InputConstants.XBOX_X))
                                         .withOnTriggeringProcedure(
                                                 ONCE,
                                                 Set.of(ss),
-                                                () -> ss.setRequest(Shoulder.RotateToPosition.AMP)),
+                                                () ->
+                                                        ss.requestShoulderPosition(
+                                                                Shoulder.Position.AMP)),
                                 Rule.create(
                                                 "Shoulder to assist shot",
                                                 () -> gamepad.getButton(InputConstants.XBOX_Y))
@@ -106,17 +100,14 @@ public class BoxOpOI {
                                                 ONCE,
                                                 Set.of(ss),
                                                 () ->
-                                                        ss.setRequest(
-                                                                Shoulder.RotateToPosition
-                                                                        .SHOOTER_ASSIST))
+                                                        ss.requestShoulderPosition(
+                                                                Shoulder.Position.SHOOTER_ASSIST))
                                         .whenTriggering(
                                                 Rule.create(
                                                                 "Spin shooter for assist shot",
                                                                 () ->
                                                                         checkForStatusWith(
-                                                                                Shooter
-                                                                                        .ShooterStatus
-                                                                                        .class,
+                                                                                Shooter.class,
                                                                                 s ->
                                                                                         s
                                                                                                         .targetSpeed()
@@ -125,38 +116,37 @@ public class BoxOpOI {
                                                                 ONCE_AND_HOLD,
                                                                 Set.of(shooter),
                                                                 () ->
-                                                                        shooter.setRequest(
-                                                                                Shooter.ShootAtSpeed
-                                                                                        .SHOOTER_ASSIST_SPEED))),
+                                                                        shooter
+                                                                                .requestShooterAssistSpeed())),
                                 Rule.create("Nudge Shoulder Up", () -> gamepad.getPOV() == 0)
                                         .withOnTriggeringProcedure(
                                                 REPEATEDLY,
                                                 Set.of(ss),
-                                                () -> ss.setRequest(Shoulder.makeNudgeUp())),
+                                                () -> ss.requestShoulderNudgeUp()),
                                 Rule.create("Nudge Shoulder Down", () -> gamepad.getPOV() == 180)
                                         .withOnTriggeringProcedure(
                                                 REPEATEDLY,
                                                 Set.of(ss),
-                                                () -> ss.setRequest(Shoulder.makeNudgeDown()))));
+                                                () -> ss.requestShoulderNudgeDown())));
 
         // shooter
         oi.addRule(
-                Rule.create("Spin Shooter", () -> gamepad.getAxis(InputConstants.XBOX_RT) > 0)
-                        .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(shooter),
-                                () -> shooter.setRequest(new Shooter.ShootAtSpeed(4800))));
+                "Spin Shooter",
+                gamepad.whenAxisMoved(InputConstants.XBOX_RT),
+                shooter,
+                () -> shooter.requestSpeed(4800));
 
         // intake
         oi.addRule(
-                Rule.create("Intake Out", () -> gamepad.getButton(InputConstants.XBOX_RB))
-                        .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(intake),
-                                () -> intake.setRequest(new Intake.Out())));
+                "Intake Out",
+                gamepad.whenButton(InputConstants.XBOX_RB),
+                intake,
+                () -> intake.requestOut());
         oi.addRule(
-                Rule.create("Intake Until In", () -> gamepad.getButton(InputConstants.XBOX_LB))
-                        .withOnTriggeringProcedure(ONCE_AND_HOLD, () -> new IntakeUntilIn(intake)));
+                "Intake Until In",
+                gamepad.whenButton(InputConstants.XBOX_LB),
+                ONCE_AND_HOLD,
+                () -> new IntakeUntilIn(intake));
 
         // // rumble
         // // TODO(MF3): Add the ability to reserve joysticks

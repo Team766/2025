@@ -26,16 +26,15 @@ public class ShootVelocityAndIntake extends Procedure {
     }
 
     public void run(Context context) {
-        var speedRequest = new Shooter.ShootAtSpeed(speed);
-        shooter.setRequest(speedRequest);
+        var speedRequest = shooter.requestSpeed(speed);
         waitForRequestOrTimeout(context, speedRequest, 1.5);
 
-        intake.setRequest(new Intake.In());
+        intake.requestIn();
 
         // FIXME: change this value back to 1.5s if doesn't intake for long enough
         context.waitForSeconds(1.0);
 
-        intake.setRequest(new Intake.Stop());
+        intake.requestStop();
         publishStatus(new ShootingProcedureStatus(Status.FINISHED));
 
         // Shooter stopped at the end of auton

@@ -17,6 +17,6 @@ public class TestPathAuto extends PathSequenceAuto {
     @Override
     protected void runSequence(Context context) {
         runPath(context, "RotationTest");
-        drive.setRequest(new SwerveDrive.SetCross());
+        drive.requestStop();
     }
 }

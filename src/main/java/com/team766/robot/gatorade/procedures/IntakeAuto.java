@@ -22,20 +22,20 @@ public class IntakeAuto extends PathSequenceAuto {
 
     @Override
     protected void runSequence(Context context) {
-        intake.setRequest(new Intake.IntakeState(gamePieceType, Intake.MotorState.IN));
+        intake.requestIntake(gamePieceType, Intake.MotorState.IN);
         runPath(context, "Intake_Path_1");
-        intake.setRequest(new Intake.IntakeState(gamePieceType, Intake.MotorState.IDLE));
+        intake.requestIntake(gamePieceType, Intake.MotorState.IDLE);
         runPath(context, "Intake_Path_2");
-        intake.setRequest(new Intake.IntakeState(gamePieceType, Intake.MotorState.OUT));
-        drive.setRequest(new SwerveDrive.SetCross());
+        intake.requestIntake(gamePieceType, Intake.MotorState.OUT);
+        drive.requestStop();
         context.waitForSeconds(1);
-        intake.setRequest(new Intake.IntakeState(gamePieceType, Intake.MotorState.STOP));
+        intake.requestIntake(gamePieceType, Intake.MotorState.STOP);
         runPath(context, "Intake_Path_3");
-        intake.setRequest(new Intake.IntakeState(gamePieceType, Intake.MotorState.IN));
+        intake.requestIntake(gamePieceType, Intake.MotorState.IN);
         runPath(context, "Intake_Path_4");
-        drive.setRequest(new SwerveDrive.SetCross());
-        intake.setRequest(new Intake.IntakeState(gamePieceType, Intake.MotorState.OUT));
+        drive.requestStop();
+        intake.requestIntake(gamePieceType, Intake.MotorState.OUT);
         context.waitForSeconds(2);
-        intake.setRequest(new Intake.IntakeState(gamePieceType, Intake.MotorState.STOP));
+        intake.requestIntake(gamePieceType, Intake.MotorState.STOP);
     }
 }

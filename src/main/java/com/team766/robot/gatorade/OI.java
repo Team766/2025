@@ -5,6 +5,7 @@ import static com.team766.framework3.RulePersistence.*;
 import com.team766.framework3.Rule;
 import com.team766.framework3.RuleEngine;
 import com.team766.framework3.Status;
+import com.team766.framework3.StatusSource;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.common.DriverOI;
@@ -19,7 +20,7 @@ import java.util.Set;
  * This class is the glue that binds the controls on the physical operator interface to the code
  * that allow control of the robot.
  */
-public class OI extends RuleEngine {
+public class OI extends RuleEngine implements StatusSource<OI.OIStatus> {
 
     public record OIStatus(GamePieceType gamePieceType, PlacementPosition placementPosition)
             implements Status {}
@@ -46,16 +47,10 @@ public class OI extends RuleEngine {
                         .withOnTriggeringProcedure(
                                 ONCE_AND_HOLD,
                                 Set.of(intake),
-                                () ->
-                                        intake.setRequest(
-                                                intake.requestForIntake(
-                                                        gamePieceType, Intake.MotorState.OUT)))
+                                () -> intake.requestIntake(gamePieceType, Intake.MotorState.OUT))
                         .withFinishedTriggeringProcedure(
                                 Set.of(intake),
-                                () ->
-                                        intake.setRequest(
-                                                intake.requestForIntake(
-                                                        gamePieceType, Intake.MotorState.STOP))));
+                                () -> intake.requestIntake(gamePieceType, Intake.MotorState.STOP)));
 
         // Respond to boxop commands
 
@@ -146,16 +141,10 @@ public class OI extends RuleEngine {
                         .withOnTriggeringProcedure(
                                 ONCE_AND_HOLD,
                                 Set.of(intake),
-                                () ->
-                                        intake.setRequest(
-                                                intake.requestForIntake(
-                                                        gamePieceType, Intake.MotorState.IN)))
+                                () -> intake.requestIntake(gamePieceType, Intake.MotorState.IN))
                         .withFinishedTriggeringProcedure(
                                 Set.of(intake),
-                                () ->
-                                        intake.setRequest(
-                                                intake.requestForIntake(
-                                                        gamePieceType, Intake.MotorState.IDLE))));
+                                () -> intake.requestIntake(gamePieceType, Intake.MotorState.IDLE)));
 
         addRule(
                 Rule.create(
@@ -164,10 +153,7 @@ public class OI extends RuleEngine {
                         .withOnTriggeringProcedure(
                                 ONCE,
                                 Set.of(intake),
-                                () ->
-                                        intake.setRequest(
-                                                intake.requestForIntake(
-                                                        gamePieceType, Intake.MotorState.STOP))));
+                                () -> intake.requestIntake(gamePieceType, Intake.MotorState.STOP)));
 
         // look for button hold to extend intake/wrist/elevator superstructure,
         // release to retract
@@ -182,19 +168,15 @@ public class OI extends RuleEngine {
                                 Set.of(arm),
                                 () -> {
                                     if (placementPosition != PlacementPosition.NONE) {
-                                        arm.setRequest(
-                                                arm.requestForExtended(
-                                                        placementPosition, gamePieceType));
+                                        arm.requestExtended(placementPosition, gamePieceType);
                                     }
                                 })
                         .withFinishedTriggeringProcedure(
                                 Set.of(arm, intake),
                                 () -> {
-                                    arm.setRequest(arm.requestForRetraced());
+                                    arm.requestRetracted();
                                     if (placementPosition == PlacementPosition.HUMAN_PLAYER) {
-                                        intake.setRequest(
-                                                intake.requestForIntake(
-                                                        gamePieceType, Intake.MotorState.IDLE));
+                                        intake.requestIntake(gamePieceType, Intake.MotorState.IDLE);
                                     }
                                 }));
 
@@ -223,9 +205,9 @@ public class OI extends RuleEngine {
                                     // elevator.setRequest(new
                                     // Elevator.NudgeNoPID(elevatorNudgeAxis)));
                                     if (elevatorNudgeAxis > 0) {
-                                        arm.setRequest(arm.requestForNudgeElevatorUp());
+                                        arm.requestNudgeElevatorUp();
                                     } else {
-                                        arm.setRequest(arm.requestForNudgeElevatorDown());
+                                        arm.requestNudgeElevatorDown();
                                     }
                                 }));
         // look for wrist nudges
@@ -247,9 +229,9 @@ public class OI extends RuleEngine {
                                                             InputConstants.AXIS_WRIST_MOVEMENT);
                                     // wrist.setRequest(new Wrist.NudgeNoPID(wristNudgeAxis));
                                     if (wristNudgeAxis > 0) {
-                                        arm.setRequest(arm.requestForNudgeWristUp());
+                                        arm.requestNudgeWristUp();
                                     } else {
-                                        arm.setRequest(arm.requestForNudgeWristDown());
+                                        arm.requestNudgeWristDown();
                                     }
                                 }));
     }

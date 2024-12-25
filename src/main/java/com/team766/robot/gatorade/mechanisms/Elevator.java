@@ -7,9 +7,6 @@ import com.team766.config.ConfigFileReader;
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
-import com.team766.framework3.requests.RequestForPercentOutput;
-import com.team766.framework3.requests.RequestForPositionControl;
-import com.team766.framework3.requests.RequestForStop;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
 import com.team766.library.ValueProvider;
@@ -21,7 +18,7 @@ import edu.wpi.first.math.MathUtil;
  * and {@link Intake} closer to a game piece or game element (eg node in the
  * field, human player station).
  */
-public class Elevator extends Mechanism<Elevator, Elevator.ElevatorStatus> {
+public class Elevator extends Mechanism<Elevator.ElevatorStatus> {
     public static class Position {
         /** Elevator is fully retracted.  Starting position. */
         public static final double RETRACTED = 0;
@@ -85,48 +82,49 @@ public class Elevator extends Mechanism<Elevator, Elevator.ElevatorStatus> {
         ffGain = ConfigFileReader.getInstance().getDouble(ELEVATOR_FFGAIN);
     }
 
-    public Request<Elevator> requestForStop() {
-        return new RequestForStop<Elevator>(leftMotor);
+    public Request<Elevator> requestStop() {
+        return setRequest(leftMotor.requestStop());
     }
 
-    public Request<Elevator> requestForNudgeNoPID(double value) {
+    public Request<Elevator> requestNudgeNoPID(double value) {
         double clampedValue = MathUtil.clamp(value, -1, 1);
         clampedValue *= NUDGE_DAMPENER; // make nudges less forceful.  TODO: make this non-linear
-        return new RequestForPercentOutput<Elevator>(leftMotor, clampedValue);
+        return setRequest(leftMotor.requestPercentOutput(clampedValue));
     }
 
-    public Request<Elevator> requestForHoldPosition() {
-        final double currentHeight = getMechanismStatus().height();
-        return requestForPosition(currentHeight);
+    public Request<Elevator> requestHoldPosition() {
+        final double currentHeight = getStatus().height();
+        return requestPosition(currentHeight);
     }
 
-    public Request<Elevator> requestForNudgeUp() {
-        final double currentHeight = getMechanismStatus().height();
+    public Request<Elevator> requestNudgeUp() {
+        final double currentHeight = getStatus().height();
         // NOTE: this could artificially limit nudge range
         final double targetHeight = Math.min(currentHeight + NUDGE_INCREMENT, Position.EXTENDED);
-        return requestForPosition(targetHeight);
+        return requestPosition(targetHeight);
     }
 
-    public Request<Elevator> requestForNudgeDown() {
-        final double currentHeight = getMechanismStatus().height();
+    public Request<Elevator> requestNudgeDown() {
+        final double currentHeight = getStatus().height();
         // NOTE: this could artificially limit nudge range
         final double targetHeight = Math.max(currentHeight - NUDGE_INCREMENT, Position.RETRACTED);
-        return requestForPosition(targetHeight);
+        return requestPosition(targetHeight);
     }
 
     /**
      * Moves the elevator to a specific position (in inches).
      */
-    public Request<Elevator> requestForPosition(double targetHeight) {
+    public Request<Elevator> requestPosition(double targetHeight) {
         final double ff = ffGain.get();
 
         // convert the desired target degrees to encoder units
-        return new RequestForPositionControl<Elevator>(
-                leftMotor,
-                EncoderUtils.elevatorHeightToRotations(targetHeight),
-                EncoderUtils.elevatorHeightToRotations(NEAR_THRESHOLD),
-                EncoderUtils.elevatorHeightToRotations(STOPPED_VELOCITY_THRESHOLD) * 60, // RPMs
-                ff);
+        return setRequest(
+                leftMotor.requestPosition(
+                        EncoderUtils.elevatorHeightToRotations(targetHeight),
+                        EncoderUtils.elevatorHeightToRotations(NEAR_THRESHOLD),
+                        EncoderUtils.elevatorHeightToRotations(STOPPED_VELOCITY_THRESHOLD)
+                                * 60, // RPMs
+                        ff));
     }
 
     @Override

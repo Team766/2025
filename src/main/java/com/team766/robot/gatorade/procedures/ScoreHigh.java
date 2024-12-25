@@ -1,5 +1,6 @@
 package com.team766.robot.gatorade.procedures;
 
+import static com.team766.framework3.Conditions.waitForRequest;
 import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
 import com.team766.robot.gatorade.mechanisms.Arm;
@@ -18,10 +19,9 @@ public class ScoreHigh extends Procedure {
     }
 
     public void run(Context context) {
-        arm.setRequest(Arm.MoveToPosition.EXTENDED_TO_HIGH);
-        context.waitFor(() -> Arm.MoveToPosition.EXTENDED_TO_HIGH.isDone());
-        intake.setRequest(new Intake.IntakeState(type, Intake.MotorState.OUT));
+        waitForRequest(context, arm.requestExtendedToHigh());
+        intake.requestIntake(type, Intake.MotorState.OUT);
         context.waitForSeconds(1);
-        intake.setRequest(new Intake.IntakeState(type, Intake.MotorState.STOP));
+        intake.requestIntake(type, Intake.MotorState.STOP);
     }
 }

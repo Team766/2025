@@ -2,10 +2,7 @@ package com.team766.robot.burro_elevator.mechanisms;
 
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
-import com.team766.framework3.requests.PercentOutputRequest;
-import com.team766.framework3.requests.PositionRequest;
-import com.team766.framework3.requests.PositionStatus;
-import com.team766.framework3.requests.VelocityStatus;
+import com.team766.framework3.Status;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
 
@@ -13,23 +10,32 @@ public class Elevator extends Mechanism<Elevator.ElevatorStatus> {
     public static final double BOTTOM_POSITION = 100.0; // set this proper
     public static final double TOP_POSITION = 0.0; // set this proper
 
-    public record ElevatorStatus(
-            double position, double positionTolerance, double velocity, double velocityTolerance)
-            implements PositionStatus, VelocityStatus {}
+    public record ElevatorStatus(double position, double velocity) implements Status {}
 
-    public void setRequestToHoldPosition() {
+    public Request<Elevator> requestPosition(double targetPosition) {
         checkContextReservation();
-        setRequest(new PositionRequest(getStatus().position()));
+        return setRequest(
+                motor.requestPosition(
+                        targetPosition / MOTOR_ROTATIONS_TO_ELEVATOR_POSITION,
+                        POSITION_TOLERANCE / MOTOR_ROTATIONS_TO_ELEVATOR_POSITION,
+                        STOPPED_SPEED_THRESHOLD
+                                / MOTOR_ROTATIONS_TO_ELEVATOR_POSITION
+                                * 60.0 /* RPMs */));
     }
 
-    public void setRequestToNudgeUp() {
+    public Request<Elevator> requestHoldPosition() {
         checkContextReservation();
-        setRequest(new PositionRequest(getStatus().position() + NUDGE_UP_INCREMENT));
+        return requestPosition(getStatus().position());
     }
 
-    public void setRequestToNudgeDown() {
+    public Request<Elevator> requestNudgeUp() {
         checkContextReservation();
-        setRequest(new PositionRequest(getStatus().position() - NUDGE_DOWN_INCREMENT));
+        return requestPosition(getStatus().position() + NUDGE_UP_INCREMENT);
+    }
+
+    public Request<Elevator> requestNudgeDown() {
+        checkContextReservation();
+        return requestPosition(getStatus().position() - NUDGE_DOWN_INCREMENT);
     }
 
     private static final double NUDGE_UP_INCREMENT = 1.0; // inches
@@ -51,26 +57,14 @@ public class Elevator extends Mechanism<Elevator.ElevatorStatus> {
     }
 
     @Override
-    protected Request<? super ElevatorStatus> getIdleRequest() {
-        return new PositionRequest(getStatus().position());
-    }
-
-    protected void runRequest(PercentOutputRequest request) {
-        motor.setRequest(request);
-    }
-
-    protected void runRequest(PositionRequest request) {
-        motor.setRequest(
-                new PositionRequest(
-                        request.targetPosition() / MOTOR_ROTATIONS_TO_ELEVATOR_POSITION));
+    protected Request<Elevator> applyIdleRequest() {
+        return requestHoldPosition();
     }
 
     @Override
     protected ElevatorStatus reportStatus() {
         return new ElevatorStatus(
                 motor.getSensorPosition() * MOTOR_ROTATIONS_TO_ELEVATOR_POSITION,
-                POSITION_TOLERANCE,
-                motor.getSensorVelocity() /* RPMs */ / 60.0 * MOTOR_ROTATIONS_TO_ELEVATOR_POSITION,
-                STOPPED_SPEED_THRESHOLD);
+                motor.getSensorVelocity() /* RPMs */ / 60.0 * MOTOR_ROTATIONS_TO_ELEVATOR_POSITION);
     }
 }

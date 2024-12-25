@@ -59,7 +59,7 @@ public abstract class PathSequenceAuto extends Procedure {
             // TODO: We should figure out why after EBR but for now we can just reset the gyro to
             // 180 of
             // current angle
-            drive.resetGyro(180 + drive.getMechanismStatus().heading());
+            drive.resetGyro(180 + drive.getStatus().heading());
         }
     }
 }
