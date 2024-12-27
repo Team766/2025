@@ -1,14 +1,11 @@
 package com.team766.robot.gatorade.mechanisms;
 
 import com.team766.framework3.Request;
-import com.team766.framework3.Status;
 import com.team766.framework3.Superstructure;
 import com.team766.robot.gatorade.PlacementPosition;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 
-public class Arm extends Superstructure<Arm.ArmStatus> {
-    public record ArmStatus() implements Status {}
-
+public class Arm extends Superstructure {
     private final Shoulder shoulder;
     private final Elevator elevator;
     private final Wrist wrist;
@@ -174,10 +171,5 @@ public class Arm extends Superstructure<Arm.ArmStatus> {
     @Override
     protected Request<Arm> startIdleRequest() {
         return requestHoldPosition();
-    }
-
-    @Override
-    protected ArmStatus reportStatus() {
-        return new ArmStatus();
     }
 }

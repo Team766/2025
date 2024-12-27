@@ -9,7 +9,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.team766.config.ConfigFileReader;
 import com.team766.controllers.PIDController;
 import com.team766.framework3.Mechanism;
-import com.team766.framework3.MultiFacetedMechanism;
+import com.team766.framework3.MultiFacetedMechanismWithStatus;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
 import com.team766.hal.GyroReader;
@@ -33,7 +33,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
-public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> {
+public class SwerveDrive extends MultiFacetedMechanismWithStatus<SwerveDrive.DriveStatus> {
     /**
      * @param heading current heading in degrees
      */

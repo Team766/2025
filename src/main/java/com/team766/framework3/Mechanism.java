@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 
-class requestAllOf_must_have_at_least_one_argument {}
+final class requestAllOf_must_have_at_least_one_argument {}
 
 public abstract class Mechanism implements Reservable, LoggingBase {
     @FunctionalInterface
@@ -45,11 +45,11 @@ public abstract class Mechanism implements Reservable, LoggingBase {
      */
     @DoNotCall
     @Deprecated
-    protected static requestAllOf_must_have_at_least_one_argument requestAllOf() {
+    protected static final requestAllOf_must_have_at_least_one_argument requestAllOf() {
         return null;
     }
 
-    protected static Directive requestAllOf(Directive... directives) {
+    protected static final Directive requestAllOf(Directive... directives) {
         var sj = new StringJoiner("; ", "{", "}");
         for (int i = 0; i < directives.length; ++i) {
             sj.add(directives[i].getProvenance());
@@ -74,7 +74,7 @@ public abstract class Mechanism implements Reservable, LoggingBase {
         };
     }
 
-    protected static Directive dontWaitFor(Directive directive) {
+    protected static final Directive dontWaitFor(Directive directive) {
         return new Directive() {
             @Override
             public boolean update() {
@@ -126,7 +126,7 @@ public abstract class Mechanism implements Reservable, LoggingBase {
         }
     }
 
-    private class ProxySubsystem extends SubsystemBase implements MechanismSubsystem {
+    private final class ProxySubsystem extends SubsystemBase implements MechanismSubsystem {
         @Override
         public Reservable getMechanism() {
             return Mechanism.this;
@@ -158,8 +158,8 @@ public abstract class Mechanism implements Reservable, LoggingBase {
 
     private boolean isRunningPeriodic = false;
 
-    private Superstructure<?> superstructure = null;
-    private MultiFacetedMechanism<?> container = null;
+    private Superstructure superstructure = null;
+    private MultiFacetedMechanism container = null;
 
     private MechanismRequest<?> request = null;
 
@@ -211,7 +211,7 @@ public abstract class Mechanism implements Reservable, LoggingBase {
      *
      * @param superstructure The superstructure this Mechanism is part of.
      */
-    /* package */ void setSuperstructure(Superstructure<?> superstructure) {
+    /* package */ final void setSuperstructure(Superstructure superstructure) {
         Objects.requireNonNull(superstructure);
         if (this.superstructure != null) {
             throw new IllegalStateException("Mechanism is already part of a superstructure");
@@ -231,7 +231,7 @@ public abstract class Mechanism implements Reservable, LoggingBase {
     /**
      * Indicate that this Mechanism is part of a MultiFacetedMechanism.
      */
-    /* package */ void setContainer(MultiFacetedMechanism<?> container) {
+    /* package */ final void setContainer(MultiFacetedMechanism container) {
         Objects.requireNonNull(container);
         if (this.superstructure != null) {
             throw new IllegalStateException("Mechanism is already part of a Superstructure");
@@ -266,12 +266,12 @@ public abstract class Mechanism implements Reservable, LoggingBase {
         return null;
     }
 
-    /* package */ boolean isRunningPeriodic() {
+    /* package */ final boolean isRunningPeriodic() {
         return isRunningPeriodic;
     }
 
     @Override
-    public void checkContextReservation() {
+    public final void checkContextReservation() {
         if (isRunningPeriodic()) {
             return;
         }
@@ -299,8 +299,12 @@ public abstract class Mechanism implements Reservable, LoggingBase {
         return Set.of(subsystem);
     }
 
-    /* package */ void periodicInternal() {
+    /* package */ final void periodicInternal() {
         try {
+            runSubmechanisms();
+
+            publishStatus();
+
             isRunningPeriodic = true;
             request.runDirective();
         } catch (Exception ex) {
@@ -311,8 +315,14 @@ public abstract class Mechanism implements Reservable, LoggingBase {
         }
     }
 
+    // Overridden in MechanismWithStatus
+    /* package */ void publishStatus() {}
+
+    // Overridden in Superstructure
+    /* package */ void runSubmechanisms() {}
+
     @Override
-    public String toString() {
+    public final String toString() {
         return getName();
     }
 }

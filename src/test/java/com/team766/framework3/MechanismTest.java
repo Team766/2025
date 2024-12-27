@@ -230,7 +230,7 @@ public class MechanismTest extends TestCase3 {
     /// Test making a Mechanism part of a superstructure.
     @Test
     public void testSuperstructure() {
-        class TestSuperstructure extends Superstructure<FakeStatus> {
+        class TestSuperstructure extends SuperstructureWithStatus<FakeStatus> {
             // NOTE: Real superstructures should have their members be private. This is public
             // to test handling of bad code patterns, and to allow us to inspect the state of the
             // inner mechanism for purposes of testing the framework.

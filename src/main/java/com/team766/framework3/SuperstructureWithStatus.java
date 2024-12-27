@@ -2,7 +2,7 @@ package com.team766.framework3;
 
 import java.util.NoSuchElementException;
 
-public abstract class MechanismWithStatus<S extends Record & Status> extends Mechanism
+public abstract class SuperstructureWithStatus<S extends Record & Status> extends Superstructure
         implements StatusSource<S> {
     private S status = null;
 

@@ -1,12 +1,9 @@
 package com.team766.robot.reva.mechanisms;
 
 import com.team766.framework3.Request;
-import com.team766.framework3.Status;
 import com.team766.framework3.Superstructure;
 
-public class ArmAndClimber extends Superstructure<ArmAndClimber.SuperstructureStatus> {
-    public record SuperstructureStatus() implements Status {}
-
+public class ArmAndClimber extends Superstructure {
     public Request<ArmAndClimber> requestShoulderPosition(double targetPosition) {
         return startRequest(
                 () -> {
@@ -108,10 +105,5 @@ public class ArmAndClimber extends Superstructure<ArmAndClimber.SuperstructureSt
         checkContextReservation();
         climber.resetLeftPosition();
         climber.resetRightPosition();
-    }
-
-    @Override
-    protected SuperstructureStatus reportStatus() {
-        return new SuperstructureStatus();
     }
 }
