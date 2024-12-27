@@ -5,13 +5,11 @@ import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
-public abstract class MultiFacetedMechanism<S extends Record & Status>
-        implements Reservable, LoggingBase {
-    private class ProxySubsystem extends SubsystemBase implements MechanismSubsystem {
+public abstract class MultiFacetedMechanism implements Reservable, LoggingBase {
+    private final class ProxySubsystem extends SubsystemBase implements MechanismSubsystem {
         @Override
         public Reservable getMechanism() {
             return MultiFacetedMechanism.this;
@@ -33,12 +31,10 @@ public abstract class MultiFacetedMechanism<S extends Record & Status>
     @SuppressWarnings("unused")
     private final MechanismSubsystem outerSubsystem = new ProxySubsystem();
 
-    private S status = null;
+    private final ArrayList<Mechanism> facets = new ArrayList<>();
+    private final HashSet<MechanismSubsystem> facetSubsystems = new HashSet<>();
 
-    private ArrayList<Mechanism> facets = new ArrayList<>();
-    private HashSet<MechanismSubsystem> facetSubsystems = new HashSet<>();
-
-    protected <M extends Mechanism> M addFacet(M facet) {
+    protected final <M extends Mechanism> M addFacet(M facet) {
         Objects.requireNonNull(facet);
         facet.setContainer(this);
         addFacet(facet);
@@ -46,7 +42,7 @@ public abstract class MultiFacetedMechanism<S extends Record & Status>
         return facet;
     }
 
-    protected <M extends MultiFacetedMechanism<S>> Request<M> requestOfFacets(
+    protected final <M extends MultiFacetedMechanism> Request<M> requestOfFacets(
             Request<?>... facetRequests) {
         for (var facetRequest : facetRequests) {
             if (!facets.contains(facetRequest.getMechanism())) {
@@ -85,7 +81,7 @@ public abstract class MultiFacetedMechanism<S extends Record & Status>
         };
     }
 
-    public void checkContextReservation() {
+    public final void checkContextReservation() {
         if (facetSubsystems.isEmpty()) {
             throw new IllegalStateException("MultiFacetedMechanism does not have any Facets");
         }
@@ -94,15 +90,8 @@ public abstract class MultiFacetedMechanism<S extends Record & Status>
         }
     }
 
-    public final S getStatus() {
-        if (status == null) {
-            throw new NoSuchElementException(getName() + " has not published a status yet");
-        }
-        return status;
-    }
-
     @Override
-    public Set<? extends MechanismSubsystem> getReservableSubsystems() {
+    public final Set<? extends MechanismSubsystem> getReservableSubsystems() {
         if (facetSubsystems.isEmpty()) {
             throw new IllegalStateException("MultiFacetedMechanism does not have any Facets");
         }
@@ -114,14 +103,13 @@ public abstract class MultiFacetedMechanism<S extends Record & Status>
         return Category.MECHANISMS;
     }
 
-    /* package */ void periodicInternal() {
+    /* package */ final void periodicInternal() {
         for (var m : facets) {
             m.periodicInternal();
         }
 
         try {
-            status = reportStatus();
-            StatusBus.getInstance().publishStatus(status);
+            publishStatus();
 
             run();
         } catch (Exception ex) {
@@ -130,12 +118,13 @@ public abstract class MultiFacetedMechanism<S extends Record & Status>
         }
     }
 
-    protected abstract S reportStatus();
+    // Overridden in MechanismWithStatus
+    /* package */ void publishStatus() {}
 
     protected abstract void run();
 
     @Override
-    public String toString() {
+    public final String toString() {
         return getName();
     }
 }

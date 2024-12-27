@@ -2,8 +2,8 @@ package com.team766.framework3;
 
 import java.util.NoSuchElementException;
 
-public abstract class MechanismWithStatus<S extends Record & Status> extends Mechanism
-        implements StatusSource<S> {
+public abstract class MultiFacetedMechanismWithStatus<S extends Record & Status>
+        extends MultiFacetedMechanism implements StatusSource<S> {
     private S status = null;
 
     public final S getStatus() {
