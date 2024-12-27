@@ -44,16 +44,24 @@ public class OI extends RuleEngine {
                 joystick0.whenButton(BUTTON_ELEVATOR_UP),
                 ONCE,
                 elevator,
-                elevator::requestNudgeUp);
+                () -> elevator.requestNudgeUp());
         addRule(
                 "Elevator Down",
                 joystick0.whenButton(BUTTON_ELEVATOR_DOWN),
                 ONCE,
                 elevator,
-                elevator::requestNudgeDown);
+                () -> elevator.requestNudgeDown());
 
-        addRule("Intake", joystick0.whenButton(BUTTON_INTAKE), gripper, gripper::requestIntake);
-        addRule("Outtake", joystick0.whenButton(BUTTON_OUTTAKE), gripper, gripper::requestOuttake);
+        addRule(
+                "Intake",
+                joystick0.whenButton(BUTTON_INTAKE),
+                gripper,
+                () -> gripper.requestIntake());
+        addRule(
+                "Outtake",
+                joystick0.whenButton(BUTTON_OUTTAKE),
+                gripper,
+                () -> gripper.requestOuttake());
     }
 
     @Override

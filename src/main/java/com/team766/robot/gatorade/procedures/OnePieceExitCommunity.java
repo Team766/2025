@@ -1,5 +1,7 @@
 package com.team766.robot.gatorade.procedures;
 
+import static com.team766.framework3.Conditions.waitForRequest;
+
 import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
 import com.team766.robot.common.mechanisms.SwerveDrive;
@@ -10,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import static com.team766.framework3.Conditions.waitForRequest;
 import java.util.Optional;
 
 public class OnePieceExitCommunity extends Procedure {

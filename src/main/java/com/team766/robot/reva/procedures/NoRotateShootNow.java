@@ -62,10 +62,10 @@ public class NoRotateShootNow extends Procedure {
             context.runSync(new ShootVelocityAndIntake(speedTarget, shooter, intake));
 
         } else {
-            // Robot.shooter.shoot(3000);
-            // Robot.shoulder.rotate(ShoulderPosition.AMP);
+            // shooter.requestSpeed(3000);
+            // var shoulderRequest = superstructure.requestShoulderPosition(Shoulder.Position.AMP);
 
-            // context.waitFor(Robot.shoulder::isFinished);
+            // Conditions.waitForRequest(context, shoulderRequest);
 
             context.runSync(new ShootVelocityAndIntake(3000, shooter, intake));
         }

@@ -1,30 +1,32 @@
 package com.team766.framework3;
 
-import static com.team766.framework3.Conditions.checkForStatusWith;
-
-class FakeMechanism extends Mechanism<FakeMechanism.FakeRequest, FakeMechanism.FakeStatus> {
+class FakeMechanism extends MechanismWithStatus<FakeMechanism.FakeStatus> {
     public record FakeStatus(int currentState) implements Status {}
 
-    public record FakeRequest(int targetState) implements Request {
-        @Override
-        public boolean isDone() {
-            return checkForStatusWith(FakeStatus.class, s -> s.currentState() == targetState);
-        }
+    public Request<FakeMechanism> requestFakeState(int targetState) {
+        currentState = targetState;
+        wasRequestNew = true;
+        currentState = targetState;
+        return startRequest(
+                () -> {
+                    currentState = targetState;
+                    wasRequestNew = false;
+
+                    return currentState == targetState;
+                });
     }
 
-    FakeRequest currentRequest;
+    Integer currentState = null;
     Boolean wasRequestNew = null;
 
-    @Override
-    protected FakeRequest getInitialRequest() {
-        return new FakeRequest(-1);
+    public FakeMechanism() {
+        // Set initial request
+        requestFakeState(-1);
     }
 
     @Override
-    protected FakeStatus run(FakeRequest request, boolean isRequestNew) {
-        currentRequest = request;
-        wasRequestNew = isRequestNew;
-        return new FakeStatus(request.targetState());
+    protected FakeStatus reportStatus() {
+        return new FakeStatus(currentState);
     }
 }
 

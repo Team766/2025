@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.team766.TestCase3;
-import com.team766.framework3.FakeMechanism.FakeRequest;
 import com.team766.framework3.FakeMechanism.FakeStatus;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -26,14 +25,14 @@ public class MechanismTest extends TestCase3 {
                                     context.yield();
 
                                     // Step 2
-                                    mech.setRequest(new FakeRequest(0));
+                                    mech.requestFakeState(0);
                                     context.yield();
 
                                     // Step 3
                                     context.yield();
 
                                     // Step 4
-                                    mech.setRequest(new FakeRequest(1));
+                                    mech.requestFakeState(1);
                                     context.yield();
                                 }));
         cmd.schedule();
@@ -45,22 +44,22 @@ public class MechanismTest extends TestCase3 {
 
         // Step 1. Test running the Mechanism in its uninitialized state.
         step();
-        assertEquals(mech.getInitialRequest(), mech.currentRequest);
+        assertEquals(-1, mech.currentState);
         assertFalse(mech.wasRequestNew);
 
         // Step 2. The Mechanism receives the first request.
         step();
-        assertEquals(new FakeRequest(0), mech.currentRequest);
+        assertEquals(0, mech.currentState);
         assertTrue(mech.wasRequestNew);
 
         // Step 3. The Mechanism continues with its first request.
         step();
-        assertEquals(new FakeRequest(0), mech.currentRequest);
+        assertEquals(0, mech.currentState);
         assertFalse(mech.wasRequestNew);
 
         // Step 4. The Mechanism receives the second request.
         step();
-        assertEquals(new FakeRequest(1), mech.currentRequest);
+        assertEquals(1, mech.currentState);
         assertTrue(mech.wasRequestNew);
 
         // Poke the Procedure to ensure it has finished.
@@ -76,35 +75,42 @@ public class MechanismTest extends TestCase3 {
         var mech =
                 new FakeMechanism() {
                     @Override
-                    protected FakeRequest getIdleRequest() {
-                        return new FakeRequest(10);
+                    protected Request<FakeMechanism> startIdleRequest() {
+                        return requestFakeState(10);
                     }
                 };
         step();
         // Status set from Initial request
         assertEquals(
                 new FakeStatus(-1), StatusBus.getInstance().getStatusOrThrow(FakeStatus.class));
-        assertEquals(new FakeStatus(-1), mech.getMechanismStatus());
+        assertEquals(new FakeStatus(-1), mech.getStatus());
         step();
         // Status set from Idle request
         assertEquals(
                 new FakeStatus(10), StatusBus.getInstance().getStatusOrThrow(FakeStatus.class));
-        assertEquals(new FakeStatus(10), mech.getMechanismStatus());
+        assertEquals(new FakeStatus(10), mech.getStatus());
     }
 
     /// Test that checkContextReservation throws an exception when called from a Procedure which has
     /// not reserved the Mechanism.
     @Test
     public void testFailedCheckContextReservationInProcedure() {
-        class DummyMechanism extends Mechanism<FakeRequest, FakeStatus> {
-            @Override
-            protected FakeRequest getInitialRequest() {
-                return new FakeRequest(-1);
+        class DummyMechanism extends MechanismWithStatus<FakeStatus> {
+            private int currentState;
+
+            public DummyMechanism() {
+                // Initial request
+                requestState(-1);
+            }
+
+            public Request<DummyMechanism> requestState(int state) {
+                currentState = state;
+                return startRequest(() -> true);
             }
 
             @Override
-            protected FakeStatus run(FakeRequest request, boolean isRequestNew) {
-                return new FakeStatus(request.targetState());
+            protected FakeStatus reportStatus() {
+                return new FakeStatus(currentState);
             }
         }
         var mech = new DummyMechanism();
@@ -116,7 +122,7 @@ public class MechanismTest extends TestCase3 {
                                 Set.of(),
                                 context -> {
                                     try {
-                                        mech.setRequest(new FakeRequest(0));
+                                        mech.requestState(0);
                                     } catch (Throwable ex) {
                                         thrownException.set(ex.getMessage());
                                     }
@@ -143,13 +149,13 @@ public class MechanismTest extends TestCase3 {
         var mech =
                 new FakeMechanism() {
                     @Override
-                    protected FakeStatus run(FakeRequest request, boolean isRequestNew) {
+                    public Request<FakeMechanism> requestFakeState(int targetState) {
                         try {
-                            checkContextReservation();
+                            return super.requestFakeState(targetState);
                         } catch (Throwable ex) {
                             thrownException.set(ex);
+                            throw ex;
                         }
-                        return new FakeStatus(request.targetState());
                     }
                 };
         step();
@@ -161,13 +167,13 @@ public class MechanismTest extends TestCase3 {
     public void testInitialRequest() {
         var mech = new FakeMechanism();
         step();
-        assertEquals(new FakeRequest(-1), mech.currentRequest);
+        assertEquals(-1, mech.currentState);
         assertTrue(mech.wasRequestNew);
         // Subsequent steps should continue to pass the Initial request to run(),
         // but it should not be indicated as a new request.
-        mech.currentRequest = null;
+        mech.currentState = null;
         step();
-        assertEquals(new FakeRequest(-1), mech.currentRequest);
+        assertEquals(-1, mech.currentState);
         assertFalse(mech.wasRequestNew);
     }
 
@@ -177,25 +183,25 @@ public class MechanismTest extends TestCase3 {
         var mech =
                 new FakeMechanism() {
                     @Override
-                    protected FakeRequest getIdleRequest() {
-                        return new FakeRequest(0);
+                    protected Request<FakeMechanism> startIdleRequest() {
+                        return requestFakeState(0);
                     }
                 };
 
         // The first step should run the Initial request.
         step();
-        assertEquals(new FakeRequest(-1), mech.currentRequest);
+        assertEquals(-1, mech.currentState);
         assertTrue(mech.wasRequestNew);
         // On subsequent steps, the Idle request should take over (as long as a Command hasn't
         // reserved this Mechanism).
         step();
-        assertEquals(new FakeRequest(0), mech.currentRequest);
+        assertEquals(0, mech.currentState);
         assertTrue(mech.wasRequestNew);
         // Subsequent steps should continue to pass the Idle request to run(),
         // but it should not be indicated as a new request.
-        mech.currentRequest = null;
+        mech.currentState = null;
         step();
-        assertEquals(new FakeRequest(0), mech.currentRequest);
+        assertEquals(0, mech.currentState);
         assertFalse(mech.wasRequestNew);
 
         // When a Command is scheduled which reserves this Procedure, it should preempt
@@ -203,28 +209,28 @@ public class MechanismTest extends TestCase3 {
         new FunctionalProcedure(
                         Set.of(mech),
                         context -> {
-                            mech.setRequest(new FakeRequest(1));
+                            mech.requestFakeState(1);
                             context.waitFor(() -> false);
                         })
                 .createCommandToRunProcedure()
                 .schedule();
         step();
         step(); // NOTE: Second step() is needed because Scheduler runs Procedures after Subsystems
-        assertEquals(new FakeRequest(1), mech.currentRequest);
+        assertEquals(1, mech.currentState);
         assertTrue(mech.wasRequestNew);
         // Subsequent steps should allow the scheduled Command to continue. It should not be
         // interrupted by the Idle request, even if the scheduled Command does not set a
         // new request.
-        mech.currentRequest = null;
+        mech.currentState = null;
         step();
-        assertEquals(new FakeRequest(1), mech.currentRequest);
+        assertEquals(1, mech.currentState);
         assertFalse(mech.wasRequestNew);
     }
 
     /// Test making a Mechanism part of a superstructure.
     @Test
     public void testSuperstructure() {
-        class TestSuperstructure extends Superstructure<FakeRequest, FakeStatus> {
+        class TestSuperstructure extends Superstructure<FakeStatus> {
             // NOTE: Real superstructures should have their members be private. This is public
             // to test handling of bad code patterns, and to allow us to inspect the state of the
             // inner mechanism for purposes of testing the framework.
@@ -232,23 +238,26 @@ public class MechanismTest extends TestCase3 {
 
             public TestSuperstructure() {
                 submechanism = addMechanism(new FakeMechanism());
+
+                // Initial request
+                requestFakeState(0);
             }
 
-            @Override
-            protected FakeRequest getInitialRequest() {
-                return new FakeRequest(0);
-            }
-
-            @Override
-            protected FakeStatus run(FakeRequest request, boolean isRequestNew) {
-                if (isRequestNew) {
-                    if (request.targetState() == 0) {
-                        submechanism.setRequest(new FakeRequest(2));
-                    } else {
-                        submechanism.setRequest(new FakeRequest(4));
-                    }
+            public Request<TestSuperstructure> requestFakeState(int targetState) {
+                currentSuperState = targetState;
+                if (targetState == 0) {
+                    submechanism.requestFakeState(2);
+                } else {
+                    submechanism.requestFakeState(4);
                 }
-                return new FakeStatus(request.targetState());
+                return startRequest(() -> true);
+            }
+
+            private int currentSuperState;
+
+            @Override
+            protected FakeStatus reportStatus() {
+                return new FakeStatus(currentSuperState);
             }
         }
         var superstructure = new TestSuperstructure();
@@ -256,18 +265,18 @@ public class MechanismTest extends TestCase3 {
         step();
         // Sub-mechanisms should run their periodic() method before the superstructure's periodic(),
         // so we will see the sub-mechanism's initial request after the first step.
-        assertEquals(new FakeRequest(-1), superstructure.submechanism.currentRequest);
+        assertEquals(-1, superstructure.submechanism.currentState);
 
         step();
         // After the second step, the request set by the superstructure on the first step will have
         // propagated to the sub-mechanism.
-        assertEquals(new FakeRequest(2), superstructure.submechanism.currentRequest);
+        assertEquals(2, superstructure.submechanism.currentState);
 
         // Test error conditions
 
         assertThrows(
                 IllegalStateException.class,
-                () -> superstructure.submechanism.setRequest(new FakeRequest(0)),
+                () -> superstructure.submechanism.requestFakeState(0),
                 "is part of a superstructure");
 
         assertThrows(NullPointerException.class, () -> superstructure.addMechanism(null));
@@ -282,8 +291,8 @@ public class MechanismTest extends TestCase3 {
                 () ->
                         superstructure.addMechanism(
                                 new FakeMechanism() {
-                                    protected FakeRequest getIdleRequest() {
-                                        return new FakeRequest(0);
+                                    protected Request<FakeMechanism> startIdleRequest() {
+                                        return requestFakeState(0);
                                     }
                                 }),
                 "A Mechanism contained in a superstructure cannot define an idle request");

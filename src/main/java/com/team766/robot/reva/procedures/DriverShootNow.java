@@ -20,7 +20,8 @@ public class DriverShootNow extends VisionPIDProcedure {
     private final ArmAndClimber superstructure;
     private final Intake intake;
 
-    public DriverShootNow(SwerveDrive.Rotation driveRotation, ArmAndClimber superstructure, Intake intake) {
+    public DriverShootNow(
+            SwerveDrive.Rotation driveRotation, ArmAndClimber superstructure, Intake intake) {
         this.driveRotation = reserve(driveRotation);
         this.superstructure = reserve(superstructure);
         this.intake = reserve(intake);

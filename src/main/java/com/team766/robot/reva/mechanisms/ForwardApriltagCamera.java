@@ -2,7 +2,7 @@ package com.team766.robot.reva.mechanisms;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
-import com.team766.framework3.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.reva.constants.VisionConstants;
@@ -11,7 +11,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 
-public class ForwardApriltagCamera extends Mechanism<ForwardApriltagCamera.ApriltagCameraStatus> {
+public class ForwardApriltagCamera
+        extends MechanismWithStatus<ForwardApriltagCamera.ApriltagCameraStatus> {
 
     public record ApriltagCameraStatus(
             boolean isCameraConnected,

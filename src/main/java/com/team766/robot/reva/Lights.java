@@ -19,7 +19,10 @@ public class Lights extends RuleEngine {
 
     public Lights() {
         final BooleanSupplier isCameraMissing =
-                () -> !checkForStatusWith(ForwardApriltagCamera.ApriltagCameraStatus.class, s -> s.isCameraConnected());
+                () ->
+                        !checkForStatusWith(
+                                ForwardApriltagCamera.ApriltagCameraStatus.class,
+                                s -> s.isCameraConnected());
 
         addRule(
                 Rule.create("Robot Disabled", () -> DriverStation.isDisabled())

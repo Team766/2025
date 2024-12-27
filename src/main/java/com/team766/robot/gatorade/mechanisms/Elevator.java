@@ -4,7 +4,7 @@ import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework3.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
 import com.team766.hal.RobotProvider;
@@ -18,7 +18,7 @@ import edu.wpi.first.math.MathUtil;
  * and {@link Intake} closer to a game piece or game element (eg node in the
  * field, human player station).
  */
-public class Elevator extends Mechanism<Elevator.ElevatorStatus> {
+public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     public static class Position {
         /** Elevator is fully retracted.  Starting position. */
         public static final double RETRACTED = 0;
@@ -83,13 +83,13 @@ public class Elevator extends Mechanism<Elevator.ElevatorStatus> {
     }
 
     public Request<Elevator> requestStop() {
-        return setRequest(leftMotor.requestStop());
+        return startRequest(leftMotor.requestStop());
     }
 
     public Request<Elevator> requestNudgeNoPID(double value) {
         double clampedValue = MathUtil.clamp(value, -1, 1);
         clampedValue *= NUDGE_DAMPENER; // make nudges less forceful.  TODO: make this non-linear
-        return setRequest(leftMotor.requestPercentOutput(clampedValue));
+        return startRequest(leftMotor.requestPercentOutput(clampedValue));
     }
 
     public Request<Elevator> requestHoldPosition() {
@@ -118,7 +118,7 @@ public class Elevator extends Mechanism<Elevator.ElevatorStatus> {
         final double ff = ffGain.get();
 
         // convert the desired target degrees to encoder units
-        return setRequest(
+        return startRequest(
                 leftMotor.requestPosition(
                         EncoderUtils.elevatorHeightToRotations(targetHeight),
                         EncoderUtils.elevatorHeightToRotations(NEAR_THRESHOLD),

@@ -3,13 +3,10 @@ package com.team766.robot.burro_arm.mechanisms;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
-import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
-public class Gripper extends Mechanism<Gripper.GripperStatus> {
-    public record GripperStatus() implements Status {}
-
+public class Gripper extends Mechanism {
     private final MotorController leftMotor;
     private final MotorController rightMotor;
 
@@ -38,19 +35,14 @@ public class Gripper extends Mechanism<Gripper.GripperStatus> {
     }
 
     private Request<Gripper> requestPercentOutput(double percentOutput) {
-        return setRequest(
+        return startRequest(
                 requestAllOf(
                         leftMotor.requestPercentOutput(percentOutput),
                         rightMotor.requestPercentOutput(percentOutput)));
     }
 
     @Override
-    protected Request<Gripper> applyIdleRequest() {
+    protected Request<Gripper> startIdleRequest() {
         return requestIdle();
-    }
-
-    @Override
-    protected GripperStatus reportStatus() {
-        return new GripperStatus();
     }
 }

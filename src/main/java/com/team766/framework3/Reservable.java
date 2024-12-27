@@ -1,10 +1,14 @@
 package com.team766.framework3;
 
-import java.util.Set;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import java.util.Set;
 
 public interface Reservable {
-    Set<Subsystem> getReservableSubsystems();
+    Set<? extends MechanismSubsystem> getReservableSubsystems();
 
     void checkContextReservation();
+}
+
+/* package */ interface MechanismSubsystem extends Subsystem {
+    Reservable getMechanism();
 }

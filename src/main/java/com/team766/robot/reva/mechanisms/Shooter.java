@@ -4,13 +4,13 @@ import static com.team766.robot.reva.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
-import com.team766.framework3.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
-public class Shooter extends Mechanism<Shooter.ShooterStatus> {
+public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
     public record ShooterStatus(
             double targetSpeed, double shooterSpeedTop, double shooterSpeedBottom)
             implements Status {
@@ -25,7 +25,7 @@ public class Shooter extends Mechanism<Shooter.ShooterStatus> {
     }
 
     public Request<Shooter> requestStop() {
-        return setRequest(
+        return startRequest(
                 requestAllOf(shooterMotorTop.requestStop(), shooterMotorBottom.requestStop()));
     }
 
@@ -44,7 +44,7 @@ public class Shooter extends Mechanism<Shooter.ShooterStatus> {
         if (targetSpeed == 0.0) {
             return requestStop();
         }
-        return setRequest(
+        return startRequest(
                 requestAllOf(
                         shooterMotorTop.requestVelocity(targetSpeed, SPEED_TOLERANCE),
                         shooterMotorBottom.requestVelocity(targetSpeed, SPEED_TOLERANCE)));
@@ -88,7 +88,7 @@ public class Shooter extends Mechanism<Shooter.ShooterStatus> {
     }
 
     @Override
-    protected Request<Shooter> applyIdleRequest() {
+    protected Request<Shooter> startIdleRequest() {
         return requestStop();
     }
 

@@ -4,7 +4,7 @@ import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework3.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
 import com.team766.hal.RobotProvider;
@@ -17,7 +17,7 @@ import edu.wpi.first.math.MathUtil;
  * attached {@link Wrist} and {@link Intake}) to reach different positions, from the floor to different
  * heights of nodes.
  */
-public class Shoulder extends Mechanism<Shoulder.ShoulderStatus> {
+public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     public static class Position {
         // TODO: adjust these!
 
@@ -77,11 +77,11 @@ public class Shoulder extends Mechanism<Shoulder.ShoulderStatus> {
     public Request<Shoulder> requestNudgeNoPID(double value) {
         double clampedValue = MathUtil.clamp(value, -1, 1);
         clampedValue *= NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
-        return setRequest(leftMotor.requestPercentOutput(clampedValue));
+        return startRequest(leftMotor.requestPercentOutput(clampedValue));
     }
 
     public Request<Shoulder> requestStop() {
-        return setRequest(leftMotor.requestStop());
+        return startRequest(leftMotor.requestStop());
     }
 
     public Request<Shoulder> requestHoldPosition() {
@@ -108,7 +108,7 @@ public class Shoulder extends Mechanism<Shoulder.ShoulderStatus> {
         final double ff = ffGain.get() * Math.cos(Math.toRadians(targetAngle));
 
         // convert the desired target degrees to rotations
-        return setRequest(
+        return startRequest(
                 leftMotor.requestPosition(
                         EncoderUtils.shoulderDegreesToRotations(targetAngle),
                         EncoderUtils.shoulderDegreesToRotations(NEAR_THRESHOLD),

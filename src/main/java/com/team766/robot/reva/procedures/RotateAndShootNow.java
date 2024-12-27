@@ -23,7 +23,10 @@ public class RotateAndShootNow extends Procedure {
     private final VisionSpeakerHelper visionSpeakerHelper;
 
     public RotateAndShootNow(
-            SwerveDrive.Rotation driveRotation, ArmAndClimber superstructure, Shooter shooter, Intake intake) {
+            SwerveDrive.Rotation driveRotation,
+            ArmAndClimber superstructure,
+            Shooter shooter,
+            Intake intake) {
         this.driveRotation = reserve(driveRotation);
         this.superstructure = reserve(superstructure);
         this.shooter = reserve(shooter);

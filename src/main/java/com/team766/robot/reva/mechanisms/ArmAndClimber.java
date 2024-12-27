@@ -3,90 +3,88 @@ package com.team766.robot.reva.mechanisms;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
 import com.team766.framework3.Superstructure;
-import java.util.function.Supplier;
 
 public class ArmAndClimber extends Superstructure<ArmAndClimber.SuperstructureStatus> {
     public record SuperstructureStatus() implements Status {}
 
-    private Request<ArmAndClimber> requestShoulder(Supplier<Request<Shoulder>> shoulderRequest) {
-        return setRequest(
-                requestAllOf(
-                        submechanismRequest(climber.requestPosition(Climber.Position.BOTTOM)),
-                        () -> {
-                            final var climberStatus = climber.getStatus();
-                            final boolean climberIsBelowArm =
-                                    climberStatus.heightLeft() < Climber.Position.BELOW_ARM
-                                            && climberStatus.heightRight()
-                                                    < Climber.Position.BELOW_ARM;
-                            if (climberIsBelowArm) {
-                                return shoulderRequest.get().isDone();
-                            } else {
-                                return shoulder.requestHoldPosition().isDone();
-                            }
-                        }));
-    }
-
     public Request<ArmAndClimber> requestShoulderPosition(double targetPosition) {
-        return requestShoulder(() -> shoulder.requestPosition(targetPosition));
+        return startRequest(
+                () -> {
+                    climber.requestPosition(Climber.Position.BOTTOM);
+
+                    final var climberStatus = climber.getStatus();
+                    final boolean climberIsBelowArm =
+                            climberStatus.heightLeft() < Climber.Position.BELOW_ARM
+                                    && climberStatus.heightRight() < Climber.Position.BELOW_ARM;
+                    if (climberIsBelowArm) {
+                        var shoulderRequest = shoulder.requestPosition(targetPosition);
+                        return shoulderRequest.isDone();
+                    } else {
+                        shoulder.requestHoldPosition();
+                        return false;
+                    }
+                });
     }
 
     public Request<ArmAndClimber> requestShoulderNudgeUp() {
-        return requestShoulder(shoulder::requestNudgeUp);
+        return requestShoulderPosition(shoulder.getNudgeUpPosition());
     }
 
     public Request<ArmAndClimber> requestShoulderNudgeDown() {
-        return requestShoulder(shoulder::requestNudgeDown);
+        return requestShoulderPosition(shoulder.getNudgeDownPosition());
     }
 
     public Request<ArmAndClimber> requestClimberStop() {
-        return setRequest(submechanismRequest(climber.requestStop()));
+        return startRequest(requestOfSubmechanism(climber.requestStop()));
     }
 
     public Request<ArmAndClimber> requestClimberMotorPowers(
             double powerLeft, double powerRight, boolean overrideSoftLimits) {
-        return setRequest(
-                requestAllOf(
-                        submechanismRequest(shoulder.requestPosition(Shoulder.Position.TOP)),
-                        () -> {
-                            if (shoulder.getStatus().isNearTo(Shoulder.Position.TOP)) {
-                                return climber.requestMotorPowers(
-                                                powerLeft, powerRight, overrideSoftLimits)
-                                        .isDone();
-                            } else {
-                                return climber.requestStop().isDone();
-                            }
-                        }));
+        return startRequest(
+                () -> {
+                    var shoulderRequest = shoulder.requestPosition(Shoulder.Position.TOP);
+                    if (shoulderRequest.isDone()) {
+                        var climberRequest =
+                                climber.requestMotorPowers(
+                                        powerLeft, powerRight, overrideSoftLimits);
+                        return climberRequest.isDone();
+                    } else {
+                        climber.requestStop();
+                        return false;
+                    }
+                });
     }
 
     public Request<ArmAndClimber> requestClimberPosition(double targetHeight) {
         if (targetHeight < Climber.Position.BELOW_ARM) {
-            return setRequest(submechanismRequest(climber.requestPosition(targetHeight)));
+            return startRequest(requestOfSubmechanism(climber.requestPosition(targetHeight)));
         } else {
-            return setRequest(
-                    requestAllOf(
-                            submechanismRequest(shoulder.requestPosition(Shoulder.Position.TOP)),
-                            () -> {
-                                if (shoulder.getStatus().isNearTo(Shoulder.Position.TOP)) {
-                                    return climber.requestPosition(targetHeight).isDone();
-                                } else {
-                                    return climber.requestStop().isDone();
-                                }
-                            }));
+            return startRequest(
+                    () -> {
+                        var shoulderRequest = shoulder.requestPosition(Shoulder.Position.TOP);
+                        if (shoulderRequest.isDone()) {
+                            var climberRequest = climber.requestPosition(targetHeight);
+                            return climberRequest.isDone();
+                        } else {
+                            climber.requestStop();
+                            return false;
+                        }
+                    });
         }
     }
 
     public Request<ArmAndClimber> requestStop() {
-        return setRequest(
+        return startRequest(
                 requestAllOf(
-                        submechanismRequest(shoulder.requestStop()),
-                        submechanismRequest(climber.requestStop())));
+                        requestOfSubmechanism(shoulder.requestStop()),
+                        requestOfSubmechanism(climber.requestStop())));
     }
 
     public Request<ArmAndClimber> requestHoldPosition() {
-        return setRequest(
+        return startRequest(
                 requestAllOf(
-                        submechanismRequest(shoulder.requestHoldPosition()),
-                        submechanismRequest(climber.requestStop())));
+                        requestOfSubmechanism(shoulder.requestHoldPosition()),
+                        requestOfSubmechanism(climber.requestStop())));
     }
 
     private final Shoulder shoulder;

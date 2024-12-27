@@ -4,7 +4,7 @@ import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework3.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
 import com.team766.hal.RobotProvider;
@@ -19,7 +19,7 @@ import edu.wpi.first.math.MathUtil;
  * field, human player station), at which point the {@link Intake} can grab or release the game
  * piece as appropriate.
  */
-public class Wrist extends Mechanism<Wrist.WristStatus> {
+public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     public static class Position {
         /** Wrist is in top position.  Starting position. */
         public static final double TOP = -180;
@@ -75,11 +75,11 @@ public class Wrist extends Mechanism<Wrist.WristStatus> {
     public Request<Wrist> requestNudgeNoPID(double value) {
         double clampedValue = MathUtil.clamp(value, -1, 1);
         clampedValue *= NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
-        return setRequest(motor.requestPercentOutput(clampedValue));
+        return startRequest(motor.requestPercentOutput(clampedValue));
     }
 
     public Request<Wrist> requestStop() {
-        return setRequest(motor.requestStop());
+        return startRequest(motor.requestStop());
     }
 
     public Request<Wrist> requestHoldPosition() {
@@ -106,7 +106,7 @@ public class Wrist extends Mechanism<Wrist.WristStatus> {
         double ff = ffGain.get() * Math.cos(Math.toRadians(targetAngle));
 
         // convert the desired target degrees to rotations
-        return setRequest(
+        return startRequest(
                 motor.requestPosition(
                         EncoderUtils.wristDegreesToRotations(targetAngle),
                         EncoderUtils.wristDegreesToRotations(NEAR_THRESHOLD),

@@ -1,7 +1,7 @@
 package com.team766.robot.burro_arm.mechanisms;
 
 import com.team766.config.ConfigFileReader;
-import com.team766.framework3.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
 import com.team766.hal.EncoderReader;
@@ -10,15 +10,15 @@ import com.team766.hal.wpilib.CANSparkMaxMotorController;
 import com.team766.library.ValueProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Arm extends Mechanism<Arm.ArmStatus> {
+public class Arm extends MechanismWithStatus<Arm.ArmStatus> {
     public record ArmStatus(double angle) implements Status {}
 
     public Request<Arm> requestPercentOutput(double percentOutput) {
-        return setRequest(motor.requestPercentOutput(percentOutput));
+        return startRequest(motor.requestPercentOutput(percentOutput));
     }
 
     public Request<Arm> requestAngle(double targetAngle) {
-        return setRequest(
+        return startRequest(
                 motor.requestPosition(
                         targetAngle / MOTOR_ROTATIONS_TO_ARM_ANGLE,
                         ANGLE_TOLERANCE / MOTOR_ROTATIONS_TO_ARM_ANGLE,
@@ -68,7 +68,7 @@ public class Arm extends Mechanism<Arm.ArmStatus> {
     }
 
     @Override
-    protected Request<Arm> applyIdleRequest() {
+    protected Request<Arm> startIdleRequest() {
         return requestHoldPosition();
     }
 

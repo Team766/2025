@@ -1,20 +1,20 @@
 package com.team766.robot.burro_elevator.mechanisms;
 
-import com.team766.framework3.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.CANSparkMaxMotorController;
 
-public class Elevator extends Mechanism<Elevator.ElevatorStatus> {
+public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     public static final double BOTTOM_POSITION = 100.0; // set this proper
     public static final double TOP_POSITION = 0.0; // set this proper
 
-    public record ElevatorStatus(double position, double velocity) implements Status {}
+    public record ElevatorStatus(double position) implements Status {}
 
     public Request<Elevator> requestPosition(double targetPosition) {
         checkContextReservation();
-        return setRequest(
+        return startRequest(
                 motor.requestPosition(
                         targetPosition / MOTOR_ROTATIONS_TO_ELEVATOR_POSITION,
                         POSITION_TOLERANCE / MOTOR_ROTATIONS_TO_ELEVATOR_POSITION,
@@ -57,14 +57,12 @@ public class Elevator extends Mechanism<Elevator.ElevatorStatus> {
     }
 
     @Override
-    protected Request<Elevator> applyIdleRequest() {
+    protected Request<Elevator> startIdleRequest() {
         return requestHoldPosition();
     }
 
     @Override
     protected ElevatorStatus reportStatus() {
-        return new ElevatorStatus(
-                motor.getSensorPosition() * MOTOR_ROTATIONS_TO_ELEVATOR_POSITION,
-                motor.getSensorVelocity() /* RPMs */ / 60.0 * MOTOR_ROTATIONS_TO_ELEVATOR_POSITION);
+        return new ElevatorStatus(motor.getSensorPosition() * MOTOR_ROTATIONS_TO_ELEVATOR_POSITION);
     }
 }

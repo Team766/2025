@@ -57,9 +57,7 @@ public class RuleEngine implements StatusesMixin, LoggingBase {
             BooleanSupplier predicate,
             RulePersistence rulePersistence,
             Supplier<Procedure> action) {
-        addRule(
-                Rule.create(name, predicate)
-                        .withOnTriggeringProcedure(rulePersistence, action));
+        addRule(Rule.create(name, predicate).withOnTriggeringProcedure(rulePersistence, action));
     }
 
     public void addRule(

@@ -23,7 +23,9 @@ public class Lights extends RuleEngine {
         addRule(
                 Rule.create(
                                 "OI State Updated",
-                                () -> checkForStatusEntryWith(OI.OIStatus.class, s -> s.age() < 1.3))
+                                () ->
+                                        checkForStatusEntryWith(
+                                                OI.OIStatus.class, s -> s.age() < 1.3))
                         .withOnTriggeringProcedure(
                                 REPEATEDLY,
                                 Set.of(),

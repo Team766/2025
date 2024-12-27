@@ -4,17 +4,14 @@ import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
-import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 
-public class BurroDrive extends Mechanism<BurroDrive.DriveStatus> {
-    public record DriveStatus() implements Status {}
-
+public class BurroDrive extends Mechanism {
     public Request<BurroDrive> requestPercentOutput(
             double leftTargetPercentOutput, double rightTargetPercentOutput) {
-        return setRequest(
+        return startRequest(
                 requestAllOf(
                         leftMotor.requestPercentOutput(leftTargetPercentOutput),
                         rightMotor.requestPercentOutput(rightTargetPercentOutput)));
@@ -42,12 +39,7 @@ public class BurroDrive extends Mechanism<BurroDrive.DriveStatus> {
     }
 
     @Override
-    protected Request<BurroDrive> applyIdleRequest() {
+    protected Request<BurroDrive> startIdleRequest() {
         return requestPercentOutput(0, 0);
-    }
-
-    @Override
-    protected DriveStatus reportStatus() {
-        return new DriveStatus();
     }
 }

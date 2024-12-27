@@ -50,7 +50,7 @@ public class FollowPath extends Procedure {
         Pose2d curPose = driveStatus.currentPosition();
         ChassisSpeeds currentSpeeds = driveStatus.chassisSpeeds();
 
-        drive.controller.reset(curPose, currentSpeeds);
+        drive.getDriveController().reset(curPose, currentSpeeds);
 
         if (replanningConfig.enableInitialReplanning
                 && curPose.getTranslation().getDistance(path.getPoint(0).position) > 0.25) {
@@ -73,7 +73,7 @@ public class FollowPath extends Procedure {
 
             if (replanningConfig.enableDynamicReplanning) {
                 // TODO: why abs?
-                double previousError = Math.abs(drive.controller.getPositionalError());
+                double previousError = Math.abs(drive.getDriveController().getPositionalError());
                 double currentError =
                         curPose.getTranslation().getDistance(targetState.positionMeters);
 
@@ -88,7 +88,7 @@ public class FollowPath extends Procedure {
             }
 
             ChassisSpeeds targetSpeeds =
-                    drive.controller.calculateRobotRelativeSpeeds(curPose, targetState);
+                    drive.getDriveController().calculateRobotRelativeSpeeds(curPose, targetState);
 
             org.littletonrobotics.junction.Logger.recordOutput(
                     "current heading", curPose.getRotation().getRadians());

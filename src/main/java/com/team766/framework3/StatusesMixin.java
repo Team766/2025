@@ -74,8 +74,7 @@ public interface StatusesMixin {
      * Suspend the Procedure until a {@link Status} with the given class has been published, then
      * return that Status.
      */
-    default <S extends Status> S waitForStatus(
-            Context context, Class<S> statusClass) {
+    default <S extends Status> S waitForStatus(Context context, Class<S> statusClass) {
         return waitForValue(context, () -> getStatus(statusClass));
     }
 

@@ -15,7 +15,7 @@ public abstract class Request<M extends Reservable> {
      */
     public abstract boolean isDone();
 
-    // TODO(MF3): do we need any way of checking if the request has been bumped/canceled?
+    public abstract boolean isActive();
 
     public void addProvenance(String frame) {
         if (provenance.isEmpty()) {
@@ -23,6 +23,12 @@ public abstract class Request<M extends Reservable> {
         } else {
             provenance = frame + " | " + provenance;
         }
+    }
+
+    /* package */ abstract Reservable getMechanism();
+
+    public String getProvenance() {
+        return provenance;
     }
 
     @Override

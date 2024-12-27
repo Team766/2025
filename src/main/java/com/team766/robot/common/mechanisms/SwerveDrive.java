@@ -84,7 +84,7 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
         }
     }
 
-    public class Translation extends Mechanism<DriveStatus> {
+    public class Translation extends Mechanism {
         private Vector2D targetRobotVelocity = Vector2D.ZERO;
 
         /**
@@ -95,7 +95,7 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
             checkContextReservation();
             targetRobotVelocity = new Vector2D(x, y);
 
-            return setRequest(
+            return startRequest(
                     () -> {
                         return getStatus()
                                 .isAtRobotOrientedSpeeds(new ChassisSpeeds(x, y, 0), false);
@@ -111,7 +111,7 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
 
             final Optional<Alliance> alliance = DriverStation.getAlliance();
 
-            return setRequest(
+            return startRequest(
                     () -> {
                         final double yawRad =
                                 Math.toRadians(
@@ -142,24 +142,21 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
 
             targetRobotVelocity = Vector2D.ZERO;
 
-            return setRequest(
+            return startRequest(
                     () -> {
                         return getStatus().isCrossed();
                     });
         }
 
         @Override
-        protected Request<Translation> applyIdleRequest() {
+        protected Request<Translation> startIdleRequest() {
             return requestStop();
         }
-
-        @Override
-        protected DriveStatus reportStatus() {}
     }
 
     public final Translation translation = addFacet(new Translation());
 
-    public class Rotation extends Mechanism<DriveStatus> {
+    public class Rotation extends Mechanism {
         private double targetVelocity = 0.0;
 
         /**
@@ -170,7 +167,7 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
 
             targetVelocity = omegaRadiansPerSecond;
 
-            return setRequest(
+            return startRequest(
                     () -> {
                         return getStatus().isAtRotationVelocity(omegaRadiansPerSecond);
                     });
@@ -183,7 +180,7 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
             checkContextReservation();
 
             rotationPID.setSetpoint(target.getDegrees());
-            return setRequest(
+            return startRequest(
                     () -> {
                         rotationPID.calculate(gyro.getAngle());
                         targetVelocity = rotationPID.getOutput();
@@ -201,19 +198,16 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
 
             targetVelocity = 0.0;
 
-            return setRequest(
+            return startRequest(
                     () -> {
                         return getStatus().isCrossed();
                     });
         }
 
         @Override
-        protected Request<Rotation> applyIdleRequest() {
+        protected Request<Rotation> startIdleRequest() {
             return requestStop();
         }
-
-        @Override
-        protected DriveStatus reportStatus() {}
     }
 
     public final Rotation rotation = addFacet(new Rotation());
@@ -237,7 +231,7 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
 
     private PIDController rotationPID;
 
-    public final PPHolonomicDriveController controller;
+    private final PPHolonomicDriveController controller;
 
     public SwerveDrive(SwerveConfig config) {
         this.config = config;
@@ -373,6 +367,10 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
         return Category.DRIVE;
     }
 
+    public PPHolonomicDriveController getDriveController() {
+        return controller;
+    }
+
     /**
      * Helper method to create a new vector counterclockwise orthogonal to the given one
      * @param vector input vector
@@ -383,7 +381,8 @@ public class SwerveDrive extends MultiFacetedMechanism<SwerveDrive.DriveStatus> 
     }
 
     private boolean shouldCrossWheels() {
-        return rotation.targetVelocity == 0.0 && translation.targetRobotVelocity.equals(Vector2D.ZERO);
+        return rotation.targetVelocity == 0.0
+                && translation.targetRobotVelocity.equals(Vector2D.ZERO);
     }
 
     @Override

@@ -37,7 +37,7 @@ public class ShootNow extends VisionPIDProcedure {
         drive.requestStop();
 
         Optional<Transform3d> maybeToUse =
-                waitForValueOrTimeout(context, this::getTransform3dOfRobotToTag, 1.0);
+                waitForValueOrTimeout(context, () -> getTransform3dOfRobotToTag(), 1.0);
         if (!maybeToUse.isPresent()) {
             log(Severity.ERROR, "No tag info available");
             return;
@@ -111,6 +111,7 @@ public class ShootNow extends VisionPIDProcedure {
     }
 
     private Optional<Transform3d> getTransform3dOfRobotToTag() {
-        return getStatus(ForwardApriltagCamera.ApriltagCameraStatus.class).flatMap(s -> s.speakerTagTransform());
+        return getStatus(ForwardApriltagCamera.ApriltagCameraStatus.class)
+                .flatMap(s -> s.speakerTagTransform());
     }
 }

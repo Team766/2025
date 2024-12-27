@@ -39,32 +39,32 @@ public class OI extends RuleEngine {
                 REPEATEDLY,
                 drive,
                 () ->
-                    drive.requestArcadeDrive(
-                            -joystick0.getAxis(AXIS_FORWARD_BACKWARD) * 0.5,
-                            -joystick0.getAxis(AXIS_TURN) * 0.3));
+                        drive.requestArcadeDrive(
+                                -joystick0.getAxis(AXIS_FORWARD_BACKWARD) * 0.5,
+                                -joystick0.getAxis(AXIS_TURN) * 0.3));
 
         addRule(
                 "Arm Up",
                 joystick0.whenButton(BUTTON_ARM_UP),
                 ONCE,
                 arm,
-                arm::requestNudgeUp);
+                () -> arm.requestNudgeUp());
         addRule(
                 "Arm Down",
                 joystick0.whenButton(BUTTON_ARM_DOWN),
                 ONCE,
                 arm,
-                arm::requestNudgeDown);
+                () -> arm.requestNudgeDown());
 
         addRule(
                 "Intake",
                 joystick0.whenButton(BUTTON_INTAKE),
                 gripper,
-                gripper::requestIntake);
+                () -> gripper.requestIntake());
         addRule(
                 "Outtake",
                 joystick0.whenButton(BUTTON_OUTTAKE),
                 gripper,
-                gripper::requestOuttake);
+                () -> gripper.requestOuttake());
     }
 }

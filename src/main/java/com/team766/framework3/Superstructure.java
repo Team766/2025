@@ -13,8 +13,8 @@ import java.util.Objects;
  * Superstructure should set requests on its constituent Mechanisms (in its
  * {@link #run(R, boolean)} method).
  */
-public abstract class Superstructure<S extends Record & Status> extends Mechanism<S> {
-    private ArrayList<Mechanism<?>> submechanisms = new ArrayList<>();
+public abstract class Superstructure<S extends Record & Status> extends MechanismWithStatus<S> {
+    private ArrayList<Mechanism> submechanisms = new ArrayList<>();
 
     @Override
     /* package */ void periodicInternal() {
@@ -25,11 +25,28 @@ public abstract class Superstructure<S extends Record & Status> extends Mechanis
         super.periodicInternal();
     }
 
-    protected static Directive submechanismRequest(Request<?> submechanismRequest) {
-        return () -> submechanismRequest.isDone();
+    protected Directive requestOfSubmechanism(Request<?> submechanismRequest) {
+        if (!submechanisms.contains(submechanismRequest.getMechanism())) {
+            throw new IllegalArgumentException(
+                    "Request is for "
+                            + submechanismRequest.getMechanism()
+                            + " which is not a submechanism of "
+                            + getName());
+        }
+        return new Directive() {
+            @Override
+            public boolean update() {
+                return submechanismRequest.isDone();
+            }
+
+            @Override
+            public String getProvenance() {
+                return submechanismRequest.getProvenance();
+            }
+        };
     }
 
-    protected <M extends Mechanism<?>> M addMechanism(M submechanism) {
+    protected <M extends Mechanism> M addMechanism(M submechanism) {
         Objects.requireNonNull(submechanism);
         submechanism.setSuperstructure(this);
         submechanisms.add(submechanism);

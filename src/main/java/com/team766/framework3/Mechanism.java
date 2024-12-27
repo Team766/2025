@@ -1,55 +1,105 @@
 package com.team766.framework3;
 
+import com.google.errorprone.annotations.DoNotCall;
 import com.team766.framework.StackTraceUtils;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 
-public abstract class Mechanism<S extends Record & Status>
-        implements Reservable, LoggingBase {
+class requestAllOf_must_have_at_least_one_argument {}
+
+public abstract class Mechanism implements Reservable, LoggingBase {
     @FunctionalInterface
     public interface Directive {
         /**
          * @return True if the request has been completed; false if the request is in progress.
          */
         boolean update();
+
+        default String getProvenance() {
+            if (getClass().isSynthetic() // Synthetic implies this is probably a Lambda
+                    // TODO: Should we attempt to log any lambda captures?
+                    || getClass().isAnonymousClass()) {
+                // TODO: This could be redundant with AOP provenance tracking
+                final var declarationSite = getClass().getEnclosingMethod();
+                return declarationSite != null
+                        ? declarationSite.getDeclaringClass().getTypeName()
+                                + '.'
+                                + declarationSite.getName()
+                        : "";
+            } else {
+                // Normal class
+                return toString();
+            }
+        }
+    }
+
+    /**
+     * @deprecated requestAllOf must have at least one argument
+     */
+    @DoNotCall
+    @Deprecated
+    protected static requestAllOf_must_have_at_least_one_argument requestAllOf() {
+        return null;
     }
 
     protected static Directive requestAllOf(Directive... directives) {
-        return () -> {
-            boolean isDone = true;
-            for (var directive : directives) {
-                if (!directive.update()) {
-                    isDone = false;
+        var sj = new StringJoiner("; ", "{", "}");
+        for (int i = 0; i < directives.length; ++i) {
+            sj.add(directives[i].getProvenance());
+        }
+        final String provenance = sj.toString();
+        return new Directive() {
+            @Override
+            public boolean update() {
+                boolean isDone = true;
+                for (var directive : directives) {
+                    if (!directive.update()) {
+                        isDone = false;
+                    }
                 }
+                return isDone;
             }
-            return isDone;
+
+            @Override
+            public String getProvenance() {
+                return provenance;
+            }
         };
-        // TODO: Handle provenance tracking
     }
 
-    private static final class MechanismRequest<M extends Mechanism<?>> extends Request<M> {
+    protected static Directive dontWaitFor(Directive directive) {
+        return new Directive() {
+            @Override
+            public boolean update() {
+                directive.update();
+                return true;
+            }
+
+            @Override
+            public String getProvenance() {
+                return "dontWaitFor " + directive.getProvenance();
+            }
+        };
+    }
+
+    private final class MechanismRequest<M extends Mechanism> extends Request<M> {
         public final Directive directive;
         public boolean isDone = false;
 
         public MechanismRequest(Directive directive) {
             this.directive = directive;
 
-            if (directive.getClass().isSynthetic()) {
-                // Probably a Lambda
-                // TODO: Should we attempt to log any lambda captures?
-            } else if (directive.getClass().isAnonymousClass()) {
-            } else {
-                // Normal class
-                addProvenance(directive.toString());
-            }
+            addProvenance(directive.getProvenance());
+
+            // Run once on construction to initialize isDone
+            runDirective();
         }
 
         public void runDirective() {
@@ -58,40 +108,64 @@ public abstract class Mechanism<S extends Record & Status>
 
         @Override
         public boolean isDone() {
+            if (!isActive()) {
+                throw new IllegalStateException(
+                        "This request is no longer being run by " + getMechanism());
+            }
             return isDone;
+        }
+
+        @Override
+        public boolean isActive() {
+            return request == this;
+        }
+
+        @Override
+        Reservable getMechanism() {
+            return Mechanism.this;
         }
     }
 
-    private final SubsystemBase subsystem =
-            new SubsystemBase() {
-                @Override
-                public String getName() {
-                    return Mechanism.this.getName();
-                }
+    private class ProxySubsystem extends SubsystemBase implements MechanismSubsystem {
+        @Override
+        public Reservable getMechanism() {
+            return Mechanism.this;
+        }
 
-                @Override
-                public final void periodic() {
-                    super.periodic();
+        @Override
+        public String getName() {
+            return Mechanism.this.getName();
+        }
 
-                    if (superstructure != null) {
-                        // This Mechanism's periodic() will be run by its superstructure.
-                        return;
-                    }
+        @Override
+        public final void periodic() {
+            super.periodic();
 
-                    periodicInternal();
-                }
-            };
+            if (superstructure != null) {
+                // This Mechanism's periodic() will be run by its Superstructure.
+                return;
+            }
+            if (container != null) {
+                // This Mechanism's periodic() will be run by the enclosing MultiFacetedMechanism.
+                return;
+            }
+
+            periodicInternal();
+        }
+    }
+
+    private final MechanismSubsystem subsystem = new ProxySubsystem();
 
     private boolean isRunningPeriodic = false;
 
     private Superstructure<?> superstructure = null;
+    private MultiFacetedMechanism<?> container = null;
 
     private MechanismRequest<?> request = null;
-    private S status = null;
 
     /**
      * This Command runs when no other Command (i.e. Procedure) is reserving this Mechanism.
-     * If this Mechanism defines applyIdleRequest, this Command serves to apply that request.
+     * If this Mechanism defines startIdleRequest, this Command serves to apply that request.
      */
     private final class IdleCommand extends Command {
         public IdleCommand() {
@@ -103,7 +177,7 @@ public abstract class Mechanism<S extends Record & Status>
             try {
                 ReservingCommand.enterCommand(this);
                 try {
-                    applyIdleRequest();
+                    startIdleRequest();
                 } finally {
                     ReservingCommand.exitCommand(this);
                 }
@@ -142,7 +216,10 @@ public abstract class Mechanism<S extends Record & Status>
         if (this.superstructure != null) {
             throw new IllegalStateException("Mechanism is already part of a superstructure");
         }
-        if (this.applyIdleRequest() != null) {
+        if (this.container != null) {
+            throw new IllegalStateException("Mechanism is already part of a MultiFacetedMechanism");
+        }
+        if (this.startIdleRequest() != null) {
             throw new UnsupportedOperationException(
                     "A Mechanism contained in a superstructure cannot define an idle request. "
                             + "Use the superstructure's idle request to control the idle behavior "
@@ -151,9 +228,26 @@ public abstract class Mechanism<S extends Record & Status>
         this.superstructure = superstructure;
     }
 
-    protected final <M extends Mechanism<S>> Request<M> setRequest(Directive directive) {
-        Objects.requireNonNull(directive);
+    /**
+     * Indicate that this Mechanism is part of a MultiFacetedMechanism.
+     */
+    /* package */ void setContainer(MultiFacetedMechanism<?> container) {
+        Objects.requireNonNull(container);
+        if (this.superstructure != null) {
+            throw new IllegalStateException("Mechanism is already part of a Superstructure");
+        }
+        if (this.container != null) {
+            throw new IllegalStateException("Mechanism is already part of a MultiFacetedMechanism");
+        }
+        this.container = container;
+    }
+
+    protected final <M extends Mechanism> Request<M> startRequest(Directive directive) {
+        if (isRunningPeriodic()) {
+            throw new IllegalStateException("Cannot start a request while running another request");
+        }
         checkContextReservation();
+        Objects.requireNonNull(directive);
         var newRequest = new MechanismRequest<M>(directive);
         this.request = newRequest;
         log(this.getName() + " processing request: " + request);
@@ -165,10 +259,10 @@ public abstract class Mechanism<S extends Record & Status>
      * Procedures are reserving this Mechanism. This happens when a Procedure which reserved this
      * Mechanism completes. It can also happen when a Procedure that reserves this Mechanism is
      * preempted by another Procedure, but the new Procedure does not reserve this Mechanism.
-     * applyIdleRequest is especially useful in the latter case, because it can help to "clean up"
+     * startIdleRequest is especially useful in the latter case, because it can help to "clean up"
      * after the cancelled Procedure, returning this Mechanism back to some safe state.
      */
-    protected Request<?> applyIdleRequest() {
+    protected Request<?> startIdleRequest() {
         return null;
     }
 
@@ -201,22 +295,12 @@ public abstract class Mechanism<S extends Record & Status>
     }
 
     @Override
-    public final Set<Subsystem> getReservableSubsystems() {
+    public final Set<? extends MechanismSubsystem> getReservableSubsystems() {
         return Set.of(subsystem);
-    }
-
-    public final S getStatus() {
-        if (status == null) {
-            throw new NoSuchElementException(getName() + " has not published a status yet");
-        }
-        return status;
     }
 
     /* package */ void periodicInternal() {
         try {
-            status = reportStatus();
-            StatusBus.getInstance().publishStatus(status);
-
             isRunningPeriodic = true;
             request.runDirective();
         } catch (Exception ex) {
@@ -227,5 +311,8 @@ public abstract class Mechanism<S extends Record & Status>
         }
     }
 
-    protected abstract S reportStatus();
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

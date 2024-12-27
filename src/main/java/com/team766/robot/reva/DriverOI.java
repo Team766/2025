@@ -67,15 +67,13 @@ public class DriverOI {
                 () -> {
                     // If a button is pressed, drive is just fine adjustment
                     final double drivingCoefficient =
-                            rightJoystick.getButton(
-                                            InputConstants.BUTTON_FINE_DRIVING)
+                            rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)
                                     ? ControlConstants.FINE_DRIVING_COEFFICIENT
                                     : 1;
                     // For fwd/rv
                     // Negative because forward is negative in driver station
                     final double leftJoystickX =
-                            -leftJoystick.getAxis(
-                                            InputConstants.AXIS_FORWARD_BACKWARD)
+                            -leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)
                                     * ControlConstants.MAX_TRANSLATIONAL_VELOCITY;
                     // For left/right
                     // Negative because left is negative in driver station
@@ -87,13 +85,11 @@ public class DriverOI {
                             drivingCoefficient
                                     * curvedJoystickPower(
                                             leftJoystickX,
-                                            ControlConstants
-                                                    .TRANSLATIONAL_CURVE_POWER),
+                                            ControlConstants.TRANSLATIONAL_CURVE_POWER),
                             drivingCoefficient
                                     * curvedJoystickPower(
                                             leftJoystickY,
-                                            ControlConstants
-                                                    .TRANSLATIONAL_CURVE_POWER));
+                                            ControlConstants.TRANSLATIONAL_CURVE_POWER));
                 });
         oi.addRule(
                 "Rotate robot",
@@ -103,8 +99,7 @@ public class DriverOI {
                 () -> {
                     // If a button is pressed, drive is just fine adjustment
                     final double drivingCoefficient =
-                            rightJoystick.getButton(
-                                            InputConstants.BUTTON_FINE_DRIVING)
+                            rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)
                                     ? ControlConstants.FINE_DRIVING_COEFFICIENT
                                     : 1;
                     // For steer
@@ -117,8 +112,7 @@ public class DriverOI {
                             drivingCoefficient
                                     * curvedJoystickPower(
                                             rightJoystickY,
-                                            ControlConstants
-                                                    .ROTATIONAL_CURVE_POWER));
+                                            ControlConstants.ROTATIONAL_CURVE_POWER));
                 });
     }
 

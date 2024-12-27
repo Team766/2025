@@ -6,7 +6,7 @@ import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_RIGHT;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework3.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
@@ -14,7 +14,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.library.ValueProvider;
 
-public class Shoulder extends Mechanism<Shoulder.ShoulderStatus> {
+public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     public static class Position {
         // TODO: Find actual values.
         public static final double BOTTOM = 0;
@@ -35,7 +35,7 @@ public class Shoulder extends Mechanism<Shoulder.ShoulderStatus> {
     }
 
     public Request<Shoulder> requestStop() {
-        return setRequest(leftMotor.requestStop());
+        return startRequest(leftMotor.requestStop());
     }
 
     public Request<Shoulder> requestHoldPosition() {
@@ -43,19 +43,27 @@ public class Shoulder extends Mechanism<Shoulder.ShoulderStatus> {
         return requestPosition(currentAngle);
     }
 
-    public Request<Shoulder> requestNudgeUp() {
+    public double getNudgeUpPosition() {
         final double currentAngle = getStatus().angle();
-        return requestPosition(currentAngle + NUDGE_AMOUNT);
+        return currentAngle + NUDGE_AMOUNT;
+    }
+
+    public Request<Shoulder> requestNudgeUp() {
+        return requestPosition(getNudgeUpPosition());
+    }
+
+    public double getNudgeDownPosition() {
+        final double currentAngle = getStatus().angle();
+        return currentAngle - NUDGE_AMOUNT;
     }
 
     public Request<Shoulder> requestNudgeDown() {
-        final double currentAngle = getStatus().angle();
-        return requestPosition(currentAngle - NUDGE_AMOUNT);
+        return requestPosition(getNudgeDownPosition());
     }
 
     public Request<Shoulder> requestPosition(double targetAngle) {
         targetAngle = com.team766.math.Math.clamp(targetAngle, Position.BOTTOM, Position.TOP);
-        return setRequest(
+        return startRequest(
                 leftMotor.requestPosition(
                         degreesToRotations(targetAngle),
                         degreesToRotations(NEAR_THRESHOLD),

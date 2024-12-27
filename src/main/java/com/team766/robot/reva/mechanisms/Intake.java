@@ -6,43 +6,43 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework3.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
 
-public class Intake extends Mechanism<Intake.IntakeStatus> {
+public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     public record IntakeStatus(double motorPower, boolean hasNoteInIntake, boolean isNoteClose)
             implements Status {}
 
-    public Request<Intake> setMotorPower(double power) {
-        return setRequest(intakeMotor.requestPercentOutput(power));
+    public Request<Intake> requestMotorPower(double power) {
+        return startRequest(intakeMotor.requestPercentOutput(power));
     }
 
     public Request<Intake> requestIn() {
-        return setMotorPower(DEFAULT_POWER);
+        return requestMotorPower(DEFAULT_POWER);
     }
 
     public Request<Intake> requestOut() {
-        return setMotorPower(-1 * DEFAULT_POWER);
+        return requestMotorPower(-1 * DEFAULT_POWER);
     }
 
     public Request<Intake> requestStop() {
-        return setMotorPower(0.0);
+        return requestMotorPower(0.0);
     }
 
     public Request<Intake> requestNudgeUp() {
-        return setMotorPower(Math.min(getStatus().motorPower() + NUDGE_INCREMENT, MAX_POWER));
+        return requestMotorPower(Math.min(getStatus().motorPower() + NUDGE_INCREMENT, MAX_POWER));
     }
 
     public Request<Intake> requestNudgeDown() {
-        return setMotorPower(Math.max(getStatus().motorPower() - NUDGE_INCREMENT, MIN_POWER));
+        return requestMotorPower(Math.max(getStatus().motorPower() - NUDGE_INCREMENT, MIN_POWER));
     }
 
     public Request<Intake> requestPowerForSensorDistance() {
-        return setRequest(
+        return startRequest(
                 () -> {
                     intakeMotor.set(
                             com.team766.math.Math.interpolate(
@@ -90,7 +90,7 @@ public class Intake extends Mechanism<Intake.IntakeStatus> {
     }
 
     @Override
-    protected Request<Intake> applyIdleRequest() {
+    protected Request<Intake> startIdleRequest() {
         return requestStop();
     }
 
@@ -102,7 +102,7 @@ public class Intake extends Mechanism<Intake.IntakeStatus> {
 
         return new IntakeStatus(
                 intakeMotor.get(),
-                (threshold.get()) > sensor.getRange() && sensor.isRangeValid(),
-                (IS_CLOSE_THRESHOLD) > sensor.getRange() && sensor.isRangeValid());
+                threshold.get() > sensor.getRange() && sensor.isRangeValid(),
+                IS_CLOSE_THRESHOLD > sensor.getRange() && sensor.isRangeValid());
     }
 }

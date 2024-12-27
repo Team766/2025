@@ -20,127 +20,106 @@ public class Arm extends Superstructure<Arm.ArmStatus> {
     }
 
     public Request<Arm> requestStop() {
-        return setRequest(
+        return startRequest(
                 requestAllOf(
-                        submechanismRequest(shoulder.requestStop()),
-                        submechanismRequest(elevator.requestStop()),
-                        submechanismRequest(wrist.requestStop())));
+                        requestOfSubmechanism(shoulder.requestStop()),
+                        requestOfSubmechanism(elevator.requestStop()),
+                        requestOfSubmechanism(wrist.requestStop())));
     }
 
     public Request<Arm> requestHoldPosition() {
-        return setRequest(
+        return startRequest(
                 requestAllOf(
-                        submechanismRequest(shoulder.requestHoldPosition()),
-                        submechanismRequest(elevator.requestHoldPosition()),
-                        submechanismRequest(wrist.requestHoldPosition())));
+                        requestOfSubmechanism(shoulder.requestHoldPosition()),
+                        requestOfSubmechanism(elevator.requestHoldPosition()),
+                        requestOfSubmechanism(wrist.requestHoldPosition())));
     }
 
     public Request<Arm> requestNudgeShoulderUp() {
-        return setRequest(
+        return startRequest(
                 requestAllOf(
-                        submechanismRequest(shoulder.requestNudgeUp()),
-                        submechanismRequest(elevator.requestHoldPosition()),
-                        submechanismRequest(wrist.requestHoldPosition())));
+                        requestOfSubmechanism(shoulder.requestNudgeUp()),
+                        requestOfSubmechanism(elevator.requestHoldPosition()),
+                        requestOfSubmechanism(wrist.requestHoldPosition())));
     }
 
     public Request<Arm> requestNudgeShoulderDown() {
-        return setRequest(
+        return startRequest(
                 requestAllOf(
-                        submechanismRequest(shoulder.requestNudgeDown()),
-                        submechanismRequest(elevator.requestHoldPosition()),
-                        submechanismRequest(wrist.requestHoldPosition())));
+                        requestOfSubmechanism(shoulder.requestNudgeDown()),
+                        requestOfSubmechanism(elevator.requestHoldPosition()),
+                        requestOfSubmechanism(wrist.requestHoldPosition())));
     }
 
     public Request<Arm> requestNudgeElevatorUp() {
-        return setRequest(
+        return startRequest(
                 requestAllOf(
-                        submechanismRequest(shoulder.requestHoldPosition()),
-                        submechanismRequest(elevator.requestNudgeUp()),
-                        submechanismRequest(wrist.requestHoldPosition())));
+                        requestOfSubmechanism(shoulder.requestHoldPosition()),
+                        requestOfSubmechanism(elevator.requestNudgeUp()),
+                        requestOfSubmechanism(wrist.requestHoldPosition())));
     }
 
     public Request<Arm> requestNudgeElevatorDown() {
-        return setRequest(
+        return startRequest(
                 requestAllOf(
-                        submechanismRequest(shoulder.requestHoldPosition()),
-                        submechanismRequest(elevator.requestNudgeDown()),
-                        submechanismRequest(wrist.requestHoldPosition())));
+                        requestOfSubmechanism(shoulder.requestHoldPosition()),
+                        requestOfSubmechanism(elevator.requestNudgeDown()),
+                        requestOfSubmechanism(wrist.requestHoldPosition())));
     }
 
     public Request<Arm> requestNudgeWristUp() {
-        return setRequest(
+        return startRequest(
                 requestAllOf(
-                        submechanismRequest(shoulder.requestHoldPosition()),
-                        submechanismRequest(elevator.requestHoldPosition()),
-                        submechanismRequest(wrist.requestNudgeUp())));
+                        requestOfSubmechanism(shoulder.requestHoldPosition()),
+                        requestOfSubmechanism(elevator.requestHoldPosition()),
+                        requestOfSubmechanism(wrist.requestNudgeUp())));
     }
 
     public Request<Arm> requestNudgeWristDown() {
-        return setRequest(
+        return startRequest(
                 requestAllOf(
-                        submechanismRequest(shoulder.requestHoldPosition()),
-                        submechanismRequest(elevator.requestHoldPosition()),
-                        submechanismRequest(wrist.requestNudgeDown())));
+                        requestOfSubmechanism(shoulder.requestHoldPosition()),
+                        requestOfSubmechanism(elevator.requestHoldPosition()),
+                        requestOfSubmechanism(wrist.requestNudgeDown())));
     }
 
     public Request<Arm> requestPosition(
             double shoulderSetpoint, double elevatorSetpoint, double wristSetpoint) {
-        return setRequest(
+        return startRequest(
                 () -> {
-                    if (elevator.getStatus().isNearTo(elevatorSetpoint)) {
-                        // If lowering the shoulder, do that after
-                        // the elevator.
+                    if (!elevator.getStatus().isNearTo(elevatorSetpoint)) {
+                        final boolean isRaisingShoulder =
+                                shoulderSetpoint > shoulder.getStatus().angle();
+                        // If raising the shoulder, do that before the elevator (else, lower it
+                        // after the elevator).
+                        final var prepareShoulderRequest =
+                                isRaisingShoulder
+                                        ? shoulder.requestPosition(shoulderSetpoint)
+                                        : shoulder.requestHoldPosition();
+                        final var prepareWristRequest =
+                                wrist.requestPosition(Wrist.Position.RETRACTED);
+
+                        if (!prepareWristRequest.isDone() || !prepareShoulderRequest.isDone()) {
+                            // Wait for wrist and possibly shoulder to move before moving elevator.
+                            elevator.requestHoldPosition();
+                        } else {
+                            // Move the elevator until it gets near the target position.
+                            elevator.requestPosition(elevatorSetpoint);
+                        }
+                        return false;
+                    } else {
+                        // If lowering the shoulder, do that after the elevator.
+                        // Else, the shoulder was already moved into position, so keep it there.
                         shoulder.requestPosition(shoulderSetpoint);
 
+                        // The elevator is already in position, but keep it there.
                         elevator.requestPosition(elevatorSetpoint);
 
-                        // Lastly, move the wrist.
+                        // Lastly, move the wrist to its target angle.
                         wrist.requestPosition(wristSetpoint);
 
                         return shoulder.getStatus().isNearTo(shoulderSetpoint)
                                 && wrist.getStatus().isNearTo(wristSetpoint);
-                    }
-
-                    final boolean isRaisingShoulder =
-                            shoulderSetpoint > shoulder.getStatus().angle();
-
-                    // Prepare to move elevator
-                    if (!wrist.getStatus().isNearTo(Wrist.Position.RETRACTED)
-                            ||
-                            // If raising the shoulder, do
-                            // that before the elevator
-                            // (else, lower it after the
-                            // elevator).
-                            (isRaisingShoulder
-                                    && !shoulder.getStatus().isNearTo(shoulderSetpoint))) {
-                        if (isRaisingShoulder) {
-                            shoulder.requestPosition(shoulderSetpoint);
-                        } else {
-                            shoulder.requestHoldPosition();
-                        }
-
-                        elevator.requestHoldPosition();
-
-                        wrist.requestPosition(Wrist.Position.RETRACTED);
-
-                        return false;
-                    }
-
-                    // Moving elevator
-                    {
-                        if (isRaisingShoulder) {
-                            shoulder.requestPosition(shoulderSetpoint);
-                        } else {
-                            shoulder.requestHoldPosition();
-                        }
-
-                        // Move the elevator until it gets near the
-                        // target position.
-                        elevator.requestPosition(elevatorSetpoint);
-
-                        wrist.requestPosition(Wrist.Position.RETRACTED);
-
-                        return false;
                     }
                 });
     }
@@ -193,7 +172,7 @@ public class Arm extends Superstructure<Arm.ArmStatus> {
     }
 
     @Override
-    protected Request<Arm> applyIdleRequest() {
+    protected Request<Arm> startIdleRequest() {
         return requestHoldPosition();
     }
 

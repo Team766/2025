@@ -1,6 +1,7 @@
 package com.team766.robot.gatorade.procedures;
 
 import static com.team766.framework3.Conditions.waitForRequest;
+
 import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
 import com.team766.robot.gatorade.mechanisms.Arm;

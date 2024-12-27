@@ -2,11 +2,11 @@ package com.team766.robot.reva.mechanisms;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.ColorCamera;
-import com.team766.framework3.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import java.util.Optional;
 
-public class NoteCamera extends Mechanism<NoteCamera.NoteCameraStatus> {
+public class NoteCamera extends MechanismWithStatus<NoteCamera.NoteCameraStatus> {
     public record NoteCameraStatus(Optional<Double> yawOfRing, Optional<Double> pitchOfRing)
             implements Status {}
 

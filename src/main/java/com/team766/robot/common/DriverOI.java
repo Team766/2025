@@ -41,9 +41,7 @@ public class DriverOI {
                                                 rightJoystick.getButton(
                                                         InputConstants.BUTTON_CROSS_WHEELS)))
                         .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(drive),
-                                () -> drive.requestStop()));
+                                ONCE_AND_HOLD, Set.of(drive), () -> drive.requestStop()));
 
         // Moves the robot if there are joystick inputs
         oi.addRule(
@@ -83,21 +81,21 @@ public class DriverOI {
                                                     ? ControlConstants.FINE_DRIVING_COEFFICIENT
                                                     : 1;
                                     drive.requestFieldOrientedVelocity(
-                                                    drivingCoefficient
-                                                            * curvedJoystickPower(
-                                                                    leftJoystickX,
-                                                                    ControlConstants
-                                                                            .TRANSLATIONAL_CURVE_POWER),
-                                                    drivingCoefficient
-                                                            * curvedJoystickPower(
-                                                                    leftJoystickY,
-                                                                    ControlConstants
-                                                                            .TRANSLATIONAL_CURVE_POWER),
-                                                    drivingCoefficient
-                                                            * curvedJoystickPower(
-                                                                    rightJoystickY,
-                                                                    ControlConstants
-                                                                            .ROTATIONAL_CURVE_POWER));
+                                            drivingCoefficient
+                                                    * curvedJoystickPower(
+                                                            leftJoystickX,
+                                                            ControlConstants
+                                                                    .TRANSLATIONAL_CURVE_POWER),
+                                            drivingCoefficient
+                                                    * curvedJoystickPower(
+                                                            leftJoystickY,
+                                                            ControlConstants
+                                                                    .TRANSLATIONAL_CURVE_POWER),
+                                            drivingCoefficient
+                                                    * curvedJoystickPower(
+                                                            rightJoystickY,
+                                                            ControlConstants
+                                                                    .ROTATIONAL_CURVE_POWER));
                                 }));
     }
 

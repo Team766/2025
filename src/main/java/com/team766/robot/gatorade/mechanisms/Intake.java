@@ -4,7 +4,6 @@ import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
 import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
-import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
@@ -19,7 +18,7 @@ import com.team766.hal.RobotProvider;
  * intake or outtake.  This is because the motor must spin in opposite directions to intake cubes
  * versus cones.
  */
-public class Intake extends Mechanism<Intake.IntakeStatus> {
+public class Intake extends Mechanism {
 
     private static final double POWER_IN = 0.3;
     private static final double POWER_OUT = 0.25;
@@ -55,8 +54,6 @@ public class Intake extends Mechanism<Intake.IntakeStatus> {
         OUT
     }
 
-    public record IntakeStatus() implements Status {}
-
     private final MotorController motor;
 
     /**
@@ -80,11 +77,6 @@ public class Intake extends Mechanism<Intake.IntakeStatus> {
                             ? POWER_IDLE
                             : (-1 * POWER_IDLE);
                 };
-        return setRequest(motor.requestPercentOutput(motorCommand));
-    }
-
-    @Override
-    protected IntakeStatus reportStatus() {
-        return new IntakeStatus();
+        return startRequest(motor.requestPercentOutput(motorCommand));
     }
 }

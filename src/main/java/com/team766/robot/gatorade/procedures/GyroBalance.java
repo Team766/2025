@@ -1,6 +1,7 @@
 package com.team766.robot.gatorade.procedures;
 
 import static com.team766.framework3.Conditions.waitForRequest;
+
 import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
 import com.team766.robot.common.mechanisms.SwerveDrive;
@@ -62,7 +63,8 @@ public class GyroBalance extends Procedure {
         waitForRequest(context, arm.requestExtendedToMid());
 
         // initialY is robot y position when balancing starts
-        final double initialY = getStatusOrThrow(SwerveDrive.DriveStatus.class).currentPosition().getY();
+        final double initialY =
+                getStatusOrThrow(SwerveDrive.DriveStatus.class).currentPosition().getY();
         // Sets movement direction towards desired charge station.
         switch (alliance) {
             case Red:

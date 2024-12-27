@@ -123,9 +123,8 @@ public class RuleTest {
 
     @Test
     public void testGetMechanismsToReserve() {
-        final Set<Mechanism<?, ?>> newlyMechanisms =
-                Set.of(new FakeMechanism1(), new FakeMechanism2());
-        final Set<Mechanism<?, ?>> finishedMechanisms = Set.of(new FakeMechanism());
+        final Set<Reservable> newlyMechanisms = Set.of(new FakeMechanism1(), new FakeMechanism2());
+        final Set<Reservable> finishedMechanisms = Set.of(new FakeMechanism());
 
         Rule duckDuckGooseGoose =
                 getSingleElement(
@@ -135,27 +134,27 @@ public class RuleTest {
                                 .build());
 
         // NONE
-        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getSubsystemsToReserve());
 
         // NEWLY
         duckDuckGooseGoose.evaluate();
-        assertEquals(newlyMechanisms, duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(newlyMechanisms, duckDuckGooseGoose.getSubsystemsToReserve());
 
         // nothing between NEWLLY and FINISHED
         duckDuckGooseGoose.evaluate();
-        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getSubsystemsToReserve());
 
         // FINISHED
         duckDuckGooseGoose.evaluate();
-        assertEquals(finishedMechanisms, duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(finishedMechanisms, duckDuckGooseGoose.getSubsystemsToReserve());
 
         // check NONE again
         duckDuckGooseGoose.evaluate();
-        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getSubsystemsToReserve());
 
         // check newly again
         duckDuckGooseGoose.evaluate();
-        assertEquals(newlyMechanisms, duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(newlyMechanisms, duckDuckGooseGoose.getSubsystemsToReserve());
     }
 
     @Test
