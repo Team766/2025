@@ -31,7 +31,7 @@ public class OI extends RuleEngine {
 
         addRule(
                 "Drive Robot",
-                () -> true,
+                UNCONDITIONAL,
                 REPEATEDLY,
                 drive,
                 () ->

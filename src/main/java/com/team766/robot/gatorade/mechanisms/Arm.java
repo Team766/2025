@@ -1,9 +1,15 @@
 package com.team766.robot.gatorade.mechanisms;
 
+import static com.team766.framework3.RulePersistence.ONCE_AND_HOLD;
+
 import com.team766.framework3.Request;
+import com.team766.framework3.Rule;
+import com.team766.framework3.RuleBasedRequest;
 import com.team766.framework3.Superstructure;
 import com.team766.robot.gatorade.PlacementPosition;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
 
 public class Arm extends Superstructure {
     private final Shoulder shoulder;
@@ -82,40 +88,83 @@ public class Arm extends Superstructure {
 
     public Request<Arm> requestPosition(
             double shoulderSetpoint, double elevatorSetpoint, double wristSetpoint) {
+        final BooleanSupplier isRaisingShoulder =
+                () -> shoulderSetpoint > shoulder.getStatus().angle();
         return startRequest(
-                () -> {
-                    if (!elevator.getStatus().isNearTo(elevatorSetpoint)) {
-                        final boolean isRaisingShoulder =
-                                shoulderSetpoint > shoulder.getStatus().angle();
-                        // If raising the shoulder, do that before the elevator (else, lower it
-                        // after the elevator).
-                        final var prepareShoulderRequest =
-                                isRaisingShoulder
-                                        ? shoulder.requestPosition(shoulderSetpoint)
-                                        : shoulder.requestHoldPosition();
-                        final var prepareWristRequest =
-                                wrist.requestPosition(Wrist.Position.RETRACTED);
+                new RuleBasedRequest() {
+                    {
+                        addRule(
+                                Rule.create(
+                                                "Need to move elevator",
+                                                () ->
+                                                        !elevator.getStatus()
+                                                                .isNearTo(elevatorSetpoint))
+                                        .onTriggering(
+                                                ONCE_AND_HOLD,
+                                                Set.of(shoulder, wrist),
+                                                () -> {
+                                                    // If raising the shoulder, do that before the
+                                                    // elevator (else, lower it after the elevator).
+                                                    if (isRaisingShoulder.getAsBoolean()) {
+                                                        shoulder.requestPosition(shoulderSetpoint);
+                                                    } else {
+                                                        shoulder.requestHoldPosition();
+                                                    }
+                                                    wrist.requestPosition(Wrist.Position.RETRACTED);
+                                                })
+                                        .whenTriggering(
+                                                // Wait for wrist and possibly shoulder to move
+                                                // before moving elevator.
+                                                Rule.create(
+                                                                "Wait for wrist and shoulder before moving elevator",
+                                                                () ->
+                                                                        wrist.getStatus()
+                                                                                        .isNearTo(
+                                                                                                wristSetpoint)
+                                                                                || (isRaisingShoulder
+                                                                                                .getAsBoolean()
+                                                                                        && !shoulder.getStatus()
+                                                                                                .isNearTo(
+                                                                                                        shoulderSetpoint)))
+                                                        .onTriggering(
+                                                                ONCE_AND_HOLD,
+                                                                Set.of(elevator),
+                                                                () ->
+                                                                        elevator
+                                                                                .requestHoldPosition()),
+                                                // Move the elevator until it gets near the target
+                                                // position.
+                                                Rule.create("Move elevator", UNCONDITIONAL)
+                                                        .onTriggering(
+                                                                ONCE_AND_HOLD,
+                                                                Set.of(elevator),
+                                                                () ->
+                                                                        elevator.requestPosition(
+                                                                                elevatorSetpoint))));
 
-                        if (!prepareWristRequest.isDone() || !prepareShoulderRequest.isDone()) {
-                            // Wait for wrist and possibly shoulder to move before moving elevator.
-                            elevator.requestHoldPosition();
-                        } else {
-                            // Move the elevator until it gets near the target position.
-                            elevator.requestPosition(elevatorSetpoint);
-                        }
-                        return false;
-                    } else {
-                        // If lowering the shoulder, do that after the elevator.
-                        // Else, the shoulder was already moved into position, so keep it there.
-                        shoulder.requestPosition(shoulderSetpoint);
+                        addRule(
+                                "After elevator in position",
+                                UNCONDITIONAL,
+                                ONCE_AND_HOLD,
+                                Set.of(shoulder, elevator, wrist),
+                                () -> {
+                                    // If lowering the shoulder, do that after the elevator.
+                                    // Else, the shoulder was already moved into position, so keep
+                                    // it there.
+                                    shoulder.requestPosition(shoulderSetpoint);
 
-                        // The elevator is already in position, but keep it there.
-                        elevator.requestPosition(elevatorSetpoint);
+                                    // The elevator is already in position, but keep it there.
+                                    elevator.requestPosition(elevatorSetpoint);
 
-                        // Lastly, move the wrist to its target angle.
-                        wrist.requestPosition(wristSetpoint);
+                                    // Lastly, move the wrist to its target angle.
+                                    wrist.requestPosition(wristSetpoint);
+                                });
+                    }
 
+                    @Override
+                    protected boolean isDone() {
                         return shoulder.getStatus().isNearTo(shoulderSetpoint)
+                                && elevator.getStatus().isNearTo(elevatorSetpoint)
                                 && wrist.getStatus().isNearTo(wristSetpoint);
                     }
                 });

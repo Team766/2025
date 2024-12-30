@@ -1,24 +1,41 @@
 package com.team766.robot.reva.mechanisms;
 
+import static com.team766.framework3.RulePersistence.ONCE_AND_HOLD;
+
 import com.team766.framework3.Request;
+import com.team766.framework3.RuleBasedRequest;
 import com.team766.framework3.Superstructure;
+import java.util.Set;
 
 public class ArmAndClimber extends Superstructure {
     public Request<ArmAndClimber> requestShoulderPosition(double targetPosition) {
         return startRequest(
-                () -> {
-                    climber.requestPosition(Climber.Position.BOTTOM);
+                new RuleBasedRequest() {
+                    {
+                        addRule(
+                                "Move climber out of conflict",
+                                () ->
+                                        climber.getStatus().heightLeft()
+                                                        > Climber.Position.BELOW_ARM
+                                                || climber.getStatus().heightRight()
+                                                        > Climber.Position.BELOW_ARM,
+                                ONCE_AND_HOLD,
+                                Set.of(climber, shoulder),
+                                () -> {
+                                    shoulder.requestHoldPosition();
+                                    climber.requestPosition(Climber.Position.BOTTOM);
+                                });
 
-                    final var climberStatus = climber.getStatus();
-                    final boolean climberIsBelowArm =
-                            climberStatus.heightLeft() < Climber.Position.BELOW_ARM
-                                    && climberStatus.heightRight() < Climber.Position.BELOW_ARM;
-                    if (climberIsBelowArm) {
-                        var shoulderRequest = shoulder.requestPosition(targetPosition);
-                        return shoulderRequest.isDone();
-                    } else {
-                        shoulder.requestHoldPosition();
-                        return false;
+                        addRule(
+                                "Move shoulder when available",
+                                UNCONDITIONAL,
+                                shoulder,
+                                () -> shoulder.requestPosition(targetPosition));
+                    }
+
+                    @Override
+                    protected boolean isDone() {
+                        return shoulder.getStatus().isNearTo(targetPosition);
                     }
                 });
     }
@@ -38,36 +55,62 @@ public class ArmAndClimber extends Superstructure {
     public Request<ArmAndClimber> requestClimberMotorPowers(
             double powerLeft, double powerRight, boolean overrideSoftLimits) {
         return startRequest(
-                () -> {
-                    var shoulderRequest = shoulder.requestPosition(Shoulder.Position.TOP);
-                    if (shoulderRequest.isDone()) {
-                        var climberRequest =
-                                climber.requestMotorPowers(
-                                        powerLeft, powerRight, overrideSoftLimits);
-                        return climberRequest.isDone();
-                    } else {
-                        climber.requestStop();
-                        return false;
+                new RuleBasedRequest() {
+                    {
+                        addRule(
+                                "Move shoulder out of conflict",
+                                () -> !shoulder.getStatus().isNearTo(Shoulder.Position.TOP),
+                                ONCE_AND_HOLD,
+                                Set.of(climber, shoulder),
+                                () -> {
+                                    climber.requestStop();
+                                    shoulder.requestPosition(Shoulder.Position.TOP);
+                                });
+
+                        addRule(
+                                "Move climber when available",
+                                UNCONDITIONAL,
+                                climber,
+                                () ->
+                                        climber.requestMotorPowers(
+                                                powerLeft, powerRight, overrideSoftLimits));
                     }
+
+                    @Override
+                    protected boolean isDone() {}
                 });
     }
 
     public Request<ArmAndClimber> requestClimberPosition(double targetHeight) {
-        if (targetHeight < Climber.Position.BELOW_ARM) {
-            return startRequest(requestOfSubmechanism(climber.requestPosition(targetHeight)));
-        } else {
-            return startRequest(
-                    () -> {
-                        var shoulderRequest = shoulder.requestPosition(Shoulder.Position.TOP);
-                        if (shoulderRequest.isDone()) {
-                            var climberRequest = climber.requestPosition(targetHeight);
-                            return climberRequest.isDone();
-                        } else {
-                            climber.requestStop();
-                            return false;
-                        }
-                    });
-        }
+        return startRequest(
+                new RuleBasedRequest() {
+                    {
+                        addRule(
+                                "Move shoulder out of conflict",
+                                () ->
+                                        targetHeight > Climber.Position.BELOW_ARM
+                                                && !shoulder.getStatus()
+                                                        .isNearTo(Shoulder.Position.TOP),
+                                ONCE_AND_HOLD,
+                                Set.of(climber, shoulder),
+                                () -> {
+                                    climber.requestStop();
+                                    shoulder.requestPosition(Shoulder.Position.TOP);
+                                });
+
+                        addRule(
+                                "Move climber when available",
+                                UNCONDITIONAL,
+                                climber,
+                                () -> climber.requestPosition(targetHeight));
+                    }
+
+                    @Override
+                    protected boolean isDone() {
+                        return climber.getStatus().isLeftNear(targetHeight)
+                                && climber.getStatus().isRightNear(targetHeight);
+                    }
+                });
     }
 
     public Request<ArmAndClimber> requestStop() {

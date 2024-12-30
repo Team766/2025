@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 
 /* package */ abstract class RuleGroupConstructors implements StatusesMixin, LoggingBase {
 
+    protected static final BooleanSupplier UNCONDITIONAL = () -> true;
+
     @Override
     public Category getLoggerCategory() {
         return Category.RULES;
