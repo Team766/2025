@@ -24,13 +24,12 @@ public class DriverOI {
                 Rule.create(
                                 "Reset Gyro",
                                 () -> leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO))
-                        .withOnTriggeringProcedure(ONCE, Set.of(drive), () -> drive.resetGyro()));
+                        .onTriggering(ONCE, Set.of(drive), () -> drive.resetGyro()));
         oi.addRule(
                 Rule.create(
                                 "Reset Pos",
                                 () -> leftJoystick.getButton(InputConstants.BUTTON_RESET_POS))
-                        .withOnTriggeringProcedure(
-                                ONCE, Set.of(drive), () -> drive.resetCurrentPosition()));
+                        .onTriggering(ONCE, Set.of(drive), () -> drive.resetCurrentPosition()));
 
         // Sets the wheels to the cross position if the cross button is pressed
         oi.addRule(
@@ -40,8 +39,7 @@ public class DriverOI {
                                         () ->
                                                 rightJoystick.getButton(
                                                         InputConstants.BUTTON_CROSS_WHEELS)))
-                        .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD, Set.of(drive), () -> drive.requestStop()));
+                        .onTriggering(ONCE_AND_HOLD, Set.of(drive), () -> drive.requestStop()));
 
         // Moves the robot if there are joystick inputs
         oi.addRule(
@@ -54,7 +52,7 @@ public class DriverOI {
                                                         InputConstants.AXIS_LEFT_RIGHT)
                                                 || rightJoystick.isAxisMoved(
                                                         InputConstants.AXIS_LEFT_RIGHT))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 REPEATEDLY,
                                 Set.of(drive),
                                 () -> {

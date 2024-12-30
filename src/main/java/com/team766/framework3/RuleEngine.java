@@ -57,7 +57,7 @@ public class RuleEngine implements StatusesMixin, LoggingBase {
             BooleanSupplier predicate,
             RulePersistence rulePersistence,
             Supplier<Procedure> action) {
-        addRule(Rule.create(name, predicate).withOnTriggeringProcedure(rulePersistence, action));
+        addRule(Rule.create(name, predicate).onTriggering(rulePersistence, action));
     }
 
     public void addRule(
@@ -68,8 +68,7 @@ public class RuleEngine implements StatusesMixin, LoggingBase {
             Runnable action) {
         addRule(
                 Rule.create(name, predicate)
-                        .withOnTriggeringProcedure(
-                                rulePersistence, reservations, () -> action.run()));
+                        .onTriggering(rulePersistence, reservations, () -> action.run()));
     }
 
     public <M extends Reservable> void addRule(
@@ -80,8 +79,7 @@ public class RuleEngine implements StatusesMixin, LoggingBase {
             Supplier<Request<M>> requestSupplier) {
         addRule(
                 Rule.create(name, predicate)
-                        .withOnTriggeringProcedure(
-                                rulePersistence, Set.of(reservation), requestSupplier::get));
+                        .onTriggering(rulePersistence, Set.of(reservation), requestSupplier::get));
     }
 
     public <M extends Reservable> void addRule(

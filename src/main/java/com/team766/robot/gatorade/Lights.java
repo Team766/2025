@@ -26,7 +26,7 @@ public class Lights extends RuleEngine {
                                 () ->
                                         checkForStatusEntryWith(
                                                 OI.OIStatus.class, s -> s.age() < 1.3))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 REPEATEDLY,
                                 Set.of(),
                                 () -> {
@@ -42,11 +42,11 @@ public class Lights extends RuleEngine {
                                 () ->
                                         DriverStation.getMatchTime() > 0
                                                 && DriverStation.getMatchTime() < 17)
-                        .withOnTriggeringProcedure(ONCE_AND_HOLD, Set.of(), () -> rainbow()));
+                        .onTriggering(ONCE_AND_HOLD, Set.of(), () -> rainbow()));
 
         addRule(
                 Rule.create("Default display", () -> checkForStatus(OI.OIStatus.class))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 REPEATEDLY,
                                 Set.of(),
                                 () -> {

@@ -28,7 +28,7 @@ public class Lights extends RuleEngine {
                 Rule.create("Robot Disabled", () -> DriverStation.isDisabled())
                         .whenTriggering(
                                 Rule.create("Camera Missing", isCameraMissing)
-                                        .withOnTriggeringProcedure(
+                                        .onTriggering(
                                                 ONCE_AND_HOLD,
                                                 Set.of(),
                                                 () -> signalCameraNotConnected())

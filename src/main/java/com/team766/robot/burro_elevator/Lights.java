@@ -24,7 +24,7 @@ public class Lights extends RuleEngine {
                                 () ->
                                         DriverStation.getMatchTime() > 0
                                                 && DriverStation.getMatchTime() < 17)
-                        .withOnTriggeringProcedure(ONCE_AND_HOLD, Set.of(), () -> rainbow()));
+                        .onTriggering(ONCE_AND_HOLD, Set.of(), () -> rainbow()));
 
         addRule(
                 Rule.create(
@@ -33,7 +33,7 @@ public class Lights extends RuleEngine {
                                         checkForStatusWith(
                                                 Elevator.ElevatorStatus.class,
                                                 s -> s.position() >= Elevator.TOP_POSITION))
-                        .withOnTriggeringProcedure(ONCE_AND_HOLD, Set.of(), () -> elevatorAtTop()));
+                        .onTriggering(ONCE_AND_HOLD, Set.of(), () -> elevatorAtTop()));
 
         addRule(
                 Rule.create(
@@ -42,8 +42,7 @@ public class Lights extends RuleEngine {
                                         checkForStatusWith(
                                                 Elevator.ElevatorStatus.class,
                                                 s -> s.position() <= Elevator.BOTTOM_POSITION))
-                        .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD, Set.of(), () -> elevatorAtBottom()));
+                        .onTriggering(ONCE_AND_HOLD, Set.of(), () -> elevatorAtBottom()));
     }
 
     public void elevatorAtBottom() {

@@ -33,7 +33,7 @@ public class BoxOpOI implements StatusesMixin {
                                 () ->
                                         gamepad.getButton(InputConstants.XBOX_A)
                                                 && gamepad.getButton(InputConstants.XBOX_B))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 // move the shoulder out of the way
                                 ONCE,
                                 Set.of(ss),
@@ -45,7 +45,7 @@ public class BoxOpOI implements StatusesMixin {
                                                 gamepad.whenAnyAxisMoved(
                                                         InputConstants.XBOX_LS_Y,
                                                         InputConstants.XBOX_RS_Y))
-                                        .withOnTriggeringProcedure(
+                                        .onTriggering(
                                                 REPEATEDLY,
                                                 Set.of(ss),
                                                 () -> {
@@ -60,16 +60,16 @@ public class BoxOpOI implements StatusesMixin {
                                                                     InputConstants.XBOX_RS_Y),
                                                             overrideSoftLimits);
                                                 })
-                                        .withFinishedTriggeringProcedure(
+                                        .onFinishedTriggering(
                                                 Set.of(ss), () -> ss.requestClimberStop()))
-                        .withFinishedTriggeringProcedure(
+                        .onFinishedTriggering(
                                 // restore the shoulder (and stop the climber)
                                 Set.of(ss), () -> ss.requestShoulderPosition(85))
                         .whenNotTriggering(
                                 Rule.create(
                                                 "Shoulder to Intake",
                                                 () -> gamepad.getButton(InputConstants.XBOX_A))
-                                        .withOnTriggeringProcedure(
+                                        .onTriggering(
                                                 ONCE,
                                                 Set.of(ss),
                                                 () ->
@@ -78,7 +78,7 @@ public class BoxOpOI implements StatusesMixin {
                                 Rule.create(
                                                 "Shoulder to close shot",
                                                 () -> gamepad.getButton(InputConstants.XBOX_B))
-                                        .withOnTriggeringProcedure(
+                                        .onTriggering(
                                                 ONCE,
                                                 Set.of(ss),
                                                 () ->
@@ -87,7 +87,7 @@ public class BoxOpOI implements StatusesMixin {
                                 Rule.create(
                                                 "Shoulder to amp shot",
                                                 () -> gamepad.getButton(InputConstants.XBOX_X))
-                                        .withOnTriggeringProcedure(
+                                        .onTriggering(
                                                 ONCE,
                                                 Set.of(ss),
                                                 () ->
@@ -96,7 +96,7 @@ public class BoxOpOI implements StatusesMixin {
                                 Rule.create(
                                                 "Shoulder to assist shot",
                                                 () -> gamepad.getButton(InputConstants.XBOX_Y))
-                                        .withOnTriggeringProcedure(
+                                        .onTriggering(
                                                 ONCE,
                                                 Set.of(ss),
                                                 () ->
@@ -114,19 +114,19 @@ public class BoxOpOI implements StatusesMixin {
                                                                                         s
                                                                                                         .targetSpeed()
                                                                                                 != 0.0))
-                                                        .withOnTriggeringProcedure(
+                                                        .onTriggering(
                                                                 ONCE_AND_HOLD,
                                                                 Set.of(shooter),
                                                                 () ->
                                                                         shooter
                                                                                 .requestShooterAssistSpeed())),
                                 Rule.create("Nudge Shoulder Up", () -> gamepad.getPOV() == 0)
-                                        .withOnTriggeringProcedure(
+                                        .onTriggering(
                                                 REPEATEDLY,
                                                 Set.of(ss),
                                                 () -> ss.requestShoulderNudgeUp()),
                                 Rule.create("Nudge Shoulder Down", () -> gamepad.getPOV() == 180)
-                                        .withOnTriggeringProcedure(
+                                        .onTriggering(
                                                 REPEATEDLY,
                                                 Set.of(ss),
                                                 () -> ss.requestShoulderNudgeDown())));
@@ -155,9 +155,9 @@ public class BoxOpOI implements StatusesMixin {
         // oi.addRule(Rule.create(
         //                 "Rumble when holding note",
         //                 () -> checkStatus(Intake.IntakeStatus.class, s -> s.hasNoteInIntake()))
-        //         .withOnTriggeringProcedure(ONCE_AND_HOLD, Set.of(), () -> ((GenericHID) gamepad)
+        //         .onTriggering(ONCE_AND_HOLD, Set.of(), () -> ((GenericHID) gamepad)
         //                 .setRumble(RumbleType.kBothRumble, 0.5))
-        //         .withFinishedTriggeringProcedure(Set.of(), () -> ((GenericHID) gamepad)
+        //         .onFinishedTriggering(Set.of(), () -> ((GenericHID) gamepad)
         //                 .setRumble(RumbleType.kBothRumble, 0.0)));
     }
 }

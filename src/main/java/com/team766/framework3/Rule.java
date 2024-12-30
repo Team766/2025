@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  *     public MyRules() {
  *       // add rule to spin up the shooter when the boxop presses the right trigger on the gamepad
  *       rules.add(Rule.create("spin up shooter", gamepad.getButton(InputConstants.XBOX_RT)).
- *         withOnTriggeringProcedure(ONCE_AND_HOLD, () -> new ShooterSpin(shooter)));
+ *         onTriggering(ONCE_AND_HOLD, () -> new ShooterSpin(shooter)));
  *       ...
  *     }
  * }
@@ -126,14 +126,13 @@ public class Rule {
         }
 
         /** Specify a creator for the Procedure that should be run when this rule starts triggering. */
-        public Builder withOnTriggeringProcedure(
-                RulePersistence rulePersistence, Supplier<Procedure> action) {
+        public Builder onTriggering(RulePersistence rulePersistence, Supplier<Procedure> action) {
             applyRulePersistence(rulePersistence, action);
             return this;
         }
 
         /** Specify a creator for the Procedure that should be run when this rule starts triggering. */
-        public Builder withOnTriggeringProcedure(
+        public Builder onTriggering(
                 RulePersistence rulePersistence, Set<Reservable> reservations, Runnable action) {
             applyRulePersistence(
                     rulePersistence, () -> new FunctionalInstantProcedure(reservations, action));
@@ -141,7 +140,7 @@ public class Rule {
         }
 
         /** Specify a creator for the Procedure that should be run when this rule starts triggering. */
-        public Builder withOnTriggeringProcedure(
+        public Builder onTriggering(
                 RulePersistence rulePersistence,
                 Set<Reservable> reservations,
                 Consumer<Context> action) {
@@ -151,14 +150,13 @@ public class Rule {
         }
 
         /** Specify a creator for the Procedure that should be run when this rule was triggering before and is no longer triggering. */
-        public Builder withFinishedTriggeringProcedure(Supplier<Procedure> action) {
+        public Builder onFinishedTriggering(Supplier<Procedure> action) {
             this.finishedTriggeringProcedure = action;
             return this;
         }
 
         /** Specify a creator for the Procedure that should be run when this rule was triggering before and is no longer triggering. */
-        public Builder withFinishedTriggeringProcedure(
-                Set<Reservable> reservations, Runnable action) {
+        public Builder onFinishedTriggering(Set<Reservable> reservations, Runnable action) {
             this.finishedTriggeringProcedure =
                     () -> new FunctionalInstantProcedure(reservations, action);
             return this;

@@ -43,11 +43,11 @@ public class OI extends RuleEngine {
                 Rule.create(
                                 "Intake Out",
                                 () -> leftJoystick.getButton(InputConstants.BUTTON_INTAKE_OUT))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 ONCE_AND_HOLD,
                                 Set.of(intake),
                                 () -> intake.requestIntake(gamePieceType, Intake.MotorState.OUT))
-                        .withFinishedTriggeringProcedure(
+                        .onFinishedTriggering(
                                 Set.of(intake),
                                 () -> intake.requestIntake(gamePieceType, Intake.MotorState.STOP)));
 
@@ -56,7 +56,7 @@ public class OI extends RuleEngine {
         // first, check if the boxop is making a cone or cube selection
         addRule(
                 Rule.create("Select Cone", () -> boxopGamepad.getPOV() == InputConstants.POV_UP)
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 ONCE,
                                 Set.of(),
                                 () -> {
@@ -65,7 +65,7 @@ public class OI extends RuleEngine {
                                 }));
         addRule(
                 Rule.create("Select Cube", () -> boxopGamepad.getPOV() == InputConstants.POV_DOWN)
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 ONCE,
                                 Set.of(),
                                 () -> {
@@ -78,7 +78,7 @@ public class OI extends RuleEngine {
                 Rule.create(
                                 "Select none",
                                 () -> boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 ONCE,
                                 Set.of(),
                                 () -> {
@@ -89,7 +89,7 @@ public class OI extends RuleEngine {
                 Rule.create(
                                 "Select low",
                                 () -> boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 ONCE,
                                 Set.of(),
                                 () -> {
@@ -100,7 +100,7 @@ public class OI extends RuleEngine {
                 Rule.create(
                                 "Select mid",
                                 () -> boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 ONCE,
                                 Set.of(),
                                 () -> {
@@ -111,7 +111,7 @@ public class OI extends RuleEngine {
                 Rule.create(
                                 "Select high",
                                 () -> boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 ONCE,
                                 Set.of(),
                                 () -> {
@@ -124,7 +124,7 @@ public class OI extends RuleEngine {
                                 () ->
                                         boxopGamepad.getButton(
                                                 InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 ONCE,
                                 Set.of(),
                                 () -> {
@@ -137,11 +137,11 @@ public class OI extends RuleEngine {
                 Rule.create(
                                 "Intake In",
                                 () -> boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_IN))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 ONCE_AND_HOLD,
                                 Set.of(intake),
                                 () -> intake.requestIntake(gamePieceType, Intake.MotorState.IN))
-                        .withFinishedTriggeringProcedure(
+                        .onFinishedTriggering(
                                 Set.of(intake),
                                 () -> intake.requestIntake(gamePieceType, Intake.MotorState.IDLE)));
 
@@ -149,7 +149,7 @@ public class OI extends RuleEngine {
                 Rule.create(
                                 "Intake Stop",
                                 () -> boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 ONCE,
                                 Set.of(intake),
                                 () -> intake.requestIntake(gamePieceType, Intake.MotorState.STOP)));
@@ -162,7 +162,7 @@ public class OI extends RuleEngine {
                                 () ->
                                         boxopGamepad.getButton(
                                                 InputConstants.BUTTON_EXTEND_WRISTVATOR))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 ONCE,
                                 Set.of(arm),
                                 () -> {
@@ -170,7 +170,7 @@ public class OI extends RuleEngine {
                                         arm.requestExtended(placementPosition, gamePieceType);
                                     }
                                 })
-                        .withFinishedTriggeringProcedure(
+                        .onFinishedTriggering(
                                 Set.of(arm, intake),
                                 () -> {
                                     arm.requestRetracted();
@@ -193,7 +193,7 @@ public class OI extends RuleEngine {
                                                         InputConstants.BUTTON_EXTEND_WRISTVATOR)
                                                 && boxopGamepad.isAxisMoved(
                                                         InputConstants.AXIS_ELEVATOR_MOVEMENT))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 REPEATEDLY,
                                 Set.of(arm),
                                 () -> {
@@ -218,7 +218,7 @@ public class OI extends RuleEngine {
                                                         InputConstants.BUTTON_EXTEND_WRISTVATOR)
                                                 && boxopGamepad.isAxisMoved(
                                                         InputConstants.AXIS_WRIST_MOVEMENT))
-                        .withOnTriggeringProcedure(
+                        .onTriggering(
                                 REPEATEDLY,
                                 Set.of(arm),
                                 () -> {
