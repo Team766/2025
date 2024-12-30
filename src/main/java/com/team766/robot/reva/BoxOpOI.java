@@ -3,8 +3,7 @@ package com.team766.robot.reva;
 import static com.team766.framework3.RulePersistence.*;
 
 import com.team766.framework3.Rule;
-import com.team766.framework3.RuleEngine;
-import com.team766.framework3.StatusesMixin;
+import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.reva.constants.InputConstants;
@@ -15,19 +14,14 @@ import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.IntakeUntilIn;
 import java.util.Set;
 
-public class BoxOpOI implements StatusesMixin {
-    public BoxOpOI(
-            RuleEngine oi,
-            JoystickReader gamepad,
-            ArmAndClimber ss,
-            Intake intake,
-            Shooter shooter) {
+public class BoxOpOI extends RuleGroup {
+    public BoxOpOI(JoystickReader gamepad, ArmAndClimber ss, Intake intake, Shooter shooter) {
         gamepad.setAxisDeadzone(InputConstants.XBOX_LS_Y, ControlConstants.JOYSTICK_DEADZONE);
         gamepad.setAxisDeadzone(InputConstants.XBOX_RS_Y, ControlConstants.JOYSTICK_DEADZONE);
 
         // climber
 
-        oi.addRule(
+        addRule(
                 Rule.create(
                                 "Climber Mode",
                                 () ->
@@ -132,19 +126,19 @@ public class BoxOpOI implements StatusesMixin {
                                                 () -> ss.requestShoulderNudgeDown())));
 
         // shooter
-        oi.addRule(
+        addRule(
                 "Spin Shooter",
                 gamepad.whenAxisMoved(InputConstants.XBOX_RT),
                 shooter,
                 () -> shooter.requestSpeed(4800));
 
         // intake
-        oi.addRule(
+        addRule(
                 "Intake Out",
                 gamepad.whenButton(InputConstants.XBOX_RB),
                 intake,
                 () -> intake.requestOut());
-        oi.addRule(
+        addRule(
                 "Intake Until In",
                 gamepad.whenButton(InputConstants.XBOX_LB),
                 ONCE_AND_HOLD,
@@ -152,7 +146,7 @@ public class BoxOpOI implements StatusesMixin {
 
         // // rumble
         // // TODO(MF3): Add the ability to reserve joysticks
-        // oi.addRule(Rule.create(
+        // addRule(Rule.create(
         //                 "Rumble when holding note",
         //                 () -> checkStatus(Intake.IntakeStatus.class, s -> s.hasNoteInIntake()))
         //         .onTriggering(ONCE_AND_HOLD, Set.of(), () -> ((GenericHID) gamepad)

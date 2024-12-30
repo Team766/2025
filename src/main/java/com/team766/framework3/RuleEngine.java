@@ -3,7 +3,6 @@ package com.team766.framework3;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.team766.logging.Category;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -29,7 +27,7 @@ import java.util.function.Supplier;
  * For a {@link Rule} to trigger, its predicate must be satisfied -- and, the {@link Mechanism}s the corresponding {@link Procedure} would reserve
  * must not be in use or about to be in use from a higher priority {@link Rule}.
  */
-public class RuleEngine implements StatusesMixin, LoggingBase {
+public class RuleEngine extends RuleGroupConstructors {
 
     private static record RuleAction(Rule rule, Rule.TriggerType triggerType) {}
 
@@ -37,57 +35,15 @@ public class RuleEngine implements StatusesMixin, LoggingBase {
     private final Map<Rule, Integer> rulePriorities = new HashMap<>();
     private BiMap<Command, RuleAction> ruleMap = HashBiMap.create();
 
-    public RuleEngine() {}
+    protected RuleEngine() {}
 
     @Override
-    public Category getLoggerCategory() {
-        return Category.RULES;
-    }
-
-    public void addRule(Rule.Builder builder) {
+    protected final void addRule(Rule.Builder builder) {
         for (Rule rule : builder.build()) {
             rules.add(rule);
             int priority = rulePriorities.size();
             rulePriorities.put(rule, priority);
         }
-    }
-
-    public void addRule(
-            String name,
-            BooleanSupplier predicate,
-            RulePersistence rulePersistence,
-            Supplier<Procedure> action) {
-        addRule(Rule.create(name, predicate).onTriggering(rulePersistence, action));
-    }
-
-    public void addRule(
-            String name,
-            BooleanSupplier predicate,
-            RulePersistence rulePersistence,
-            Set<Reservable> reservations,
-            Runnable action) {
-        addRule(
-                Rule.create(name, predicate)
-                        .onTriggering(rulePersistence, reservations, () -> action.run()));
-    }
-
-    public <M extends Reservable> void addRule(
-            String name,
-            BooleanSupplier predicate,
-            RulePersistence rulePersistence,
-            M reservation,
-            Supplier<Request<M>> requestSupplier) {
-        addRule(
-                Rule.create(name, predicate)
-                        .onTriggering(rulePersistence, Set.of(reservation), requestSupplier::get));
-    }
-
-    public <M extends Reservable> void addRule(
-            String name,
-            BooleanSupplier predicate,
-            M reservation,
-            Supplier<Request<M>> requestSupplier) {
-        addRule(name, predicate, RulePersistence.ONCE_AND_HOLD, reservation, requestSupplier);
     }
 
     @VisibleForTesting

@@ -4,35 +4,31 @@ import static com.team766.framework3.RulePersistence.*;
 
 import com.team766.framework3.Conditions;
 import com.team766.framework3.Rule;
-import com.team766.framework3.RuleEngine;
+import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import java.util.Set;
 
-public class DriverOI {
-    public DriverOI(
-            RuleEngine oi,
-            JoystickReader leftJoystick,
-            JoystickReader rightJoystick,
-            SwerveDrive drive) {
+public class DriverOI extends RuleGroup {
+    public DriverOI(JoystickReader leftJoystick, JoystickReader rightJoystick, SwerveDrive drive) {
         leftJoystick.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
         rightJoystick.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
 
-        oi.addRule(
+        addRule(
                 Rule.create(
                                 "Reset Gyro",
                                 () -> leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO))
                         .onTriggering(ONCE, Set.of(drive), () -> drive.resetGyro()));
-        oi.addRule(
+        addRule(
                 Rule.create(
                                 "Reset Pos",
                                 () -> leftJoystick.getButton(InputConstants.BUTTON_RESET_POS))
                         .onTriggering(ONCE, Set.of(drive), () -> drive.resetCurrentPosition()));
 
         // Sets the wheels to the cross position if the cross button is pressed
-        oi.addRule(
+        addRule(
                 Rule.create(
                                 "Cross Wheels",
                                 new Conditions.Toggle(
@@ -42,7 +38,7 @@ public class DriverOI {
                         .onTriggering(ONCE_AND_HOLD, Set.of(drive), () -> drive.requestStop()));
 
         // Moves the robot if there are joystick inputs
-        oi.addRule(
+        addRule(
                 Rule.create(
                                 "Joysticks moved",
                                 () ->

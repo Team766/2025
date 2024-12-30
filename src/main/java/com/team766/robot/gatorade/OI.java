@@ -37,7 +37,7 @@ public class OI extends RuleEngine {
                 RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
 
         // Driver OI: take input from left, right joysticks.  control drive.
-        new DriverOI(this, leftJoystick, rightJoystick, drive);
+        addRules(new DriverOI(leftJoystick, rightJoystick, drive));
 
         addRule(
                 Rule.create(

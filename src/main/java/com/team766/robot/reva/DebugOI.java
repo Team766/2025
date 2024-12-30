@@ -3,6 +3,7 @@ package com.team766.robot.reva;
 import static com.team766.framework3.RulePersistence.*;
 
 import com.team766.framework3.Rule;
+import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.ArmAndClimber;
@@ -33,13 +34,12 @@ import java.util.Set;
  *  3        = Intake In
  * 7        = Intake Out
  */
-public class DebugOI {
-    public DebugOI(
-            OI oi, JoystickReader macropad, ArmAndClimber ss, Intake intake, Shooter shooter) {
+public class DebugOI extends RuleGroup {
+    public DebugOI(JoystickReader macropad, ArmAndClimber ss, Intake intake, Shooter shooter) {
         // fine-grained control of the shoulder
         // used for testing and tuning
         // press down the shoulder control button and nudge the angle up and down
-        oi.addRule(
+        addRule(
                 Rule.create(
                                 "Debug Control Shoulder",
                                 () -> macropad.getButton(InputConstants.CONTROL_SHOULDER))
@@ -66,14 +66,14 @@ public class DebugOI {
                                                                         .MACROPAD_RESET_SHOULDER))
                                         .onTriggering(ONCE, Set.of(ss), () -> ss.resetShoulder())));
 
-        oi.addRule(
+        addRule(
                 Rule.create("Debug Climber Reset", () -> macropad.getButton(16))
                         .onTriggering(ONCE, Set.of(ss), () -> ss.resetClimberPositions()));
 
         // fine-grained control of the climber
         // used for testing and tuning
         // press down the climber control button and nudge the climber up and down
-        oi.addRule(
+        addRule(
                 Rule.create(
                                 "Debug Control Climber",
                                 () -> macropad.getButton(InputConstants.CONTROL_CLIMBER))
@@ -101,17 +101,17 @@ public class DebugOI {
         // simple one-button controls for intake
         // used for testing and tuning
         // allows for running intake at default intake/outtake speeds.
-        oi.addRule(
+        addRule(
                 Rule.create("Debug Intake In", () -> macropad.getButton(InputConstants.INTAKE_IN))
                         .onTriggering(ONCE_AND_HOLD, Set.of(intake), () -> intake.requestIn()));
-        oi.addRule(
+        addRule(
                 Rule.create("Debug Intake Out", () -> macropad.getButton(InputConstants.INTAKE_OUT))
                         .onTriggering(ONCE_AND_HOLD, Set.of(intake), () -> intake.requestOut()));
 
         // fine-grained controls for shooter
         // used for testing and tuning
         // press down the intake control button and nudge ths shooter speed up and down
-        oi.addRule(
+        addRule(
                 Rule.create(
                                 "Debug Control Shooter",
                                 () -> macropad.getButton(InputConstants.CONTROL_SHOOTER))

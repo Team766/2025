@@ -24,9 +24,9 @@ public class OI extends RuleEngine {
         // Add driver controls here.
 
         // Driver OI: take input from left, right joysticks.  control drive.
-        new DriverOI(this, leftJoystick, rightJoystick, drive, ss, intake);
-        new BoxOpOI(this, gamepad, ss, intake, shooter);
+        addRules(new DriverOI(leftJoystick, rightJoystick, drive, ss, intake));
+        addRules(new BoxOpOI(gamepad, ss, intake, shooter));
         // Debug OI: allow for finer-grain testing of each mechanism.
-        new DebugOI(this, macropad, ss, intake, shooter);
+        addRules(new DebugOI(macropad, ss, intake, shooter));
     }
 }

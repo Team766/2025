@@ -168,9 +168,19 @@ public class Rule {
             return this;
         }
 
+        public Builder whenTriggering(RuleGroup group) {
+            composedRules.addAll(group.getRuleBuildersOrderedByPriority());
+            return this;
+        }
+
         /** Specify Rules which should only trigger when this Rule is not triggering. */
         public Builder whenNotTriggering(Rule.Builder... rules) {
             negatedComposedRules.addAll(Arrays.asList(rules));
+            return this;
+        }
+
+        public Builder whenNotTriggering(RuleGroup group) {
+            negatedComposedRules.addAll(group.getRuleBuildersOrderedByPriority());
             return this;
         }
 

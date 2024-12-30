@@ -3,6 +3,7 @@ package com.team766.robot.reva;
 import static com.team766.framework3.RulePersistence.*;
 
 import com.team766.framework3.Conditions;
+import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
@@ -13,9 +14,8 @@ import com.team766.robot.reva.procedures.DriverShootNow;
 import com.team766.robot.reva.procedures.DriverShootVelocityAndIntake;
 import java.util.Set;
 
-public class DriverOI {
+public class DriverOI extends RuleGroup {
     public DriverOI(
-            OI oi,
             JoystickReader leftJoystick,
             JoystickReader rightJoystick,
             SwerveDrive drive,
@@ -24,41 +24,41 @@ public class DriverOI {
         leftJoystick.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
         rightJoystick.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
 
-        oi.addRule(
+        addRule(
                 "Reset Gyro",
                 leftJoystick.whenButton(InputConstants.BUTTON_RESET_GYRO),
                 ONCE,
                 Set.of(drive),
                 () -> drive.resetGyro());
 
-        oi.addRule(
+        addRule(
                 "Reset Pos",
                 leftJoystick.whenButton(InputConstants.BUTTON_RESET_POS),
                 ONCE,
                 Set.of(drive),
                 () -> drive.resetCurrentPosition());
 
-        oi.addRule(
+        addRule(
                 "Cross wheels",
                 new Conditions.Toggle(rightJoystick.whenButton(InputConstants.BUTTON_CROSS_WHEELS)),
                 ONCE_AND_HOLD,
                 drive,
                 () -> drive.requestStop());
 
-        oi.addRule(
+        addRule(
                 "Target Shooter",
                 leftJoystick.whenButton(InputConstants.BUTTON_TARGET_SHOOTER),
                 ONCE_AND_HOLD,
                 () -> new DriverShootNow(drive.rotation, ss, intake));
 
-        oi.addRule(
+        addRule(
                 "Start Shooting",
                 rightJoystick.whenButton(InputConstants.BUTTON_START_SHOOTING_PROCEDURE),
                 ONCE_AND_HOLD,
                 () -> new DriverShootVelocityAndIntake(intake));
 
         // Moves the robot if there are joystick inputs
-        oi.addRule(
+        addRule(
                 "Translate robot",
                 leftJoystick.whenAnyAxisMoved(
                         InputConstants.AXIS_FORWARD_BACKWARD, InputConstants.AXIS_LEFT_RIGHT),
@@ -91,7 +91,7 @@ public class DriverOI {
                                             leftJoystickY,
                                             ControlConstants.TRANSLATIONAL_CURVE_POWER));
                 });
-        oi.addRule(
+        addRule(
                 "Rotate robot",
                 rightJoystick.whenAxisMoved(InputConstants.AXIS_LEFT_RIGHT),
                 REPEATEDLY,
