@@ -20,7 +20,7 @@ public class KalmanFilter {
     private Matrix<N4, N4> noiseCovariance;
     private Matrix<N2, N2> odometryCovariancePerDist;
     private Matrix<N2, N2> visionCovariance;
-    private TreeMap<Double, Translation2d> inputLog; 
+    private TreeMap<Double, Translation2d> inputLog; // TODO: make circular buffer
     private double velocityInputDeletionTime; // in seconds
 
     private static final Matrix<N4, N1> CUR_STATE_DEFAULT = MatBuilder.fill(Nat.N4(), Nat.N1(), 0, 0, 0, 0);
@@ -28,18 +28,18 @@ public class KalmanFilter {
     private static final Matrix<N4, N4> COVARIANCE_DEFAULT = Matrix.eye(Nat.N4());
 
     private static final Matrix<N4, N4> NOISE_COVARIANCE_DEFAULT = MatBuilder.fill(Nat.N4(), Nat.N4(), 
-        0.03, 0, 0, 0,
-                0, 0.03, 0, 0,
-                0, 0, 0.01, 0,
-                0, 0, 0, 0.01);
+        0.3, 0, 0, 0,
+                0, 0.3, 0, 0,
+                0, 0, 0.1, 0,
+                0, 0, 0, 0.1);
 
     private static final Matrix<N2, N2> ODOMETRY_COVARIANCE_DEFAULT = MatBuilder.fill(Nat.N2(), Nat.N2(), 
         0.2, 0, 
                 0, 0.05);
 
     private static final Matrix<N2, N2> VISION_COVARIANCE_DEFAULT = MatBuilder.fill(Nat.N2(), Nat.N2(), 
-        0.1, 0, 
-                0, 0.1);
+        0.2, 0, 
+                0, 0.2);
         
     private static final Matrix<N2, N4> OBSERVATION_MATRIX = MatBuilder.fill(Nat.N2(), Nat.N4(), 
         1, 0, 0, 0,
@@ -118,8 +118,8 @@ public class KalmanFilter {
         double prevTime;
         double dt; 
 
-        while (time > targetTime) {
-            try {
+        while (time > targetTime) { 
+            try { // TODO: use something other than try catch
                 prevTime = inputLog.lowerKey(time);
                 dt = Math.max(prevTime, targetTime) - time; // will be negative
 
@@ -192,8 +192,8 @@ public class KalmanFilter {
     }
 
     /**
-     * Updates the estimated position using a 
-     * @param measurement
+     * Updates the estimated position using a vision measurement from a given time
+     * @param measurement measured position on the field
      * @param time in seconds
      */
     public void updateWithVisionMeasurement(Translation2d measurement, double time) {

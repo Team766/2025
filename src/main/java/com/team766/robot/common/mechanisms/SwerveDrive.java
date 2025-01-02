@@ -297,13 +297,6 @@ public class SwerveDrive extends Mechanism {
         movingToTarget = true;
         this.x = x;
         this.y = y;
-
-        // controlFieldOriented(
-        //         x,
-        //         y,
-        //         (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD
-        //                 ? 0
-        //                 : rotationPID.getOutput()));
     }
 
     public boolean isAtRotationTarget() {
@@ -404,12 +397,10 @@ public class SwerveDrive extends Mechanism {
 
     public void setCurrentPosition(Pose2d P) {
         kalmanFilter.setPos(P.getTranslation());
-        // log("setCurrentPosition(): " + P);
     }
 
     public void resetCurrentPosition() {
         kalmanFilter.setPos(new Translation2d());
-        // swerveOdometry.setCurrentPosition(new Pose2d());
     }
 
     /**
@@ -469,7 +460,6 @@ public class SwerveDrive extends Mechanism {
         }
 
         // SmartDashboard.putBoolean("movingToTarget", movingToTarget);
-
         // SmartDashboard.putBoolean("isAtRotationTarget", isAtRotationTarget());
 
         swerveFR.dashboardCurrentUsage();
@@ -513,14 +503,15 @@ public class SwerveDrive extends Mechanism {
             simPrevPoses.remove(simPrevPoses.firstKey()); // delete old values
         } 
 
-        // kalmanFilter.updateWithOdometry(swerveOdometry.predictCurrentPositionChange(), now - dt, now);
+        kalmanFilter.updateWithOdometry(swerveOdometry.predictCurrentPositionChange());
 
-        if (Math.random() < 0.5) {
-            double delay = 0.05; // Math.random() * 0.5;
+        if (Math.random() < 0.5) { // simulate inconsistent vision updates
+            double delay = 0.05; 
             Pose2d prevPose = simPrevPoses.ceilingEntry(now - delay).getValue();
+            // simulated vision position is randomly chosen in an area around actual position
             double randX = prevPose.getX() + 0.1 * (Math.random() - 0.5);
             double randY = prevPose.getY() + 0.1 * (Math.random() - 0.5);
-            kalmanFilter.updateWithVisionMeasurement(new Translation2d(randX, randY), now - delay /* - 0.1 * Math.random() */);
+            kalmanFilter.updateWithVisionMeasurement(new Translation2d(randX, randY), now - delay);
             SmartDashboard.putNumber("sensor X measurement", randX);
         }
 
