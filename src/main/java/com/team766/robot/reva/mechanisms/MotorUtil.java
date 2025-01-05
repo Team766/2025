@@ -5,7 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
 import com.team766.hal.MotorController;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -25,15 +25,15 @@ public final class MotorUtil {
         return -1;
     }
 
-    private static double getSparkMaxCurrentUsage(CANSparkMax motor) {
+    private static double getSparkMaxCurrentUsage(SparkMax motor) {
         return motor.getOutputCurrent();
     }
 
     public static double getCurrentUsage(MotorController motor) {
         if (motor instanceof TalonFX) {
             return getTalonFXCurrentUsage((TalonFX) motor);
-        } else if (motor instanceof CANSparkMax) {
-            return getSparkMaxCurrentUsage((CANSparkMax) motor);
+        } else if (motor instanceof SparkMax) {
+            return getSparkMaxCurrentUsage((SparkMax) motor);
         } else {
             return -1;
         }

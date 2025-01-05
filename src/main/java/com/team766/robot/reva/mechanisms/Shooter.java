@@ -3,7 +3,7 @@ package com.team766.robot.reva.mechanisms;
 import static com.team766.robot.reva.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
@@ -36,8 +36,8 @@ public class Shooter extends Mechanism {
     public Shooter() {
         shooterMotorTop = RobotProvider.instance.getMotor(SHOOTER_MOTOR_TOP);
         shooterMotorBottom = RobotProvider.instance.getMotor(SHOOTER_MOTOR_BOTTOM);
-        CANSparkMax canTop = (CANSparkMax) shooterMotorTop;
-        CANSparkMax canBottom = (CANSparkMax) shooterMotorBottom;
+        SparkMax canTop = (SparkMax) shooterMotorTop;
+        SparkMax canBottom = (SparkMax) shooterMotorBottom;
         canTop.enableVoltageCompensation(12.0);
         canBottom.enableVoltageCompensation(12.0);
 
