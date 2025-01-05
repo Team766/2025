@@ -10,8 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -32,9 +31,10 @@ public class RuleEngine implements LoggingBase {
 
     private static record RuleAction(Rule rule, Rule.TriggerType triggerType) {}
 
-    private final List<Rule> rules = new LinkedList<>();
+    private final LinkedHashMap<String, Rule> rules = new LinkedHashMap<>();
     private final Map<Rule, Integer> rulePriorities = new HashMap<>();
     private BiMap<Command, RuleAction> ruleMap = HashBiMap.create();
+    private boolean sealed = false;
 
     protected RuleEngine() {}
 
@@ -45,7 +45,7 @@ public class RuleEngine implements LoggingBase {
 
     protected Rule addRule(String name, BooleanSupplier condition, Supplier<Procedure> action) {
         Rule rule = new Rule(name, condition, action);
-        rules.add(rule);
+        rules.put(name, rule);
         int priority = rulePriorities.size();
         rulePriorities.put(rule, priority);
         return rule;
@@ -58,12 +58,13 @@ public class RuleEngine implements LoggingBase {
     }
 
     @VisibleForTesting
-    /* package */ Map<String, Rule> getRuleNameMap() {
-        Map<String, Rule> namedRules = new HashMap<>();
-        for (Rule rule : rules) {
-            namedRules.put(rule.getName(), rule);
-        }
-        return namedRules;
+    /* package */ int size() {
+        return rules.size();
+    }
+
+    @VisibleForTesting
+    /* package */ Rule getRuleByName(String name) {
+        return rules.get(name);
     }
 
     @VisibleForTesting
@@ -82,7 +83,18 @@ public class RuleEngine implements LoggingBase {
         return (ruleAction == null) ? null : ruleAction.rule;
     }
 
+    private void sealRules() {
+        for (Rule rule : rules.values()) {
+            rule.seal();
+        }
+    }
+
     public final void run() {
+        if (!sealed) {
+            sealRules();
+            sealed = true;
+        }
+
         Set<Mechanism<?>> mechanismsToUse = new HashSet<>();
 
         // TODO(MF3): when creating a Procedure, check that the reservations are the same as
@@ -90,7 +102,7 @@ public class RuleEngine implements LoggingBase {
 
         // evaluate each rule
         ruleLoop:
-        for (Rule rule : rules) {
+        for (Rule rule : rules.values()) {
             try {
                 rule.evaluate();
 

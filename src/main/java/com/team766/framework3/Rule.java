@@ -57,6 +57,7 @@ public class Rule {
             Maps.newEnumMap(TriggerType.class);
 
     private TriggerType currentTriggerType = TriggerType.NONE;
+    private boolean sealed = false;
 
     /* package */ Rule(
             String name, BooleanSupplier predicate, Supplier<Procedure> newlyTriggeringProcedure) {
@@ -79,6 +80,11 @@ public class Rule {
 
     /** Specify a creator for the Procedure that should be run when this rule was triggering before and is no longer triggering. */
     public Rule withFinishedTriggeringProcedure(Supplier<Procedure> action) {
+        if (sealed) {
+            throw new IllegalStateException(
+                    "Cannot modify rules once they've been evaluated in the RuleEngine");
+        }
+
         triggerProcedures.put(TriggerType.FINISHED, action);
         triggerReservations.put(TriggerType.FINISHED, getReservationsForProcedure(action));
         return this;
@@ -105,6 +111,10 @@ public class Rule {
 
     /* package */ TriggerType getCurrentTriggerType() {
         return currentTriggerType;
+    }
+
+    /* package */ void seal() {
+        sealed = true;
     }
 
     /* package */ void reset() {

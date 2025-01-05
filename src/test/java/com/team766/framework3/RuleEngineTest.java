@@ -3,12 +3,12 @@ package com.team766.framework3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.team766.TestCase3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.Test;
@@ -59,6 +59,34 @@ public class RuleEngineTest extends TestCase3 {
     private final FakeMechanism3 fm3 = new FakeMechanism3();
 
     @Test
+    public void testSeal() {
+        // test that we can modify rules before we call run
+        RuleEngine rulesOne =
+                new RuleEngine() {
+                    {
+                        addRule("rule1_1", () -> true, () -> Procedure.NO_OP)
+                                .withFinishedTriggeringProcedure(() -> Procedure.NO_OP);
+                    }
+                };
+        rulesOne.run();
+
+        // test that
+        RuleEngine rulesTwo =
+                new RuleEngine() {
+                    {
+                        addRule("rule2_1", () -> true, () -> Procedure.NO_OP);
+                    }
+                };
+        rulesTwo.run();
+
+        assertThrows(
+                IllegalStateException.class,
+                () ->
+                        rulesTwo.getRuleByName("rule2_1")
+                                .withFinishedTriggeringProcedure(() -> Procedure.NO_OP));
+    }
+
+    @Test
     public void testAddRuleAndGetPriority() {
         // simply test that rules we add are added - and at the expected priority
 
@@ -77,12 +105,11 @@ public class RuleEngineTest extends TestCase3 {
                     }
                 };
 
-        Map<String, Rule> namedRules = myRules.getRuleNameMap();
         // make sure we have 2 rules
-        assertEquals(2, namedRules.size());
+        assertEquals(2, myRules.size());
         // with priorities based on insertion order, starting at 0
-        assertEquals(0, myRules.getPriorityForRule(namedRules.get("fm1_p0")));
-        assertEquals(1, myRules.getPriorityForRule(namedRules.get("fm1_p1")));
+        assertEquals(0, myRules.getPriorityForRule(myRules.getRuleByName("fm1_p0")));
+        assertEquals(1, myRules.getPriorityForRule(myRules.getRuleByName("fm1_p1")));
     }
 
     @Test
