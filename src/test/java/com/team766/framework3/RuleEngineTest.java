@@ -67,13 +67,13 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () -> new FakeProcedure(2, Set.of(fm1))));
+                                "fm1_p0",
+                                new ScheduledPredicate(0),
+                                () -> new FakeProcedure(2, Set.of(fm1)));
                         addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () -> new FakeProcedure(2, Set.of(fm1))));
+                                "fm1_p1",
+                                new ScheduledPredicate(0),
+                                () -> new FakeProcedure(2, Set.of(fm1)));
                     }
                 };
 
@@ -96,13 +96,13 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () -> new FakeProcedure(2, Set.of(fm1))));
+                                "fm1",
+                                new ScheduledPredicate(0),
+                                () -> new FakeProcedure(2, Set.of(fm1)));
                         addRule(
-                                Rule.create("fm2", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () -> new FakeProcedure(2, Set.of(fm2))));
+                                "fm2",
+                                new ScheduledPredicate(0),
+                                () -> new FakeProcedure(2, Set.of(fm2)));
                     }
                 };
 
@@ -146,17 +146,13 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 1, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p0",
-                                                                1,
-                                                                Set.of(fm1, fm2))));
+                                        "fm1_p0",
+                                        new ScheduledPredicate(0),
+                                        () -> new FakeProcedure("fm1procnew_p0", 1, Set.of(fm1)))
+                                .withFinishedTriggeringProcedure(
+                                        () ->
+                                                new FakeProcedure(
+                                                        "fm1procfin_p0", 1, Set.of(fm1, fm2)));
                     }
                 };
 
@@ -188,28 +184,18 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p0",
-                                                                0,
-                                                                Set.of(fm1, fm2))));
+                                "fm1_p0",
+                                new ScheduledPredicate(0),
+                                () -> new FakeProcedure("fm1proc_p0", 0, Set.of(fm1, fm2)));
                         addRule(
-                                Rule.create("fm1_p1", new PeriodicPredicate(2))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p1",
-                                                                0,
-                                                                Set.of(fm1, fm3))));
+                                "fm1_p1",
+                                new PeriodicPredicate(2),
+                                () -> new FakeProcedure("fm1proc_p1", 0, Set.of(fm1, fm3)));
 
                         addRule(
-                                Rule.create("fm3_p2", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm3proc_p2", 0, Set.of(fm3))));
+                                "fm3_p2",
+                                new ScheduledPredicate(0),
+                                () -> new FakeProcedure("fm3proc_p2", 0, Set.of(fm3)));
                     }
                 };
 
@@ -250,30 +236,18 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p0",
-                                                                2,
-                                                                Set.of(fm1, fm2))));
+                                "fm1_p0",
+                                new ScheduledPredicate(0),
+                                () -> new FakeProcedure("fm1proc_p0", 2, Set.of(fm1, fm2)));
                         addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p1",
-                                                                2,
-                                                                Set.of(fm1, fm2))));
+                                "fm1_p1",
+                                new ScheduledPredicate(1),
+                                () -> new FakeProcedure("fm1proc_p1", 2, Set.of(fm1, fm2)));
 
                         addRule(
-                                Rule.create("fm1_p2", new ScheduledPredicate(3))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p2",
-                                                                2,
-                                                                Set.of(fm1, fm2))));
+                                "fm1_p2",
+                                new ScheduledPredicate(3),
+                                () -> new FakeProcedure("fm1proc_p2", 2, Set.of(fm1, fm2)));
                     }
                 };
 
@@ -321,21 +295,13 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p0",
-                                                                2,
-                                                                Set.of(fm1, fm2))));
+                                "fm1_p0",
+                                new ScheduledPredicate(1),
+                                () -> new FakeProcedure("fm1proc_p0", 2, Set.of(fm1, fm2)));
                         addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p1",
-                                                                4,
-                                                                Set.of(fm1, fm2))));
+                                "fm1_p1",
+                                new ScheduledPredicate(0),
+                                () -> new FakeProcedure("fm1proc_p1", 4, Set.of(fm1, fm2)));
                     }
                 };
 
@@ -363,21 +329,15 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 2, Set.of(fm1))));
+                                "fm1_p0",
+                                new ScheduledPredicate(0),
+                                () -> new FakeProcedure("fm1procnew_p0", 2, Set.of(fm1)));
                         addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p1", 1, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p1", 1, Set.of(fm2))));
+                                        "fm1_p1",
+                                        new ScheduledPredicate(0),
+                                        () -> new FakeProcedure("fm1procnew_p1", 1, Set.of(fm1)))
+                                .withFinishedTriggeringProcedure(
+                                        () -> new FakeProcedure("fm1procfin_p1", 1, Set.of(fm2)));
                     }
                 };
 
@@ -404,21 +364,15 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 2, Set.of(fm1))));
+                                "fm1_p0",
+                                new ScheduledPredicate(0),
+                                () -> new FakeProcedure("fm1procnew_p0", 2, Set.of(fm1)));
                         addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p1", 1, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p1", 1, Set.of(fm2))));
+                                        "fm1_p1",
+                                        new ScheduledPredicate(1),
+                                        () -> new FakeProcedure("fm1procnew_p1", 1, Set.of(fm1)))
+                                .withFinishedTriggeringProcedure(
+                                        () -> new FakeProcedure("fm1procfin_p1", 1, Set.of(fm2)));
                     }
                 };
 
@@ -453,21 +407,15 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 2, Set.of(fm1))));
+                                "fm1_p0",
+                                new ScheduledPredicate(1),
+                                () -> new FakeProcedure("fm1procnew_p0", 2, Set.of(fm1)));
                         addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p1", 2, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p1", 2, Set.of(fm2))));
+                                        "fm1_p1",
+                                        new ScheduledPredicate(0),
+                                        () -> new FakeProcedure("fm1procnew_p1", 2, Set.of(fm1)))
+                                .withFinishedTriggeringProcedure(
+                                        () -> new FakeProcedure("fm1procfin_p1", 2, Set.of(fm2)));
                     }
                 };
 
@@ -494,25 +442,17 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0, 4))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 0, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p0", 0, Set.of(fm1))));
+                                        "fm1_p0",
+                                        new ScheduledPredicate(0, 4),
+                                        () -> new FakeProcedure("fm1procnew_p0", 0, Set.of(fm1)))
+                                .withFinishedTriggeringProcedure(
+                                        () -> new FakeProcedure("fm1procfin_p0", 0, Set.of(fm1)));
                         addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p1", 0, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p1", 0, Set.of(fm1))));
+                                        "fm1_p1",
+                                        new ScheduledPredicate(1),
+                                        () -> new FakeProcedure("fm1procnew_p1", 0, Set.of(fm1)))
+                                .withFinishedTriggeringProcedure(
+                                        () -> new FakeProcedure("fm1procfin_p1", 0, Set.of(fm1)));
                     }
                 };
 
@@ -563,25 +503,17 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 0, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p0", 0, Set.of(fm1))));
+                                        "fm1_p0",
+                                        new ScheduledPredicate(1),
+                                        () -> new FakeProcedure("fm1procnew_p0", 0, Set.of(fm1)))
+                                .withFinishedTriggeringProcedure(
+                                        () -> new FakeProcedure("fm1procfin_p0", 0, Set.of(fm1)));
                         addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(0, 4))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p1", 1, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p1", 1, Set.of(fm1))));
+                                        "fm1_p1",
+                                        new ScheduledPredicate(0, 4),
+                                        () -> new FakeProcedure("fm1procnew_p1", 1, Set.of(fm1)))
+                                .withFinishedTriggeringProcedure(
+                                        () -> new FakeProcedure("fm1procfin_p1", 1, Set.of(fm1)));
                     }
                 };
 
@@ -633,25 +565,17 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 0, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p0", 0, Set.of(fm1))));
+                                        "fm1_p0",
+                                        new ScheduledPredicate(1),
+                                        () -> new FakeProcedure("fm1procnew_p0", 0, Set.of(fm1)))
+                                .withFinishedTriggeringProcedure(
+                                        () -> new FakeProcedure("fm1procfin_p0", 0, Set.of(fm1)));
                         addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(0, 3))
-                                        .withNewlyTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p1", 1, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p1", 1, Set.of(fm1))));
+                                        "fm1_p1",
+                                        new ScheduledPredicate(0, 3),
+                                        () -> new FakeProcedure("fm1procnew_p1", 1, Set.of(fm1)))
+                                .withFinishedTriggeringProcedure(
+                                        () -> new FakeProcedure("fm1procfin_p1", 1, Set.of(fm1)));
                     }
                 };
 

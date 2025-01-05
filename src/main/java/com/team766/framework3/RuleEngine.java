@@ -14,6 +14,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * {@link RuleEngine}s manage and process a set of {@link Rule}s.  Subclasses should add rules via
@@ -41,11 +43,18 @@ public class RuleEngine implements LoggingBase {
         return Category.RULES;
     }
 
-    protected void addRule(Rule.Builder builder) {
-        Rule rule = builder.build();
+    protected Rule addRule(String name, BooleanSupplier condition, Supplier<Procedure> action) {
+        Rule rule = new Rule(name, condition, action);
         rules.add(rule);
         int priority = rulePriorities.size();
         rulePriorities.put(rule, priority);
+        return rule;
+    }
+
+    protected Rule addRule(
+            String name, BooleanSupplier condition, Mechanism<?> mechanism, Runnable action) {
+        return addRule(
+                name, condition, () -> new FunctionalInstantProcedure(Set.of(mechanism), action));
     }
 
     @VisibleForTesting
