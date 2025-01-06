@@ -6,6 +6,7 @@ import com.team766.hal.GyroReader;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
+import edu.wpi.first.units.measure.Angle;
 
 // TODO: add support for configuring the Pigeon2's mountpose
 // https://api.ctr-electronics.com/phoenix6/release/java/com/ctre/phoenix6/hardware/core/CorePigeon2.html
@@ -39,7 +40,7 @@ public class PigeonGyro implements GyroReader {
 
     @Override
     public double getPitch() {
-        StatusSignal<Double> value = pigeon.getPitch();
+        StatusSignal<Angle> value = pigeon.getPitch();
         if (value.getStatus().isOK()) {
             return value.getValueAsDouble();
         }
@@ -50,7 +51,7 @@ public class PigeonGyro implements GyroReader {
 
     @Override
     public double getRoll() {
-        StatusSignal<Double> value = pigeon.getRoll();
+        StatusSignal<Angle> value = pigeon.getRoll();
         if (value.getStatus().isOK()) {
             return value.getValueAsDouble();
         }

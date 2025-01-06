@@ -21,6 +21,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorControllerCommandFailedException;
 import com.team766.logging.LoggerExceptionUtils;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public class CANTalonFxMotorController extends TalonFX implements MotorController {
 
@@ -94,7 +96,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public double getSensorPosition() {
-        StatusSignal<Double> status = super.getPosition();
+        StatusSignal<Angle> status = super.getPosition();
         StatusCode code = status.getStatus();
         if (code.isOK()) {
             return status.getValueAsDouble();
@@ -106,7 +108,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public double getSensorVelocity() {
-        StatusSignal<Double> status = super.getVelocity();
+        StatusSignal<AngularVelocity> status = super.getVelocity();
         StatusCode code = status.getStatus();
         if (code.isOK()) {
             return status.getValueAsDouble();
