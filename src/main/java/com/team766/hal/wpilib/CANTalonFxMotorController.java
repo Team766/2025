@@ -137,6 +137,18 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
+    public boolean getMotorInverted() {
+        // TODO: retrieve this via the TalonFXConfiguration
+        return super.getInverted();
+    }
+
+    @Override
+    public void setMotorInverted(final boolean inverted) {
+        // TODO: set this via the TalonFXConfiguration
+        super.setInverted(inverted);
+    }
+
+    @Override
     public void setOpenLoopRamp(final double secondsFromNeutralToFull) {
         refreshConfig();
         talonFXConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = secondsFromNeutralToFull;

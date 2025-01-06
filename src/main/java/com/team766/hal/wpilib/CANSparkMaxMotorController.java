@@ -157,11 +157,11 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
             case Analog:
                 {
                     SparkAnalogSensor analog = getAnalog(SparkAnalogSensor.Mode.kAbsolute);
-                    revErrorToException(ExceptionTarget.LOG, analog.setInverted(sensorInverted));
+                    revErrorToException(ExceptionTarget.LOG, analog.setMotorInverted(sensorInverted));
                     sensorPositionSupplier = analog::getPosition;
                     sensorVelocitySupplier = analog::getVelocity;
                     sensorPositionSetter = (pos) -> REVLibError.kOk;
-                    sensorInvertedSetter = analog::setInverted;
+                    sensorInvertedSetter = analog::setMotorInverted;
                     revErrorToException(
                             ExceptionTarget.LOG, getClosedLoopController().setFeedbackDevice(analog));
                     return;
@@ -198,11 +198,11 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
             case QuadEncoder:
                 // TODO: should we pass a real counts-per-rev scale here?
                 RelativeEncoder encoder = getAlternateEncoder(1);
-                revErrorToException(ExceptionTarget.LOG, encoder.setInverted(sensorInverted));
+                revErrorToException(ExceptionTarget.LOG, encoder.setMotorInverted(sensorInverted));
                 sensorPositionSupplier = encoder::getPosition;
                 sensorVelocitySupplier = encoder::getVelocity;
                 sensorPositionSetter = encoder::setPosition;
-                sensorInvertedSetter = encoder::setInverted;
+                sensorInvertedSetter = encoder::setMotorInverted;
                 revErrorToException(
                         ExceptionTarget.LOG, getClosedLoopController().setFeedbackDevice(encoder));
                 return;

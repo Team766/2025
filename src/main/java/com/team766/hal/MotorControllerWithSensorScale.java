@@ -48,13 +48,13 @@ public class MotorControllerWithSensorScale implements MotorController {
     }
 
     @Override
-    public void setInverted(final boolean isInverted) {
-        delegate.setInverted(isInverted);
+    public void setMotorInverted(final boolean isInverted) {
+        delegate.setMotorInverted(isInverted);
     }
 
     @Override
-    public boolean getInverted() {
-        return delegate.getInverted();
+    public boolean getMotorInverted() {
+        return delegate.getMotorInverted();
     }
 
     @Override

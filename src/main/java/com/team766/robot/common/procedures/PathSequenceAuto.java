@@ -1,12 +1,18 @@
 package com.team766.robot.common.procedures;
 
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.util.GeometryUtil;
-import com.pathplanner.lib.util.PIDConstants;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.framework.RunnableWithContext;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
@@ -24,8 +30,8 @@ public class PathSequenceAuto extends Procedure {
     private final LinkedList<RunnableWithContext> pathItems;
     private final SwerveDrive drive;
     private final Pose2d initialPosition;
+    private final RobotConfig robotConfig;
     private final PPHolonomicDriveController controller;
-    private VisionSpeakerHelper visionSpeakerHelper;
 
     /**
      * Sequencer for using path following with other procedures
@@ -35,17 +41,32 @@ public class PathSequenceAuto extends Procedure {
     public PathSequenceAuto(SwerveDrive drive, Pose2d initialPosition) {
         pathItems = new LinkedList<RunnableWithContext>();
         this.drive = drive;
+        this.robotConfig = createRobotConfig(drive);
         this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
-        visionSpeakerHelper = new VisionSpeakerHelper(drive);
     }
 
-    private PPHolonomicDriveController createDriveController(SwerveDrive drive) {
+    private RobotConfig createRobotConfig(SwerveDrive drive) {
         double maxSpeed =
                 ConfigFileReader.getInstance()
                         .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
                         .valueOr(PathPlannerConstants.MAX_SPEED_MPS);
 
+        double massKG =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_MASS_KG)
+                        .valueOr(PathPlannerConstants.MASS_KG);
+                    
+        double momentOfInertia =
+                        ConfigFileReader.getInstance()
+                                .getDouble(ConfigConstants.PATH_FOLLOWING_MOMENT_OF_INERTIA)
+                                .valueOr(PathPlannerConstants.MOMENT_OF_INTERTIA);
+
+        RobotConfig robotConfig = new RobotConfig(massKG, momentOfInertia, moduleConfig, ...);
+        return robotConfig;
+    }
+
+    private PPHolonomicDriveController createDriveController(SwerveDrive drive) {
         double translationP =
                 ConfigFileReader.getInstance()
                         .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P)
@@ -73,13 +94,18 @@ public class PathSequenceAuto extends Procedure {
 
         return new PPHolonomicDriveController(
                 new PIDConstants(translationP, translationI, translationD),
-                new PIDConstants(rotationP, rotationI, rotationD),
-                maxSpeed,
-                drive.maxWheelDistToCenter());
+                new PIDConstants(rotationP, rotationI, rotationD));
     }
 
     protected void addPath(String pathName) {
-        pathItems.add(new FollowPath(pathName, controller, drive));
+        // TODO: should this log errors and otherwise proceed, or throw an exception and 
+        // somehow disable the entire auton (but not disable the robot completely, so teleop still works)?
+        try {
+            pathItems.add(new FollowPath(pathName, controller, robotConfig, drive));
+        } catch (Exception e) {
+            Logger.get(Category.AUTONOMOUS).logRaw(Severity.WARNING, 
+                "!!!! Error loading path " + pathName + ": " + e.getMessage() + ", skipping in auton.");
+        }
     }
 
     protected void addProcedure(Procedure procedure) {
@@ -107,12 +133,12 @@ public class PathSequenceAuto extends Procedure {
         context.takeOwnership(drive);
         // if (!visionSpeakerHelper.updateTarget(context)) {
         drive.setCurrentPosition(
-                shouldFlipAuton ? GeometryUtil.flipFieldPose(initialPosition) : initialPosition);
+                shouldFlipAuton ? FlippingUtil.flipFieldPose(initialPosition) : initialPosition);
         // }
         // context.takeOwnership(drive);
         drive.resetGyro(
                 (shouldFlipAuton
-                                ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
+                                ? FlippingUtil.flipFieldRotation(initialPosition.getRotation())
                                 : initialPosition.getRotation())
                         .getDegrees());
         for (RunnableWithContext pathItem : pathItems) {

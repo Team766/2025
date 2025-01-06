@@ -1,14 +1,9 @@
 package com.team766.robot.common.constants;
 
-import com.pathplanner.lib.util.ReplanningConfig;
 
 public final class PathPlannerConstants {
 
     private PathPlannerConstants() {}
-
-    // default replanning config values
-    public static final ReplanningConfig REPLANNING_CONFIG =
-            new ReplanningConfig(true /* replan at start */, false /* don't replan during path */);
 
     // PID constants for drive controller
     // TODO: change pathplanner constants
