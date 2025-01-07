@@ -7,23 +7,29 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 /*
  * This class is used to get raw values from the NetworkTable. We can send values on the Orin to NetworkTables and get them easily here.
+ * Each camera needs its own GetOrinRawValue object with it's own topic name that is set in the constructor.
  * One important caveat of the NetworkTables code is that it doesn't throw exceptions when a value is not found.
  * Instead, it asks for a default value to return. This is a problem because we can't know if the value is not found or if the value is the default value.
  * Thus, numbers were chosen as default values that aren't really plausible to be sent by the Orin.
  * For example, it is not likley that the Orin will send Integer.MIN_VALUE as a value. In this case, an exception is thrown.
  *
- * @author Max Spier, 9/28/2024
+ * @author Max Spier, 9/28/2024, updated 1/6/2025
  */
 public class GetOrinRawValue {
 
-    private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    private static NetworkTable table = inst.getTable("/SmartDashboard");
+    private NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    private NetworkTable table = inst.getTable("/SmartDashboard");
 
-    private static DoubleArrayTopic pose = table.getDoubleArrayTopic("raw_pose");
-    private static double[] arr = new double[] {Double.NEGATIVE_INFINITY};
-    private static DoubleArrayEntry poseValues = pose.getEntry(arr);
+    private DoubleArrayTopic pose = table.getDoubleArrayTopic("not_set");
+    private double[] arr = new double[] {Double.NEGATIVE_INFINITY};
+    private DoubleArrayEntry poseValues = pose.getEntry(arr);
 
-    public static double[] getRawPoseData() throws ValueNotFoundOnTableError {
+    public GetOrinRawValue(String topicName){
+        pose = table.getDoubleArrayTopic(topicName);
+        poseValues = pose.getEntry(arr);
+    }
+    
+    public double[] getRawPoseData() throws ValueNotFoundOnTableError {
         if (poseValues.get().length == 1 && poseValues.get()[0] == Double.NEGATIVE_INFINITY) {
             throw new ValueNotFoundOnTableError("Pose Data Not Present on Table");
         }
@@ -31,7 +37,7 @@ public class GetOrinRawValue {
         return poseValues.get();
     }
 
-    public static void closeAll() {
+    public void closeAll() {
         poseValues.close();
     }
 }
