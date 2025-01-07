@@ -36,5 +36,6 @@ public class Robot implements RobotConfigurator {
     @Override
     public AutonomousMode[] getAutonomousModes() {
         return AutonomousModes.AUTONOMOUS_MODES;
+
     }
 }

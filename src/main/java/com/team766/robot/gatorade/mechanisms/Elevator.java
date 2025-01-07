@@ -5,7 +5,7 @@ import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
+
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
