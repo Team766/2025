@@ -20,7 +20,6 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
     private Supplier<Double> sensorPositionSupplier;
     private Supplier<Double> sensorVelocitySupplier;
     private Function<Double, REVLibError> sensorPositionSetter;
-    private Function<Boolean, REVLibError> sensorInvertedSetter;
     private boolean sensorInverted = false;
 
     public CANSparkMaxMotorController(final int deviceId) {
@@ -156,12 +155,10 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
         switch (feedbackDevice) {
             case Analog:
                 {
-                    SparkAnalogSensor analog = getAnalog(SparkAnalogSensor.Mode.kAbsolute);
-                    revErrorToException(ExceptionTarget.LOG, analog.setMotorInverted(sensorInverted));
+                    SparkAnalogSensor analog = getAnalog();
                     sensorPositionSupplier = analog::getPosition;
                     sensorVelocitySupplier = analog::getVelocity;
                     sensorPositionSetter = (pos) -> REVLibError.kOk;
-                    sensorInvertedSetter = analog::setMotorInverted;
                     revErrorToException(
                             ExceptionTarget.LOG, getClosedLoopController().setFeedbackDevice(analog));
                     return;
@@ -172,24 +169,6 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
             case CTRE_MagEncoder_Relative:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder"));
-            case IntegratedSensor:
-                {
-                    RelativeEncoder encoder = getEncoder();
-                    // NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the
-                    // integrated sensor returns an error.
-                    // revErrorToException(ExceptionTarget.LOG,
-                    // encoder.setInverted(sensorInverted));
-                    sensorPositionSupplier = encoder::getPosition;
-                    sensorVelocitySupplier = encoder::getVelocity;
-                    sensorPositionSetter = encoder::setPosition;
-                    // NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the
-                    // integrated sensor returns an error.
-                    // sensorInvertedSetter = encoder::setInverted;
-                    sensorInvertedSetter = (inverted) -> REVLibError.kOk;
-                    revErrorToException(
-                            ExceptionTarget.LOG, getClosedLoopController().setFeedbackDevice(encoder));
-                    return;
-                }
             case None:
                 return;
             case PulseWidthEncodedPosition:
@@ -197,12 +176,10 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
                         new IllegalArgumentException("SparkMax does not support PWM sensors"));
             case QuadEncoder:
                 // TODO: should we pass a real counts-per-rev scale here?
-                RelativeEncoder encoder = getAlternateEncoder(1);
-                revErrorToException(ExceptionTarget.LOG, encoder.setMotorInverted(sensorInverted));
+                RelativeEncoder encoder = getAlternateEncoder();
                 sensorPositionSupplier = encoder::getPosition;
                 sensorVelocitySupplier = encoder::getVelocity;
                 sensorPositionSetter = encoder::setPosition;
-                sensorInvertedSetter = encoder::setMotorInverted;
                 revErrorToException(
                         ExceptionTarget.LOG, getClosedLoopController().setFeedbackDevice(encoder));
                 return;

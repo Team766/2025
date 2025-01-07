@@ -3,9 +3,9 @@ package com.team766.robot.gatorade.mechanisms;
 import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
@@ -58,9 +58,9 @@ public class Shoulder extends Mechanism {
 
     private static final double NEAR_THRESHOLD = 5.0;
 
-    private final CANSparkMax leftMotor;
-    private final CANSparkMax rightMotor;
-    private final SparkPIDController pidController;
+    private final SparkMax leftMotor;
+    private final SparkMax rightMotor;
+    private final SparkClosedLoopController pidController;
     private final ValueProvider<Double> pGain;
     private final ValueProvider<Double> iGain;
     private final ValueProvider<Double> dGain;
@@ -78,7 +78,7 @@ public class Shoulder extends Mechanism {
         MotorController halLeftMotor = RobotProvider.instance.getMotor(SHOULDER_LEFT_MOTOR);
         MotorController halRightMotor = RobotProvider.instance.getMotor(SHOULDER_RIGHT_MOTOR);
 
-        if (!((halLeftMotor instanceof CANSparkMax) && (halRightMotor instanceof CANSparkMax))) {
+        if (!((halLeftMotor instanceof SparkMax) && (halRightMotor instanceof SparkMax))) {
             log(Severity.ERROR, "Motors are not CANSparkMaxes!");
             throw new IllegalStateException("Motor are not CANSparkMaxes!");
         }
@@ -86,8 +86,8 @@ public class Shoulder extends Mechanism {
         halLeftMotor.setNeutralMode(NeutralMode.Brake);
         halRightMotor.setNeutralMode(NeutralMode.Brake);
 
-        leftMotor = (CANSparkMax) halLeftMotor;
-        rightMotor = (CANSparkMax) halRightMotor;
+        leftMotor = (SparkMax) halLeftMotor;
+        rightMotor = (SparkMax) halRightMotor;
 
         rightMotor.follow(leftMotor, true /* invert */);
 
@@ -95,7 +95,7 @@ public class Shoulder extends Mechanism {
                 .getEncoder()
                 .setPosition(EncoderUtils.shoulderDegreesToRotations(Position.BOTTOM.getAngle()));
 
-        pidController = leftMotor.getPIDController();
+        pidController = leftMotor.getClosedLoopController();
         pidController.setFeedbackDevice(leftMotor.getEncoder());
 
         pGain = ConfigFileReader.getInstance().getDouble(SHOULDER_PGAIN);
