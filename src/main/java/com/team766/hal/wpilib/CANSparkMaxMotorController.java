@@ -2,13 +2,13 @@ package com.team766.hal.wpilib;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkAnalogSensor;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorControllerCommandFailedException;
 import com.team766.logging.LoggerExceptionUtils;
@@ -160,7 +160,8 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
                     sensorVelocitySupplier = analog::getVelocity;
                     sensorPositionSetter = (pos) -> REVLibError.kOk;
                     revErrorToException(
-                            ExceptionTarget.LOG, getClosedLoopController().setFeedbackDevice(analog));
+                            ExceptionTarget.LOG,
+                            getClosedLoopController().setFeedbackDevice(analog));
                     return;
                 }
             case CTRE_MagEncoder_Absolute:
@@ -217,7 +218,8 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
     @Override
     public void setOutputRange(final double minOutput, final double maxOutput) {
         revErrorToException(
-                ExceptionTarget.LOG, getClosedLoopController().setOutputRange(minOutput, maxOutput));
+                ExceptionTarget.LOG,
+                getClosedLoopController().setOutputRange(minOutput, maxOutput));
     }
 
     public void setCurrentLimit(final double ampsLimit) {

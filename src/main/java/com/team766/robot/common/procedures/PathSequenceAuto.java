@@ -5,7 +5,6 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.FlippingUtil;
-import com.pathplanner.lib.util.GeometryUtil;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
@@ -13,17 +12,19 @@ import com.team766.framework.RunnableWithContext;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
+import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.Robot;
-import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import com.team766.robot.reva.procedures.MoveClimbersToBottom;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.LinkedList;
 import java.util.Optional;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class PathSequenceAuto extends Procedure {
 
@@ -46,7 +47,16 @@ public class PathSequenceAuto extends Procedure {
         this.initialPosition = initialPosition;
     }
 
+    private static Translation2d wheelLocationAsTranslation(
+            double distanceFromCenter, Vector2D vector) {
+        vector = vector.scalarMultiply(distanceFromCenter);
+        return new Translation2d(vector.getX(), vector.getY());
+    }
+
     private RobotConfig createRobotConfig(SwerveDrive drive) {
+        SwerveConfig swerveConfig = drive.getSwerveConfig();
+
+        // TODO: should max speed, mass, moment of inertia, etc be part of the SwerveConfig?
         double maxSpeed =
                 ConfigFileReader.getInstance()
                         .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
@@ -56,13 +66,42 @@ public class PathSequenceAuto extends Procedure {
                 ConfigFileReader.getInstance()
                         .getDouble(ConfigConstants.PATH_FOLLOWING_MASS_KG)
                         .valueOr(PathPlannerConstants.MASS_KG);
-                    
-        double momentOfInertia =
-                        ConfigFileReader.getInstance()
-                                .getDouble(ConfigConstants.PATH_FOLLOWING_MOMENT_OF_INERTIA)
-                                .valueOr(PathPlannerConstants.MOMENT_OF_INTERTIA);
 
-        RobotConfig robotConfig = new RobotConfig(massKG, momentOfInertia, moduleConfig, ...);
+        double momentOfInertia =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_MOMENT_OF_INERTIA)
+                        .valueOr(PathPlannerConstants.MOMENT_OF_INTERTIA);
+
+        // TODO: check numMotors is only counting drive motors
+        // TODO: measure CoF, consider making part of SwerveConfig
+        ModuleConfig moduleConfig =
+                new ModuleConfig(
+                        swerveConfig.wheelRadius() / 100.,
+                        maxSpeed,
+                        1.0 /* guess at CoF */,
+                        swerveConfig.driveMotor(),
+                        swerveConfig.driveMotorCurrentLimit(),
+                        1 /* num motors */);
+
+        RobotConfig robotConfig =
+                new RobotConfig(
+                        massKG,
+                        momentOfInertia,
+                        moduleConfig,
+                        new Translation2d[] {
+                            wheelLocationAsTranslation(
+                                    swerveConfig.wheelDistanceFromCenter(),
+                                    swerveConfig.frontLeftLocation()),
+                            wheelLocationAsTranslation(
+                                    swerveConfig.wheelDistanceFromCenter(),
+                                    swerveConfig.frontRightLocation()),
+                            wheelLocationAsTranslation(
+                                    swerveConfig.wheelDistanceFromCenter(),
+                                    swerveConfig.backLeftLocation()),
+                            wheelLocationAsTranslation(
+                                    swerveConfig.wheelDistanceFromCenter(),
+                                    swerveConfig.backRightLocation())
+                        });
         return robotConfig;
     }
 
@@ -98,13 +137,20 @@ public class PathSequenceAuto extends Procedure {
     }
 
     protected void addPath(String pathName) {
-        // TODO: should this log errors and otherwise proceed, or throw an exception and 
-        // somehow disable the entire auton (but not disable the robot completely, so teleop still works)?
+        // TODO: should this log errors and otherwise proceed, or throw an exception and
+        // somehow disable the entire auton (but not disable the robot completely, so teleop still
+        // works)?
         try {
             pathItems.add(new FollowPath(pathName, controller, robotConfig, drive));
         } catch (Exception e) {
-            Logger.get(Category.AUTONOMOUS).logRaw(Severity.WARNING, 
-                "!!!! Error loading path " + pathName + ": " + e.getMessage() + ", skipping in auton.");
+            Logger.get(Category.AUTONOMOUS)
+                    .logRaw(
+                            Severity.WARNING,
+                            "!!!! Error loading path "
+                                    + pathName
+                                    + ": "
+                                    + e.getMessage()
+                                    + ", skipping in auton.");
         }
     }
 

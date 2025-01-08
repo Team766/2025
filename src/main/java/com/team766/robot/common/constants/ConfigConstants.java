@@ -29,4 +29,6 @@ public final class ConfigConstants {
     public static final String PATH_FOLLOWING_ROTATION_P = "followpath.rotationP";
     public static final String PATH_FOLLOWING_ROTATION_I = "followpath.rotationI";
     public static final String PATH_FOLLOWING_ROTATION_D = "followpath.rotationD";
+    public static final String PATH_FOLLOWING_MASS_KG = "followpath.massKg";
+    public static final String PATH_FOLLOWING_MOMENT_OF_INERTIA = "followpath.momentOfInertia";
 }

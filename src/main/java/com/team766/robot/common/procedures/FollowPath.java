@@ -6,10 +6,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import com.pathplanner.lib.util.FileVersionException;
-
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -40,12 +38,13 @@ public class FollowPath extends Procedure {
         this.drive = drive;
     }
 
-    public FollowPath(String autoName, PPHolonomicDriveController controller, RobotConfig config, SwerveDrive drive) throws IOException, FileNotFoundException, ParseException, FileVersionException {
-        this(
-                PathPlannerPath.fromPathFile(autoName),
-                controller,
-                config,
-                drive);
+    public FollowPath(
+            String autoName,
+            PPHolonomicDriveController controller,
+            RobotConfig config,
+            SwerveDrive drive)
+            throws IOException, FileNotFoundException, ParseException, FileVersionException {
+        this(PathPlannerPath.fromPathFile(autoName), controller, config, drive);
     }
 
     @Override
@@ -91,8 +90,7 @@ public class FollowPath extends Procedure {
 
             org.littletonrobotics.junction.Logger.recordOutput(
                     "input rotational velocity", targetSpeeds.omegaRadiansPerSecond);
-            org.littletonrobotics.junction.Logger.recordOutput(
-                    "pose", targetState.pose);
+            org.littletonrobotics.junction.Logger.recordOutput("pose", targetState.pose);
             drive.controlRobotOriented(targetSpeeds);
             context.yield();
         }
