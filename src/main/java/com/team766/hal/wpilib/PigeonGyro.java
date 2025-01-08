@@ -7,6 +7,7 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 // TODO: add support for configuring the Pigeon2's mountpose
 // https://api.ctr-electronics.com/phoenix6/release/java/com/ctre/phoenix6/hardware/core/CorePigeon2.html
@@ -34,8 +35,13 @@ public class PigeonGyro implements GyroReader {
 
     @Override
     public double getAngle() {
-        // Negative since getAngle returns CW+ and our standard is CCW
-        return -pigeon.getAngle();
+        StatusSignal<Angle> angle = pigeon.getYaw();
+        if (angle.getStatus().isOK()) {
+            return angle.getValueAsDouble();
+        }
+        Logger.get(Category.GYRO)
+                .logData(Severity.ERROR, "Unable to get angle: %s", angle.toString());
+        return 0;
     }
 
     @Override
@@ -62,6 +68,12 @@ public class PigeonGyro implements GyroReader {
 
     @Override
     public double getRate() {
-        return pigeon.getRate();
+        StatusSignal<AngularVelocity> rate = pigeon.getAngularVelocityZWorld();
+        if (rate.getStatus().isOK()) {
+            return rate.getValueAsDouble();
+        }
+        Logger.get(Category.GYRO)
+                .logData(Severity.ERROR, "Unable to get angular velocity: %s", rate.toString());
+        return 0;
     }
 }

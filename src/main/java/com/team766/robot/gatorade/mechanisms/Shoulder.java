@@ -3,9 +3,14 @@ package com.team766.robot.gatorade.mechanisms;
 import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
@@ -89,14 +94,21 @@ public class Shoulder extends Mechanism {
         leftMotor = (SparkMax) halLeftMotor;
         rightMotor = (SparkMax) halRightMotor;
 
-        rightMotor.follow(leftMotor, true /* invert */);
+        SparkMaxConfig rightConfig = new SparkMaxConfig();
+        rightConfig.follow(leftMotor, true /* invert */);
+        rightMotor.configure(
+                rightConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         leftMotor
                 .getEncoder()
                 .setPosition(EncoderUtils.shoulderDegreesToRotations(Position.BOTTOM.getAngle()));
 
         pidController = leftMotor.getClosedLoopController();
-        pidController.setFeedbackDevice(leftMotor.getEncoder());
+
+        SparkMaxConfig leftConfig = new SparkMaxConfig();
+        leftConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        leftMotor.configure(
+                leftConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         pGain = ConfigFileReader.getInstance().getDouble(SHOULDER_PGAIN);
         iGain = ConfigFileReader.getInstance().getDouble(SHOULDER_IGAIN);
@@ -170,22 +182,22 @@ public class Shoulder extends Mechanism {
 
         System.err.println("Setting target angle to " + angle);
         // set the PID controller values with whatever the latest is in the config
-        pidController.setP(pGain.get());
-        pidController.setI(iGain.get());
-        pidController.setD(dGain.get());
-        // pidController.setFF(ffGain.get());
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.closedLoop.pid(pGain.get(), iGain.get(), dGain.get());
+        config.closedLoop.outputRange(-0.4, 0.4);
+        leftMotor.configure(
+                config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+
         double ff = ffGain.get() * Math.cos(Math.toRadians(angle));
         SmartDashboard.putNumber("[SHOULDER] ff", ff);
         SmartDashboard.putNumber("[SHOULDER] reference", angle);
-
-        pidController.setOutputRange(-0.4, 0.4);
 
         // convert the desired target degrees to rotations
         double rotations = EncoderUtils.shoulderDegreesToRotations(angle);
         SmartDashboard.putNumber("[SHOULDER] Setpoint", rotations);
 
         // set the reference point for the wrist
-        pidController.setReference(rotations, ControlType.kPosition, 0, ff);
+        pidController.setReference(rotations, ControlType.kPosition, ClosedLoopSlot.kSlot0, ff);
     }
 
     @Override

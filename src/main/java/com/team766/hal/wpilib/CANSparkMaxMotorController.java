@@ -20,6 +20,7 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
     private Supplier<Double> sensorPositionSupplier;
     private Supplier<Double> sensorVelocitySupplier;
     private Function<Double, REVLibError> sensorPositionSetter;
+    private Function<Boolean, REVLibError> sensorInvertedSetter;
     private boolean sensorInverted = false;
 
     public CANSparkMaxMotorController(final int deviceId) {
@@ -50,6 +51,13 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
                 LoggerExceptionUtils.logException(ex);
                 break;
         }
+    }
+
+    private void configureAndCheckRevError(final SparkMaxConfig config) {
+        revErrorToException(
+                ExceptionTarget.LOG,
+                configure(
+                        config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));
     }
 
     @Override
@@ -92,7 +100,6 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
     @Override
     public void follow(final MotorController leader) {
         SparkMaxConfig config = new SparkMaxConfig();
-        configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         try {
             config.follow((SparkMax) leader);
         } catch (ClassCastException ex) {
@@ -101,6 +108,7 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
                             "Spark Max can only follow another Spark Max", ex));
             return;
         }
+        configureAndCheckRevError(config);
     }
 
     @Override
@@ -119,35 +127,35 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
                         new IllegalArgumentException("Unsupported neutral mode " + neutralMode));
                 break;
         }
-        configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        configureAndCheckRevError(config);
     }
 
     @Override
     public void setP(final double value) {
         SparkMaxConfig config = new SparkMaxConfig();
         config.closedLoop.p(value);
-        configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        configureAndCheckRevError(config);
     }
 
     @Override
     public void setI(final double value) {
         SparkMaxConfig config = new SparkMaxConfig();
         config.closedLoop.i(value);
-        configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        configureAndCheckRevError(config);
     }
 
     @Override
     public void setD(final double value) {
         SparkMaxConfig config = new SparkMaxConfig();
         config.closedLoop.d(value);
-        configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        configureAndCheckRevError(config);
     }
 
     @Override
     public void setFF(final double value) {
         SparkMaxConfig config = new SparkMaxConfig();
         config.closedLoop.velocityFF(value);
-        configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        configureAndCheckRevError(config);
     }
 
     @Override
@@ -159,9 +167,18 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
                     sensorPositionSupplier = analog::getPosition;
                     sensorVelocitySupplier = analog::getVelocity;
                     sensorPositionSetter = (pos) -> REVLibError.kOk;
-                    revErrorToException(
-                            ExceptionTarget.LOG,
-                            getClosedLoopController().setFeedbackDevice(analog));
+                    sensorInvertedSetter =
+                            (inverted) -> {
+                                SparkMaxConfig config = new SparkMaxConfig();
+                                config.analogSensor.inverted(inverted);
+                                return configure(
+                                        config,
+                                        ResetMode.kNoResetSafeParameters,
+                                        PersistMode.kPersistParameters);
+                            };
+                    SparkMaxConfig config = new SparkMaxConfig();
+                    config.closedLoop.feedbackSensor(FeedbackSensor.kAnalogSensor);
+                    configureAndCheckRevError(config);
                     return;
                 }
             case CTRE_MagEncoder_Absolute:
@@ -181,8 +198,18 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
                 sensorPositionSupplier = encoder::getPosition;
                 sensorVelocitySupplier = encoder::getVelocity;
                 sensorPositionSetter = encoder::setPosition;
-                revErrorToException(
-                        ExceptionTarget.LOG, getClosedLoopController().setFeedbackDevice(encoder));
+                sensorInvertedSetter =
+                        (inverted) -> {
+                            SparkMaxConfig config = new SparkMaxConfig();
+                            config.alternateEncoder.inverted(inverted);
+                            return configure(
+                                    config,
+                                    ResetMode.kNoResetSafeParameters,
+                                    PersistMode.kPersistParameters);
+                        };
+                SparkMaxConfig config = new SparkMaxConfig();
+                config.closedLoop.feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
+                configureAndCheckRevError(config);
                 return;
             case RemoteSensor0:
                 LoggerExceptionUtils.logException(
@@ -217,27 +244,48 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
 
     @Override
     public void setOutputRange(final double minOutput, final double maxOutput) {
-        revErrorToException(
-                ExceptionTarget.LOG,
-                getClosedLoopController().setOutputRange(minOutput, maxOutput));
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.closedLoop.outputRange(minOutput, maxOutput);
+        configureAndCheckRevError(config);
     }
 
     public void setCurrentLimit(final double ampsLimit) {
-        revErrorToException(ExceptionTarget.LOG, setSmartCurrentLimit((int) ampsLimit));
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.smartCurrentLimit((int) (ampsLimit));
+        configureAndCheckRevError(config);
     }
 
     @Override
     public void restoreFactoryDefault() {
-        revErrorToException(ExceptionTarget.LOG, restoreFactoryDefaults());
+        SparkMaxConfig config = new SparkMaxConfig();
+        revErrorToException(
+                ExceptionTarget.LOG,
+                configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
     }
 
     @Override
     public void setOpenLoopRamp(final double secondsFromNeutralToFull) {
-        revErrorToException(ExceptionTarget.LOG, setOpenLoopRampRate(secondsFromNeutralToFull));
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.openLoopRampRate(secondsFromNeutralToFull);
+        configureAndCheckRevError(config);
     }
 
     @Override
     public void setClosedLoopRamp(final double secondsFromNeutralToFull) {
-        revErrorToException(ExceptionTarget.LOG, setClosedLoopRampRate(secondsFromNeutralToFull));
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.closedLoopRampRate(secondsFromNeutralToFull);
+        configureAndCheckRevError(config);
+    }
+
+    @Override
+    public void setMotorInverted(boolean isInverted) {
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.inverted(isInverted);
+        configureAndCheckRevError(config);
+    }
+
+    @Override
+    public boolean getMotorInverted() {
+        return configAccessor.getInverted();
     }
 }
