@@ -7,23 +7,19 @@ import java.util.ArrayList;
 
 public class GetApriltagPoseData {
 
-    public static ArrayList<KalamanApriltag> getAllTags() {
+    public static ArrayList<KalamanApriltag> getAllTags(double[] ntArr) {
         ArrayList<KalamanApriltag> apriltags = new ArrayList<KalamanApriltag>();
 
-        int[] tagIds;
         double[] tagData;
 
-        try {
-            tagData = GetOrinRawValue.getRawPoseData();
-        } catch (ValueNotFoundOnTableError e) {
-            return apriltags; // Can just return an array of zero apriltags here
-        }
+        tagData = ntArr;
 
         if (tagData.length % 5 != 0 || tagData.length == 0) return apriltags;
 
         for (int i = 0; i < tagData.length; i += 5) {
             KalamanApriltag tag =
-                    new KalamanApriltag(tagData[i],
+                    new KalamanApriltag(
+                            tagData[i],
                             (int) tagData[i + 1],
                             new Pose3d(
                                     new Translation3d(
