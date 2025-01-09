@@ -31,6 +31,7 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
         // device's PID controller is using.
         SparkMaxConfig config = new SparkMaxConfig();
         config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        configureAndCheckRevError(config);
     }
 
     private enum ExceptionTarget {
