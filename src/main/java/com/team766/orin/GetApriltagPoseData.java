@@ -18,7 +18,8 @@ public class GetApriltagPoseData {
 
         for (int i = 0; i < tagData.length; i += 5) {
             KalamanApriltag tag =
-                    new KalamanApriltag(tagData[i],
+                    new KalamanApriltag(
+                            tagData[i],
                             (int) tagData[i + 1],
                             new Pose3d(
                                     new Translation3d(

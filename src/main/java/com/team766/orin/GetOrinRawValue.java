@@ -24,11 +24,11 @@ public class GetOrinRawValue {
     private double[] arr = new double[] {Double.NEGATIVE_INFINITY};
     private DoubleArrayEntry poseValues = pose.getEntry(arr);
 
-    public GetOrinRawValue(String topicName){
+    public GetOrinRawValue(String topicName) {
         pose = table.getDoubleArrayTopic(topicName);
         poseValues = pose.getEntry(arr);
     }
-    
+
     public double[] getRawPoseData() throws ValueNotFoundOnTableError {
         if (poseValues.get().length == 1 && poseValues.get()[0] == Double.NEGATIVE_INFINITY) {
             throw new ValueNotFoundOnTableError("Pose Data Not Present on Table");

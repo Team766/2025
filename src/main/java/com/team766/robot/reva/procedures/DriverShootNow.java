@@ -59,7 +59,7 @@ public class DriverShootNow extends VisionPIDProcedure {
 
         double distanceOfRobotToTag =
                 Math.sqrt(Math.pow(toUse.getX(), 2) + Math.pow(toUse.getZ(), 2));
-            
+
         log("DIST: " + distanceOfRobotToTag);
         if (distanceOfRobotToTag
                 > VisionPIDProcedure.scoringPositions
@@ -82,7 +82,7 @@ public class DriverShootNow extends VisionPIDProcedure {
         Robot.shoulder.rotate(armAngle);
         log("ArmAngle: " + armAngle);
 
-        angle = Math.atan2(x,z);
+        angle = Math.atan2(x, z);
 
         log("ROBOT ANGLE: " + angle);
 
@@ -101,7 +101,7 @@ public class DriverShootNow extends VisionPIDProcedure {
                 z = toUse.getZ();
                 x = toUse.getX();
 
-                angle = Math.atan2(x,z);
+                angle = Math.atan2(x, z);
 
                 anglePID.calculate(angle);
             } catch (NoTagFoundError e) {
