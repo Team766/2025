@@ -126,7 +126,7 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
             default:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("Unsupported neutral mode " + neutralMode));
-                break;
+                return;
         }
         configureAndCheckRevError(config);
     }

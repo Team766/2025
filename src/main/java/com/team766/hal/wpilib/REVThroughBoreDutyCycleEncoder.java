@@ -40,4 +40,8 @@ public class REVThroughBoreDutyCycleEncoder extends DutyCycleEncoder implements 
     public double getDistance() {
         return get() * distancePerRotation;
     }
+
+    public double getWithoutOffset() {
+        return super.get();
+    }
 }

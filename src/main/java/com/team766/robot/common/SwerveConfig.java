@@ -47,7 +47,7 @@ public class SwerveConfig {
     public static final double DEFAULT_DRIVE_CURRENT_LIMIT = 35;
     public static final double DEFAULT_STEER_CURRENT_LIMIT = 30;
 
-    public static final DCMotor DEFAULT_DRIVE_MOTOR = DCMotor.getKrakenX60(1);
+    public static final DCMotor DEFAULT_DRIVE_MOTOR = DCMotor.getKrakenX60(1 /* motors */);
 
     private String canBus = DEFAULT_CAN_BUS;
     // TODO: can we combine Drive's wheel locations and odometry's wheel locations?
