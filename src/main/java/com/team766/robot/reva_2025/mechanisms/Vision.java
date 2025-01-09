@@ -26,4 +26,12 @@ public class Vision extends Mechanism{
         throw new NoTagFoundError(tagId);
     }
 
+    public ArrayList<KalamanApriltag> getAllTags() throws ValueNotFoundOnTableError{
+        double[] poseData;
+        poseData = camera.getRawPoseData();
+
+        ArrayList<KalamanApriltag> tags = GetApriltagPoseData.getAllTags(poseData);
+        return tags;
+    }
+
 }
