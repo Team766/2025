@@ -4,6 +4,7 @@ import com.team766.logging.Category;
 import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class Mechanism implements Reservable, LoggingBase {
@@ -20,11 +21,18 @@ public abstract class Mechanism implements Reservable, LoggingBase {
 
         @Override
         public final void periodic() {
+            if (container != null) {
+                // This Mechanism's periodic() will be run by the enclosing MultiFacetedMechanism.
+                return;
+            }
+
             periodicInternal();
         }
     }
 
     private final MechanismSubsystem subsystem = new ProxySubsystem();
+
+    private MultiFacetedMechanism container = null;
 
     private boolean isRunningPeriodic = false;
 
@@ -72,6 +80,17 @@ public abstract class Mechanism implements Reservable, LoggingBase {
     @Override
     public Category getLoggerCategory() {
         return Category.MECHANISMS;
+    }
+
+    /**
+     * Indicate that this Mechanism is part of a MultiFacetedMechanism.
+     */
+    /* package */ final void setContainer(MultiFacetedMechanism container) {
+        Objects.requireNonNull(container);
+        if (this.container != null) {
+            throw new IllegalStateException("Mechanism is already part of a MultiFacetedMechanism");
+        }
+        this.container = container;
     }
 
     /**
