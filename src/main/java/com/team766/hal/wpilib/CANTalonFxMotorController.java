@@ -10,13 +10,15 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorControllerCommandFailedException;
@@ -24,7 +26,7 @@ import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 
-public class CANTalonFxMotorController extends TalonFX implements MotorController {
+public class CANTalonFxMotorController extends CoreTalonFX implements MotorController {
 
     // NOTE: whenever we make changes to this (or embedded parts of it), we refresh the config
     // out of paranoia, in case some code casts this MotorController to a TalonFX directly
@@ -67,11 +69,40 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
         statusCodeToException(ExceptionTarget.LOG, getConfigurator().refresh(talonFXConfig));
     }
 
+    public void set(double value) {
+        setControl(new DutyCycleOut(value));
+    }
+
+    @Override
+    public double get() {
+        return getDutyCycle(true).getValue();
+    }
+
+    public void stopMotor() {
+        setControl(new NeutralOut());
+    }
+
+    public void setInverted(boolean inverted) {
+        refreshConfig();
+        talonFXConfig.MotorOutput.Inverted =
+                inverted
+                        ? InvertedValue.Clockwise_Positive
+                        : InvertedValue.CounterClockwise_Positive;
+        statusCodeToException(
+                ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.MotorOutput));
+    }
+
+    public boolean getInverted() {
+        refreshConfig();
+        return talonFXConfig.MotorOutput.Inverted == InvertedValue.Clockwise_Positive;
+    }
+
     @Override
     public void set(final ControlMode mode, double value) {
         switch (mode) {
             case Disabled:
-                super.disable();
+                NeutralOut neutral = new NeutralOut();
+                super.setControl(neutral);
                 break;
             case PercentOutput:
                 DutyCycleOut percent = new DutyCycleOut(value);
@@ -134,18 +165,6 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
                     new IllegalArgumentException(
                             "TalonFX can only follow another TalonFX motor controller."));
         }
-    }
-
-    @Override
-    public boolean getMotorInverted() {
-        // TODO: retrieve this via the TalonFXConfiguration
-        return super.getInverted();
-    }
-
-    @Override
-    public void setMotorInverted(final boolean inverted) {
-        // TODO: set this via the TalonFXConfiguration
-        statusCodeToException(ExceptionTarget.LOG, super.setInverted(inverted));
     }
 
     @Override
@@ -272,6 +291,9 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
                         new IllegalArgumentException("Unsupported neutral mode " + neutralMode));
                 return;
         }
-        super.setNeutralMode(neutralModeValue);
+        MotorOutputConfigs motorOutput = new MotorOutputConfigs();
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().refresh(motorOutput));
+        motorOutput.NeutralMode = neutralModeValue;
+        statusCodeToException(ExceptionTarget.LOG, super.getConfigurator().apply(motorOutput));
     }
 }

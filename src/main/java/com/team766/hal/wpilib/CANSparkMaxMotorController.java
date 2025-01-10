@@ -298,14 +298,14 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
     }
 
     @Override
-    public void setMotorInverted(boolean isInverted) {
+    public void setInverted(boolean isInverted) {
         SparkMaxConfig config = new SparkMaxConfig();
         config.inverted(isInverted);
         configureAndCheckRevError(config);
     }
 
     @Override
-    public boolean getMotorInverted() {
+    public boolean getInverted() {
         return configAccessor.getInverted();
     }
 }

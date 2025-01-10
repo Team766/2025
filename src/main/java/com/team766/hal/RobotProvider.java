@@ -142,7 +142,7 @@ public abstract class RobotProvider {
                 motor = new MotorControllerWithSensorScale(motor, sensorScaleConfig.get());
             }
             if (invertedConfig.valueOr(false)) {
-                motor.setMotorInverted(true);
+                motor.setInverted(true);
             }
             if (sensorInvertedConfig.valueOr(false)) {
                 motor.setSensorInverted(true);

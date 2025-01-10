@@ -55,7 +55,7 @@ public interface MotorController extends BasicMotorController {
      *
      * @param isInverted The state of inversion true is inverted.
      */
-    void setMotorInverted(boolean isInverted);
+    void setInverted(boolean isInverted);
 
     /**
      * Common interface for returning if a motor controller is in the inverted
@@ -63,7 +63,7 @@ public interface MotorController extends BasicMotorController {
      *
      * @return isInverted The state of the inversion true is inverted.
      */
-    boolean getMotorInverted();
+    boolean getInverted();
 
     /**
      * Stops motor movement. Motor can be moved again by calling set without having

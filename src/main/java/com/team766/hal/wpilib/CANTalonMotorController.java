@@ -171,12 +171,12 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
     }
 
     @Override
-    public void setMotorInverted(final boolean isInverted) {
+    public void setInverted(final boolean isInverted) {
         m_device.setInverted(isInverted);
     }
 
     @Override
-    public boolean getMotorInverted() {
+    public boolean getInverted() {
         return m_device.getInverted();
     }
 

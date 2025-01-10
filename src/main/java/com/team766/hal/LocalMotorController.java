@@ -119,12 +119,12 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public void setMotorInverted(final boolean isInverted) {
+    public void setInverted(final boolean isInverted) {
         this.inverted = isInverted;
     }
 
     @Override
-    public boolean getMotorInverted() {
+    public boolean getInverted() {
         return this.inverted;
     }
 
