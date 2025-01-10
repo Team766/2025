@@ -190,7 +190,6 @@ repositories {
     // REV
     maven { url = uri('https://maven.revrobotics.com/') }
 
-
     mavenLocal()
 }
 
