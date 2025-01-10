@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
     public InstantCommand(InstantProcedure procedure) {
         this.procedure = procedure;
-        m_requirements.addAll(procedure.reservations());
+        getRequirements().addAll(procedure.reservations());
         setName(procedure.getName());
     }
 
