@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.team766.TestCase3;
+import com.team766.framework3.FakeMechanism.FakeStatus;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,7 +24,7 @@ public class MechanismTest extends TestCase3 {
                         new FunctionalProcedure(
                                 Set.of(mech),
                                 context -> {
-                                    mech.mutateMechanism();
+                                    mech.mutateMechanism(0);
 
                                     succeeded.set(true);
                                 }));
@@ -32,6 +33,24 @@ public class MechanismTest extends TestCase3 {
         step();
         assertTrue(cmd.isFinished());
         assertTrue(succeeded.get());
+    }
+
+    /// Test a Mechanism publishing a Status via its run() method return value.
+    @Test
+    public void testStatuses() {
+        // FakeMechanism publishes a FakeStatus with the state value which was most recently set in
+        // its Request.
+        var mech = new FakeMechanism() {};
+        step();
+        // Status set from Initial request
+        assertEquals(
+                new FakeStatus(-1), StatusBus.getInstance().getStatusOrThrow(FakeStatus.class));
+        assertEquals(new FakeStatus(-1), mech.getStatus());
+        step();
+        // Status set from Idle request
+        assertEquals(
+                new FakeStatus(10), StatusBus.getInstance().getStatusOrThrow(FakeStatus.class));
+        assertEquals(new FakeStatus(10), mech.getStatus());
     }
 
     /// Test that checkContextReservation throws an exception when called from a Procedure which has
@@ -47,7 +66,7 @@ public class MechanismTest extends TestCase3 {
                                 Set.of(),
                                 context -> {
                                     try {
-                                        mech.mutateMechanism();
+                                        mech.mutateMechanism(0);
                                     } catch (Throwable ex) {
                                         thrownException.set(ex.getMessage());
                                     }
