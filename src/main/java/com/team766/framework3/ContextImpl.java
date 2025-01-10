@@ -158,7 +158,7 @@ import java.util.function.BooleanSupplier;
         m_controlOwner = ControlOwner.MAIN_THREAD;
         m_state = State.NEW;
         setName(getContextName());
-        m_requirements.addAll(procedure.reservations());
+        getRequirements().addAll(procedure.reservations());
     }
 
     /**

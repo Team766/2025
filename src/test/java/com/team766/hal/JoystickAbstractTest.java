@@ -37,15 +37,15 @@ public abstract class JoystickAbstractTest extends TestCase3 {
         setAxis(0, 0.5);
         setAxis(1, 0.3);
         joystick.setAxisDeadzone(1, 0.2);
-        assertEquals(0.0, joystick.getAxis(0));
-        assertEquals(0.3, joystick.getAxis(1));
+        assertEquals(0.0, joystick.getAxis(0), 1e-7);
+        assertEquals(0.3, joystick.getAxis(1), 1e-7);
         assertFalse(joystick.isAxisMoved(0));
         assertTrue(joystick.isAxisMoved(1));
 
         // Calling setAllAxisDeadzone should override previously-set per-axis deadzones.
         joystick.setAllAxisDeadzone(0.5);
-        assertEquals(0.5, joystick.getAxis(0));
-        assertEquals(0.0, joystick.getAxis(1));
+        assertEquals(0.5, joystick.getAxis(0), 1e-7);
+        assertEquals(0.0, joystick.getAxis(1), 1e-7);
         assertTrue(joystick.isAxisMoved(0));
         assertFalse(joystick.isAxisMoved(1));
     }
