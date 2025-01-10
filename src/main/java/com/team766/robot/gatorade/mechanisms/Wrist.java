@@ -2,9 +2,13 @@ package com.team766.robot.gatorade.mechanisms;
 
 import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
@@ -58,8 +62,8 @@ public class Wrist extends Mechanism {
 
     private static final double NEAR_THRESHOLD = 5.0;
 
-    private final CANSparkMax motor;
-    private final SparkPIDController pidController;
+    private final SparkMax motor;
+    private final SparkClosedLoopController pidController;
     private final ValueProvider<Double> pGain;
     private final ValueProvider<Double> iGain;
     private final ValueProvider<Double> dGain;
@@ -71,11 +75,11 @@ public class Wrist extends Mechanism {
      */
     public Wrist() {
         MotorController halMotor = RobotProvider.instance.getMotor(WRIST_MOTOR);
-        if (!(halMotor instanceof CANSparkMax)) {
+        if (!(halMotor instanceof SparkMax)) {
             log(Severity.ERROR, "Motor is not a CANSparkMax!");
             throw new IllegalStateException("Motor is not a CANSparkMax!");
         }
-        motor = (CANSparkMax) halMotor;
+        motor = (SparkMax) halMotor;
 
         motor.getEncoder()
                 .setPosition(EncoderUtils.wristDegreesToRotations(Position.TOP.getAngle()));
@@ -83,8 +87,11 @@ public class Wrist extends Mechanism {
         // stash the PIDController for convenience.  will update the PID values to the latest from
         // the config
         // file each time we use the motor.
-        pidController = motor.getPIDController();
-        pidController.setFeedbackDevice(motor.getEncoder());
+        pidController = motor.getClosedLoopController();
+
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         // grab config values for PID.
         pGain = ConfigFileReader.getInstance().getDouble(WRIST_PGAIN);
@@ -157,21 +164,24 @@ public class Wrist extends Mechanism {
 
         System.err.println("Setting target angle to " + angle);
         // set the PID controller values with whatever the latest is in the config
-        pidController.setP(pGain.get());
-        pidController.setI(iGain.get());
-        pidController.setD(dGain.get());
-        // pidController.setFF(ffGain.get());
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.closedLoop.pid(pGain.get(), iGain.get(), dGain.get());
+        config.closedLoop.outputRange(-1, 1);
+        motor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+
         double ff = ffGain.get() * Math.cos(Math.toRadians(angle));
         SmartDashboard.putNumber("[WRIST] ff", ff);
         SmartDashboard.putNumber("[WRIST] reference", angle);
-
-        pidController.setOutputRange(-1, 1);
 
         // convert the desired target degrees to rotations
         double rotations = EncoderUtils.wristDegreesToRotations(angle);
 
         // set the reference point for the wrist
-        pidController.setReference(rotations, ControlType.kPosition, 0, ff);
+        pidController.setReference(
+                rotations,
+                com.revrobotics.spark.SparkBase.ControlType.kPosition,
+                ClosedLoopSlot.kSlot0,
+                ff);
     }
 
     @Override
