@@ -84,9 +84,8 @@ public class RuleTest {
 
     @Test
     public void testGetMechanismsToReserve() {
-        final Set<Mechanism<?>> newlyMechanisms =
-                Set.of(new FakeMechanism1(), new FakeMechanism2());
-        final Set<Mechanism<?>> finishedMechanisms = Set.of(new FakeMechanism());
+        final Set<Mechanism> newlyMechanisms = Set.of(new FakeMechanism1(), new FakeMechanism2());
+        final Set<Mechanism> finishedMechanisms = Set.of(new FakeMechanism());
 
         Rule duckDuckGooseGoose =
                 Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
