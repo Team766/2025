@@ -29,9 +29,7 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
         // Set default feedback device. This ensures that our implementations of
         // getSensorPosition/getSensorVelocity return values that match what the
         // device's PID controller is using.
-        SparkMaxConfig config = new SparkMaxConfig();
-        config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-        configureAndCheckRevError(config);
+        selectPrimaryFeedbackSensor();
     }
 
     private enum ExceptionTarget {
@@ -159,6 +157,26 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
         configureAndCheckRevError(config);
     }
 
+    private void selectPrimaryFeedbackSensor() {
+        RelativeEncoder encoder = getEncoder();
+        sensorPositionSupplier = encoder::getPosition;
+        sensorVelocitySupplier = encoder::getVelocity;
+        sensorPositionSetter = encoder::setPosition;
+        sensorInvertedSetter =
+                (inverted) -> {
+                    SparkMaxConfig config = new SparkMaxConfig();
+                    config.encoder.inverted(inverted);
+                    return configure(
+                            config,
+                            ResetMode.kNoResetSafeParameters,
+                            PersistMode.kPersistParameters);
+                };
+
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        configureAndCheckRevError(config);
+    }
+
     @Override
     public void setSelectedFeedbackSensor(final FeedbackDevice feedbackDevice) {
         switch (feedbackDevice) {
@@ -262,6 +280,7 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
         revErrorToException(
                 ExceptionTarget.LOG,
                 configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+        selectPrimaryFeedbackSensor();
     }
 
     @Override
