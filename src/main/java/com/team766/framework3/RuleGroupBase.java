@@ -40,7 +40,7 @@ import java.util.function.Supplier;
             String name,
             BooleanSupplier condition,
             RulePersistence rulePersistence,
-            Set<Mechanism> mechanisms,
+            Set<Reservable> mechanisms,
             Consumer<Context> action) {
         return addRule(
                 name,
@@ -52,7 +52,7 @@ import java.util.function.Supplier;
     protected Rule addRule(
             String name,
             BooleanSupplier condition,
-            Set<Mechanism> mechanisms,
+            Set<Reservable> mechanisms,
             Consumer<Context> action) {
         return addRule(name, condition, ONCE_AND_HOLD, mechanisms, action);
     }
@@ -75,7 +75,7 @@ import java.util.function.Supplier;
             String name,
             BooleanSupplier condition,
             RulePersistence rulePersistence,
-            Set<Mechanism> mechanisms,
+            Set<Reservable> mechanisms,
             Runnable action) {
         return addRule(
                 name,
@@ -85,7 +85,7 @@ import java.util.function.Supplier;
     }
 
     protected Rule addRule(
-            String name, BooleanSupplier condition, Set<Mechanism> mechanisms, Runnable action) {
+            String name, BooleanSupplier condition, Set<Reservable> mechanisms, Runnable action) {
         return addRule(name, condition, ONCE_AND_HOLD, mechanisms, action);
     }
 
@@ -93,13 +93,13 @@ import java.util.function.Supplier;
             String name,
             BooleanSupplier condition,
             RulePersistence rulePersistence,
-            Mechanism mechanism,
+            Reservable mechanism,
             Runnable action) {
         return addRule(name, condition, rulePersistence, Set.of(mechanism), action);
     }
 
     protected Rule addRule(
-            String name, BooleanSupplier condition, Mechanism mechanism, Runnable action) {
+            String name, BooleanSupplier condition, Reservable mechanism, Runnable action) {
         return addRule(name, condition, ONCE_AND_HOLD, mechanism, action);
     }
 

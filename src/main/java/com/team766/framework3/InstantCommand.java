@@ -7,7 +7,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 
     public InstantCommand(InstantProcedure procedure) {
         this.procedure = procedure;
-        getRequirements().addAll(procedure.reservations());
+        for (var res : procedure.reservations()) {
+            getRequirements().addAll(res.getReservableSubsystems());
+        }
         setName(procedure.getName());
     }
 

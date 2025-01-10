@@ -82,7 +82,7 @@ public class MechanismTest extends TestCase3 {
         cmd.schedule();
         step();
         assertThat(thrownException.get())
-                .matches("FakeMechanism tried to be used without reserving it");
+                .matches(".*FakeMechanism tried to be used without reserving it");
 
         var cmd2 = new ContextImpl(new FakeProcedure(1, Set.of(mech)));
         cmd2.schedule();
@@ -90,7 +90,7 @@ public class MechanismTest extends TestCase3 {
         cmd.schedule();
         step();
         assertThat(thrownException.get())
-                .matches("FakeMechanism tried to be used without reserving it");
+                .matches(".*FakeMechanism tried to be used without reserving it");
     }
 
     /// Test that checkContextReservation succeeds when called from within the Mechanism's own run()

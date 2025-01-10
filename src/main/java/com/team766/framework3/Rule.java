@@ -1,7 +1,9 @@
 package com.team766.framework3;
 
 import com.google.common.collect.Maps;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -62,7 +64,7 @@ public class Rule {
     private BooleanSupplier predicate;
     private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
-    private final Map<TriggerType, Set<Mechanism>> triggerReservations =
+    private final Map<TriggerType, Set<Subsystem>> triggerReservations =
             Maps.newEnumMap(TriggerType.class);
     private Cancellation cancellationOnFinish;
 
@@ -141,13 +143,13 @@ public class Rule {
     }
 
     public Rule withOnTriggeringProcedure(
-            RulePersistence rulePersistence, Set<Mechanism> reservations, Runnable action) {
+            RulePersistence rulePersistence, Set<Reservable> reservations, Runnable action) {
         return withOnTriggeringProcedure(
                 rulePersistence, () -> new FunctionalInstantProcedure(reservations, action));
     }
 
     public Rule withOnTriggeringProcedure(
-            RulePersistence rulePersistence, Mechanism reservation, Runnable action) {
+            RulePersistence rulePersistence, Reservable reservation, Runnable action) {
         return withOnTriggeringProcedure(rulePersistence, Set.of(reservation), action);
     }
 
@@ -167,12 +169,12 @@ public class Rule {
         return this;
     }
 
-    public Rule withFinishedTriggeringProcedure(Set<Mechanism> reservations, Runnable action) {
+    public Rule withFinishedTriggeringProcedure(Set<Reservable> reservations, Runnable action) {
         return withFinishedTriggeringProcedure(
                 () -> new FunctionalInstantProcedure(reservations, action));
     }
 
-    public Rule withFinishedTriggeringProcedure(Mechanism reservation, Runnable action) {
+    public Rule withFinishedTriggeringProcedure(Reservable reservation, Runnable action) {
         return withFinishedTriggeringProcedure(Set.of(reservation), action);
     }
 
@@ -221,11 +223,15 @@ public class Rule {
         }
     }
 
-    private static Set<Mechanism> getReservationsForProcedure(Supplier<Procedure> supplier) {
+    private static Set<Subsystem> getReservationsForProcedure(Supplier<Procedure> supplier) {
         if (supplier != null) {
             Procedure procedure = supplier.get();
             if (procedure != null) {
-                return procedure.reservations();
+                HashSet<Subsystem> subsystems = new HashSet<>();
+                for (var r : procedure.reservations()) {
+                    subsystems.addAll(r.getReservableSubsystems());
+                }
+                return subsystems;
             }
         }
         return Collections.emptySet();
@@ -276,7 +282,7 @@ public class Rule {
         }
     }
 
-    /* package */ Set<Mechanism> getMechanismsToReserve() {
+    /* package */ Set<Subsystem> getSubsystemsToReserve() {
         return triggerReservations.getOrDefault(currentTriggerType, Collections.emptySet());
     }
 

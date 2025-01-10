@@ -7,6 +7,7 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -85,7 +86,7 @@ public class RuleEngine extends RuleGroupBase {
             sealed = true;
         }
 
-        Set<Mechanism> mechanismsToUse = new HashSet<>();
+        Set<Subsystem> subsystemsToUse = new HashSet<>();
 
         // TODO(MF3): when creating a Procedure, check that the reservations are the same as
         // what the Rule pre-computed.
@@ -104,25 +105,25 @@ public class RuleEngine extends RuleGroupBase {
                     int priority = getPriorityForRule(rule);
 
                     // see if there are mechanisms a potential procedure would want to reserve
-                    Set<Mechanism> reservations = rule.getMechanismsToReserve();
+                    Set<Subsystem> reservations = rule.getSubsystemsToReserve();
                     log(Severity.INFO, "Rule " + rule.getName() + " would reserve " + reservations);
-                    for (Mechanism mechanism : reservations) {
+                    for (Subsystem subsystem : reservations) {
                         // see if any of the mechanisms higher priority rules will use would also be
                         // used by this lower priority rule's procedure.
-                        if (mechanismsToUse.contains(mechanism)) {
+                        if (subsystemsToUse.contains(subsystem)) {
                             log(
                                     Severity.INFO,
                                     "RULE CONFLICT!  Ignoring rule: "
                                             + rule.getName()
                                             + "; mechanism "
-                                            + mechanism.getName()
+                                            + subsystem.getName()
                                             + " already reserved by higher priority rule.");
                             rule.reset();
                             continue ruleLoop;
                         }
                         // see if a previously triggered rule is still using the mechanism
                         Command existingCommand =
-                                CommandScheduler.getInstance().requiring(mechanism);
+                                CommandScheduler.getInstance().requiring(subsystem);
                         if (existingCommand != null) {
                             // look up the rule
                             Rule existingRule = getRuleForTriggeredProcedure(existingCommand);
@@ -137,7 +138,7 @@ public class RuleEngine extends RuleGroupBase {
                                             "RULE CONFLICT!  Ignoring rule: "
                                                     + rule.getName()
                                                     + "; mechanism "
-                                                    + mechanism.getName()
+                                                    + subsystem.getName()
                                                     + " already being used in CommandScheduler by higher priority rule.");
                                     rule.reset();
                                     continue ruleLoop;
@@ -149,7 +150,7 @@ public class RuleEngine extends RuleGroupBase {
                                             "Pre-empting rule: "
                                                     + existingRule.getName()
                                                     + "; mechanism "
-                                                    + mechanism.getName()
+                                                    + subsystem.getName()
                                                     + " will now be reserved by higher priority rule "
                                                     + rule.getName());
                                     existingRule.reset();
@@ -183,7 +184,7 @@ public class RuleEngine extends RuleGroupBase {
 
                     // TODO(MF3): check that the reservations have not changed
                     Command command = procedure.createCommandToRunProcedure();
-                    mechanismsToUse.addAll(reservations);
+                    subsystemsToUse.addAll(reservations);
                     ruleMap.forcePut(command, new RuleAction(rule, triggerType));
                     command.schedule();
                 }
