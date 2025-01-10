@@ -49,7 +49,7 @@ public class PathSequenceAuto extends Procedure {
 
     private static Translation2d wheelLocationAsTranslation(
             double distanceFromCenter, Vector2D vector) {
-        vector = vector.scalarMultiply(distanceFromCenter);
+        vector = vector.normalize().scalarMultiply(distanceFromCenter);
         return new Translation2d(vector.getX(), vector.getY());
     }
 
@@ -78,7 +78,7 @@ public class PathSequenceAuto extends Procedure {
                 new ModuleConfig(
                         swerveConfig.wheelRadius() / 100.,
                         maxSpeed,
-                        1.0 /* guess at CoF */,
+                        1.2 /* guess at CoF */,
                         swerveConfig.driveMotor(),
                         swerveConfig.driveMotorCurrentLimit(),
                         1 /* num motors */);

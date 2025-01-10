@@ -145,7 +145,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     @Override
     public void setMotorInverted(final boolean inverted) {
         // TODO: set this via the TalonFXConfiguration
-        super.setInverted(inverted);
+        statusCodeToException(ExceptionTarget.LOG, super.setInverted(inverted));
     }
 
     @Override

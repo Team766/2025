@@ -90,7 +90,7 @@ public class FollowPath extends Procedure {
 
             org.littletonrobotics.junction.Logger.recordOutput(
                     "input rotational velocity", targetSpeeds.omegaRadiansPerSecond);
-            org.littletonrobotics.junction.Logger.recordOutput("pose", targetState.pose);
+            org.littletonrobotics.junction.Logger.recordOutput("targetPose", targetState.pose);
             drive.controlRobotOriented(targetSpeeds);
             context.yield();
         }
