@@ -5,7 +5,10 @@ import com.team766.framework.Procedure;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.common.DriverOI;
 import com.team766.robot.reva.constants.InputConstants;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -17,7 +20,7 @@ public class OI extends Procedure {
     private final JoystickReader rightJoystick;
     private final JoystickReader macropad;
     private final JoystickReader gamepad;
-    private final DriverOI driverOI;
+    private final com.team766.robot.common.DriverOI driverOI;
     private final DebugOI debugOI;
     private final BoxOpOI boxOpOI;
 
@@ -32,9 +35,6 @@ public class OI extends Procedure {
         driverOI =
                 new DriverOI(
                         Robot.drive,
-                        Robot.shoulder,
-                        Robot.intake,
-                        Robot.shooter,
                         leftJoystick,
                         rightJoystick);
         debugOI = new DebugOI(macropad, Robot.shoulder, Robot.climber, Robot.intake, Robot.shooter);
@@ -54,10 +54,12 @@ public class OI extends Procedure {
 
             // Driver OI: take input from left, right joysticks.  control drive.
             driverOI.runOI(context);
+            if (leftJoystick.getButtonPressed(1)) {Robot.drive.setCurrentPosition(new Pose2d(1, 3, new Rotation2d()));}
+            if (leftJoystick.getButtonPressed(2)) {Robot.drive.resetGyro();}
             // Debug OI: allow for finer-grain testing of each mechanism.
-            debugOI.runOI(context);
+            // debugOI.runOI(context);
 
-            boxOpOI.runOI(context);
+            // boxOpOI.runOI(context);
         }
     }
 }

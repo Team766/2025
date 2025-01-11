@@ -1,13 +1,25 @@
 package com.team766.robot.common.mechanisms;
 
+import static com.team766.robot.common.constants.SwerveConstants.*;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.sim.CANcoderSimState;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
+import com.team766.robot.common.constants.SwerveConstants;
+import com.team766.robot.common.mechanisms.simulation.SwerveModuleSim;
 import com.team766.robot.reva.mechanisms.MotorUtil;
+import com.team766.simulator.Parameters;
+import com.team766.simulator.PhysicalConstants;
+import de.erichseifert.gral.graphics.Orientation;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.Angle;
@@ -25,38 +37,10 @@ public class SwerveModule {
     private final CANcoder encoder;
     private final double offset;
 
-    // FIXME: have these be passed in from Drive (via SwerveConfig).  Many of these are
-    // passed into Odometry.  (Swerve and Odometry code need to be renconciled.)
-
-    /*
-     * Factor that converts between motor rotations and wheel degrees
-     * Multiply to convert from wheel degrees to motor rotations
-     * Divide to convert from motor rotations to wheel degrees
-     */
-    private static final double ENCODER_CONVERSION_FACTOR =
-            (150.0 / 7.0) /*steering gear ratio*/ * (1. / 360.0) /*degrees to motor rotations*/;
-
-    private static final double DRIVE_GEAR_RATIO = 6.75; // L2 gear ratio configuration
-
-    // Radius of the wheels. The circumference was measured to be 30.5cm, then experimentally this
-    // value had
-    // an error of 2.888%. This was then converted to meters, and then the radius.
-    private static final double WHEEL_RADIUS = 30.5 * 1.02888 / 100 / (2 * Math.PI);
-
-    /*
-     * Factor that converts between drive motor angular speed (rad/s) to drive wheel tip speed (m/s)
-     * Multiply to convert from wheel tip speed to motor angular speed
-     * Divide to convert from angular speed to wheel tip speed
-     */
-    private static final double MOTOR_WHEEL_FACTOR_MPS =
-            1.
-                    / WHEEL_RADIUS // Wheel radians/sec
-                    * DRIVE_GEAR_RATIO // Motor radians/sec
-                    / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
-
-    // TUNE THESE!
-    private static final double DRIVE_STATOR_CURRENT_LIMIT = 80.0;
-    private static final double STEER_STATOR_CURRENT_LIMIT = 80.0;
+    private SwerveModuleSim sim;
+    private TalonFXSimState driveSimState;
+    private TalonFXSimState steerSimState;
+    private CANcoderSimState encoderSimState;
 
     /**
      * Creates a new SwerveModule.
@@ -86,6 +70,7 @@ public class SwerveModule {
         // TODO: tune these values!
         MotorUtil.setTalonFXStatorCurrentLimit(drive, DRIVE_STATOR_CURRENT_LIMIT);
         MotorUtil.setTalonFXStatorCurrentLimit(steer, STEER_STATOR_CURRENT_LIMIT);
+
     }
 
     private double computeEncoderOffset() {
@@ -110,9 +95,9 @@ public class SwerveModule {
      */
     public void steer(Vector2D vector) {
         boolean reversed = false;
-        // SmartDashboard.putString(
-        //         "[" + modulePlacement + "]" + "x, y",
-        //         String.format("%.2f, %.2f", vector.getX(), vector.getY()));
+        SmartDashboard.putString(
+                "[" + modulePlacement + "]" + "x, y",
+                String.format("%.2f, %.2f", vector.getX(), vector.getY()));
 
         // Calculates the angle of the vector from -180° to 180°
         final double vectorTheta = Math.toDegrees(Math.atan2(vector.getY(), vector.getX()));
@@ -145,17 +130,17 @@ public class SwerveModule {
         // Needs to multiply by ENCODER_CONVERSION_FACTOR to translate into a unit the motor
         // understands
         // SmartDashboard.putNumber(
-        //         "[" + modulePlacement + "]" + "Steer", ENCODER_CONVERSION_FACTOR * angleDegrees);
+        //         "[" + modulePlacement + "]" + "Steer", angleDegrees);
 
         steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
 
-        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
         // SmartDashboard.putNumber(
         //         "[" + modulePlacement + "]" + "RelativeAngle",
-        //         steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + "CANCoder",
-                encoder.getAbsolutePosition().getValueAsDouble() * 360);
+        //         (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset) % 360);
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + "CANCoder",
+        //         encoder.getAbsolutePosition().getValueAsDouble() * 360);
         // return reversed;
     }
 
@@ -182,8 +167,8 @@ public class SwerveModule {
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Input motor velocity", power);
         drive.set(ControlMode.Velocity, power);
 
-        // SmartDashboard.putNumber(
-        //         "[" + modulePlacement + "]" + "Read Vel", drive.getSensorVelocity());
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + "Read Vel", drive.getSensorVelocity());
     }
 
     /**
@@ -193,11 +178,20 @@ public class SwerveModule {
         drive.stopMotor();
     }
 
+    public Rotation2d getSteerAngle() {
+        Logger.get(Category.DRIVE).logRaw(Severity.DEBUG, "Get Steer Angle");
+        return Rotation2d.fromDegrees(steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
+    }
+
+    public double getDriveDisplacement() {
+        Logger.get(Category.DRIVE).logRaw(Severity.DEBUG, "Get Drive Displacement");
+        return drive.getSensorPosition();
+    }
+
     public SwerveModuleState getModuleState() {
         return new SwerveModuleState(
-                drive.getSensorVelocity() / MOTOR_WHEEL_FACTOR_MPS,
-                Rotation2d.fromDegrees(
-                        steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset));
+                drive.getSensorVelocity() / MOTOR_WHEEL_FACTOR_MPS, 
+                getSteerAngle());
     }
 
     public void dashboardCurrentUsage() {

@@ -76,4 +76,8 @@ public class PigeonGyro implements GyroReader {
                 .logData(Severity.ERROR, "Unable to get angular velocity: %s", rate.toString());
         return 0;
     }
+
+    public Pigeon2 getCTRE() {
+        return pigeon;
+    }
 }
