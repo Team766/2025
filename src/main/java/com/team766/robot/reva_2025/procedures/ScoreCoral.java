@@ -1,0 +1,17 @@
+package com.team766.robot.reva_2025.procedures;
+
+import com.team766.framework.Context;
+import com.team766.framework.Procedure;
+import com.team766.robot.reva_2025.constants.CoralConstants.CoralConstant;
+
+public class ScoreCoral extends Procedure{
+
+
+    public void run(Context context, CoralConstant position, double levelHeight, double angle){
+        
+    }
+    public void run(Context context) {
+        throw new UnsupportedOperationException("Please use the overloaded method (context, CoralConstant).");
+    }
+    
+}
