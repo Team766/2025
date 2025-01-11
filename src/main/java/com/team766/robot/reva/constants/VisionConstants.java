@@ -1,6 +1,6 @@
 package com.team766.robot.reva.constants;
 
-import com.pathplanner.lib.util.GeometryUtil;
+import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class VisionConstants {
@@ -12,5 +12,5 @@ public class VisionConstants {
 
     public static final Translation2d MAIN_BLUE_SPEAKER_TAG_POS = new Translation2d(0, 5.5);
     public static final Translation2d MAIN_RED_SPEAKER_TAG_POS =
-            GeometryUtil.flipFieldPosition(MAIN_BLUE_SPEAKER_TAG_POS);
+            FlippingUtil.flipFieldPosition(MAIN_BLUE_SPEAKER_TAG_POS);
 }

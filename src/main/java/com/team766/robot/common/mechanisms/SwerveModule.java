@@ -10,6 +10,7 @@ import com.team766.logging.Severity;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -88,7 +89,7 @@ public class SwerveModule {
     }
 
     private double computeEncoderOffset() {
-        StatusSignal<Double> value = encoder.getAbsolutePosition();
+        StatusSignal<Angle> value = encoder.getAbsolutePosition();
         if (!value.getStatus().isOK()) {
             Logger.get(Category.DRIVE)
                     .logData(
