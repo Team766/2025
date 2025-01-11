@@ -30,7 +30,9 @@ public class FollowPath extends Procedure {
     private PathPlannerTrajectory generatedTrajectory;
 
     private final StructPublisher<Pose2d> pathPlannerPosePublisher =
-            NetworkTableInstance.getDefault().getStructTopic("PathPlannerTargetPose", Pose2d.struct).publish();
+            NetworkTableInstance.getDefault()
+                    .getStructTopic("PathPlannerTargetPose", Pose2d.struct)
+                    .publish();
 
     public FollowPath(
             PathPlannerPath path,
@@ -70,7 +72,8 @@ public class FollowPath extends Procedure {
         // intitialization
 
         Pose2d curPose = drive.getCurrentPosition();
-        ChassisSpeeds currentSpeeds = drive.getRelativeChassisSpeeds(); // FIXME: MIGHT HAVE TO BE ABSOLUTE
+        ChassisSpeeds currentSpeeds =
+                drive.getRelativeChassisSpeeds(); // FIXME: MIGHT HAVE TO BE ABSOLUTE
 
         controller.reset(curPose, currentSpeeds);
 

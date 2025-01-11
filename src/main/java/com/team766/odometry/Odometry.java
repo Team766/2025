@@ -1,13 +1,10 @@
 package com.team766.odometry;
 
 import com.team766.hal.GyroReader;
-import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 import com.team766.robot.common.mechanisms.SwerveModule;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.Angle;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /*
 /*
@@ -87,7 +84,8 @@ public class Odometry {
      */
     private void updateDisplacementAndRotation() {
         for (int i = 0; i < moduleCount; i++) {
-            currentWheelRotation[i] = Rotation2d.fromDegrees(gyro.getAngle()).plus(moduleList[i].getSteerAngle());
+            currentWheelRotation[i] =
+                    Rotation2d.fromDegrees(gyro.getAngle()).plus(moduleList[i].getSteerAngle());
             wheelRotationChange[i] = currentWheelRotation[i].minus(prevWheelRotation[i]);
             prevWheelRotation[i] = currentWheelRotation[i];
 
@@ -109,7 +107,7 @@ public class Odometry {
         double sumY = 0;
 
         updateDisplacementAndRotation();
-        
+
         for (int i = 0; i < moduleCount; i++) {
 
             // FOR SLOPES:
@@ -119,7 +117,8 @@ public class Odometry {
 
             // double w = moduleList[i].getSteerAngle().getRadians();
             // Vector2D u =
-            //         new Vector2D(Math.cos(yaw) * Math.cos(pitch), Math.sin(yaw) * Math.cos(pitch));
+            //         new Vector2D(Math.cos(yaw) * Math.cos(pitch), Math.sin(yaw) *
+            // Math.cos(pitch));
             // Vector2D v =
             //         new Vector2D(
             //                 Math.cos(yaw) * Math.sin(pitch) * Math.sin(roll)
@@ -129,10 +128,10 @@ public class Odometry {
             // Vector2D a = u.scalarMultiply(Math.cos(w)).add(v.scalarMultiply(Math.sin(w)));
             // Vector2D b = u.scalarMultiply(-Math.sin(w)).add(v.scalarMultiply(Math.cos(w)));
             // Vector2D wheelMotion;
-            
+
             if (Math.abs(wheelRotationChange[i].getDegrees()) != 0) {
                 // estimates the bot moved in a circle to calculate new position
-                radius = driveDisplacementChange[i] / wheelRotationChange[i].getRadians(); 
+                radius = driveDisplacementChange[i] / wheelRotationChange[i].getRadians();
 
                 deltaX = radius * Math.sin(wheelRotationChange[i].getRadians());
                 deltaY = radius * (1 - Math.cos(wheelRotationChange[i].getRadians()));
@@ -141,15 +140,17 @@ public class Odometry {
 
                 deltaX = driveDisplacementChange[i];
                 deltaY = 0;
-
             }
 
-            Translation2d wheelMotion = new Translation2d(deltaX, deltaY).rotateBy(currentWheelRotation[i]).times(wheelCircumference / (gearRatio * encoderToRevolutionConstant));
-            
+            Translation2d wheelMotion =
+                    new Translation2d(deltaX, deltaY)
+                            .rotateBy(currentWheelRotation[i])
+                            .times(wheelCircumference / (gearRatio * encoderToRevolutionConstant));
+
             sumX += wheelMotion.getX();
             sumY += wheelMotion.getY();
         }
 
-        return new Translation2d(sumX /  moduleCount, sumY / moduleCount);
+        return new Translation2d(sumX / moduleCount, sumY / moduleCount);
     }
 }

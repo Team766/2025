@@ -32,11 +32,7 @@ public class OI extends Procedure {
         macropad = RobotProvider.instance.getJoystick(InputConstants.MACROPAD);
         gamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD_X);
 
-        driverOI =
-                new DriverOI(
-                        Robot.drive,
-                        leftJoystick,
-                        rightJoystick);
+        driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
         debugOI = new DebugOI(macropad, Robot.shoulder, Robot.climber, Robot.intake, Robot.shooter);
         boxOpOI = new BoxOpOI(gamepad, Robot.shoulder, Robot.intake, Robot.shooter, Robot.climber);
     }
@@ -54,8 +50,12 @@ public class OI extends Procedure {
 
             // Driver OI: take input from left, right joysticks.  control drive.
             driverOI.runOI(context);
-            if (leftJoystick.getButtonPressed(1)) {Robot.drive.setCurrentPosition(new Pose2d(1, 3, new Rotation2d()));}
-            if (leftJoystick.getButtonPressed(2)) {Robot.drive.resetGyro();}
+            if (leftJoystick.getButtonPressed(1)) {
+                Robot.drive.setCurrentPosition(new Pose2d(1, 3, new Rotation2d()));
+            }
+            if (leftJoystick.getButtonPressed(2)) {
+                Robot.drive.resetGyro();
+            }
             // Debug OI: allow for finer-grain testing of each mechanism.
             // debugOI.runOI(context);
 

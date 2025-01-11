@@ -1,6 +1,5 @@
 package com.team766.robot.common.mechanisms;
 
-import static com.team766.math.Math.normalizeAngleDegrees;
 import static com.team766.robot.common.constants.ConfigConstants.DRIVE_DRIVE_BACK_LEFT;
 import static com.team766.robot.common.constants.ConfigConstants.DRIVE_DRIVE_BACK_RIGHT;
 import static com.team766.robot.common.constants.ConfigConstants.DRIVE_DRIVE_FRONT_LEFT;
@@ -10,18 +9,13 @@ import static com.team766.robot.common.constants.ConfigConstants.DRIVE_STEER_BAC
 import static com.team766.robot.common.constants.ConfigConstants.DRIVE_STEER_BACK_RIGHT;
 import static com.team766.robot.common.constants.ConfigConstants.DRIVE_STEER_FRONT_LEFT;
 import static com.team766.robot.common.constants.ConfigConstants.DRIVE_STEER_FRONT_RIGHT;
-import java.util.List;
-import java.util.Optional;
-import java.util.TreeMap;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.sim.Pigeon2SimState;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.hal.wpilib.PigeonGyro;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.odometry.KalmanFilter;
@@ -29,8 +23,6 @@ import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.ControlConstants;
-import com.team766.robot.common.mechanisms.simulation.QuadSwerveSim;
-import com.team766.simulator.Parameters;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -39,19 +31,15 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.Optional;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class SwerveDrive extends Mechanism {
 
     private final SwerveConfig config;
-
-    private final QuadSwerveSim sim;
-
-    private final Pigeon2SimState gyroSimState;
 
     // SwerveModules
     private final SwerveModule swerveFR;
@@ -76,24 +64,12 @@ public class SwerveDrive extends Mechanism {
             NetworkTableInstance.getDefault()
                     .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
                     .publish();
-    
-    private final StructPublisher<Pose2d> simPosePublisher =
-            NetworkTableInstance.getDefault().getStructTopic("SimRobotPose", Pose2d.struct).publish();
-
-    private final StructPublisher<Pose2d> odometryPosePublisher =
-            NetworkTableInstance.getDefault().getStructTopic("OdometryRobotPose", Pose2d.struct).publish();
 
     private PIDController rotationPID;
 
     private boolean movingToTarget = false;
     private double x;
     private double y;
-
-    private double simPrevTime;
-    private TreeMap<Double, Pose2d> simPrevPoses;
-    private double simPrevYaw;
-
-    private Field2d m_field;
 
     public SwerveDrive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
@@ -154,8 +130,6 @@ public class SwerveDrive extends Mechanism {
 
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
-
-        gyroSimState = ((PigeonGyro) gyro).getCTRE().getSimState();
 
         rotationPID = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
 
@@ -393,7 +367,7 @@ public class SwerveDrive extends Mechanism {
 
     /**
      * @return robot relative chassis speeds
-    */
+     */
     public ChassisSpeeds getRelativeChassisSpeeds() {
         return swerveDriveKinematics.toChassisSpeeds(
                 swerveFR.getModuleState(),
@@ -401,15 +375,15 @@ public class SwerveDrive extends Mechanism {
                 swerveBR.getModuleState(),
                 swerveBL.getModuleState());
     }
-    
+
     /**
      * @return field relative robot velocity
      */
     public Translation2d getAbsoluteRobotVelocity() {
         ChassisSpeeds relSpeeds = getRelativeChassisSpeeds();
-        return new Translation2d(relSpeeds.vxMetersPerSecond, relSpeeds.vyMetersPerSecond).rotateBy(Rotation2d.fromDegrees(getHeading()));
+        return new Translation2d(relSpeeds.vxMetersPerSecond, relSpeeds.vyMetersPerSecond)
+                .rotateBy(Rotation2d.fromDegrees(getHeading()));
     }
-
 
     public double maxWheelDistToCenter() {
         double max = 0;
@@ -428,8 +402,10 @@ public class SwerveDrive extends Mechanism {
     // Odometry
     @Override
     public void run() {
-        kalmanFilter.addOdometryInput(swerveOdometry.predictCurrentPositionChange(), RobotProvider.instance.getClock().getTime());
-        
+        kalmanFilter.addOdometryInput(
+                swerveOdometry.predictCurrentPositionChange(),
+                RobotProvider.instance.getClock().getTime());
+
         // log(currentPosition.toString());
         // SmartDashboard.putString("pos", getCurrentPosition().toString());
 
@@ -455,7 +431,8 @@ public class SwerveDrive extends Mechanism {
         swerveBR.dashboardCurrentUsage();
         swerveBL.dashboardCurrentUsage();
 
-        swerveModuleStates = new SwerveModuleState[] {
+        swerveModuleStates =
+                new SwerveModuleState[] {
                     swerveFR.getModuleState(),
                     swerveFL.getModuleState(),
                     swerveBR.getModuleState(),
@@ -464,10 +441,11 @@ public class SwerveDrive extends Mechanism {
         if (Logger.isLoggingToDataLog()) {
             org.littletonrobotics.junction.Logger.recordOutput("curPose", getCurrentPosition());
             org.littletonrobotics.junction.Logger.recordOutput(
-                    "current rotational velocity", getRelativeChassisSpeeds().omegaRadiansPerSecond);
+                    "current rotational velocity",
+                    getRelativeChassisSpeeds().omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", swerveModuleStates);
         }
-        
+
         swerveModuleStatePublisher.set(swerveModuleStates);
     }
 }

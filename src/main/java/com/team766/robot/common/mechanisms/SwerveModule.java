@@ -1,25 +1,15 @@
 package com.team766.robot.common.mechanisms;
 
 import static com.team766.robot.common.constants.SwerveConstants.*;
+
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
-import com.ctre.phoenix6.sim.CANcoderSimState;
-import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
-import com.team766.robot.common.constants.SwerveConstants;
-import com.team766.robot.common.mechanisms.simulation.SwerveModuleSim;
 import com.team766.robot.reva.mechanisms.MotorUtil;
-import com.team766.simulator.Parameters;
-import com.team766.simulator.PhysicalConstants;
-import de.erichseifert.gral.graphics.Orientation;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.Angle;
@@ -36,11 +26,6 @@ public class SwerveModule {
     private final MotorController steer;
     private final CANcoder encoder;
     private final double offset;
-
-    private SwerveModuleSim sim;
-    private TalonFXSimState driveSimState;
-    private TalonFXSimState steerSimState;
-    private CANcoderSimState encoderSimState;
 
     /**
      * Creates a new SwerveModule.
@@ -70,7 +55,6 @@ public class SwerveModule {
         // TODO: tune these values!
         MotorUtil.setTalonFXStatorCurrentLimit(drive, DRIVE_STATOR_CURRENT_LIMIT);
         MotorUtil.setTalonFXStatorCurrentLimit(steer, STEER_STATOR_CURRENT_LIMIT);
-
     }
 
     private double computeEncoderOffset() {
@@ -180,7 +164,8 @@ public class SwerveModule {
 
     public Rotation2d getSteerAngle() {
         Logger.get(Category.DRIVE).logRaw(Severity.DEBUG, "Get Steer Angle");
-        return Rotation2d.fromDegrees(steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
+        return Rotation2d.fromDegrees(
+                steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
     }
 
     public double getDriveDisplacement() {
@@ -190,8 +175,7 @@ public class SwerveModule {
 
     public SwerveModuleState getModuleState() {
         return new SwerveModuleState(
-                drive.getSensorVelocity() / MOTOR_WHEEL_FACTOR_MPS, 
-                getSteerAngle());
+                drive.getSensorVelocity() / MOTOR_WHEEL_FACTOR_MPS, getSteerAngle());
     }
 
     public void dashboardCurrentUsage() {
