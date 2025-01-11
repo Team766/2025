@@ -440,7 +440,7 @@ public class SwerveDrive extends Mechanism {
     // Odometry
     @Override
     public void run() {
-        kalmanFilter.addVelocityInput(getAbsoluteRobotVelocity(), RobotProvider.instance.getClock().getTime());
+        kalmanFilter.addOdometryInput(swerveOdometry.predictCurrentPositionChange(), RobotProvider.instance.getClock().getTime());
         
         // log(currentPosition.toString());
         // SmartDashboard.putString("pos", getCurrentPosition().toString());
@@ -503,14 +503,12 @@ public class SwerveDrive extends Mechanism {
             simPrevPoses.remove(simPrevPoses.firstKey()); // delete old values
         } 
 
-        kalmanFilter.updateWithOdometry(swerveOdometry.predictCurrentPositionChange());
-
         if (Math.random() < 0.5) { // simulate inconsistent vision updates
             double delay = 0.05; 
             Pose2d prevPose = simPrevPoses.ceilingEntry(now - delay).getValue();
             // simulated vision position is randomly chosen in an area around actual position
-            double randX = prevPose.getX() + 0.1 * (Math.random() - 0.5);
-            double randY = prevPose.getY() + 0.1 * (Math.random() - 0.5);
+            double randX = prevPose.getX() + 0.5 * (Math.random() - 0.5);
+            double randY = prevPose.getY() + 0.5 * (Math.random() - 0.5);
             kalmanFilter.updateWithVisionMeasurement(new Translation2d(randX, randY), now - delay);
             SmartDashboard.putNumber("sensor X measurement", randX);
         }
