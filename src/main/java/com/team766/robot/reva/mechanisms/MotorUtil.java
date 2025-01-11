@@ -10,6 +10,7 @@ import com.team766.hal.MotorController;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
+import edu.wpi.first.units.measure.Current;
 
 // throaway class.  this is ugly - quick-and-dirty utility class to help us understand
 // current draw by motor.
@@ -18,7 +19,7 @@ public final class MotorUtil {
     private MotorUtil() {}
 
     private static double getTalonFXCurrentUsage(TalonFX motor) {
-        StatusSignal<Double> current = ((TalonFX) motor).getSupplyCurrent();
+        StatusSignal<Current> current = ((TalonFX) motor).getSupplyCurrent();
         if (current.getStatus().isOK()) {
             return current.getValueAsDouble();
         }
@@ -41,7 +42,7 @@ public final class MotorUtil {
 
     public static double getStatorCurrentUsage(MotorController motor) {
         if (motor instanceof TalonFX) {
-            StatusSignal<Double> current = ((TalonFX) motor).getStatorCurrent();
+            StatusSignal<Current> current = ((TalonFX) motor).getStatorCurrent();
             if (current.getStatus().isOK()) {
                 return current.getValueAsDouble();
             }

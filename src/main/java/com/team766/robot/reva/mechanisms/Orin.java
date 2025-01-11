@@ -5,13 +5,12 @@ import com.team766.orin.GetApriltagPoseData;
 import com.team766.orin.NoTagFoundError;
 import com.team766.robot.reva.Robot;
 import edu.wpi.first.apriltag.AprilTag;
-import java.util.ArrayList;
 
 public class Orin extends Mechanism {
     public Orin() {}
 
     public AprilTag getTagById(int id) throws NoTagFoundError {
-        ArrayList<AprilTag> tags = GetApriltagPoseData.getAllTags();
+        var tags = GetApriltagPoseData.getAllTags(new double[0]);
 
         for (AprilTag tag : tags) {
             if (tag.ID == id) return tag;
@@ -21,7 +20,7 @@ public class Orin extends Mechanism {
     }
 
     public void run() {
-        ArrayList<AprilTag> tags = GetApriltagPoseData.getAllTags();
+        var tags = GetApriltagPoseData.getAllTags(new double[0]);
 
         if (tags.size() > 0) {
             Robot.lights.signalHasTag();
