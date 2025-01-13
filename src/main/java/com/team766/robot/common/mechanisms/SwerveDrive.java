@@ -193,6 +193,10 @@ public class SwerveDrive extends Mechanism {
                                 createOrthogonalVector(config.backLeftLocation()).normalize()));
     }
 
+    public SwerveConfig getSwerveConfig() {
+        return config;
+    }
+
     /**
      * Uses controlRobotOriented() to control the robot relative to the field
      * @param x the x value for the position joystick, positive being forward, in meters/sec

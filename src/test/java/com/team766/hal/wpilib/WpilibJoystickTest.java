@@ -3,10 +3,7 @@ package com.team766.hal.wpilib;
 import com.team766.hal.JoystickAbstractTest;
 import edu.wpi.first.wpilibj.simulation.JoystickSim;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 
-// TODO: AdvantageKit breaks this test. Try re-enabling this after upgrade to 2025.
-@Disabled
 public class WpilibJoystickTest extends JoystickAbstractTest {
     private JoystickSim driver;
 
@@ -19,6 +16,12 @@ public class WpilibJoystickTest extends JoystickAbstractTest {
     @Override
     protected void setAxis(int axis, double value) {
         driver.setRawAxis(axis, value);
+        updateDriverStationData();
+    }
+
+    @Override
+    protected void setButton(int button, boolean value) {
+        driver.setRawButton(button, value);
         updateDriverStationData();
     }
 }

@@ -1,9 +1,8 @@
 plugins {
-    id "eclipse"
     id "java"
     id 'java-library'
     id 'maven-publish'
-    id "edu.wpi.first.GradleRIO" version "2024.3.2"
+    id "edu.wpi.first.GradleRIO" version "2025.1.1"
     id 'com.diffplug.spotless' version '6.22.0'
     id 'com.google.protobuf' version '0.8.19'
 }
@@ -14,36 +13,6 @@ def protobufVersion = '3.21.6'
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
-}
-
-// Enable support for pattern matching switch statements.
-tasks.withType(JavaCompile) {
-    options.compilerArgs.add '--enable-preview'
-
-    // When VSCode/EclipseJDT imports a Gradle project, it ignores the file.withProperties clause.
-    // This forces generation of .settings/org.eclipse.jdt.core.prefs with all of the properties
-    // specified below, which are the only way to simultaneously get bytecode that is compatible
-    // with JDK 17 and have VSCode not show errors when using pattern matching switch statements.
-    dependsOn tasks.withType(GenerateEclipseJdt)
-}
-eclipse {
-    jdt {
-        // Use JDK 21 in VSCode (pattern matching is no longer a preview feature in JDK 21).
-        // Eclipse JDT (used as the Java engine for VSCode) doesn't support enabling previews for
-        // source versions that are prior to its release version (i.e. we can't have JDK 17 with
-        // preview features for the JDK 21 version of Eclipse JDT). NB: Downgrading to an earlier
-        // version of JDT is not really a viable option, since modern VSCode expects a modern JDT.
-        sourceCompatibility = 21
-
-        file {
-            withProperties { properties ->
-                // This specific setting is required to get bytecode that is compatible with JDK 17.
-                // Without this (and with sourceCompatibility = 21), the generated code tries to
-                // depend on java.lang.MatchException, which was not added until JDK 19.
-                properties['org.eclipse.jdt.core.compiler.compliance'] = '17'
-            }
-        }
-    }
 }
 
 def ROBOT_MAIN_CLASS = "com.team766.hal.wpilib.RobotMain"
@@ -106,6 +75,8 @@ deploy {
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
+                    deleteOldFiles = false // Change to true to delete files on roboRIO that no
+                    // longer exist in deploy directory of this project
                 }
 
                 // Just the (static) config files
@@ -127,9 +98,15 @@ wpi.java.debugJni = false
 // Set this to true to enable desktop support.
 def includeDesktopSupport = false
 
+task(replayWatch, type: JavaExec) {
+    mainClass = "org.littletonrobotics.junction.ReplayWatch"
+    classpath = sourceSets.main.runtimeClasspath
+}
+
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
 dependencies {
+    annotationProcessor wpi.java.deps.wpilibAnnotations()
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
@@ -151,7 +128,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
-    annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
+    annotationProcessor "org.littletonrobotics.akit:akit-autolog:$akitJson.version"
 
     // our files
     implementation "com.google.protobuf:protobuf-javalite:${protobufVersion}"
@@ -215,26 +192,8 @@ repositories {
     // REV
     maven { url = uri('https://maven.revrobotics.com/') }
 
-    maven {
-        url = uri("https://maven.pkg.github.com/Mechanical-Advantage/AdvantageKit")
-        credentials {
-            username = "Mechanical-Advantage-Bot"
-            password = "\u0067\u0068\u0070\u005f\u006e\u0056\u0051\u006a\u0055\u004f\u004c\u0061\u0079\u0066\u006e\u0078\u006e\u0037\u0051\u0049\u0054\u0042\u0032\u004c\u004a\u006d\u0055\u0070\u0073\u0031\u006d\u0037\u004c\u005a\u0030\u0076\u0062\u0070\u0063\u0051"
-        }
-    }
-
     mavenLocal()
 }
-
-configurations.all {
-    exclude group: "edu.wpi.first.wpilibj"
-}
-
-task(checkAkitInstall, dependsOn: "classes", type: JavaExec) {
-    mainClass = "org.littletonrobotics.junction.CheckInstall"
-    classpath = sourceSets.main.runtimeClasspath
-}
-compileJava.finalizedBy checkAkitInstall
 
 spotless {
     java {
