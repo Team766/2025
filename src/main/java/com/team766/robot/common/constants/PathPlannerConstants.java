@@ -1,14 +1,8 @@
 package com.team766.robot.common.constants;
 
-import com.pathplanner.lib.util.ReplanningConfig;
-
 public final class PathPlannerConstants {
 
     private PathPlannerConstants() {}
-
-    // default replanning config values
-    public static final ReplanningConfig REPLANNING_CONFIG =
-            new ReplanningConfig(true /* replan at start */, false /* don't replan during path */);
 
     // PID constants for drive controller
     // TODO: change pathplanner constants
@@ -22,4 +16,8 @@ public final class PathPlannerConstants {
 
     // default values
     public static final double MAX_SPEED_MPS = 4.5;
+    public static final double MASS_KG =
+            (135.0 /* weight limit, with bumper, in lbs */ + 12.0) /* battery weight */ / 2.2;
+    // TODO: get this from CAD or a few measurements, update default!
+    public static final double MOMENT_OF_INTERTIA = 6 /* kg * m^2 */;
 }

@@ -5,11 +5,12 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
 import com.team766.hal.MotorController;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
+import edu.wpi.first.units.measure.Current;
 
 // throaway class.  this is ugly - quick-and-dirty utility class to help us understand
 // current draw by motor.
@@ -18,22 +19,22 @@ public final class MotorUtil {
     private MotorUtil() {}
 
     private static double getTalonFXCurrentUsage(TalonFX motor) {
-        StatusSignal<Double> current = ((TalonFX) motor).getSupplyCurrent();
+        StatusSignal<Current> current = ((TalonFX) motor).getSupplyCurrent();
         if (current.getStatus().isOK()) {
             return current.getValueAsDouble();
         }
         return -1;
     }
 
-    private static double getSparkMaxCurrentUsage(CANSparkMax motor) {
+    private static double getSparkMaxCurrentUsage(SparkMax motor) {
         return motor.getOutputCurrent();
     }
 
     public static double getCurrentUsage(MotorController motor) {
         if (motor instanceof TalonFX) {
             return getTalonFXCurrentUsage((TalonFX) motor);
-        } else if (motor instanceof CANSparkMax) {
-            return getSparkMaxCurrentUsage((CANSparkMax) motor);
+        } else if (motor instanceof SparkMax) {
+            return getSparkMaxCurrentUsage((SparkMax) motor);
         } else {
             return -1;
         }
@@ -41,7 +42,7 @@ public final class MotorUtil {
 
     public static double getStatorCurrentUsage(MotorController motor) {
         if (motor instanceof TalonFX) {
-            StatusSignal<Double> current = ((TalonFX) motor).getStatorCurrent();
+            StatusSignal<Current> current = ((TalonFX) motor).getStatorCurrent();
             if (current.getStatus().isOK()) {
                 return current.getValueAsDouble();
             }
