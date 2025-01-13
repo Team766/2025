@@ -98,7 +98,7 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
     }
 
     @Override
-    public void set(final ControlMode mode, double value) {
+    public void set(final ControlMode mode, double value, double arbitraryFeedForward) {
         switch (mode) {
             case Disabled:
                 NeutralOut neutral = new NeutralOut();
@@ -110,10 +110,12 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
                 break;
             case Position:
                 PositionDutyCycle position = new PositionDutyCycle(value);
+                position.FeedForward = arbitraryFeedForward;
                 super.setControl(position);
                 break;
             case Velocity:
                 VelocityDutyCycle velocity = new VelocityDutyCycle(value);
+                velocity.FeedForward = arbitraryFeedForward;
                 super.setControl(velocity);
                 break;
             case Voltage:

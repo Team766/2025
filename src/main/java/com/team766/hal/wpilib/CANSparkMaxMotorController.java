@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
@@ -70,7 +71,7 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
     }
 
     @Override
-    public void set(final ControlMode mode, final double value) {
+    public void set(final ControlMode mode, final double value, double arbitraryFeedForward) {
         switch (mode) {
             case Disabled:
                 disable();
@@ -79,10 +80,20 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
                 getClosedLoopController().setReference(value, SparkMax.ControlType.kDutyCycle);
                 break;
             case Position:
-                getClosedLoopController().setReference(value, SparkMax.ControlType.kPosition);
+                getClosedLoopController()
+                        .setReference(
+                                value,
+                                SparkMax.ControlType.kPosition,
+                                ClosedLoopSlot.kSlot0,
+                                arbitraryFeedForward);
                 break;
             case Velocity:
-                getClosedLoopController().setReference(value, SparkMax.ControlType.kVelocity);
+                getClosedLoopController()
+                        .setReference(
+                                value,
+                                SparkMax.ControlType.kVelocity,
+                                ClosedLoopSlot.kSlot0,
+                                arbitraryFeedForward);
                 break;
             case Voltage:
                 getClosedLoopController().setReference(value, SparkMax.ControlType.kVoltage);
