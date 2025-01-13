@@ -6,33 +6,6 @@ import java.util.function.BooleanSupplier;
  * Pre-canned Conditions used frqeuently in robot programming.
  */
 public class Conditions {
-
-    /**
-     * Predicate that checks whether or not the latest {@link Status} passes the
-     * check provided by {@link Checker}.
-     */
-    public static class StatusCheck<S extends Status> implements BooleanSupplier {
-
-        /** Functional interface for checking whether or not a {@link Status} passes desired criteria. */
-        @FunctionalInterface
-        public interface Checker<S> {
-            boolean check(S status);
-        }
-
-        private final Class<S> clazz;
-        private final Checker<S> checker;
-
-        public StatusCheck(Class<S> clazz, Checker<S> checker) {
-            this.clazz = clazz;
-            this.checker = checker;
-        }
-
-        public boolean getAsBoolean() {
-            S status = StatusBus.getInstance().getStatus(clazz);
-            return checker.check(status);
-        }
-    }
-
     /**
      * This predicate toggles its value (false -> true, or true -> false) whenever the provided
      * predicate changes from false to true (rising edge). Otherwise, it retains its previous value.

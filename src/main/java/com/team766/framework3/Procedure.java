@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Collection;
 import java.util.Set;
 
-public abstract class Procedure implements LoggingBase {
+public abstract class Procedure implements StatusesMixin, LoggingBase {
     // A reusable Procedure that does nothing.
     private static final class NoOpProcedure extends InstantProcedure {
         @Override

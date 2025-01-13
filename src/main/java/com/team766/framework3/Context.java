@@ -1,6 +1,9 @@
 package com.team766.framework3;
 
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * Context is the framework's representation of a single thread of execution.
@@ -56,6 +59,41 @@ public interface Context {
      * the Context is paused to determine whether it should continue waiting.
      */
     void waitFor(final BooleanSupplier predicate);
+
+    /**
+     * Suspend the Procedure until the given Supplier returns a non-empty Optional. Then, unwrap
+     * the T value from the Optional and return it.
+     */
+    default <T> T waitForValue(Supplier<Optional<T>> supplier) {
+        final AtomicReference<T> result = new AtomicReference<>();
+        waitFor(
+                () -> {
+                    final var t = supplier.get();
+                    if (t.isPresent()) {
+                        result.set(t.get());
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+        return result.get();
+    }
+
+    /**
+     * Suspend the Procedure until the given Supplier returns a non-empty Optional, or we've waited
+     * for at least {@code timeoutSeconds}. Returns the last value returned by the Supplier.
+     */
+    default <T> Optional<T> waitForValueOrTimeout(
+            Supplier<Optional<T>> supplier, double timeoutSeconds) {
+        final AtomicReference<Optional<T>> result = new AtomicReference<>(Optional.empty());
+        waitForConditionOrTimeout(
+                () -> {
+                    result.set(supplier.get());
+                    return result.get().isPresent();
+                },
+                timeoutSeconds);
+        return result.get();
+    }
 
     /**
      * Momentarily pause execution of this Context to allow other Contexts to execute. Execution of
