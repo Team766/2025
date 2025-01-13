@@ -38,16 +38,16 @@ public class MechanismTest extends TestCase3 {
     /// Test a Mechanism publishing a Status via its run() method return value.
     @Test
     public void testStatuses() {
-        // FakeMechanism publishes a FakeStatus with the state value which was most recently set in
-        // its Request.
+        // FakeMechanism publishes a FakeStatus with the state value which was most recently set
+        // via its mutateMechanism() method.
         var mech = new FakeMechanism() {};
         step();
-        // Status set from Initial request
+        // Status set from initial state.
         assertEquals(
                 new FakeStatus(-1), StatusBus.getInstance().getStatusOrThrow(FakeStatus.class));
         assertEquals(new FakeStatus(-1), mech.getStatus());
         step();
-        // Status set from Idle request
+        // Status set from onMechanismIdle
         assertEquals(
                 new FakeStatus(10), StatusBus.getInstance().getStatusOrThrow(FakeStatus.class));
         assertEquals(new FakeStatus(10), mech.getStatus());

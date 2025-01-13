@@ -12,7 +12,7 @@ class FakeMechanism extends MechanismWithStatus<FakeMechanism.FakeStatus> {
 
     @Override
     protected void onMechanismIdle() {
-        currentState = 10;
+        mutateMechanism(10);
     }
 
     @Override
