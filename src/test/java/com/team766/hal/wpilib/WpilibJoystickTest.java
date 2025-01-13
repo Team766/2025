@@ -18,4 +18,10 @@ public class WpilibJoystickTest extends JoystickAbstractTest {
         driver.setRawAxis(axis, value);
         updateDriverStationData();
     }
+
+    @Override
+    protected void setButton(int button, boolean value) {
+        driver.setRawButton(button, value);
+        updateDriverStationData();
+    }
 }

@@ -1,5 +1,7 @@
 package com.team766.hal;
 
+import java.util.function.BooleanSupplier;
+
 public interface JoystickReader {
     /**
      * Get the value of the axis.
@@ -19,6 +21,30 @@ public interface JoystickReader {
      * @return True if the axis value is larger than or equal to the deadzone, else false.
      */
     boolean isAxisMoved(int axis);
+
+    /**
+     * Returns a condition that can be used when defining a Rule. The condition will trigger
+     * whenever the given axis moves out of its deadzone. {@see #isAxisMoved(int)}
+     */
+    default BooleanSupplier whenAxisMoved(int axis) {
+        return () -> isAxisMoved(axis);
+    }
+
+    /**
+     * Returns a condition that can be used when defining a Rule. The condition will trigger
+     * whenever at least one of the given axes have moved out of their respective deadzones.
+     * {@see #isAxisMoved(int)}
+     */
+    default BooleanSupplier whenAnyAxisMoved(int... axes) {
+        return () -> {
+            for (int axis : axes) {
+                if (isAxisMoved(axis)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+    }
 
     /**
      * Set the size of the deadzone for the given axis.
@@ -46,6 +72,44 @@ public interface JoystickReader {
      * @return The state of the button.
      */
     boolean getButton(int button);
+
+    /**
+     * Returns a condition that can be used when defining a Rule. The condition will trigger
+     * whenever the given button is being pressed. {@see #getButton(int)}
+     */
+    default BooleanSupplier whenButton(int button) {
+        return () -> getButton(button);
+    }
+
+    /**
+     * Returns a condition that can be used when defining a Rule. The condition will trigger
+     * whenever at least one of the given buttons are being pressed. {@see #getButton(int)}
+     */
+    default BooleanSupplier whenAnyButton(int... buttons) {
+        return () -> {
+            for (int button : buttons) {
+                if (getButton(button)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+    }
+
+    /**
+     * Returns a condition that can be used when defining a Rule. The condition will trigger
+     * whenever all of the given buttons are being pressed. {@see #getButton(int)}
+     */
+    default BooleanSupplier whenAllButtons(int... buttons) {
+        return () -> {
+            for (int button : buttons) {
+                if (!getButton(button)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+    }
 
     /**
      * Whether the button was pressed since the last check. Button indexes begin at 1.
