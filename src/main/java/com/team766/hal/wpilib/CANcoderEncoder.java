@@ -6,6 +6,8 @@ import com.team766.hal.EncoderReader;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public class CANcoderEncoder implements EncoderReader {
 
@@ -22,7 +24,7 @@ public class CANcoderEncoder implements EncoderReader {
 
     @Override
     public double getDistance() {
-        StatusSignal<Double> position = cancoder.getPosition();
+        StatusSignal<Angle> position = cancoder.getPosition();
         if (!position.getStatus().isOK()) {
             Logger.get(Category.HAL)
                     .logData(
@@ -36,7 +38,7 @@ public class CANcoderEncoder implements EncoderReader {
 
     @Override
     public double getRate() {
-        StatusSignal<Double> velocity = cancoder.getVelocity();
+        StatusSignal<AngularVelocity> velocity = cancoder.getVelocity();
         if (!velocity.getStatus().isOK()) {
             Logger.get(Category.HAL)
                     .logData(

@@ -1,45 +1,50 @@
 package com.team766.robot.common.procedures;
 
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
+import com.pathplanner.lib.util.FileVersionException;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Optional;
+import org.json.simple.parser.ParseException;
 
 public class FollowPath extends Procedure {
-    private final SwerveDrive drive;
     private PathPlannerPath path; // may be flipped
-    private final ReplanningConfig replanningConfig;
     private final PPHolonomicDriveController controller;
+    private final RobotConfig config;
+    private final SwerveDrive drive;
     private final Timer timer = new Timer();
     private PathPlannerTrajectory generatedTrajectory;
 
     public FollowPath(
             PathPlannerPath path,
-            ReplanningConfig replanningConfig,
             PPHolonomicDriveController controller,
+            RobotConfig config,
             SwerveDrive drive) {
         this.path = path;
-        this.replanningConfig = replanningConfig;
         this.controller = controller;
+        this.config = config;
         this.drive = drive;
     }
 
-    public FollowPath(String autoName, PPHolonomicDriveController controller, SwerveDrive drive) {
-        this(
-                PathPlannerPath.fromPathFile(autoName),
-                PathPlannerConstants.REPLANNING_CONFIG,
-                controller,
-                drive);
+    public FollowPath(
+            String autoName,
+            PPHolonomicDriveController controller,
+            RobotConfig config,
+            SwerveDrive drive)
+            throws IOException, FileNotFoundException, ParseException, FileVersionException {
+        this(PathPlannerPath.fromPathFile(autoName), controller, config, drive);
     }
 
     @Override
@@ -64,12 +69,7 @@ public class FollowPath extends Procedure {
 
         controller.reset(curPose, currentSpeeds);
 
-        if (replanningConfig.enableInitialReplanning
-                && curPose.getTranslation().getDistance(path.getPoint(0).position) > 0.25) {
-            replanPath(curPose, currentSpeeds);
-        } else {
-            generatedTrajectory = path.getTrajectory(currentSpeeds, curPose.getRotation());
-        }
+        generatedTrajectory = path.generateTrajectory(currentSpeeds, curPose.getRotation(), config);
 
         timer.reset();
         timer.start();
@@ -78,25 +78,9 @@ public class FollowPath extends Procedure {
         log("time: " + generatedTrajectory.getTotalTimeSeconds());
         while (!timer.hasElapsed(generatedTrajectory.getTotalTimeSeconds())) {
             double currentTime = timer.get();
-            PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
+            PathPlannerTrajectoryState targetState = generatedTrajectory.sample(currentTime);
             curPose = drive.getCurrentPosition();
             currentSpeeds = drive.getChassisSpeeds();
-
-            if (replanningConfig.enableDynamicReplanning) {
-                // TODO: why abs?
-                double previousError = Math.abs(controller.getPositionalError());
-                double currentError =
-                        curPose.getTranslation().getDistance(targetState.positionMeters);
-
-                if (currentError >= replanningConfig.dynamicReplanningTotalErrorThreshold
-                        || currentError - previousError
-                                // TODO: is this always negative?
-                                >= replanningConfig.dynamicReplanningErrorSpikeThreshold) {
-                    replanPath(curPose, currentSpeeds);
-                    timer.reset();
-                    targetState = generatedTrajectory.sample(0);
-                }
-            }
 
             ChassisSpeeds targetSpeeds =
                     controller.calculateRobotRelativeSpeeds(curPose, targetState);
@@ -106,21 +90,14 @@ public class FollowPath extends Procedure {
 
             org.littletonrobotics.junction.Logger.recordOutput(
                     "input rotational velocity", targetSpeeds.omegaRadiansPerSecond);
-            org.littletonrobotics.junction.Logger.recordOutput(
-                    "targetState", targetState.getTargetHolonomicPose());
+            org.littletonrobotics.junction.Logger.recordOutput("targetPose", targetState.pose);
             drive.controlRobotOriented(targetSpeeds);
             context.yield();
         }
 
-        if (path.getGoalEndState().getVelocity() < 0.1) {
+        if (path.getGoalEndState().velocity().magnitude() < 0.1) {
             drive.stopDrive();
             drive.setCross();
         }
-    }
-
-    private void replanPath(Pose2d currentPose, ChassisSpeeds currentSpeeds) {
-        PathPlannerPath replanned = path.replan(currentPose, currentSpeeds);
-        generatedTrajectory =
-                new PathPlannerTrajectory(replanned, currentSpeeds, currentPose.getRotation());
     }
 }

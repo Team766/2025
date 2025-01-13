@@ -15,4 +15,9 @@ public class MockJoystickTest extends JoystickAbstractTest {
     protected void setAxis(int axis, double value) {
         driver.setAxisValue(axis, value);
     }
+
+    @Override
+    protected void setButton(int button, boolean value) {
+        driver.setButton(button, value);
+    }
 }

@@ -53,7 +53,7 @@ public class Rule {
     private final BooleanSupplier predicate;
     private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
-    private final Map<TriggerType, Set<Mechanism<?>>> triggerReservations =
+    private final Map<TriggerType, Set<Mechanism>> triggerReservations =
             Maps.newEnumMap(TriggerType.class);
 
     private TriggerType currentTriggerType = TriggerType.NONE;
@@ -90,12 +90,12 @@ public class Rule {
         return this;
     }
 
-    public Rule withFinishedTriggeringProcedure(Set<Mechanism<?>> reservations, Runnable action) {
+    public Rule withFinishedTriggeringProcedure(Set<Mechanism> reservations, Runnable action) {
         return withFinishedTriggeringProcedure(
                 () -> new FunctionalInstantProcedure(reservations, action));
     }
 
-    private Set<Mechanism<?>> getReservationsForProcedure(Supplier<Procedure> supplier) {
+    private Set<Mechanism> getReservationsForProcedure(Supplier<Procedure> supplier) {
         if (supplier != null) {
             Procedure procedure = supplier.get();
             if (procedure != null) {
@@ -141,7 +141,7 @@ public class Rule {
         }
     }
 
-    /* package */ Set<Mechanism<?>> getMechanismsToReserve() {
+    /* package */ Set<Mechanism> getMechanismsToReserve() {
         if (triggerReservations.containsKey(currentTriggerType)) {
             return triggerReservations.get(currentTriggerType);
         }
