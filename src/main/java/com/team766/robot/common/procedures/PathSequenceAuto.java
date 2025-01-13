@@ -6,9 +6,9 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.FlippingUtil;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
-import com.team766.framework.RunnableWithContext;
+import com.team766.framework3.Context;
+import com.team766.framework3.FunctionalProcedure;
+import com.team766.framework3.Procedure;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
@@ -16,19 +16,18 @@ import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
-import com.team766.robot.reva.Robot;
-import com.team766.robot.reva.procedures.MoveClimbersToBottom;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.Set;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
-public class PathSequenceAuto extends Procedure {
+public abstract class PathSequenceAuto extends Procedure {
 
-    private final LinkedList<RunnableWithContext> pathItems;
+    private final LinkedList<Procedure> pathItems;
     private final SwerveDrive drive;
     private final Pose2d initialPosition;
     private final RobotConfig robotConfig;
@@ -40,8 +39,8 @@ public class PathSequenceAuto extends Procedure {
      * @param initialPosition Starting position on Blue Alliance in meters (gets flipped when on red)
      */
     public PathSequenceAuto(SwerveDrive drive, Pose2d initialPosition) {
-        pathItems = new LinkedList<RunnableWithContext>();
-        this.drive = drive;
+        pathItems = new LinkedList<Procedure>();
+        this.drive = reserve(drive);
         this.robotConfig = createRobotConfig(drive);
         this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
@@ -159,11 +158,13 @@ public class PathSequenceAuto extends Procedure {
     }
 
     protected void addWait(double waitForSeconds) {
-        pathItems.add((context) -> context.waitForSeconds(waitForSeconds));
+        pathItems.add(
+                new FunctionalProcedure(
+                        Set.of(), (context) -> context.waitForSeconds(waitForSeconds)));
     }
 
     @Override
-    public final void run(Context context) {
+    public void run(Context context) {
         boolean shouldFlipAuton = false;
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
@@ -175,32 +176,25 @@ public class PathSequenceAuto extends Procedure {
             return;
         }
 
-        context.startAsync(new MoveClimbersToBottom());
-        context.takeOwnership(drive);
         // if (!visionSpeakerHelper.updateTarget(context)) {
         drive.setCurrentPosition(
                 shouldFlipAuton ? FlippingUtil.flipFieldPose(initialPosition) : initialPosition);
         // }
-        // context.takeOwnership(drive);
         drive.resetGyro(
                 (shouldFlipAuton
                                 ? FlippingUtil.flipFieldRotation(initialPosition.getRotation())
                                 : initialPosition.getRotation())
                         .getDegrees());
-        for (RunnableWithContext pathItem : pathItems) {
-            context.runSync(pathItem);
-            context.yield();
+        try {
+            for (Procedure pathItem : pathItems) {
+                context.runSync(pathItem);
+                context.yield();
+            }
+        } finally {
+            // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
+            // TODO: We should figure out why after EBR but for now we can just reset the gyro to
+            // 180 of current angle
+            drive.resetGyro(180 + drive.getStatus().heading());
         }
-
-        context.takeOwnership(Robot.shooter);
-        Robot.shooter.stop();
-        context.releaseOwnership(Robot.shooter);
-
-        // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
-        // TODO: We should figure out why after EBR but for now we can just reset the gyro to 180 of
-        // current angle
-        context.takeOwnership(drive);
-        drive.resetGyro(180 + drive.getHeading());
-        context.releaseOwnership(drive);
     }
 }

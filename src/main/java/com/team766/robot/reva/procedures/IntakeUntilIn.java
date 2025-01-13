@@ -1,28 +1,24 @@
 package com.team766.robot.reva.procedures;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
-import com.team766.robot.reva.Robot;
+import com.team766.framework3.Context;
+import com.team766.framework3.Procedure;
+import com.team766.framework3.Status;
+import com.team766.robot.reva.mechanisms.Intake;
 
 public class IntakeUntilIn extends Procedure {
+    public record IntakeUntilInStatus(boolean noteInIntake) implements Status {}
+
+    private final Intake intake;
+
+    public IntakeUntilIn(Intake intake) {
+        this.intake = reserve(intake);
+    }
+
     public void run(Context context) {
-        context.takeOwnership(Robot.intake);
-        Robot.lights.signalNoNoteInIntakeYet();
-        while (!Robot.intake.hasNoteInIntake()) {
-            Robot.intake.setIntakePowerForSensorDistance();
-
-            if (Robot.intake.isNoteClose()) {
-                Robot.lights.signalNoteInIntake();
-            }
-            context.yield();
-        }
-
-        context.releaseOwnership(Robot.intake);
-
-        Robot.lights.signalNoteInIntake();
-
-        context.waitForSeconds(2);
-
-        Robot.lights.turnLightsOff();
+        publishStatus(new IntakeUntilInStatus(false));
+        intake.setIntakePowerFromSensorDistance();
+        context.waitFor(() -> intake.getStatus().isNoteClose());
+        publishStatus(new IntakeUntilInStatus(true));
+        context.waitFor(() -> intake.getStatus().hasNoteInIntake());
     }
 }

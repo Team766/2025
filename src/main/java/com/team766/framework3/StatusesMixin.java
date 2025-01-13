@@ -67,6 +67,18 @@ public interface StatusesMixin {
         return getStatusEntry(statusClass).map(predicate::test).orElse(false);
     }
 
+    default <S extends Status> boolean checkForRecentStatus(
+            Class<S> statusClass, double maxAgeSeconds) {
+        return getStatusEntry(statusClass).map(e -> e.age() < maxAgeSeconds).orElse(false);
+    }
+
+    default <S extends Status> boolean checkForRecentStatusMatching(
+            Class<S> statusClass, double maxAgeSeconds, Predicate<S> predicate) {
+        return getStatusEntry(statusClass)
+                .map(e -> e.age() < maxAgeSeconds && predicate.test(e.status()))
+                .orElse(false);
+    }
+
     /**
      * Suspend the Procedure until a {@link Status} with the given class has been published, then
      * return that Status.

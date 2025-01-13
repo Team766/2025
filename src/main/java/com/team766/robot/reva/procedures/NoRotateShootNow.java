@@ -1,31 +1,37 @@
 package com.team766.robot.reva.procedures;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework3.Context;
+import com.team766.framework3.Procedure;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.robot.reva.Robot;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
+import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Shooter;
+import com.team766.robot.reva.mechanisms.Shoulder;
 
 public class NoRotateShootNow extends Procedure {
 
-    VisionSpeakerHelper visionSpeakerHelper;
-    boolean amp;
+    private final SwerveDrive drive;
+    private final Shoulder shoulder;
+    private final Shooter shooter;
+    private final Intake intake;
+    private final VisionSpeakerHelper visionSpeakerHelper;
+    private final boolean amp;
 
-    public NoRotateShootNow(boolean amp) {
+    public NoRotateShootNow(
+            boolean amp, SwerveDrive drive, Shoulder shoulder, Shooter shooter, Intake intake) {
+        this.drive = reserve(drive);
+        this.shoulder = reserve(shoulder);
+        this.shooter = reserve(shooter);
+        this.intake = reserve(intake);
         this.amp = amp;
-        visionSpeakerHelper = new VisionSpeakerHelper(Robot.drive);
+        visionSpeakerHelper = new VisionSpeakerHelper();
     }
 
     public void run(Context context) {
         if (!amp) {
-            context.takeOwnership(Robot.drive);
-            context.takeOwnership(Robot.shooter);
-            context.takeOwnership(Robot.shoulder);
-
-            Robot.drive.stopDrive();
-
-            context.releaseOwnership(Robot.drive);
+            drive.stopDrive();
 
             double power;
             double armAngle;
@@ -40,31 +46,22 @@ public class NoRotateShootNow extends Procedure {
                 return;
             }
 
-            Robot.shoulder.rotate(armAngle);
+            shoulder.rotate(armAngle);
 
             // start shooting now while waiting for shoulder, stopped in ShootVelocityAndIntake
-            Robot.shooter.shoot(power);
+            shooter.shoot(power);
 
-            context.waitForConditionOrTimeout(Robot.shoulder::isFinished, 0.5);
+            context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armAngle), 0.5);
 
-            context.releaseOwnership(Robot.shooter);
-            context.releaseOwnership(Robot.shoulder);
-            context.runSync(new ShootVelocityAndIntake(power));
+            context.runSync(new ShootVelocityAndIntake(power, shooter, intake));
 
         } else {
-            // context.takeOwnership(Robot.shooter);
-
-            // context.takeOwnership(Robot.shoulder);
-
             // Robot.shooter.shoot(3000);
             // Robot.shoulder.rotate(ShoulderPosition.AMP);
 
             // context.waitFor(Robot.shoulder::isFinished);
 
-            // context.releaseOwnership(Robot.shoulder);
-            // context.releaseOwnership(Robot.shooter);
-
-            context.runSync(new ShootVelocityAndIntake(3000));
+            context.runSync(new ShootVelocityAndIntake(3000, shooter, intake));
         }
     }
 }

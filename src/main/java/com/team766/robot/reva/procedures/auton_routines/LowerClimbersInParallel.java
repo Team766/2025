@@ -1,0 +1,22 @@
+package com.team766.robot.reva.procedures.auton_routines;
+
+import com.team766.framework3.Context;
+import com.team766.framework3.Procedure;
+import com.team766.robot.reva.mechanisms.Climber;
+import com.team766.robot.reva.procedures.MoveClimbersToBottom;
+
+public class LowerClimbersInParallel extends Procedure {
+    private final Procedure autonomousRoutine;
+    private final Climber climber;
+
+    public LowerClimbersInParallel(Procedure autonomousRoutine, Climber climber) {
+        this.autonomousRoutine = autonomousRoutine;
+        reserve(autonomousRoutine.reservations());
+        this.climber = climber;
+    }
+
+    @Override
+    public void run(Context context) {
+        context.runParallel(new MoveClimbersToBottom(climber), autonomousRoutine);
+    }
+}

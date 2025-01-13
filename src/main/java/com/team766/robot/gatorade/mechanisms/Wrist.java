@@ -10,10 +10,10 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
+import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Severity;
 import edu.wpi.first.math.MathUtil;
@@ -26,7 +26,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * field, human player station), at which point the {@link Intake} can grab or release the game
  * piece as appropriate.
  */
-public class Wrist extends Mechanism {
+public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
+    /**
+     * @param angle the current angle of the wrist.
+     */
+    public record WristStatus(double rotations, double angle) implements Status {
+        public boolean isNearTo(Position position) {
+            return isNearTo(position.getAngle());
+        }
+
+        public boolean isNearTo(double angle) {
+            return Math.abs(angle - this.angle()) < NEAR_THRESHOLD;
+        }
+    }
 
     /**
      * Pre-set positions for the wrist.
@@ -68,7 +80,6 @@ public class Wrist extends Mechanism {
     private final ValueProvider<Double> iGain;
     private final ValueProvider<Double> dGain;
     private final ValueProvider<Double> ffGain;
-    private final RateLimiter rateLimiter = new RateLimiter(1.0 /* seconds */);
 
     /**
      * Contructs a new Wrist.
@@ -100,40 +111,22 @@ public class Wrist extends Mechanism {
         ffGain = ConfigFileReader.getInstance().getDouble(WRIST_FFGAIN);
     }
 
-    public double getRotations() {
-        return motor.getEncoder().getPosition();
-    }
-
-    /**
-     * Returns the current angle of the wrist.
-     */
-    public double getAngle() {
-        return EncoderUtils.wristRotationsToDegrees(motor.getEncoder().getPosition());
-    }
-
-    public boolean isNearTo(Position position) {
-        return isNearTo(position.getAngle());
-    }
-
-    public boolean isNearTo(double angle) {
-        return Math.abs(angle - getAngle()) < NEAR_THRESHOLD;
-    }
-
     public void nudgeNoPID(double value) {
-        checkContextOwnership();
+        checkContextReservation();
         double clampedValue = MathUtil.clamp(value, -1, 1);
         clampedValue *= NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
         motor.set(clampedValue);
     }
 
     public void stopWrist() {
-        checkContextOwnership();
+        checkContextReservation();
         motor.set(0);
     }
 
     public void nudgeUp() {
+        checkContextReservation();
         System.err.println("Nudging up.");
-        double angle = getAngle();
+        double angle = getStatus().angle();
         double targetAngle = Math.max(angle - NUDGE_INCREMENT, Position.TOP.getAngle());
         System.err.println("Target: " + targetAngle);
 
@@ -141,8 +134,9 @@ public class Wrist extends Mechanism {
     }
 
     public void nudgeDown() {
+        checkContextReservation();
         System.err.println("Nudging down.");
-        double angle = getAngle();
+        double angle = getStatus().angle();
         double targetAngle = Math.min(angle + NUDGE_INCREMENT, Position.BOTTOM.getAngle());
         rotate(targetAngle);
     }
@@ -151,6 +145,7 @@ public class Wrist extends Mechanism {
      * Rotates the wrist to a pre-set {@link Position}.
      */
     public void rotate(Position position) {
+        checkContextReservation();
         rotate(position.getAngle());
     }
 
@@ -160,7 +155,7 @@ public class Wrist extends Mechanism {
      * with {@link #getAngle()}.
      */
     public void rotate(double angle) {
-        checkContextOwnership();
+        checkContextReservation();
 
         System.err.println("Setting target angle to " + angle);
         // set the PID controller values with whatever the latest is in the config
@@ -185,10 +180,9 @@ public class Wrist extends Mechanism {
     }
 
     @Override
-    public void run() {
-        if (rateLimiter.next()) {
-            SmartDashboard.putNumber("[WRIST] Angle", getAngle());
-            SmartDashboard.putNumber("[WRIST] Rotations", getRotations());
-        }
+    protected WristStatus reportStatus() {
+        return new WristStatus(
+                motor.getEncoder().getPosition(),
+                EncoderUtils.wristRotationsToDegrees(motor.getEncoder().getPosition()));
     }
 }
