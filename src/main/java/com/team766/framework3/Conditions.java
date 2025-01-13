@@ -34,17 +34,6 @@ public class Conditions {
     }
 
     /**
-     * Predicate that checks if the provided {@link Request} has been fulfilled by checking
-     * the latest {@link Status}.
-     */
-    public static class AwaitRequest<S extends Status> extends StatusCheck<S> {
-
-        public AwaitRequest(Class<S> clazz, Request<S> request) {
-            super(clazz, request::isDone);
-        }
-    }
-
-    /**
      * This predicate toggles its value (false -> true, or true -> false) whenever the provided
      * predicate changes from false to true (rising edge). Otherwise, it retains its previous value.
      *
