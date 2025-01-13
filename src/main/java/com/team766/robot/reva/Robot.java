@@ -32,7 +32,7 @@ public class Robot implements RobotConfigurator {
     @Override
     public void initializeMechanisms() {
         SwerveConfig config = new SwerveConfig();
-        // lights = new Lights();
+        lights = new Lights();
         drive = new SwerveDrive(config);
         climber = new Climber();
         shoulder = new Shoulder();

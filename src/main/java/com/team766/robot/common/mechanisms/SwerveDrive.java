@@ -1,14 +1,6 @@
 package com.team766.robot.common.mechanisms;
 
-import static com.team766.robot.common.constants.ConfigConstants.DRIVE_DRIVE_BACK_LEFT;
-import static com.team766.robot.common.constants.ConfigConstants.DRIVE_DRIVE_BACK_RIGHT;
-import static com.team766.robot.common.constants.ConfigConstants.DRIVE_DRIVE_FRONT_LEFT;
-import static com.team766.robot.common.constants.ConfigConstants.DRIVE_DRIVE_FRONT_RIGHT;
-import static com.team766.robot.common.constants.ConfigConstants.DRIVE_GYRO;
-import static com.team766.robot.common.constants.ConfigConstants.DRIVE_STEER_BACK_LEFT;
-import static com.team766.robot.common.constants.ConfigConstants.DRIVE_STEER_BACK_RIGHT;
-import static com.team766.robot.common.constants.ConfigConstants.DRIVE_STEER_FRONT_LEFT;
-import static com.team766.robot.common.constants.ConfigConstants.DRIVE_STEER_FRONT_RIGHT;
+import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.controllers.PIDController;

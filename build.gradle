@@ -6,17 +6,12 @@ plugins {
     id 'com.diffplug.spotless' version '6.22.0'
     id 'com.google.protobuf' version '0.8.19'
 }
-
-
 def protobufVersion = '3.21.6'
-
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
-
 def ROBOT_MAIN_CLASS = "com.team766.hal.wpilib.RobotMain"
-
 sourceSets {
     main {
         java {
@@ -26,7 +21,6 @@ sourceSets {
         }
     }
 }
-
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
@@ -38,11 +32,9 @@ deploy {
             // want to store a team number in this file.
             team = project.frc.getTeamNumber()
             debug = project.frc.getDebugOrDefault(false)
-
             artifacts {
                 // First part is artifact name, 2nd is artifact type
                 // getTargetTypeClass is a shortcut to get the class type using a string
-
                 frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
                     // This supposedly makes Java save a heap dump on OutOfMemoryError, but
                     // unfortunately it doesn't seem to work when the error is raised due to a
@@ -70,7 +62,6 @@ deploy {
                     // This makes the JVM print the heap memory size on startup.
                     jvmArgs.add("-XshowSettings:vm")
                 }
-
                 // Static files artifact
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/main/deploy')
@@ -78,7 +69,6 @@ deploy {
                     deleteOldFiles = false // Change to true to delete files on roboRIO that no
                     // longer exist in deploy directory of this project
                 }
-
                 // Just the (static) config files
                 configFiles(getArtifactTypeClass('FileTreeArtifact')) {
                     setDeployStage(it, 'BeforeProgramKill')
@@ -89,49 +79,41 @@ deploy {
         }
     }
 }
-
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
-
 // Set to true to use debug for JNI.
 wpi.java.debugJni = false
 
 // Set this to true to enable desktop support.
-def includeDesktopSupport = true
+def includeDesktopSupport = false
 
 task(replayWatch, type: JavaExec) {
     mainClass = "org.littletonrobotics.junction.ReplayWatch"
     classpath = sourceSets.main.runtimeClasspath
 }
-
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
 dependencies {
     annotationProcessor wpi.java.deps.wpilibAnnotations()
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
-
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
     roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
-
     roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
     roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
-
     nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
     nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
     simulationDebug wpi.sim.enableDebug()
-
     nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
     nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
     simulationRelease wpi.sim.enableRelease()
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
     def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
     annotationProcessor "org.littletonrobotics.akit:akit-autolog:$akitJson.version"
 
     // our files
-    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+    implementation "com.google.protobuf:protobuf-javalite:${protobufVersion}"
 
     implementation files('deps/commons-math3-3.6.1.jar')
     implementation files('deps/gral-core-0.11.jar')
@@ -139,20 +121,16 @@ dependencies {
     //implementation files('deps/Java-WebSocket-1.3.9.jar')
     implementation files('deps/json-20190722.jar')
 }
-
 javadoc {
     source = sourceSets.main.allJava
 }
-
 test {
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
-
 // Simulation configuration (e.g. environment variables).
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
-
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib
 // knows where to look for our Robot Class.
@@ -166,33 +144,24 @@ jar {
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
-
 // Configure jar and deploy tasks
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
-
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
-
 repositories {
     mavenCentral()
-
     gradlePluginPortal()  // for protobuf
-
     maven { url = uri('https://frcmaven.wpi.edu/artifactory/release/') }
-
     // CTRE
     maven { url = uri('https://devsite.ctr-electronics.com/maven/release/') }
-
     // REV
     maven { url = uri('https://maven.revrobotics.com/') }
-
     mavenLocal()
 }
-
 spotless {
     java {
         target fileTree('.') {
@@ -235,7 +204,6 @@ spotless {
         endWithNewline()
     }
 }
-
 protobuf {
     // Configure the protoc executable
     protoc {
@@ -245,12 +213,17 @@ protobuf {
 
 
     plugins {
+        javalite {
+            // The codegen for lite comes as a separate artifact
+            artifact = 'com.google.protobuf:protoc-gen-javalite:${protobufVersion}'
+        }
     }
 
     generateProtoTasks {
         all().configureEach { task ->
             task.builtins {
                 java {
+                    option "lite"
                 }
             }
         }
