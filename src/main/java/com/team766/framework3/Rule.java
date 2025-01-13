@@ -24,8 +24,8 @@ import java.util.function.Supplier;
  *   public class MyRules extends RuleEngine {
  *     public MyRules() {
  *       // add rule to spin up the shooter when the boxop presses the right trigger on the gamepad
- *       rules.add("spin up shooter", gamepad.getButton(InputConstants.XBOX_RT),
- *                 () -> new ShooterSpin(shooter)));
+ *       addRule("spin up shooter", gamepad.getButton(InputConstants.XBOX_RT),
+ *               () -> new ShooterSpin(shooter)));
  *       ...
  *     }
  * }
