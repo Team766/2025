@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public abstract class Mechanism extends SubsystemBase implements LoggingBase {
-    private Thread m_runningPeriodic = null;
+    private boolean isRunningPeriodic = false;
 
     /**
      * This Command runs when no other Command (i.e. Procedure) is reserving this Mechanism.
@@ -59,7 +59,7 @@ public abstract class Mechanism extends SubsystemBase implements LoggingBase {
     protected void onMechanismIdle() {}
 
     protected void checkContextReservation() {
-        if (m_runningPeriodic != null) {
+        if (isRunningPeriodic) {
             return;
         }
         ReservingCommand.checkCurrentCommandHasReservation(this);
@@ -70,13 +70,13 @@ public abstract class Mechanism extends SubsystemBase implements LoggingBase {
         super.periodic();
 
         try {
-            m_runningPeriodic = Thread.currentThread();
+            isRunningPeriodic = true;
             run();
         } catch (Exception ex) {
             ex.printStackTrace();
             LoggerExceptionUtils.logException(ex);
         } finally {
-            m_runningPeriodic = null;
+            isRunningPeriodic = false;
         }
     }
 

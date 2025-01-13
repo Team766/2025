@@ -26,7 +26,7 @@ import java.util.Set;
  * For a {@link Rule} to trigger, its predicate must be satisfied -- and, the {@link Mechanism}s the corresponding {@link Procedure} would reserve
  * must not be in use or about to be in use from a higher priority {@link Rule}.
  */
-public class RuleEngine implements LoggingBase {
+public class RuleEngine implements StatusesMixin, LoggingBase {
 
     private static record RuleAction(Rule rule, Rule.TriggerType triggerType) {}
 
