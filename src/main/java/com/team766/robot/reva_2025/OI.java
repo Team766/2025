@@ -6,7 +6,7 @@ import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.common.DriverOI;
-import com.team766.robot.reva_2025.constants.inputConstants;
+import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.procedures.*;
 
 /**
@@ -22,9 +22,9 @@ public class OI extends Procedure {
     public OI() {
         loggerCategory = Category.OPERATOR_INTERFACE;
 
-        leftJoystick = RobotProvider.instance.getJoystick(inputConstants.LEFT_JOYSTICK);
-        rightJoystick = RobotProvider.instance.getJoystick(inputConstants.RIGHT_JOYSTICK);
-        boxopGamepad = RobotProvider.instance.getJoystick(inputConstants.BOXOP_GAMEPAD);
+        leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
+        rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
+        boxopGamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
 
         driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
     }
