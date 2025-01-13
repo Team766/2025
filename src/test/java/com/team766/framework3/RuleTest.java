@@ -1,9 +1,13 @@
 package com.team766.framework3;
 
+import static com.team766.framework3.RulePersistence.ONCE;
+import static com.team766.framework3.RulePersistence.ONCE_AND_HOLD;
+import static com.team766.framework3.RulePersistence.REPEATEDLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.team766.framework3.Rule.Cancellation;
 import com.team766.framework3.Rule.TriggerType;
 import java.util.Collections;
 import java.util.Set;
@@ -41,7 +45,7 @@ public class RuleTest {
 
     @Test
     public void testCreate() {
-        Rule alwaysTrue = new Rule("always true", () -> true, () -> Procedure.NO_OP);
+        Rule alwaysTrue = new Rule("always true", () -> true, ONCE, () -> Procedure.NO_OP);
         assertNotNull(alwaysTrue);
         assertEquals("always true", alwaysTrue.getName());
     }
@@ -49,7 +53,7 @@ public class RuleTest {
     @Test
     public void testEvaluate() {
         // start with simple test of a NONE->NEWLY->CONTINUING->CONTINUING sequence
-        Rule alwaysTrue = new Rule("always true", () -> true, () -> Procedure.NO_OP);
+        Rule alwaysTrue = new Rule("always true", () -> true, ONCE, () -> Procedure.NO_OP);
         assertEquals(Rule.TriggerType.NONE, alwaysTrue.getCurrentTriggerType());
         alwaysTrue.evaluate();
         assertEquals(TriggerType.NEWLY, alwaysTrue.getCurrentTriggerType());
@@ -63,6 +67,7 @@ public class RuleTest {
                 new Rule(
                         "duck duck goose goose",
                         new DuckDuckGooseGoosePredicate(),
+                        ONCE,
                         () -> Procedure.NO_OP);
         assertEquals(Rule.TriggerType.NONE, duckDuckGooseGoose.getCurrentTriggerType());
         duckDuckGooseGoose.evaluate();
@@ -78,6 +83,35 @@ public class RuleTest {
     }
 
     @Test
+    public void testGetCancellation() {
+        Rule ruleWithOnce =
+                new Rule(
+                        "always true",
+                        new DuckDuckGooseGoosePredicate(),
+                        ONCE,
+                        () -> Procedure.NO_OP);
+        assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithOnce.getCancellationOnFinish());
+
+        Rule ruleWithOnceAndHold =
+                new Rule(
+                        "always true",
+                        new DuckDuckGooseGoosePredicate(),
+                        ONCE_AND_HOLD,
+                        () -> Procedure.NO_OP);
+        assertEquals(
+                Cancellation.CANCEL_NEWLY_ACTION, ruleWithOnceAndHold.getCancellationOnFinish());
+
+        Rule ruleWithRepeatedly =
+                new Rule(
+                        "always true",
+                        new DuckDuckGooseGoosePredicate(),
+                        REPEATEDLY,
+                        () -> Procedure.NO_OP);
+        assertEquals(
+                Cancellation.CANCEL_NEWLY_ACTION, ruleWithRepeatedly.getCancellationOnFinish());
+    }
+
+    @Test
     public void testGetMechanismsToReserve() {
         final Set<Mechanism> newlyMechanisms = Set.of(new FakeMechanism1(), new FakeMechanism2());
         final Set<Mechanism> finishedMechanisms = Set.of(new FakeMechanism());
@@ -86,6 +120,7 @@ public class RuleTest {
                 new Rule(
                                 "duck duck goose goose",
                                 new DuckDuckGooseGoosePredicate(),
+                                ONCE,
                                 () -> new FunctionalInstantProcedure(newlyMechanisms, () -> {}))
                         .withFinishedTriggeringProcedure(finishedMechanisms, () -> {});
 
@@ -120,6 +155,7 @@ public class RuleTest {
                 new Rule(
                                 "duck duck goose goose",
                                 new DuckDuckGooseGoosePredicate(),
+                                ONCE,
                                 () -> new TrivialProcedure("newly"))
                         .withFinishedTriggeringProcedure(() -> new TrivialProcedure("finished"));
 
