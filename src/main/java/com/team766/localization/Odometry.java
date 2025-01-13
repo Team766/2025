@@ -1,4 +1,4 @@
-package com.team766.odometry;
+package com.team766.localization;
 
 import com.team766.hal.GyroReader;
 import com.team766.library.RateLimiter;

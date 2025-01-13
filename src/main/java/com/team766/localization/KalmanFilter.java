@@ -1,4 +1,4 @@
-package com.team766.odometry;
+package com.team766.localization;
 
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class KalmanFilter {
@@ -184,12 +185,48 @@ public class KalmanFilter {
     }
 
     /**
-     * Updates the estimated position using a vision measurement from a given time
+     * Updates the esimated position using sensor measurements mapped to their covariance
+     * @param measurements map key is the position measurements (x, y), value is covariance matrix of that measurement
+     * @param time the time that the measurement took place, in seconds
+     */
+    private void updateWithPositionMeasurement(Map<Translation2d, Matrix<N2, N2>> measurements, double time) {
+        findPrevState(time);
+        for(Translation2d measurement:measurements.keySet()) {
+            Matrix<N2, N2> kalmanGain =
+                curCovariance.times(curCovariance.plus(measurements.get(measurement)).inv());
+            curState = kalmanGain.times(measurement.toVector().minus(curState)).plus(curState);
+            curCovariance = Matrix.eye(Nat.N2()).minus(kalmanGain).times(curCovariance);
+        }
+        
+        predictCurrentState(time);
+    }
+    /**
+     * Updates the estimated position using a vision measurement from a given time, assuming default/input covariance matrix
      * @param measurement measured position on the field
-     * @param time in seconds
+     * @param time timestamp from vision measurement, in seconds
      */
     public void updateWithVisionMeasurement(Translation2d measurement, double time) {
         updateWithPositionMeasurement(measurement, visionCovariance, time);
+    }
+    /**
+     * Updates the esimated position using vision measurements mapped to their covariance, allowing for a unique covariance for each measurement
+     * @param measurements map key is the vision measurements (x, y), value is covariance matrix of that measurement
+     * @param time the time that the measurement took place, in seconds
+     */
+    public void updateWithVisionMeasurement(Map<Translation2d, Matrix<N2, N2>> measurements, double time) {
+        updateWithPositionMeasurement(measurements, time);
+    }
+    /**
+     * Updates the esimated position using vision measurements mapped to their covariance, allowing for a unique covariance for each measurement
+     * @param measurements map key is the vision measurements (x, y), value is covariance matrix of that measurement
+     * @param time the time that the measurement took place, in seconds
+     */
+    public void updateWithVisionMeasurement(Translation2d[] measurements, double time) {
+        TreeMap<Translation2d, Matrix<N2, N2>> measurementTreeMap = new TreeMap<>();
+        for(Translation2d measurement:measurements) {
+            measurementTreeMap.put(measurement, VISION_COVARIANCE_DEFAULT);
+        }
+        updateWithPositionMeasurement(measurementTreeMap, time);
     }
 
     public Translation2d getPos() {

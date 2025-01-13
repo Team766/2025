@@ -1,3 +1,27 @@
 package com.team766.robot.reva_2025;
 
-public class Robot {}
+import com.team766.framework.AutonomousMode;
+import com.team766.framework.Procedure;
+import com.team766.hal.RobotConfigurator;
+import com.team766.robot.common.SwerveConfig;
+import com.team766.robot.common.mechanisms.SwerveDrive;
+
+public class Robot implements RobotConfigurator {
+    public static SwerveDrive drive;
+
+    @Override
+    public Procedure createOI() {
+        return new OI();
+    }
+
+    @Override
+    public AutonomousMode[] getAutonomousModes() {
+        return AutonomousModes.AUTONOMOUS_MODES;
+    }
+
+    @Override
+    public void initializeMechanisms() {
+        SwerveConfig config = new SwerveConfig();
+        drive = new SwerveDrive(config);
+    }
+}
