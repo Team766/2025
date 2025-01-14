@@ -51,9 +51,10 @@ public class RotateAndShootNow extends Procedure {
         drive.controlFieldOrientedWithRotationTarget(0, 0, heading);
         // shooter.shoot(power);
 
-        context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armAngle), 0.5);
-        context.waitForConditionOrTimeout(
-                () -> drive.getStatus().isAtRotationHeading(heading), 3.0);
+        waitForStatusMatchingOrTimeout(
+                context, Shoulder.ShoulderStatus.class, s -> s.isNearTo(armAngle), 0.5);
+        waitForStatusMatchingOrTimeout(
+                context, SwerveDrive.DriveStatus.class, s -> s.isAtRotationHeading(heading), 3.0);
         drive.stopDrive();
 
         context.runSync(new ShootVelocityAndIntake(shooter, intake));

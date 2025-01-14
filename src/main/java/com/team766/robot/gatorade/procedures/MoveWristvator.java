@@ -35,23 +35,27 @@ public class MoveWristvator extends Procedure {
         // It might already be retracted, so it's possible that this step finishes instantaneously.
         wrist.rotate(Wrist.Position.RETRACTED);
         // If raising the shoulder, do that before the elevator (else, lower it after the elevator).
-        if (shoulderSetpoint.getAngle() > shoulder.getStatus().angle()) {
+        if (shoulderSetpoint.getAngle() > getStatusOrThrow(Shoulder.ShoulderStatus.class).angle()) {
             shoulder.rotate(shoulderSetpoint);
-            context.waitFor(() -> shoulder.getStatus().isNearTo(shoulderSetpoint));
+            waitForStatusMatching(
+                    context, Shoulder.ShoulderStatus.class, s -> s.isNearTo(shoulderSetpoint));
         }
-        context.waitFor(() -> wrist.getStatus().isNearTo(Wrist.Position.RETRACTED));
+        waitForStatusMatching(
+                context, Wrist.WristStatus.class, s -> s.isNearTo(Wrist.Position.RETRACTED));
 
         // Move the elevator. Wait until it gets near the target position.
         elevator.moveTo(elevatorSetpoint);
-        context.waitFor(() -> elevator.getStatus().isNearTo(elevatorSetpoint));
+        waitForStatusMatching(
+                context, Elevator.ElevatorStatus.class, s -> s.isNearTo(elevatorSetpoint));
 
         // If lowering the shoulder, do that after the elevator.
-        if (shoulderSetpoint.getAngle() < shoulder.getStatus().angle()) {
+        if (shoulderSetpoint.getAngle() < getStatusOrThrow(Shoulder.ShoulderStatus.class).angle()) {
             shoulder.rotate(shoulderSetpoint);
         }
         // Lastly, move the wrist.
         wrist.rotate(wristSetpoint);
-        context.waitFor(() -> wrist.getStatus().isNearTo(wristSetpoint));
-        context.waitFor(() -> shoulder.getStatus().isNearTo(shoulderSetpoint));
+        waitForStatusMatching(context, Wrist.WristStatus.class, s -> s.isNearTo(wristSetpoint));
+        waitForStatusMatching(
+                context, Shoulder.ShoulderStatus.class, s -> s.isNearTo(shoulderSetpoint));
     }
 }

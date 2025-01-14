@@ -124,15 +124,16 @@ public class DriverShootNow extends VisionPIDProcedure {
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
-        context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armAngle), 1);
+        waitForStatusMatchingOrTimeout(
+                context, Shoulder.ShoulderStatus.class, s -> s.isNearTo(armAngle), 1);
 
         publishStatus(new ShootingProcedureStatus(ShootingProcedureStatus.Status.FINISHED));
         context.runSync(new DriverShootVelocityAndIntake(intake));
     }
 
     private Optional<Transform3d> getTransform3dOfRobotToTag() {
-        return getStatus(ForwardApriltagCamera.ApriltagCameraStatus.class)
-                .flatMap(s -> s.speakerTagTransform());
+        return getStatusOrThrow(ForwardApriltagCamera.ApriltagCameraStatus.class)
+                .speakerTagTransform();
     }
 
     private Optional<Transform3d> getTransform3dOfRobotToTagOrin() {

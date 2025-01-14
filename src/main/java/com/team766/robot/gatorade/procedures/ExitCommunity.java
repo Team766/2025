@@ -16,9 +16,12 @@ public class ExitCommunity extends Procedure {
     }
 
     public void run(Context context) {
-        double startY = drive.getStatus().currentPosition().getY();
+        double startY = getStatusOrThrow(SwerveDrive.DriveStatus.class).currentPosition().getY();
         drive.controlFieldOriented(0, -FollowPointsInputConstants.SPEED, 0);
-        context.waitFor(() -> Math.abs(drive.getStatus().currentPosition().getY() - startY) > DIST);
+        waitForStatusMatching(
+                context,
+                SwerveDrive.DriveStatus.class,
+                s -> Math.abs(s.currentPosition().getY() - startY) > DIST);
         drive.stopDrive();
     }
 }

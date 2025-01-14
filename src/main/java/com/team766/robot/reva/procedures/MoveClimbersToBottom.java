@@ -13,10 +13,12 @@ public class MoveClimbersToBottom extends Procedure {
 
     public void run(Context context) {
         climber.setPower(0.25);
-        context.waitFor(
-                () ->
-                        climber.getStatus().isLeftNear(Climber.ClimberPosition.BOTTOM)
-                                && climber.getStatus().isRightNear(Climber.ClimberPosition.BOTTOM));
+        waitForStatusMatching(
+                context,
+                Climber.ClimberStatus.class,
+                s ->
+                        s.isLeftNear(Climber.ClimberPosition.BOTTOM)
+                                && s.isRightNear(Climber.ClimberPosition.BOTTOM));
         climber.stop();
     }
 }

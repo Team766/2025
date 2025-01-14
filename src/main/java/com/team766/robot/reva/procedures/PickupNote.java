@@ -27,9 +27,9 @@ public class PickupNote extends VisionPIDProcedure {
     public void run(Context context) {
         yawPID.setSetpoint(0.00);
 
-        while (!intake.getStatus().hasNoteInIntake()) {
+        while (!getStatusOrThrow(Intake.IntakeStatus.class).hasNoteInIntake()) {
             Optional<Double> yawInDegrees =
-                    getStatus(NoteCamera.NoteCameraStatus.class).flatMap(s -> s.yawOfRing());
+                    getStatusOrThrow(NoteCamera.NoteCameraStatus.class).yawOfRing();
             if (!yawInDegrees.isPresent()) {
                 // return status.NO_RING_IN_VIEW;
                 break;

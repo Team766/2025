@@ -51,7 +51,8 @@ public class NoRotateShootNow extends Procedure {
             // start shooting now while waiting for shoulder, stopped in ShootVelocityAndIntake
             shooter.shoot(power);
 
-            context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armAngle), 0.5);
+            waitForStatusMatchingOrTimeout(
+                    context, Shoulder.ShoulderStatus.class, s -> s.isNearTo(armAngle), 0.5);
 
             context.runSync(new ShootVelocityAndIntake(power, shooter, intake));
 

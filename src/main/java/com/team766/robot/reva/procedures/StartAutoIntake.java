@@ -17,7 +17,8 @@ public class StartAutoIntake extends Procedure {
     public void run(Context context) {
         final var armTarget = Shoulder.ShoulderPosition.BOTTOM;
         shoulder.rotate(armTarget);
-        context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armTarget), 1.5);
+        waitForStatusMatchingOrTimeout(
+                context, Shoulder.ShoulderStatus.class, s -> s.isNearTo(armTarget), 1.5);
         intake.setIntakePowerFromSensorDistance();
     }
 }

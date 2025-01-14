@@ -25,7 +25,8 @@ public class ShootVelocityAndIntake extends Procedure {
 
     public void run(Context context) {
         shooter.shoot(speed);
-        context.waitForConditionOrTimeout(() -> shooter.getStatus().isCloseToSpeed(speed), 1.5);
+        waitForStatusMatchingOrTimeout(
+                context, Shooter.ShooterStatus.class, s -> s.isCloseToSpeed(speed), 1.5);
 
         intake.in();
 

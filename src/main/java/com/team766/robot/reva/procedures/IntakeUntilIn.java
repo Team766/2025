@@ -17,8 +17,8 @@ public class IntakeUntilIn extends Procedure {
     public void run(Context context) {
         publishStatus(new IntakeUntilInStatus(false));
         intake.setIntakePowerFromSensorDistance();
-        context.waitFor(() -> intake.getStatus().isNoteClose());
+        waitForStatusMatching(context, Intake.IntakeStatus.class, s -> s.isNoteClose());
         publishStatus(new IntakeUntilInStatus(true));
-        context.waitFor(() -> intake.getStatus().hasNoteInIntake());
+        waitForStatusMatching(context, Intake.IntakeStatus.class, s -> s.hasNoteInIntake());
     }
 }

@@ -62,8 +62,9 @@ public class GyroBalance extends Procedure {
     }
 
     private double getAbsoluteTilt() {
-        final double pitch = drive.getStatus().pitch();
-        final double roll = drive.getStatus().roll();
+        final var driveStatus = getStatusOrThrow(SwerveDrive.DriveStatus.class);
+        final double pitch = driveStatus.pitch();
+        final double roll = driveStatus.roll();
         return Math.toDegrees(
                 Math.acos(Math.cos(Math.toRadians(roll) * Math.cos(Math.toRadians(pitch)))));
     }
