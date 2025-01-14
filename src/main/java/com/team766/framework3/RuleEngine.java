@@ -1,11 +1,8 @@
 package com.team766.framework3;
 
-import static com.team766.framework3.RulePersistence.ONCE_AND_HOLD;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.team766.logging.Category;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,8 +12,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -30,7 +25,7 @@ import java.util.function.Supplier;
  * For a {@link Rule} to trigger, its predicate must be satisfied -- and, the {@link Mechanism}s the corresponding {@link Procedure} would reserve
  * must not be in use or about to be in use from a higher priority {@link Rule}.
  */
-public class RuleEngine implements StatusesMixin, LoggingBase {
+public class RuleEngine extends RuleGroupBase {
 
     private static record RuleAction(Rule rule, Rule.TriggerType triggerType) {}
 
@@ -42,91 +37,14 @@ public class RuleEngine implements StatusesMixin, LoggingBase {
     protected RuleEngine() {}
 
     @Override
-    public Category getLoggerCategory() {
-        return Category.RULES;
-    }
-
-    protected Rule addRule(
-            String name,
-            BooleanSupplier condition,
-            RulePersistence rulePersistence,
-            Supplier<Procedure> action) {
-        Rule rule = new Rule(name, condition, rulePersistence, action);
-        rules.put(name, rule);
+    protected void addRule(Rule rule) {
+        if (sealed) {
+            throw new IllegalStateException(
+                    "Cannot add rules after the RuleEngine has started running");
+        }
+        rules.put(rule.getName(), rule);
         int priority = rulePriorities.size();
         rulePriorities.put(rule, priority);
-        return rule;
-    }
-
-    protected Rule addRule(String name, BooleanSupplier condition, Supplier<Procedure> action) {
-        return addRule(name, condition, ONCE_AND_HOLD, action);
-    }
-
-    protected Rule addRule(
-            String name,
-            BooleanSupplier condition,
-            RulePersistence rulePersistence,
-            Set<Mechanism> mechanisms,
-            Consumer<Context> action) {
-        return addRule(
-                name,
-                condition,
-                rulePersistence,
-                () -> new FunctionalProcedure(mechanisms, action));
-    }
-
-    protected Rule addRule(
-            String name,
-            BooleanSupplier condition,
-            Set<Mechanism> mechanisms,
-            Consumer<Context> action) {
-        return addRule(name, condition, ONCE_AND_HOLD, mechanisms, action);
-    }
-
-    protected Rule addRule(
-            String name,
-            BooleanSupplier condition,
-            RulePersistence rulePersistence,
-            Mechanism mechanism,
-            Consumer<Context> action) {
-        return addRule(name, condition, rulePersistence, Set.of(mechanism), action);
-    }
-
-    protected Rule addRule(
-            String name, BooleanSupplier condition, Mechanism mechanism, Consumer<Context> action) {
-        return addRule(name, condition, ONCE_AND_HOLD, mechanism, action);
-    }
-
-    protected Rule addRule(
-            String name,
-            BooleanSupplier condition,
-            RulePersistence rulePersistence,
-            Set<Mechanism> mechanisms,
-            Runnable action) {
-        return addRule(
-                name,
-                condition,
-                rulePersistence,
-                () -> new FunctionalInstantProcedure(mechanisms, action));
-    }
-
-    protected Rule addRule(
-            String name, BooleanSupplier condition, Set<Mechanism> mechanisms, Runnable action) {
-        return addRule(name, condition, ONCE_AND_HOLD, mechanisms, action);
-    }
-
-    protected Rule addRule(
-            String name,
-            BooleanSupplier condition,
-            RulePersistence rulePersistence,
-            Mechanism mechanism,
-            Runnable action) {
-        return addRule(name, condition, rulePersistence, Set.of(mechanism), action);
-    }
-
-    protected Rule addRule(
-            String name, BooleanSupplier condition, Mechanism mechanism, Runnable action) {
-        return addRule(name, condition, ONCE_AND_HOLD, mechanism, action);
     }
 
     @VisibleForTesting
