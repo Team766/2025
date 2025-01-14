@@ -40,17 +40,16 @@ public class MechanismTest extends TestCase3 {
     public void testStatuses() {
         // FakeMechanism publishes a FakeStatus with the state value which was most recently set
         // via its mutateMechanism() method.
+        @SuppressWarnings("unused")
         var mech = new FakeMechanism() {};
         step();
         // Status set from initial state.
         assertEquals(
                 new FakeStatus(-1), StatusBus.getInstance().getStatusOrThrow(FakeStatus.class));
-        assertEquals(new FakeStatus(-1), mech.getStatus());
         step();
         // Status set from onMechanismIdle
         assertEquals(
                 new FakeStatus(10), StatusBus.getInstance().getStatusOrThrow(FakeStatus.class));
-        assertEquals(new FakeStatus(10), mech.getStatus());
     }
 
     /// Test that checkContextReservation throws an exception when called from a Procedure which has
