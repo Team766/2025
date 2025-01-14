@@ -1,10 +1,23 @@
 package com.team766.framework3;
 
-class FakeMechanism extends Mechanism {
-    record FakeStatus(int currentState) implements Status {}
+class FakeMechanism extends MechanismWithStatus<FakeMechanism.FakeStatus> {
+    public record FakeStatus(int currentState) implements Status {}
 
-    public void mutateMechanism() {
+    int currentState = -1;
+
+    public void mutateMechanism(int newState) {
         checkContextReservation();
+        currentState = newState;
+    }
+
+    @Override
+    protected void onMechanismIdle() {
+        mutateMechanism(10);
+    }
+
+    @Override
+    protected FakeStatus reportStatus() {
+        return new FakeStatus(currentState);
     }
 }
 

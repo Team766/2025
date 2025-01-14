@@ -70,6 +70,8 @@ public abstract class Mechanism extends SubsystemBase implements LoggingBase {
         super.periodic();
 
         try {
+            publishStatus();
+
             isRunningPeriodic = true;
             run();
         } catch (Exception ex) {
@@ -81,4 +83,7 @@ public abstract class Mechanism extends SubsystemBase implements LoggingBase {
     }
 
     protected void run() {}
+
+    // Overridden in MechanismWithStatus
+    /* package */ void publishStatus() {}
 }
