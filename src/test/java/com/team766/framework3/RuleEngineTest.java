@@ -62,6 +62,7 @@ public class RuleEngineTest extends TestCase3 {
     private final FakeMechanism1 fm1 = new FakeMechanism1();
     private final FakeMechanism2 fm2 = new FakeMechanism2();
     private final FakeMechanism3 fm3 = new FakeMechanism3();
+    private final FakeMechanism4 fm4 = new FakeMechanism4();
 
     @Test
     public void testSeal() {
@@ -69,7 +70,7 @@ public class RuleEngineTest extends TestCase3 {
         RuleEngine rulesOne =
                 new RuleEngine() {
                     {
-                        addRule("rule1_1", () -> true, ONCE, () -> Procedure.NO_OP)
+                        addRule("rule1_1", UNCONDITIONAL, ONCE, () -> Procedure.NO_OP)
                                 .withFinishedTriggeringProcedure(() -> Procedure.NO_OP);
                     }
                 };
@@ -79,7 +80,7 @@ public class RuleEngineTest extends TestCase3 {
         RuleEngine rulesTwo =
                 new RuleEngine() {
                     {
-                        addRule("rule2_1", () -> true, ONCE, () -> Procedure.NO_OP);
+                        addRule("rule2_1", UNCONDITIONAL, ONCE, () -> Procedure.NO_OP);
                     }
                 };
         rulesTwo.run();
@@ -863,5 +864,206 @@ public class RuleEngineTest extends TestCase3 {
         cmd2 = CommandScheduler.getInstance().requiring(fm2);
         assertNotNull(cmd2);
         assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
+    }
+
+    /** Test hierarchical Rules triggering */
+    @Test
+    public void testRuleHierarchy() {
+        RuleEngine myRules =
+                new RuleEngine() {
+                    {
+                        addRule("root", new ScheduledPredicate(0, 2))
+                                .withOnTriggeringProcedure(
+                                        ONCE_AND_HOLD,
+                                        () -> new FakeProcedure("root_proc", 10, Set.of(fm1)))
+                                .whenTriggering(
+                                        new RuleGroup() {
+                                            {
+                                                addRule(
+                                                                "positive_combinator",
+                                                                new ScheduledPredicate(1, 3))
+                                                        .withOnTriggeringProcedure(
+                                                                ONCE_AND_HOLD,
+                                                                () ->
+                                                                        new FakeProcedure(
+                                                                                "positive_combinator_proc",
+                                                                                10,
+                                                                                Set.of(fm2)))
+                                                        .whenNotTriggering(
+                                                                new RuleGroup() {
+                                                                    {
+                                                                        // Test multi-level
+                                                                        // combinator
+                                                                        addRule(
+                                                                                "positive_then_negative_combinator",
+                                                                                () -> true,
+                                                                                ONCE_AND_HOLD,
+                                                                                () ->
+                                                                                        new FakeProcedure(
+                                                                                                "positive_then_negative_combinator_proc",
+                                                                                                0,
+                                                                                                Set
+                                                                                                        .of(
+                                                                                                                fm4)));
+                                                                    }
+                                                                });
+                                            }
+                                        })
+                                .whenNotTriggering(
+                                        new RuleGroup() {
+                                            {
+                                                addRule(
+                                                                "negative_combinator",
+                                                                // Note: This predicate is only
+                                                                // evaluated when the `root` rule is
+                                                                // not triggering, so this triggers
+                                                                // on frame 2, even though its
+                                                                // start/end arguments say it
+                                                                // triggers on frame 0.
+                                                                new ScheduledPredicate(0, 1))
+                                                        .withOnTriggeringProcedure(
+                                                                ONCE_AND_HOLD,
+                                                                () ->
+                                                                        new FakeProcedure(
+                                                                                "negative_combinator_proc",
+                                                                                10,
+                                                                                Set.of(fm3)));
+                                            }
+                                        });
+                    }
+                };
+
+        myRules.run();
+
+        Command cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd1);
+        assertTrue(cmd1.getName().endsWith("root_proc"));
+        Command cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        assertNull(cmd2);
+        Command cmd3 = CommandScheduler.getInstance().requiring(fm3);
+        assertNull(cmd3);
+        Command cmd4 = CommandScheduler.getInstance().requiring(fm4);
+        assertNotNull(cmd4);
+        assertTrue(cmd4.getName().endsWith("positive_then_negative_combinator_proc"));
+
+        step();
+        myRules.run();
+
+        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd1);
+        assertTrue(cmd1.getName().endsWith("root_proc"));
+        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        assertNotNull(cmd2);
+        assertTrue(cmd2.getName().endsWith("positive_combinator_proc"));
+        cmd3 = CommandScheduler.getInstance().requiring(fm3);
+        assertNull(cmd3);
+        cmd4 = CommandScheduler.getInstance().requiring(fm4);
+        assertNull(cmd4);
+
+        step();
+        myRules.run();
+
+        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNull(cmd1);
+        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        assertNull(cmd2);
+        cmd3 = CommandScheduler.getInstance().requiring(fm3);
+        assertNotNull(cmd3);
+        assertTrue(cmd3.getName().endsWith("negative_combinator_proc"));
+        cmd4 = CommandScheduler.getInstance().requiring(fm4);
+        assertNull(cmd4);
+
+        step();
+        myRules.run();
+
+        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNull(cmd1);
+        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        assertNull(cmd2);
+        cmd3 = CommandScheduler.getInstance().requiring(fm3);
+        assertNull(cmd3);
+        cmd4 = CommandScheduler.getInstance().requiring(fm4);
+        assertNull(cmd4);
+    }
+
+    /** Test that the root Rule takes precedence over child rules triggering */
+    @Test
+    public void testRuleHierarchyPriorities() {
+        RuleEngine myRules =
+                new RuleEngine() {
+                    {
+                        addRule("root", new ScheduledPredicate(0, 2))
+                                .withOnTriggeringProcedure(
+                                        ONCE,
+                                        () -> new FakeProcedure("root_newly_proc", 0, Set.of(fm1)))
+                                .withFinishedTriggeringProcedure(
+                                        () ->
+                                                new FakeProcedure(
+                                                        "root_finished_proc", 0, Set.of(fm1)))
+                                .whenTriggering(
+                                        new RuleGroup() {
+                                            {
+                                                addRule(
+                                                                "positive_combinator",
+                                                                new ScheduledPredicate(0, 2))
+                                                        .withOnTriggeringProcedure(
+                                                                ONCE_AND_HOLD,
+                                                                () ->
+                                                                        new FakeProcedure(
+                                                                                "positive_combinator_proc",
+                                                                                10,
+                                                                                Set.of(fm1)));
+                                            }
+                                        })
+                                .whenNotTriggering(
+                                        new RuleGroup() {
+                                            {
+                                                addRule(
+                                                                "negative_combinator",
+                                                                // Note: This predicate is only
+                                                                // evaluated when the `root` rule is
+                                                                // not triggering, so this triggers
+                                                                // on frames 2-3, even though its
+                                                                // start/end arguments say it
+                                                                // triggers on frame 0-1.
+                                                                new ScheduledPredicate(0, 2))
+                                                        .withOnTriggeringProcedure(
+                                                                ONCE_AND_HOLD,
+                                                                () ->
+                                                                        new FakeProcedure(
+                                                                                "negative_combinator_proc",
+                                                                                10,
+                                                                                Set.of(fm1)));
+                                            }
+                                        });
+                    }
+                };
+
+        myRules.run();
+
+        Command cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd1);
+        assertTrue(cmd1.getName().endsWith("root_newly_proc"));
+
+        step();
+        myRules.run();
+
+        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd1);
+        assertTrue(cmd1.getName().endsWith("positive_combinator_proc"));
+
+        step();
+        myRules.run();
+
+        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd1);
+        assertTrue(cmd1.getName().endsWith("root_finished_proc"));
+
+        step();
+        myRules.run();
+
+        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd1);
+        assertTrue(cmd1.getName().endsWith("negative_combinator_proc"));
     }
 }
