@@ -23,22 +23,22 @@ public class MotorControllerWithSensorScale implements MotorController {
     }
 
     @Override
-    public void set(final ControlMode mode, final double value) {
+    public void set(final ControlMode mode, final double value, double arbitraryFeedForward) {
         switch (mode) {
             case PercentOutput:
-                delegate.set(mode, value);
+                delegate.set(mode, value, arbitraryFeedForward);
                 return;
             case Position:
-                delegate.set(mode, value / scale);
+                delegate.set(mode, value / scale, arbitraryFeedForward);
                 return;
             case Velocity:
-                delegate.set(mode, value / scale);
+                delegate.set(mode, value / scale, arbitraryFeedForward);
                 return;
             case Voltage:
-                delegate.set(mode, value);
+                delegate.set(mode, value, arbitraryFeedForward);
                 return;
             case Disabled:
-                delegate.set(mode, value);
+                delegate.set(mode, value, arbitraryFeedForward);
                 return;
             default:
                 break;

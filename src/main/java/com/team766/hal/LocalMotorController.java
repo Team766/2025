@@ -20,6 +20,7 @@ public class LocalMotorController implements MotorController {
 
     private ControlMode controlMode = ControlMode.PercentOutput;
     private double setpoint = 0.0;
+    private double arbitraryFeedForward = 0.0;
     private MotorController leader = null;
 
     public LocalMotorController(
@@ -63,17 +64,27 @@ public class LocalMotorController implements MotorController {
                                         break;
                                     case Position:
                                         pidController.calculate(getSensorPosition());
-                                        setPower(pidController.getOutput());
+                                        setPower(pidController.getOutput() + arbitraryFeedForward);
                                         break;
                                     case Velocity:
                                         pidController.calculate(getSensorVelocity());
-                                        setPower(pidController.getOutput());
+                                        setPower(pidController.getOutput() + arbitraryFeedForward);
                                         break;
                                     case Voltage:
-                                        setPower(
-                                                setpoint
-                                                        / RobotProvider.instance
-                                                                .getBatteryVoltage());
+                                        if (LocalMotorController.this.motor
+                                                instanceof MotorController) {
+                                            double voltage = setpoint;
+                                            if (inverted) {
+                                                voltage *= -1;
+                                            }
+                                            ((MotorController) LocalMotorController.this.motor)
+                                                    .set(ControlMode.Voltage, voltage);
+                                        } else {
+                                            setPower(
+                                                    setpoint
+                                                            / RobotProvider.instance
+                                                                    .getBatteryVoltage());
+                                        }
                                         break;
                                     default:
                                         LoggerExceptionUtils.logException(
@@ -182,13 +193,14 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public void set(final ControlMode mode, final double value) {
+    public void set(final ControlMode mode, final double value, double arbitraryFeedForward) {
         if (this.controlMode != mode || this.leader != null) {
             pidController.reset();
             this.leader = null;
         }
         this.controlMode = mode;
         this.setpoint = value;
+        this.arbitraryFeedForward = arbitraryFeedForward;
         this.pidController.setSetpoint(setpoint);
     }
 
