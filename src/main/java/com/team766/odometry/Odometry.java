@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.Angle;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /*
@@ -148,7 +149,7 @@ public class Odometry {
 
         for (int i = 0; i < motorCount; i++) {
 
-            StatusSignal<Double> positionStatus = CANCoderList[i].getAbsolutePosition();
+            StatusSignal<Angle> positionStatus = CANCoderList[i].getAbsolutePosition();
             if (!positionStatus.getStatus().isOK()) {
                 Logger.get(Category.ODOMETRY)
                         .logData(

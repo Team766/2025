@@ -3,9 +3,14 @@ package com.team766.robot.gatorade.mechanisms;
 import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkMax;
-
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
@@ -56,9 +61,9 @@ public class Elevator extends Mechanism {
 
     private static final double NEAR_THRESHOLD = 2.0;
 
-    private final CANSparkMax leftMotor;
-    private final CANSparkMax rightMotor;
-    private final SparkPIDController pidController;
+    private final SparkMax leftMotor;
+    private final SparkMax rightMotor;
+    private final SparkClosedLoopController pidController;
     private final ValueProvider<Double> pGain;
     private final ValueProvider<Double> iGain;
     private final ValueProvider<Double> dGain;
@@ -76,7 +81,7 @@ public class Elevator extends Mechanism {
         MotorController halLeftMotor = RobotProvider.instance.getMotor(ELEVATOR_LEFT_MOTOR);
         MotorController halRightMotor = RobotProvider.instance.getMotor(ELEVATOR_RIGHT_MOTOR);
 
-        if (!((halLeftMotor instanceof CANSparkMax) && (halRightMotor instanceof CANSparkMax))) {
+        if (!((halLeftMotor instanceof SparkMax) && (halRightMotor instanceof SparkMax))) {
             log(Severity.ERROR, "Motors are not CANSparkMaxes!");
             throw new IllegalStateException("Motor are not CANSparkMaxes!");
         }
@@ -84,18 +89,25 @@ public class Elevator extends Mechanism {
         halLeftMotor.setNeutralMode(NeutralMode.Brake);
         halRightMotor.setNeutralMode(NeutralMode.Brake);
 
-        leftMotor = (CANSparkMax) halLeftMotor;
-        rightMotor = (CANSparkMax) halRightMotor;
+        leftMotor = (SparkMax) halLeftMotor;
+        rightMotor = (SparkMax) halRightMotor;
 
-        rightMotor.follow(leftMotor, true /* invert */);
+        SparkMaxConfig rightConfig = new SparkMaxConfig();
+        rightConfig.follow(leftMotor, true /* invert */);
+        rightMotor.configure(
+                rightConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         leftMotor
                 .getEncoder()
                 .setPosition(
                         EncoderUtils.elevatorHeightToRotations(Position.RETRACTED.getHeight()));
 
-        pidController = leftMotor.getPIDController();
-        pidController.setFeedbackDevice(leftMotor.getEncoder());
+        pidController = leftMotor.getClosedLoopController();
+
+        SparkMaxConfig leftConfig = new SparkMaxConfig();
+        leftConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        leftMotor.configure(
+                leftConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         pGain = ConfigFileReader.getInstance().getDouble(ELEVATOR_PGAIN);
         iGain = ConfigFileReader.getInstance().getDouble(ELEVATOR_IGAIN);
@@ -169,13 +181,13 @@ public class Elevator extends Mechanism {
 
         System.err.println("Setting target position to " + position);
         // set the PID controller values with whatever the latest is in the config
-        pidController.setP(pGain.get());
-        pidController.setI(iGain.get());
-        pidController.setD(dGain.get());
-        // pidController.setFF(ffGain.get());
-        double ff = ffGain.get();
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.closedLoop.pid(pGain.get(), iGain.get(), dGain.get());
+        config.closedLoop.outputRange(-0.4, 0.4);
+        leftMotor.configure(
+                config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
-        pidController.setOutputRange(-0.4, 0.4);
+        double ff = ffGain.get();
 
         // pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
         // pidController.setSmartMotionMaxVelocity(maxVelocity.get(), 0);
@@ -189,7 +201,7 @@ public class Elevator extends Mechanism {
         SmartDashboard.putNumber("[ELEVATOR] reference", rotations);
 
         // set the reference point for the wrist
-        pidController.setReference(rotations, ControlType.kPosition, 0, ff);
+        pidController.setReference(rotations, ControlType.kPosition, ClosedLoopSlot.kSlot0, ff);
     }
 
     @Override

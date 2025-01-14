@@ -6,6 +6,7 @@ import com.team766.simulator.elements.CanMotorController;
 import com.team766.simulator.elements.DCMotor;
 import com.team766.simulator.elements.Gears;
 import com.team766.simulator.interfaces.MechanicalAngularDevice;
+import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -223,12 +224,13 @@ public class DoubleJointedArm {
         final double Mx =
                 J2_FIRST_MOMENT_OF_MASS * J1_LENGTH * Math.cos(state.get(0, 0) - state.get(1, 0));
         var M =
-                Matrix.mat(N2.instance, N2.instance)
-                        .fill(
-                                J1_SECOND_MOMENT_OF_MASS + J2_MASS * J1_LENGTH * J1_LENGTH,
-                                Mx,
-                                Mx,
-                                J2_SECOND_MOMENT_OF_MASS);
+                MatBuilder.fill(
+                        N2.instance,
+                        N2.instance,
+                        J1_SECOND_MOMENT_OF_MASS + J2_MASS * J1_LENGTH * J1_LENGTH,
+                        Mx,
+                        Mx,
+                        J2_SECOND_MOMENT_OF_MASS);
 
         final double C =
                 J2_FIRST_MOMENT_OF_MASS

@@ -1,5 +1,6 @@
 package com.team766.robot.common;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /**
@@ -46,6 +47,8 @@ public class SwerveConfig {
     public static final double DEFAULT_DRIVE_CURRENT_LIMIT = 35;
     public static final double DEFAULT_STEER_CURRENT_LIMIT = 30;
 
+    public static final DCMotor DEFAULT_DRIVE_MOTOR = DCMotor.getKrakenX60(1 /* motors */);
+
     private String canBus = DEFAULT_CAN_BUS;
     // TODO: can we combine Drive's wheel locations and odometry's wheel locations?
     private Vector2D frontLeftLocation = new Vector2D(DEFAULT_FL_X, DEFAULT_FL_Y);
@@ -61,6 +64,7 @@ public class SwerveConfig {
     private int encoderToRevolutionConstant = DEFAULT_ENCODER_TO_REVOLUTION_CONSTANT;
     private double driveMotorCurrentLimit = DEFAULT_DRIVE_CURRENT_LIMIT;
     private double steerMotorCurrentLimit = DEFAULT_STEER_CURRENT_LIMIT;
+    private DCMotor driveMotor = DEFAULT_DRIVE_MOTOR;
 
     public SwerveConfig() {}
 
@@ -118,6 +122,10 @@ public class SwerveConfig {
 
     public double steerMotorCurrentLimit() {
         return steerMotorCurrentLimit;
+    }
+
+    public DCMotor driveMotor() {
+        return driveMotor;
     }
 
     public SwerveConfig withCanBus(String canBus) {
@@ -183,6 +191,11 @@ public class SwerveConfig {
 
     public SwerveConfig withSteerMotorCurrentLimit(double limit) {
         this.steerMotorCurrentLimit = limit;
+        return this;
+    }
+
+    public SwerveConfig withDriveMotor(DCMotor motor) {
+        this.driveMotor = motor;
         return this;
     }
 }
