@@ -17,8 +17,8 @@ import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class Lights extends RuleEngine {
-    // private LEDString leds = new LEDString("leds");
-    private final LEDString leds = new LEDString("leds");
+    private final LEDString ledString = new LEDString("leds");
+    private final LEDString.Segment segment = ledString.makeSegment(0, 512);
 
     public static record RobotStatus() implements Status {
         public boolean isReady() {
@@ -35,9 +35,9 @@ public class Lights extends RuleEngine {
                                 CoralIntake.CoralIntakeStatus.class,
                                 s -> s.coralIntakeSuccessful()),
                         2),
-                leds,
+                segment,
                 () -> {
-                    leds.setColor(ColorConstants.YELLOW);
+                    segment.setColor(ColorConstants.YELLOW);
                 });
 
         addRule(
@@ -46,9 +46,9 @@ public class Lights extends RuleEngine {
                         whenStatusMatching(
                                 AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAlgaeStable()),
                         2),
-                leds,
+                segment,
                 () -> {
-                    leds.setColor(ColorConstants.GREEN);
+                    segment.setColor(ColorConstants.GREEN);
                 });
 
         addRule(
@@ -56,9 +56,9 @@ public class Lights extends RuleEngine {
                 whenStatusMatching(
                         AlgaeIntake.AlgaeIntakeStatus.class,
                         s -> s.state() == AlgaeIntake.State.In),
-                leds,
+                segment,
                 () -> {
-                    leds.setColor(ColorConstants.PURPLE);
+                    segment.setColor(ColorConstants.PURPLE);
                 });
 
         addRule(
@@ -66,9 +66,9 @@ public class Lights extends RuleEngine {
                 whenStatusMatching(
                         CoralIntake.CoralIntakeStatus.class,
                         s -> s.state() == CoralIntake.State.In),
-                leds,
+                segment,
                 () -> {
-                    leds.setColor(ColorConstants.ORANGE);
+                    segment.setColor(ColorConstants.ORANGE);
                 });
 
         addRule(
@@ -84,18 +84,18 @@ public class Lights extends RuleEngine {
                                 whenStatusMatching(
                                         SwerveDrive.DriveStatus.class, s -> !s.isBalanced()),
                                 20)),
-                leds,
+                segment,
                 () -> {
                     Animation rainbowAnim = new RainbowAnimation();
-                    leds.animate(rainbowAnim);
+                    segment.animate(rainbowAnim);
                 });
 
         addRule(
                 "Lights for Climb",
                 whenStatusMatching(Climber.ClimberStatus.class, s -> s.state() == Climber.State.On),
-                leds,
+                segment,
                 () -> {
-                    leds.setColor(ColorConstants.PINK);
+                    segment.setColor(ColorConstants.PINK);
                 });
 
         addRule(
@@ -103,10 +103,10 @@ public class Lights extends RuleEngine {
                 () ->
                         (DriverStation.isTeleopEnabled()
                                 && DriverStation.getMatchTime() < 20), // endgame time
-                leds,
+                segment,
                 () -> {
                     Animation fireAnim = new FireAnimation();
-                    leds.animate(fireAnim);
+                    segment.animate(fireAnim);
                 });
     }
 
