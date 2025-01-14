@@ -8,7 +8,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-/* package */ abstract class RuleGroupBase implements LoggingBase {
+/* package */ abstract class RuleGroupBase implements StatusesMixin, LoggingBase {
     protected static final BooleanSupplier UNCONDITIONAL = () -> true;
 
     @Override
