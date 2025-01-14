@@ -44,7 +44,11 @@ public interface MotorController extends BasicMotorController {
      *
      * @param value The setpoint value, as described above.
      */
-    void set(ControlMode mode, double value);
+    default void set(ControlMode mode, double value) {
+        set(mode, value, 0.0);
+    }
+
+    void set(ControlMode mode, double value, double arbitraryFeedForward);
 
     /**
      * Common interface for inverting direction of a motor controller.
