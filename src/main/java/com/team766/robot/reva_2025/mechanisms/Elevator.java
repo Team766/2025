@@ -21,8 +21,8 @@ public class Elevator extends Mechanism {
     }
 
     public void setPosition(double setPosition) {
+        checkContextOwnership();
         if (setPosition >= MIN_HEIGHT && setPosition <= MAX_HEIGHT) {
-            checkContextOwnership();
             elevatorLeftMotor.set(MotorController.ControlMode.Position, setPosition);
         }
     }
