@@ -22,10 +22,10 @@ import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.PigeonGyro;
+import com.team766.localization.KalmanFilter;
+import com.team766.localization.Odometry;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
-import com.team766.odometry.KalmanFilter;
-import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.ControlConstants;
@@ -213,9 +213,7 @@ public class SwerveDrive extends Mechanism {
      */
     public void controlRobotOriented(double x, double y, double turn) {
         checkContextOwnership();
-        // SmartDashboard.putString(
-        //         "[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
-
+        
         // Calculate the necessary turn velocity (m/s) for each motor:
         double turnVelocity = config.wheelDistanceFromCenter() * turn;
 
@@ -253,16 +251,17 @@ public class SwerveDrive extends Mechanism {
         checkContextOwnership();
 
         SmartDashboard.putString("Swerve Commands", "x: " + x + ", y: " + y + ", turn: " + turn);
+
+        alliance = DriverStation.getAlliance();
         double yawRad =
                 Math.toRadians(
                         getHeading()
                                 + (alliance.isPresent() && alliance.get() == Alliance.Blue
                                         ? 0
                                         : 180));
-        SmartDashboard.putNumber("rotate by: ", Math.toDegrees(yawRad));
+
         // Applies a rotational translation to controlRobotOriented
         // Counteracts the forward direction changing when the robot turns
-        // TODO: change to inverse rotation matrix (rather than negative angle)
         controlRobotOriented(
                 Math.cos(-yawRad) * x - Math.sin(-yawRad) * y,
                 Math.sin(-yawRad) * x + Math.cos(-yawRad) * y,
@@ -391,7 +390,6 @@ public class SwerveDrive extends Mechanism {
     }
 
     public Pose2d getCurrentPosition() {
-        SmartDashboard.putNumber("filtered X value", kalmanFilter.getPos().getX());
         return new Pose2d(kalmanFilter.getPos(), Rotation2d.fromDegrees(getHeading()));
     }
 
@@ -406,7 +404,7 @@ public class SwerveDrive extends Mechanism {
     /**
      * @return robot relative chassis speeds
     */
-    public ChassisSpeeds getRelativeChassisSpeeds() {
+    public ChassisSpeeds getRobotOrientedChassisSpeeds() {
         return swerveDriveKinematics.toChassisSpeeds(
                 swerveFR.getModuleState(),
                 swerveFL.getModuleState(),
@@ -417,8 +415,8 @@ public class SwerveDrive extends Mechanism {
     /**
      * @return field relative robot velocity
      */
-    public Translation2d getAbsoluteRobotVelocity() {
-        ChassisSpeeds relSpeeds = getRelativeChassisSpeeds();
+    public Translation2d getFieldOrientedRobotVelocity() {
+        ChassisSpeeds relSpeeds = getRobotOrientedChassisSpeeds();
         return new Translation2d(relSpeeds.vxMetersPerSecond, relSpeeds.vyMetersPerSecond).rotateBy(Rotation2d.fromDegrees(getHeading()));
     }
 
@@ -440,7 +438,7 @@ public class SwerveDrive extends Mechanism {
     // Odometry
     @Override
     public void run() {
-        kalmanFilter.addOdometryInput(swerveOdometry.predictCurrentPositionChange(), RobotProvider.instance.getClock().getTime());
+        kalmanFilter.addOdometryInput(swerveOdometry.calculateCurrentPositionChange(), RobotProvider.instance.getClock().getTime());
         
         // log(currentPosition.toString());
         // SmartDashboard.putString("pos", getCurrentPosition().toString());
@@ -476,7 +474,7 @@ public class SwerveDrive extends Mechanism {
         if (Logger.isLoggingToDataLog()) {
             org.littletonrobotics.junction.Logger.recordOutput("curPose", getCurrentPosition());
             org.littletonrobotics.junction.Logger.recordOutput(
-                    "current rotational velocity", getRelativeChassisSpeeds().omegaRadiansPerSecond);
+                    "current rotational velocity", getRobotOrientedChassisSpeeds().omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", swerveModuleStates);
         }
         
@@ -507,8 +505,8 @@ public class SwerveDrive extends Mechanism {
             double delay = 0.05; 
             Pose2d prevPose = simPrevPoses.ceilingEntry(now - delay).getValue();
             // simulated vision position is randomly chosen in an area around actual position
-            double randX = prevPose.getX() + 0.5 * (Math.random() - 0.5);
-            double randY = prevPose.getY() + 0.5 * (Math.random() - 0.5);
+            double randX = prevPose.getX() + 0.1 * (Math.random() - 0.5);
+            double randY = prevPose.getY() + 0.1 * (Math.random() - 0.5);
             kalmanFilter.updateWithVisionMeasurement(new Translation2d(randX, randY), now - delay);
             SmartDashboard.putNumber("sensor X measurement", randX);
         }

@@ -1,4 +1,4 @@
-package com.team766.odometry;
+package com.team766.localization;
 
 import com.team766.hal.GyroReader;
 import com.team766.hal.RobotProvider;
@@ -14,14 +14,8 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
  */
 public class Odometry {
 
-    private static final double RATE_LIMITER_TIME = 0.05;
-
-    // probably good at every 100th of a second but test
-    private RateLimiter odometryLimiter;
-
     private GyroReader gyro;
     private SwerveModule[] moduleList;
-    // The order of CANCoders should be the same as in motorList
     private int moduleCount;
 
     private Rotation2d[] prevWheelRotation;
@@ -31,12 +25,10 @@ public class Odometry {
     private double[] prevDriveDisplacement;
     private double[] driveDisplacementChange;
 
-    private double prevTime;
-
     // In meters
-    private double wheelCircumference;
-    public double gearRatio;
-    public int encoderToRevolutionConstant;
+    private final double WHEEL_CIRCUMFERENCE;
+    public final double GEAR_RATIO;
+    public  final int ENCODER_TO_REVOLUTION_CONSTANT;
 
     /**
      * Constructor for Odometry, taking in several defines for the robot.
@@ -56,7 +48,6 @@ public class Odometry {
             int encoderToRevolutionConstant) {
 
         this.gyro = gyro;
-        odometryLimiter = new RateLimiter(RATE_LIMITER_TIME);
         this.moduleList = moduleList;
         moduleCount = moduleList.length;
 
@@ -67,9 +58,9 @@ public class Odometry {
         prevDriveDisplacement = new double[moduleCount];
         driveDisplacementChange = new double[moduleCount];
 
-        this.wheelCircumference = wheelCircumference;
-        this.gearRatio = gearRatio;
-        this.encoderToRevolutionConstant = encoderToRevolutionConstant;
+        this.WHEEL_CIRCUMFERENCE = wheelCircumference;
+        this.GEAR_RATIO = gearRatio;
+        this.ENCODER_TO_REVOLUTION_CONSTANT = encoderToRevolutionConstant;
 
         for (int i = 0; i < moduleCount; i++) {
             prevWheelRotation[i] = new Rotation2d();
@@ -97,12 +88,10 @@ public class Odometry {
     }
 
     /**
-     * Updates the position of each wheel of the robot by assuming each wheel moved in an arc.
+     * Calculates the position change of the robot since the last time method was run by assuming each wheel moved in an arc.
+     * @return position change between previous time method was run and now
      */
-    public Translation2d predictCurrentPositionChange() {
-        double radius;
-        double deltaX;
-        double deltaY;
+    public Translation2d calculateCurrentPositionChange() {
 
         double sumX = 0;
         double sumY = 0;
@@ -129,9 +118,11 @@ public class Odometry {
             // Vector2D b = u.scalarMultiply(-Math.sin(w)).add(v.scalarMultiply(Math.cos(w)));
             // Vector2D wheelMotion;
             
+            double deltaX, deltaY;
+            
             if (Math.abs(wheelRotationChange[i].getDegrees()) != 0) {
                 // estimates the bot moved in a circle to calculate new position
-                radius = driveDisplacementChange[i] / wheelRotationChange[i].getRadians(); 
+                double radius = driveDisplacementChange[i] / wheelRotationChange[i].getRadians(); 
 
                 deltaX = radius * Math.sin(wheelRotationChange[i].getRadians());
                 deltaY = radius * (1 - Math.cos(wheelRotationChange[i].getRadians()));
@@ -143,7 +134,7 @@ public class Odometry {
 
             }
 
-            Translation2d wheelMotion = new Translation2d(deltaX, deltaY).rotateBy(currentWheelRotation[i]).times(wheelCircumference / (gearRatio * encoderToRevolutionConstant));
+            Translation2d wheelMotion = new Translation2d(deltaX, deltaY).rotateBy(prevWheelRotation[i]).times();
             
             sumX += wheelMotion.getX();
             sumY += wheelMotion.getY();

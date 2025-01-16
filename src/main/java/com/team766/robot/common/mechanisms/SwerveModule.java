@@ -15,6 +15,7 @@ import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
+import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.SwerveConstants;
 import com.team766.robot.common.mechanisms.simulation.SwerveModuleSim;
 import com.team766.robot.reva.mechanisms.MotorUtil;
@@ -57,8 +58,7 @@ public class SwerveModule {
             MotorController drive,
             MotorController steer,
             CANcoder encoder,
-            double driveMotorCurrentLimit,
-            double steerMotorCurrentLimit) {
+            SwerveConfig config) {
         this.modulePlacement = modulePlacement;
         this.drive = drive;
         this.steer = steer;
@@ -67,8 +67,8 @@ public class SwerveModule {
         // SmartDashboard.putNumber("[" + modulePlacement + "]" + "Offset", offset);
 
         // Current limit for motors to avoid breaker problems
-        drive.setCurrentLimit(driveMotorCurrentLimit);
-        steer.setCurrentLimit(steerMotorCurrentLimit);
+        drive.setCurrentLimit(config.driveMotorCurrentLimit());
+        steer.setCurrentLimit(config.steerMotorCurrentLimit());
         // TODO: tune these values!
         MotorUtil.setTalonFXStatorCurrentLimit(drive, DRIVE_STATOR_CURRENT_LIMIT);
         MotorUtil.setTalonFXStatorCurrentLimit(steer, STEER_STATOR_CURRENT_LIMIT);
@@ -202,9 +202,13 @@ public class SwerveModule {
         return Rotation2d.fromDegrees(steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
     }
 
+    /**
+     * Returns the encoder value of the drive motor in meters
+     * @return drive motor encoder value, in meters
+     */
     public double getDriveDisplacement() {
         Logger.get(Category.DRIVE).logRaw(Severity.DEBUG, "Get Drive Displacement");
-        return drive.getSensorPosition();
+        return drive.getSensorPosition() * WHEEL_CIRCUMFERENCE / (DRIVE_GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT);
     }
 
     public SwerveModuleState getModuleState() {
