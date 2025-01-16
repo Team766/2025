@@ -45,6 +45,8 @@ public class SwerveModule {
     private TalonFXSimState steerSimState;
     private CANcoderSimState encoderSimState;
 
+    private final double WHEEL_CIRCUMFERENCE;
+    private final double ENCODER_TO_REVOLUTION_CONSTANT;
     /**
      * Creates a new SwerveModule.
      *
@@ -73,6 +75,9 @@ public class SwerveModule {
         MotorUtil.setTalonFXStatorCurrentLimit(drive, DRIVE_STATOR_CURRENT_LIMIT);
         MotorUtil.setTalonFXStatorCurrentLimit(steer, STEER_STATOR_CURRENT_LIMIT);
 
+        WHEEL_CIRCUMFERENCE = config.wheelCircumference();
+        ENCODER_TO_REVOLUTION_CONSTANT = config.encoderToRevolutionConstant();
+        
         this.sim = new SwerveModuleSim(
                 DCMotor.getKrakenX60Foc(1),
                 DCMotor.getKrakenX60Foc(1),

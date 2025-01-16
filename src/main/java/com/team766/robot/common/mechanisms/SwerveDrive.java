@@ -125,32 +125,28 @@ public class SwerveDrive extends Mechanism {
                         driveFR,
                         steerFR,
                         encoderFR,
-                        config.driveMotorCurrentLimit(),
-                        config.steerMotorCurrentLimit());
+                        config);
         swerveFL =
                 new SwerveModule(
                         "FL",
                         driveFL,
                         steerFL,
                         encoderFL,
-                        config.driveMotorCurrentLimit(),
-                        config.steerMotorCurrentLimit());
+                        config);
         swerveBR =
                 new SwerveModule(
                         "BR",
                         driveBR,
                         steerBR,
                         encoderBR,
-                        config.driveMotorCurrentLimit(),
-                        config.steerMotorCurrentLimit());
+                        config);
         swerveBL =
                 new SwerveModule(
                         "BL",
                         driveBL,
                         steerBL,
                         encoderBL,
-                        config.driveMotorCurrentLimit(),
-                        config.steerMotorCurrentLimit());
+                        config);
 
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);

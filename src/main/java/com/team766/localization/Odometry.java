@@ -134,7 +134,7 @@ public class Odometry {
 
             }
 
-            Translation2d wheelMotion = new Translation2d(deltaX, deltaY).rotateBy(prevWheelRotation[i]).times();
+            Translation2d wheelMotion = new Translation2d(deltaX, deltaY).rotateBy(prevWheelRotation[i]);
             
             sumX += wheelMotion.getX();
             sumY += wheelMotion.getY();
