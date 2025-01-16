@@ -5,9 +5,11 @@ import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
+import com.team766.robot.reva_2025.mechanisms.*;
 
 public class Robot implements RobotConfigurator {
     public static SwerveDrive drive;
+    public static AlgaeIntake algaeIntake;
 
     @Override
     public Procedure createOI() {
@@ -23,5 +25,6 @@ public class Robot implements RobotConfigurator {
     public void initializeMechanisms() {
         SwerveConfig config = new SwerveConfig();
         drive = new SwerveDrive(config);
+        algaeIntake = new AlgaeIntake();
     }
 }

@@ -13,6 +13,7 @@ public class Elevator extends Mechanism {
         private final double MIN_HEIGHT=0;
         private final double MAX_HEIGHT=150;
         private final double NUDGE_AMOUNT=5;
+        //values are untested and are set to change
 
         public Elevator() {
                 elevatorLeftMotor = RobotProvider.instance.getMotor("elevator.leftMotor");
