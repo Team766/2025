@@ -1,6 +1,5 @@
 package com.team766.robot.common.mechanisms;
 
-import static com.team766.robot.common.constants.SwerveConstants.*;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -16,7 +15,6 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 import com.team766.robot.common.SwerveConfig;
-import com.team766.robot.common.constants.SwerveConstants;
 import com.team766.robot.common.mechanisms.simulation.SwerveModuleSim;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 import com.team766.simulator.Parameters;
@@ -45,8 +43,26 @@ public class SwerveModule {
     private TalonFXSimState steerSimState;
     private CANcoderSimState encoderSimState;
 
+    // In meters
     private final double WHEEL_CIRCUMFERENCE;
-    private final double ENCODER_TO_REVOLUTION_CONSTANT;
+    private final double DRIVE_GEAR_RATIO;
+    private final int ENCODER_TO_REVOLUTION_CONSTANT;
+    
+    /*
+    * Factor that converts between motor rotations and wheel degrees
+    * Multiply to convert from wheel degrees to motor rotations
+    * Divide to convert from motor rotations to wheel degrees
+    */
+    public final double ENCODER_CONVERSION_FACTOR;
+
+    /*
+     * Factor that converts between drive motor angular speed (rad/s) to drive wheel tip speed (m/s)
+     * Multiply to convert from wheel tip speed to motor angular speed
+     * Divide to convert from angular speed to wheel tip speed
+     */
+    public final double MOTOR_WHEEL_FACTOR_MPS;
+
+
     /**
      * Creates a new SwerveModule.
      *
@@ -61,6 +77,16 @@ public class SwerveModule {
             MotorController steer,
             CANcoder encoder,
             SwerveConfig config) {
+
+        WHEEL_CIRCUMFERENCE = config.wheelCircumference();
+        DRIVE_GEAR_RATIO = config.driveGearRatio();
+        ENCODER_TO_REVOLUTION_CONSTANT = config.encoderToRevolutionConstant();
+        ENCODER_CONVERSION_FACTOR = config.steerGearRatio() /*steering gear ratio*/ * (1. / 360.0) /*degrees to motor rotations*/;
+        MOTOR_WHEEL_FACTOR_MPS = 1.
+        / config.wheelRadius() // Wheel radians/sec
+        * DRIVE_GEAR_RATIO // Motor radians/sec
+        / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
+    
         this.modulePlacement = modulePlacement;
         this.drive = drive;
         this.steer = steer;
@@ -72,23 +98,20 @@ public class SwerveModule {
         drive.setCurrentLimit(config.driveMotorCurrentLimit());
         steer.setCurrentLimit(config.steerMotorCurrentLimit());
         // TODO: tune these values!
-        MotorUtil.setTalonFXStatorCurrentLimit(drive, DRIVE_STATOR_CURRENT_LIMIT);
-        MotorUtil.setTalonFXStatorCurrentLimit(steer, STEER_STATOR_CURRENT_LIMIT);
+        MotorUtil.setTalonFXStatorCurrentLimit(drive, config.driveMotorStatorCurrentLimit());
+        MotorUtil.setTalonFXStatorCurrentLimit(steer, config.steerMotorStatorCurrentLimit());
 
-        WHEEL_CIRCUMFERENCE = config.wheelCircumference();
-        ENCODER_TO_REVOLUTION_CONSTANT = config.encoderToRevolutionConstant();
-        
         this.sim = new SwerveModuleSim(
                 DCMotor.getKrakenX60Foc(1),
                 DCMotor.getKrakenX60Foc(1),
-                SwerveConstants.WHEEL_RADIUS,
-                SwerveConstants.STEER_GEAR_RATIO,
-                SwerveConstants.DRIVE_GEAR_RATIO,
+                config.wheelRadius(),
+                config.steerGearRatio(),
+                config.driveGearRatio(),
                 1., // CANCoder is directly on the shaft
-                SwerveConstants.DRIVE_GEAR_RATIO,
-                SwerveConstants.WHEEL_COEFF_FRICTION_STATIC,
-                SwerveConstants.WHEEL_COEFF_FRICTION_DYNAMIC,
-                Parameters.ROBOT_MASS * PhysicalConstants.GRAVITY_ACCELERATION / SwerveConstants.NUM_WHEELS,
+                config.driveGearRatio(),
+                config.wheelCoeffFrictionStatic(),
+                config.wheelCoeffFrictionDynamic(),
+                Parameters.ROBOT_MASS * PhysicalConstants.GRAVITY_ACCELERATION / 4,
                 0.01);
         this.driveSimState = ((TalonFX) drive).getSimState();
         this.steerSimState = ((TalonFX) steer).getSimState();

@@ -43,8 +43,13 @@ public class SwerveConfig {
     // will increase by 1.
     public static final int DEFAULT_ENCODER_TO_REVOLUTION_CONSTANT = 1;
 
+    // FIXME: check/tune these
+    public static final double WHEEL_COEFF_FRICTION_STATIC = 1.1;
+    public static final double WHEEL_COEFF_FRICTION_DYNAMIC = 0.8;
     public static final double DEFAULT_DRIVE_CURRENT_LIMIT = 35;
     public static final double DEFAULT_STEER_CURRENT_LIMIT = 30;
+    public static final double DRIVE_STATOR_CURRENT_LIMIT = 80.0;
+    public static final double STEER_STATOR_CURRENT_LIMIT = 80.0;
 
     private String canBus = DEFAULT_CAN_BUS;
     // TODO: can we combine Drive's wheel locations and odometry's wheel locations?
@@ -59,8 +64,12 @@ public class SwerveConfig {
     private double distanceBetweenWheels = DEFAULT_DISTANCE_BETWEEN_WHEELS;
     private double wheelDistanceFromCenter = Math.sqrt(2) * DEFAULT_DISTANCE_BETWEEN_WHEELS / 2;
     private int encoderToRevolutionConstant = DEFAULT_ENCODER_TO_REVOLUTION_CONSTANT;
+    private double wheelCoeffFrictionStatic = WHEEL_COEFF_FRICTION_STATIC;
+    private double wheelCoeffFrictionDynamic = WHEEL_COEFF_FRICTION_DYNAMIC;
     private double driveMotorCurrentLimit = DEFAULT_DRIVE_CURRENT_LIMIT;
     private double steerMotorCurrentLimit = DEFAULT_STEER_CURRENT_LIMIT;
+    private double driveMotorStatorCurrentLimit = DRIVE_STATOR_CURRENT_LIMIT;
+    private double steerMotorStatorCurrentLimit = STEER_STATOR_CURRENT_LIMIT;
 
     public SwerveConfig() {}
 
@@ -112,12 +121,28 @@ public class SwerveConfig {
         return encoderToRevolutionConstant;
     }
 
+    public double wheelCoeffFrictionStatic() {
+        return wheelCoeffFrictionStatic;
+    }
+
+    public double wheelCoeffFrictionDynamic() {
+        return wheelCoeffFrictionDynamic;
+    }
+
     public double driveMotorCurrentLimit() {
         return driveMotorCurrentLimit;
     }
 
     public double steerMotorCurrentLimit() {
         return steerMotorCurrentLimit;
+    }
+
+    public double driveMotorStatorCurrentLimit() {
+        return driveMotorStatorCurrentLimit;
+    }
+
+    public double steerMotorStatorCurrentLimit() {
+        return steerMotorStatorCurrentLimit;
     }
 
     public SwerveConfig withCanBus(String canBus) {
@@ -176,6 +201,16 @@ public class SwerveConfig {
         return this;
     }
 
+    public SwerveConfig withWheelCoeffFrictionStatic(double coefficient) {
+        this.wheelCoeffFrictionStatic = coefficient;
+        return this;
+    }
+
+    public SwerveConfig withWheelCoeffFrictionDynamic(double coefficient) {
+        this.wheelCoeffFrictionDynamic = coefficient;
+        return this;
+    }
+
     public SwerveConfig withDriveMotorCurrentLimit(double limit) {
         this.driveMotorCurrentLimit = limit;
         return this;
@@ -183,6 +218,16 @@ public class SwerveConfig {
 
     public SwerveConfig withSteerMotorCurrentLimit(double limit) {
         this.steerMotorCurrentLimit = limit;
+        return this;
+    }
+
+    public SwerveConfig withDriveMotorStatorCurrentLimit(double limit) {
+        this.driveMotorStatorCurrentLimit = limit;
+        return this;
+    }
+
+    public SwerveConfig withSteerMotorStatorCurrentLimit(double limit) {
+        this.steerMotorStatorCurrentLimit = limit;
         return this;
     }
 }
