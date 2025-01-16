@@ -1,10 +1,8 @@
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.hal.wpilib.CANSparkMaxMotorController;
 
-public class Wrist extends Mechanism{
+public class Wrist extends Mechanism {
 
     public enum WristPosition {
 
@@ -18,21 +16,22 @@ public class Wrist extends Mechanism{
             this.angle = angle;
         }
 
-        public double getAngle(){
+        public double getAngle() {
             return angle;
         }
     }
 
     private MotorController wristMotor;
-    public Wrist (){
+
+    public Wrist() {
         wristMotor = RobotProvider.instance.getMotor("Wrist.Motor");
     }
 
-    public void setAngle(WristPosition position){
+    public void setAngle(WristPosition position) {
         setAngle(position.getAngle());
     }
 
-    public void setAngle(double angle){
+    public void setAngle(double angle) {
         checkContextOwnership();
         wristMotor.set(MotorController.ControlMode.Position, angle);
     }
