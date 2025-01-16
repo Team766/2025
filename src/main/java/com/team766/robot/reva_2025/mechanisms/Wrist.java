@@ -6,7 +6,7 @@ import com.team766.hal.wpilib.CANSparkMaxMotorController;
 
 public class Wrist extends Mechanism{
 
-    public enum Position {
+    public enum WristPosition {
 
         // TODO: update all of these to real things!
         PICKUP_CORAL(0),
@@ -14,7 +14,7 @@ public class Wrist extends Mechanism{
 
         private final double angle;
 
-        private Position(double angle) {
+        private WristPosition(double angle) {
             this.angle = angle;
         }
 
@@ -28,7 +28,7 @@ public class Wrist extends Mechanism{
         wristMotor = RobotProvider.instance.getMotor("Wrist.Motor");
     }
 
-    public void setAngle(Position position){
+    public void setAngle(WristPosition position){
         setAngle(position.getAngle());
     }
 
