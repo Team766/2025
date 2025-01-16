@@ -9,7 +9,7 @@ import com.team766.robot.reva_2025.mechanisms.*;
 
 public class Robot implements RobotConfigurator {
     public static SwerveDrive drive;
-    public static AlgaeIntake algaeIntake;
+    public static Elevator elevator;
 
     @Override
     public Procedure createOI() {
@@ -25,6 +25,6 @@ public class Robot implements RobotConfigurator {
     public void initializeMechanisms() {
         SwerveConfig config = new SwerveConfig();
         drive = new SwerveDrive(config);
-        algaeIntake = new AlgaeIntake();
+        elevator = new Elevator();
     }
 }
