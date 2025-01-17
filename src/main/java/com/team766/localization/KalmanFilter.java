@@ -1,7 +1,5 @@
 package com.team766.localization;
 
-import java.util.Map;
-import java.util.TreeMap;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
@@ -12,6 +10,8 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class KalmanFilter {
     private Matrix<N2, N1> curState;
@@ -24,22 +24,20 @@ public class KalmanFilter {
     private static final Matrix<N2, N1> CUR_STATE_DEFAULT =
             MatBuilder.fill(Nat.N2(), Nat.N1(), 0, 0);
 
-    private static final Matrix<N2, N2> INITIAL_COVARIANCE_DEFAULT = Matrix.eye(Nat.N2()).times(Double.MAX_VALUE);
+    private static final Matrix<N2, N2> INITIAL_COVARIANCE_DEFAULT =
+            Matrix.eye(Nat.N2()).times(Double.MAX_VALUE);
 
-    private static final Matrix<N2, N2> SET_POS_COVARIANCE_DEFAULT = MatBuilder.fill(Nat.N2(), Nat.N2(), 
-    .5, 0, 
-            0, .5);
-
-    // FIXME: placeholder values
-    private static final Matrix<N2, N2> ODOMETRY_COVARIANCE_PER_DIST_DEFAULT = MatBuilder.fill(Nat.N2(), Nat.N2(), 
-        0.2, 0, 
-                0, 0.05);
+    private static final Matrix<N2, N2> SET_POS_COVARIANCE_DEFAULT =
+            MatBuilder.fill(Nat.N2(), Nat.N2(), .5, 0, 0, .5);
 
     // FIXME: placeholder values
-    private static final Matrix<N2, N2> VISION_COVARIANCE_DEFAULT = MatBuilder.fill(Nat.N2(), Nat.N2(), 
-        .5, 0, 
-                0, .5);
-        
+    private static final Matrix<N2, N2> ODOMETRY_COVARIANCE_PER_DIST_DEFAULT =
+            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.2, 0, 0, 0.05);
+
+    // FIXME: placeholder values
+    private static final Matrix<N2, N2> VISION_COVARIANCE_DEFAULT =
+            MatBuilder.fill(Nat.N2(), Nat.N2(), .5, 0, 0, .5);
+
     private static final double VELOCITY_INPUT_DELETION_TIME_DEFAULT = 1; // in seconds
 
     public KalmanFilter(
@@ -70,7 +68,11 @@ public class KalmanFilter {
     }
 
     public KalmanFilter(Matrix<N2, N2> odometryCovariancePerDist, Matrix<N2, N2> visionCovariance) {
-        this(CUR_STATE_DEFAULT, INITIAL_COVARIANCE_DEFAULT, odometryCovariancePerDist, visionCovariance);
+        this(
+                CUR_STATE_DEFAULT,
+                INITIAL_COVARIANCE_DEFAULT,
+                odometryCovariancePerDist,
+                visionCovariance);
     }
 
     public KalmanFilter() {
@@ -81,7 +83,8 @@ public class KalmanFilter {
 
         // short circuits if inputting a value with the wrong time
         if (time <= inputLog.lastKey()) {
-            Logger.get(Category.ODOMETRY).logRaw(Severity.ERROR, "tried to input an old odometry value");
+            Logger.get(Category.ODOMETRY)
+                    .logRaw(Severity.ERROR, "tried to input an old odometry value");
             return;
         }
 
@@ -96,16 +99,27 @@ public class KalmanFilter {
     }
 
     private void predict(double time, double nextStepTime, double dt) {
-        Translation2d positionChange; 
+        Translation2d positionChange;
 
-        // scalar multiplied to account for decreased velocity change if input targetTime is between two input entries
-        positionChange = inputLog.get(nextStepTime).times(dt/(nextStepTime - time)); 
+        // scalar multiplied to account for decreased velocity change if input targetTime is between
+        // two input entries
+        positionChange = inputLog.get(nextStepTime).times(dt / (nextStepTime - time));
 
         curState = curState.plus(positionChange.toVector());
 
         double angleRad = positionChange.getAngle().getRadians();
-        Matrix<N2, N2> track = MatBuilder.fill(Nat.N2(), Nat.N2(), Math.cos(angleRad), -Math.sin(angleRad), Math.sin(angleRad), Math.cos(angleRad));
-        curCovariance = track.times(odometryCovariancePerDist.times(track.transpose())).times(positionChange.getNorm()).plus(getCovariance());
+        Matrix<N2, N2> track =
+                MatBuilder.fill(
+                        Nat.N2(),
+                        Nat.N2(),
+                        Math.cos(angleRad),
+                        -Math.sin(angleRad),
+                        Math.sin(angleRad),
+                        Math.cos(angleRad));
+        curCovariance =
+                track.times(odometryCovariancePerDist.times(track.transpose()))
+                        .times(positionChange.getNorm())
+                        .plus(getCovariance());
     }
 
     /**
@@ -118,7 +132,7 @@ public class KalmanFilter {
             throw new IndexOutOfBoundsException();
         } else {
             double time = inputLog.lastKey();
-            while (time > targetTime) { 
+            while (time > targetTime) {
                 double prevTime = inputLog.lowerKey(time);
                 double dt = Math.max(prevTime, targetTime) - time; // will be negative
 
@@ -139,9 +153,11 @@ public class KalmanFilter {
 
         while (time < currentTime) {
             double nextTime = inputLog.higherKey(time);
-            
-            // going forward, the target time (currentTime) will always be a key exactly since it is defined as the last key
-            // that means that finding the minimum between current time and next time, similar to in findPrevState, is not necessary
+
+            // going forward, the target time (currentTime) will always be a key exactly since it is
+            // defined as the last key
+            // that means that finding the minimum between current time and next time, similar to in
+            // findPrevState, is not necessary
             double dt = nextTime - time;
 
             predict(time, nextTime, dt);
@@ -162,16 +178,17 @@ public class KalmanFilter {
         try {
             resetToPrevState(time);
 
-            Matrix<N2, N2> kalmanGain = curCovariance.times(curCovariance.plus(measurementCovariance).inv());
-            
+            Matrix<N2, N2> kalmanGain =
+                    curCovariance.times(curCovariance.plus(measurementCovariance).inv());
+
             curState = kalmanGain.times(measurement.toVector().minus(curState)).plus(curState);
             curCovariance = Matrix.eye(Nat.N2()).minus(kalmanGain).times(curCovariance);
-            
+
             predictCurrentState(time);
         } catch (IndexOutOfBoundsException e) {
-            Logger.get(Category.ODOMETRY).logRaw(Severity.ERROR, "inputLog does not go back far enough");
+            Logger.get(Category.ODOMETRY)
+                    .logRaw(Severity.ERROR, "inputLog does not go back far enough");
         }
-        
     }
 
     /**
@@ -187,13 +204,15 @@ public class KalmanFilter {
             for (var entry : measurements.entrySet()) {
                 Matrix<N2, N2> kalmanGain =
                         curCovariance.times(curCovariance.plus(entry.getValue()).inv());
-                curState = kalmanGain.times(entry.getKey().toVector().minus(curState)).plus(curState);
+                curState =
+                        kalmanGain.times(entry.getKey().toVector().minus(curState)).plus(curState);
                 curCovariance = Matrix.eye(Nat.N2()).minus(kalmanGain).times(curCovariance);
             }
 
             predictCurrentState(time);
         } catch (IndexOutOfBoundsException e) {
-            Logger.get(Category.ODOMETRY).logRaw(Severity.ERROR, "inputLog does not go back far enough");
+            Logger.get(Category.ODOMETRY)
+                    .logRaw(Severity.ERROR, "inputLog does not go back far enough");
         }
     }
 

@@ -1,7 +1,6 @@
 package com.team766.localization;
 
 import com.team766.hal.GyroReader;
-import com.team766.library.RateLimiter;
 import com.team766.robot.common.mechanisms.SwerveModule;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,7 +25,7 @@ public class Odometry {
     // In meters
     private final double WHEEL_CIRCUMFERENCE;
     public final double GEAR_RATIO;
-    public  final int ENCODER_TO_REVOLUTION_CONSTANT;
+    public final int ENCODER_TO_REVOLUTION_CONSTANT;
 
     /**
      * Constructor for Odometry, taking in several defines for the robot.
@@ -117,12 +116,12 @@ public class Odometry {
             // Vector2D a = u.scalarMultiply(Math.cos(w)).add(v.scalarMultiply(Math.sin(w)));
             // Vector2D b = u.scalarMultiply(-Math.sin(w)).add(v.scalarMultiply(Math.cos(w)));
             // Vector2D wheelMotion;
-            
+
             double deltaX, deltaY;
-            
+
             if (Math.abs(wheelRotationChange[i].getDegrees()) != 0) {
                 // estimates the bot moved in a circle to calculate new position
-                double radius = driveDisplacementChange[i] / wheelRotationChange[i].getRadians(); 
+                double radius = driveDisplacementChange[i] / wheelRotationChange[i].getRadians();
 
                 deltaX = radius * Math.sin(wheelRotationChange[i].getRadians());
                 deltaY = radius * (1 - Math.cos(wheelRotationChange[i].getRadians()));
@@ -133,8 +132,9 @@ public class Odometry {
                 deltaY = 0;
             }
 
-            Translation2d wheelMotion = new Translation2d(deltaX, deltaY).rotateBy(prevWheelRotation[i]);
-            
+            Translation2d wheelMotion =
+                    new Translation2d(deltaX, deltaY).rotateBy(prevWheelRotation[i]);
+
             sumX += wheelMotion.getX();
             sumY += wheelMotion.getY();
         }

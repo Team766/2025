@@ -11,8 +11,6 @@ import com.team766.framework.Procedure;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -67,7 +65,8 @@ public class FollowPath extends Procedure {
         // intitialization
 
         Pose2d curPose = drive.getCurrentPosition();
-        ChassisSpeeds currentSpeeds = drive.getRobotOrientedChassisSpeeds(); // FIXME: MIGHT HAVE TO BE ABSOLUTE
+        ChassisSpeeds currentSpeeds =
+                drive.getRobotOrientedChassisSpeeds(); // FIXME: MIGHT HAVE TO BE ABSOLUTE
 
         controller.reset(curPose, currentSpeeds);
 

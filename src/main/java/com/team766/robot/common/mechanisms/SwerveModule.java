@@ -1,6 +1,5 @@
 package com.team766.robot.common.mechanisms;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.hal.MotorController;
@@ -31,12 +30,12 @@ public class SwerveModule {
     private final double WHEEL_CIRCUMFERENCE;
     private final double DRIVE_GEAR_RATIO;
     private final int ENCODER_TO_REVOLUTION_CONSTANT;
-    
+
     /*
-    * Factor that converts between motor rotations and wheel degrees
-    * Multiply to convert from wheel degrees to motor rotations
-    * Divide to convert from motor rotations to wheel degrees
-    */
+     * Factor that converts between motor rotations and wheel degrees
+     * Multiply to convert from wheel degrees to motor rotations
+     * Divide to convert from motor rotations to wheel degrees
+     */
     public final double ENCODER_CONVERSION_FACTOR;
 
     /*
@@ -45,7 +44,6 @@ public class SwerveModule {
      * Divide to convert from angular speed to wheel tip speed
      */
     public final double MOTOR_WHEEL_FACTOR_MPS;
-
 
     /**
      * Creates a new SwerveModule.
@@ -65,12 +63,15 @@ public class SwerveModule {
         WHEEL_CIRCUMFERENCE = config.wheelCircumference();
         DRIVE_GEAR_RATIO = config.driveGearRatio();
         ENCODER_TO_REVOLUTION_CONSTANT = config.encoderToRevolutionConstant();
-        ENCODER_CONVERSION_FACTOR = config.steerGearRatio() /*steering gear ratio*/ * (1. / 360.0) /*degrees to motor rotations*/;
-        MOTOR_WHEEL_FACTOR_MPS = 1.
-        / config.wheelRadius() // Wheel radians/sec
-        * DRIVE_GEAR_RATIO // Motor radians/sec
-        / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
-    
+        ENCODER_CONVERSION_FACTOR =
+                config.steerGearRatio() /*steering gear ratio*/
+                        * (1. / 360.0) /*degrees to motor rotations*/;
+        MOTOR_WHEEL_FACTOR_MPS =
+                1.
+                        / config.wheelRadius() // Wheel radians/sec
+                        * DRIVE_GEAR_RATIO // Motor radians/sec
+                        / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
+
         this.modulePlacement = modulePlacement;
         this.drive = drive;
         this.steer = steer;
@@ -201,7 +202,9 @@ public class SwerveModule {
      * @return drive motor encoder value, in meters
      */
     public double getDriveDisplacement() {
-        return drive.getSensorPosition() * WHEEL_CIRCUMFERENCE / (DRIVE_GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT);
+        return drive.getSensorPosition()
+                * WHEEL_CIRCUMFERENCE
+                / (DRIVE_GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT);
     }
 
     public SwerveModuleState getModuleState() {
