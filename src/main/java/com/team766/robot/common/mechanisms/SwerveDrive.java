@@ -2,9 +2,9 @@ package com.team766.robot.common.mechanisms;
 
 import static com.team766.robot.common.constants.ConfigConstants.*;
 
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
+import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
@@ -76,10 +76,10 @@ public class SwerveDrive extends Mechanism {
         MotorController steerBL = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_LEFT);
 
         // create the encoders
-        CANcoder encoderFR = new CANcoder(2, config.canBus());
-        CANcoder encoderFL = new CANcoder(4, config.canBus());
-        CANcoder encoderBR = new CANcoder(3, config.canBus());
-        CANcoder encoderBL = new CANcoder(1, config.canBus());
+        EncoderReader encoderFR = RobotProvider.instance.getEncoder(DRIVE_ENCODER_FRONT_RIGHT);
+        EncoderReader encoderFL = RobotProvider.instance.getEncoder(DRIVE_ENCODER_FRONT_LEFT);
+        EncoderReader encoderBR = RobotProvider.instance.getEncoder(DRIVE_ENCODER_BACK_RIGHT);
+        EncoderReader encoderBL = RobotProvider.instance.getEncoder(DRIVE_ENCODER_BACK_LEFT);
 
         // initialize the swerve modules
         swerveFR =
@@ -121,7 +121,8 @@ public class SwerveDrive extends Mechanism {
         rotationPID = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
 
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBR, driveBL};
-        CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBR, encoderBL};
+        EncoderReader[] encoderList =
+                new EncoderReader[] {encoderFR, encoderFL, encoderBR, encoderBL};
         double halfDistanceBetweenWheels = config.distanceBetweenWheels() / 2;
         this.wheelPositions =
                 new Translation2d[] {

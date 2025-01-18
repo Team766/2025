@@ -17,6 +17,11 @@ public final class ConfigConstants {
     public static final String DRIVE_STEER_BACK_RIGHT = "drive.SteerBackRight";
     public static final String DRIVE_STEER_BACK_LEFT = "drive.SteerBackLeft";
 
+    public static final String DRIVE_ENCODER_FRONT_RIGHT = "drive.EncoderFrontRight";
+    public static final String DRIVE_ENCODER_FRONT_LEFT = "drive.EncoderFrontLeft";
+    public static final String DRIVE_ENCODER_BACK_RIGHT = "drive.EncoderBackRight";
+    public static final String DRIVE_ENCODER_BACK_LEFT = "drive.EncoderBackLeft";
+
     public static final String DRIVE_TARGET_ROTATION_PID = "drive.setpointPid";
 
     // pathplanner config values

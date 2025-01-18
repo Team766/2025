@@ -1,18 +1,13 @@
 package com.team766.odometry;
 
-import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.hardware.CANcoder;
+import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
-import com.team766.logging.Category;
-import com.team766.logging.Logger;
-import com.team766.logging.Severity;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.Angle;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /*
@@ -29,7 +24,7 @@ public class Odometry {
     private GyroReader gyro;
     private MotorController[] motorList;
     // The order of CANCoders should be the same as in motorList
-    private CANcoder[] CANCoderList;
+    private EncoderReader[] encoderList;
     private int motorCount;
 
     private Pose2d[] prevPositions;
@@ -62,7 +57,7 @@ public class Odometry {
     public Odometry(
             GyroReader gyro,
             MotorController[] motors,
-            CANcoder[] CANCoders,
+            EncoderReader[] encoders,
             Translation2d[] wheelLocations,
             double wheelCircumference,
             double gearRatio,
@@ -71,7 +66,7 @@ public class Odometry {
         this.gyro = gyro;
         odometryLimiter = new RateLimiter(RATE_LIMITER_TIME);
         motorList = motors;
-        CANCoderList = CANCoders;
+        encoderList = encoders;
         motorCount = motorList.length;
         // log("Motor count " + motorCount);
         prevPositions = new Pose2d[motorCount];
@@ -149,17 +144,9 @@ public class Odometry {
 
         for (int i = 0; i < motorCount; i++) {
 
-            StatusSignal<Angle> positionStatus = CANCoderList[i].getAbsolutePosition();
-            if (!positionStatus.getStatus().isOK()) {
-                Logger.get(Category.ODOMETRY)
-                        .logData(
-                                Severity.WARNING,
-                                "Unable to read CANCoder: %s",
-                                positionStatus.getStatus().toString());
-                continue;
-            }
+            double position = encoderList[i].getPosition();
 
-            double absolutePosition = 360 * positionStatus.getValueAsDouble();
+            double absolutePosition = 360 * position;
 
             // prevPositions[i] = new PointDir(currentPosition.getX() + 0.5 *
             // DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) *
