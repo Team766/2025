@@ -1,7 +1,9 @@
 package com.team766.orin;
 
+import com.team766.robot.common.constants.AprilTagPositions;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class KalamanApriltag extends AprilTag {
     private double collectTime = -1;
@@ -13,5 +15,12 @@ public class KalamanApriltag extends AprilTag {
 
     public double getCollectTime() {
         return collectTime;
+    }
+
+    public Translation2d toRobotPosition() {
+        return AprilTagPositions.TAGS_2025
+                .get(this.ID)
+                .getTranslation()
+                .plus(this.pose.getTranslation().toTranslation2d());
     }
 }
