@@ -8,7 +8,7 @@ public class IntakeOut extends Procedure {
     private final Intake intake;
 
     public IntakeOut(Intake intake) {
-        this.intake = intake;
+        this.intake = reserve(intake);
     }
 
     public void run(Context context) {

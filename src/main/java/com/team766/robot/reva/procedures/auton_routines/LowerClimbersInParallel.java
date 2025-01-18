@@ -12,7 +12,7 @@ public class LowerClimbersInParallel extends Procedure {
     public LowerClimbersInParallel(Procedure autonomousRoutine, Climber climber) {
         this.autonomousRoutine = autonomousRoutine;
         reserve(autonomousRoutine.reservations());
-        this.climber = climber;
+        this.climber = reserve(climber);
     }
 
     @Override
