@@ -188,7 +188,10 @@ public class KalmanFilter {
             predictCurrentState(time);
         } catch (IndexOutOfBoundsException e) {
             Logger.get(Category.ODOMETRY)
-                    .logRaw(Severity.ERROR, "inputLog does not go back far enough:" + LoggerExceptionUtils.exceptionToString(e));
+                    .logRaw(
+                            Severity.ERROR,
+                            "inputLog does not go back far enough:"
+                                    + LoggerExceptionUtils.exceptionToString(e));
         }
     }
 
@@ -213,7 +216,10 @@ public class KalmanFilter {
             predictCurrentState(time);
         } catch (IndexOutOfBoundsException e) {
             Logger.get(Category.ODOMETRY)
-                    .logRaw(Severity.ERROR, "inputLog does not go back far enough: " + LoggerExceptionUtils.exceptionToString(e));
+                    .logRaw(
+                            Severity.ERROR,
+                            "inputLog does not go back far enough: "
+                                    + LoggerExceptionUtils.exceptionToString(e));
         }
     }
 

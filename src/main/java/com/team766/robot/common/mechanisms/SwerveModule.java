@@ -193,8 +193,7 @@ public class SwerveModule {
     }
 
     public Rotation2d getSteerAngle() {
-        return Rotation2d.fromDegrees(
-                steer.getSensorPosition() / encoderConversionFactor - offset);
+        return Rotation2d.fromDegrees(steer.getSensorPosition() / encoderConversionFactor - offset);
     }
 
     /**
