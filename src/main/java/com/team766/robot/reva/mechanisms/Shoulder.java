@@ -14,6 +14,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.library.ValueProvider;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     public record ShoulderStatus(double angle) implements Status {
@@ -180,6 +181,8 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
         //         "[SHOULDER] Right Motor Stator Current",
         //         MotorUtil.getStatorCurrentUsage(rightMotor));
         // SmartDashboard.putNumber("[SHOULDER VELOCITY]", Math.abs(leftMotor.getSensorVelocity()));
+        SmartDashboard.putNumber("[SHOULDER] Angle", angle);
+        SmartDashboard.putNumber("[SHOULDER] Target Angle", rotationsToDegrees(targetRotations));
 
         return new ShoulderStatus(angle);
     }

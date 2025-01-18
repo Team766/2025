@@ -11,6 +11,7 @@ import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.logging.Logger;
 import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
@@ -21,6 +22,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
@@ -92,6 +95,11 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
     private Translation2d[] wheelPositions;
     private SwerveDriveKinematics swerveDriveKinematics;
+
+    private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
+            NetworkTableInstance.getDefault()
+                    .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
+                    .publish();
 
     private PIDController rotationPID;
 
@@ -417,6 +425,13 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                     swerveBR.getModuleState(),
                     swerveBL.getModuleState(),
                 };
+        if (Logger.isLoggingToDataLog()) {
+            org.littletonrobotics.junction.Logger.recordOutput("curPose", currentPosition);
+            org.littletonrobotics.junction.Logger.recordOutput(
+                    "current rotational velocity", chassisSpeeds.omegaRadiansPerSecond);
+            org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", swerveStates);
+        }
+        swerveModuleStatePublisher.set(swerveStates);
 
         return new DriveStatus(heading, pitch, roll, currentPosition, chassisSpeeds, swerveStates);
     }

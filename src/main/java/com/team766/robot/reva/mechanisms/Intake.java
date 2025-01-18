@@ -11,6 +11,7 @@ import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     public record IntakeStatus(boolean hasNoteInIntake, boolean isNoteClose) implements Status {}
@@ -108,7 +109,7 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     protected IntakeStatus reportStatus() {
         // SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
         // SmartDashboard.putNumber("[INTAKE] Current", MotorUtil.getCurrentUsage(intakeMotor));
-        // SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
+        SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
         return new IntakeStatus(
                 (threshold.get()) > sensor.getRange() && sensor.isRangeValid(),
                 (IS_CLOSE_THRESHOLD) > sensor.getRange() && sensor.isRangeValid());

@@ -13,6 +13,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
     public record ShooterStatus(
@@ -125,6 +126,10 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
         // SmartDashboard.putNumber(
         //         "[SHOOTER] Bottom Motor Current",
         //         MotorUtil.getCurrentUsage(shooterMotorBottom));
+        SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
+        SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", shooterMotorTop.getSensorVelocity());
+        SmartDashboard.putNumber(
+                "[SHOOTER BOTTOM MOTOR SPEED]", shooterMotorBottom.getSensorVelocity());
 
         return new ShooterStatus(
                 targetSpeed,
