@@ -64,7 +64,8 @@ public class FollowPath extends Procedure {
 
         var driveStatus = getStatusOrThrow(SwerveDrive.DriveStatus.class);
         Pose2d curPose = driveStatus.currentPosition();
-        ChassisSpeeds currentSpeeds = driveStatus.chassisSpeeds();
+        ChassisSpeeds currentSpeeds =
+                driveStatus.robotOrientedChassisSpeeds(); // FIXME: MIGHT HAVE TO BE ABSOLUTE
 
         controller.reset(curPose, currentSpeeds);
 
@@ -80,7 +81,6 @@ public class FollowPath extends Procedure {
             PathPlannerTrajectoryState targetState = generatedTrajectory.sample(currentTime);
             driveStatus = getStatusOrThrow(SwerveDrive.DriveStatus.class);
             curPose = driveStatus.currentPosition();
-            currentSpeeds = driveStatus.chassisSpeeds();
 
             ChassisSpeeds targetSpeeds =
                     controller.calculateRobotRelativeSpeeds(curPose, targetState);
