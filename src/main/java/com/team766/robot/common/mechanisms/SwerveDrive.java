@@ -53,7 +53,9 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         }
 
         public boolean isAtRotationVelocity(double omegaRadiansPerSecond) {
-            return Math.abs(omegaRadiansPerSecond - robotOrientedChassisSpeeds.omegaRadiansPerSecond)
+            return Math.abs(
+                            omegaRadiansPerSecond
+                                    - robotOrientedChassisSpeeds.omegaRadiansPerSecond)
                     < Math.toRadians(ControlConstants.AT_ROTATIONAL_SPEED_THRESHOLD);
         }
 
@@ -372,7 +374,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                         swerveFL.getModuleState(),
                         swerveBR.getModuleState(),
                         swerveBL.getModuleState());
-        
+
         final ChassisSpeeds fieldOrientedChassisSpeeds =
                 ChassisSpeeds.fromRobotRelativeSpeeds(
                         robotOrientedChassisSpeeds, Rotation2d.fromDegrees(heading));
@@ -397,7 +399,14 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
             org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", swerveModuleStates);
         }
 
-        return new DriveStatus(heading, pitch, roll, currentPosition, robotOrientedChassisSpeeds, fieldOrientedChassisSpeeds, swerveModuleStates);
+        return new DriveStatus(
+                heading,
+                pitch,
+                roll,
+                currentPosition,
+                robotOrientedChassisSpeeds,
+                fieldOrientedChassisSpeeds,
+                swerveModuleStates);
     }
 
     @Override
