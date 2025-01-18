@@ -27,23 +27,23 @@ public class SwerveModule {
     private final double offset;
 
     // In meters
-    private final double WHEEL_CIRCUMFERENCE;
-    private final double DRIVE_GEAR_RATIO;
-    private final int ENCODER_TO_REVOLUTION_CONSTANT;
+    private final double wheelCircumference;
+    private final double driveGearRatio;
+    private final int encoderToRevolutionConstant;
 
     /*
      * Factor that converts between motor rotations and wheel degrees
      * Multiply to convert from wheel degrees to motor rotations
      * Divide to convert from motor rotations to wheel degrees
      */
-    public final double ENCODER_CONVERSION_FACTOR;
+    public final double encoderConversionFactor;
 
     /*
      * Factor that converts between drive motor angular speed (rad/s) to drive wheel tip speed (m/s)
      * Multiply to convert from wheel tip speed to motor angular speed
      * Divide to convert from angular speed to wheel tip speed
      */
-    public final double MOTOR_WHEEL_FACTOR_MPS;
+    public final double motorWheelFactorMPS;
 
     /**
      * Creates a new SwerveModule.
@@ -60,16 +60,16 @@ public class SwerveModule {
             CANcoder encoder,
             SwerveConfig config) {
 
-        WHEEL_CIRCUMFERENCE = config.wheelCircumference();
-        DRIVE_GEAR_RATIO = config.driveGearRatio();
-        ENCODER_TO_REVOLUTION_CONSTANT = config.encoderToRevolutionConstant();
-        ENCODER_CONVERSION_FACTOR =
+        wheelCircumference = config.wheelCircumference();
+        driveGearRatio = config.driveGearRatio();
+        encoderToRevolutionConstant = config.encoderToRevolutionConstant();
+        encoderConversionFactor =
                 config.steerGearRatio() /*steering gear ratio*/
                         * (1. / 360.0) /*degrees to motor rotations*/;
-        MOTOR_WHEEL_FACTOR_MPS =
+        motorWheelFactorMPS =
                 1.
                         / config.wheelRadius() // Wheel radians/sec
-                        * DRIVE_GEAR_RATIO // Motor radians/sec
+                        * driveGearRatio // Motor radians/sec
                         / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
 
         this.modulePlacement = modulePlacement;
@@ -98,7 +98,7 @@ public class SwerveModule {
                             value.getStatus().toString());
             return 0; // ??
         }
-        return (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR) % 360
+        return (steer.getSensorPosition() / encoderConversionFactor) % 360
                 - (value.getValueAsDouble() * 360);
     }
 
@@ -121,7 +121,7 @@ public class SwerveModule {
                 vectorTheta
                         + 360
                                 * (Math.round(
-                                        (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR
+                                        (steer.getSensorPosition() / encoderConversionFactor
                                                         - offset
                                                         - vectorTheta)
                                                 / 360))
@@ -146,7 +146,7 @@ public class SwerveModule {
         // SmartDashboard.putNumber(
         //         "[" + modulePlacement + "]" + "Steer", angleDegrees);
 
-        steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
+        steer.set(ControlMode.Position, encoderConversionFactor * angleDegrees);
 
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
         // SmartDashboard.putNumber(
@@ -176,7 +176,7 @@ public class SwerveModule {
         //    reversed = false;
 
         // } else {
-        power = vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
+        power = vector.getNorm() * motorWheelFactorMPS;
         // }
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Input motor velocity", power);
         drive.set(ControlMode.Velocity, power);
@@ -194,7 +194,7 @@ public class SwerveModule {
 
     public Rotation2d getSteerAngle() {
         return Rotation2d.fromDegrees(
-                steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
+                steer.getSensorPosition() / encoderConversionFactor - offset);
     }
 
     /**
@@ -203,13 +203,13 @@ public class SwerveModule {
      */
     public double getDriveDisplacement() {
         return drive.getSensorPosition()
-                * WHEEL_CIRCUMFERENCE
-                / (DRIVE_GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT);
+                * wheelCircumference
+                / (driveGearRatio * encoderToRevolutionConstant);
     }
 
     public SwerveModuleState getModuleState() {
         return new SwerveModuleState(
-                drive.getSensorVelocity() / MOTOR_WHEEL_FACTOR_MPS, getSteerAngle());
+                drive.getSensorVelocity() / motorWheelFactorMPS, getSteerAngle());
     }
 
     public void dashboardCurrentUsage() {

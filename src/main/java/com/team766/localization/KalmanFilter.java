@@ -2,6 +2,7 @@ package com.team766.localization;
 
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
@@ -25,7 +26,7 @@ public class KalmanFilter {
             MatBuilder.fill(Nat.N2(), Nat.N1(), 0, 0);
 
     private static final Matrix<N2, N2> INITIAL_COVARIANCE_DEFAULT =
-            Matrix.eye(Nat.N2()).times(Double.MAX_VALUE);
+            Matrix.eye(Nat.N2()).times(100000); // large so that it can quickly converge to robot
 
     private static final Matrix<N2, N2> SET_POS_COVARIANCE_DEFAULT =
             MatBuilder.fill(Nat.N2(), Nat.N2(), .5, 0, 0, .5);
@@ -187,7 +188,7 @@ public class KalmanFilter {
             predictCurrentState(time);
         } catch (IndexOutOfBoundsException e) {
             Logger.get(Category.ODOMETRY)
-                    .logRaw(Severity.ERROR, "inputLog does not go back far enough");
+                    .logRaw(Severity.ERROR, "inputLog does not go back far enough:" + LoggerExceptionUtils.exceptionToString(e));
         }
     }
 
@@ -212,7 +213,7 @@ public class KalmanFilter {
             predictCurrentState(time);
         } catch (IndexOutOfBoundsException e) {
             Logger.get(Category.ODOMETRY)
-                    .logRaw(Severity.ERROR, "inputLog does not go back far enough");
+                    .logRaw(Severity.ERROR, "inputLog does not go back far enough: " + LoggerExceptionUtils.exceptionToString(e));
         }
     }
 
