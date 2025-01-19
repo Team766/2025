@@ -3,11 +3,22 @@ package com.team766.robot.reva.mechanisms;
 import static com.team766.robot.reva.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.team766.framework.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
+import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
-public class Climber extends Mechanism {
+public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
+
+    public record ClimberStatus(double heightLeft, double heightRight) implements Status {
+        public boolean isLeftNear(ClimberPosition position) {
+            return Math.abs(heightLeft() - position.getHeight()) < POSITION_LOCATION_THRESHOLD;
+        }
+
+        public boolean isRightNear(ClimberPosition position) {
+            return Math.abs(heightRight() - position.getHeight()) < POSITION_LOCATION_THRESHOLD;
+        }
+    }
 
     public enum ClimberPosition {
         // A very rough measurement, and was being very safe.
@@ -41,9 +52,6 @@ public class Climber extends Mechanism {
     private static final double INITITAL_POSITION = -63.0; // TODO: set
     private static final double NUDGE_INCREMENT = 0.1;
 
-    private double leftPower = 0;
-    private double rightPower = 0;
-
     public Climber() {
         leftMotor = RobotProvider.instance.getMotor(CLIMBER_LEFT_MOTOR);
         rightMotor = RobotProvider.instance.getMotor(CLIMBER_RIGHT_MOTOR);
@@ -58,51 +66,64 @@ public class Climber extends Mechanism {
         MotorUtil.setTalonFXStatorCurrentLimit(rightMotor, STATOR_CURRENT_LIMIT);
         MotorUtil.setSoftLimits(leftMotor, 0.0 /* forward limit */, -115.0 /* reverse limit */);
         MotorUtil.setSoftLimits(rightMotor, 0.0 /* forward limit */, -115.0 /* reverse limit */);
+
+        enableSoftLimits(true);
     }
 
     public void enableSoftLimits(boolean enabled) {
+        checkContextReservation();
         MotorUtil.enableSoftLimits(leftMotor, enabled);
         MotorUtil.enableSoftLimits(rightMotor, enabled);
     }
 
     public void resetLeftPosition() {
+        checkContextReservation();
         leftMotor.setSensorPosition(0);
     }
 
     public void resetRightPosition() {
+        checkContextReservation();
         rightMotor.setSensorPosition(0);
     }
 
     public void setPower(double power) {
+        checkContextReservation();
         setLeftPower(power);
         setRightPower(power);
     }
 
     public void setLeftPower(double power) {
+        checkContextReservation();
         power = com.team766.math.Math.clamp(power, -1, 1);
-        leftPower = power;
         leftMotor.set(power);
     }
 
     public void setRightPower(double power) {
+        checkContextReservation();
         power = com.team766.math.Math.clamp(power, -1, 1);
-        rightPower = power;
         rightMotor.set(power);
     }
 
     public void stop() {
+        checkContextReservation();
         stopLeft();
         stopRight();
     }
 
     public void stopLeft() {
-        leftPower = 0;
+        checkContextReservation();
         leftMotor.stopMotor();
     }
 
     public void stopRight() {
-        rightPower = 0;
+        checkContextReservation();
         rightMotor.stopMotor();
+    }
+
+    @Override
+    protected void onMechanismIdle() {
+        stopLeft();
+        stopRight();
     }
 
     private static double heightToRotations(double height) {
@@ -113,24 +134,8 @@ public class Climber extends Mechanism {
         return rotations / GEAR_RATIO_AND_CIRCUMFERENCE;
     }
 
-    public double getHeightLeft() {
-        return rotationsToHeight(leftMotor.getSensorPosition());
-    }
-
-    public double getHeightRight() {
-        return rotationsToHeight(rightMotor.getSensorPosition());
-    }
-
-    public boolean isLeftAtBottom() {
-        return Math.abs(getHeightLeft()) < POSITION_LOCATION_THRESHOLD;
-    }
-
-    public boolean isRightAtBottom() {
-        return Math.abs(getHeightRight()) < POSITION_LOCATION_THRESHOLD;
-    }
-
     @Override
-    public void run() {
+    protected ClimberStatus updateStatus() {
         // SmartDashboard.putNumber("[CLIMBER] Left Rotations", leftMotor.getSensorPosition());
         // SmartDashboard.putNumber("[CLIMBER] Right Rotations", rightMotor.getSensorPosition());
         // SmartDashboard.putNumber("[CLIMBER] Left Height", getHeightLeft());
@@ -147,5 +152,8 @@ public class Climber extends Mechanism {
         // SmartDashboard.putNumber(
         //         "[CLIMBER] Right Motor Stator Current",
         //         MotorUtil.getStatorCurrentUsage(rightMotor));
+        return new ClimberStatus(
+                rotationsToHeight(leftMotor.getSensorPosition()),
+                rotationsToHeight(rightMotor.getSensorPosition()));
     }
 }
