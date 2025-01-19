@@ -357,7 +357,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
     // Odometry
     @Override
-    public DriveStatus reportStatus() {
+    public DriveStatus updateStatus() {
         kalmanFilter.addOdometryInput(
                 swerveOdometry.calculateCurrentPositionChange(),
                 RobotProvider.instance.getClock().getTime());

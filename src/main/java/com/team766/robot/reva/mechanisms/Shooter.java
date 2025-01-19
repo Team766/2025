@@ -122,7 +122,7 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
     }
 
     @Override
-    protected ShooterStatus reportStatus() {
+    protected ShooterStatus updateStatus() {
         // SmartDashboard.putNumber(
         //         "[SHOOTER] Top Motor Current", MotorUtil.getCurrentUsage(shooterMotorTop));
         // SmartDashboard.putNumber(

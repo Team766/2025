@@ -140,7 +140,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     @Override
-    protected ShoulderStatus reportStatus() {
+    protected ShoulderStatus updateStatus() {
         // encoder takes some time to settle.
         // this threshold was determined very scientifically around 3:20am.
         if (!encoderInitialized && absoluteEncoder.isConnected()) {

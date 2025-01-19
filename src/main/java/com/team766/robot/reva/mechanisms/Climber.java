@@ -135,7 +135,7 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     }
 
     @Override
-    protected ClimberStatus reportStatus() {
+    protected ClimberStatus updateStatus() {
         // SmartDashboard.putNumber("[CLIMBER] Left Rotations", leftMotor.getSensorPosition());
         // SmartDashboard.putNumber("[CLIMBER] Right Rotations", rightMotor.getSensorPosition());
         // SmartDashboard.putNumber("[CLIMBER] Left Height", getHeightLeft());

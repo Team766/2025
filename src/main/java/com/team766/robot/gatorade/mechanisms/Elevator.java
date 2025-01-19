@@ -200,7 +200,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     @Override
-    protected ElevatorStatus reportStatus() {
+    protected ElevatorStatus updateStatus() {
         return new ElevatorStatus(
                 leftMotor.getEncoder().getPosition(),
                 EncoderUtils.elevatorRotationsToHeight(leftMotor.getEncoder().getPosition()));

@@ -106,7 +106,7 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     }
 
     @Override
-    protected IntakeStatus reportStatus() {
+    protected IntakeStatus updateStatus() {
         // SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
         // SmartDashboard.putNumber("[INTAKE] Current", MotorUtil.getCurrentUsage(intakeMotor));
         SmartDashboard.putNumber("Prox Sensor", sensor.getRange());

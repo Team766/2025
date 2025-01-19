@@ -90,7 +90,7 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     }
 
     @Override
-    protected IntakeStatus reportStatus() {
+    protected IntakeStatus updateStatus() {
         return new IntakeStatus(state);
     }
 }

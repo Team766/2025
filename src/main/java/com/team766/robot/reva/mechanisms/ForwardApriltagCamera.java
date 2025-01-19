@@ -35,7 +35,7 @@ public class ForwardApriltagCamera
     }
 
     @Override
-    protected ApriltagCameraStatus reportStatus() {
+    protected ApriltagCameraStatus updateStatus() {
         if (tagId == TAG_ID_NOT_CONFIGURED) {
             Optional<Alliance> alliance = DriverStation.getAlliance();
 

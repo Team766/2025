@@ -196,7 +196,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     @Override
-    protected ShoulderStatus reportStatus() {
+    protected ShoulderStatus updateStatus() {
         return new ShoulderStatus(
                 leftMotor.getEncoder().getPosition(),
                 EncoderUtils.shoulderRotationsToDegrees(leftMotor.getEncoder().getPosition()));

@@ -17,7 +17,7 @@ public class NoteCamera extends MechanismWithStatus<NoteCamera.NoteCameraStatus>
     }
 
     @Override
-    protected NoteCameraStatus reportStatus() {
+    protected NoteCameraStatus updateStatus() {
         Optional<Double> yawOfRing;
         try {
             yawOfRing = Optional.of(camera.getYawOfRing());

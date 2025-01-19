@@ -24,7 +24,7 @@ public class Orin extends MechanismWithStatus<Orin.OrinStatus> {
     public Orin() {}
 
     @Override
-    protected OrinStatus reportStatus() {
+    protected OrinStatus updateStatus() {
         var tags = GetApriltagPoseData.getAllTags(new double[0]);
 
         return new OrinStatus(Collections.unmodifiableList(tags));

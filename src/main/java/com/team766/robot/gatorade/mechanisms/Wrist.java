@@ -180,7 +180,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     @Override
-    protected WristStatus reportStatus() {
+    protected WristStatus updateStatus() {
         return new WristStatus(
                 motor.getEncoder().getPosition(),
                 EncoderUtils.wristRotationsToDegrees(motor.getEncoder().getPosition()));

@@ -28,7 +28,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
     }
 
     @Override
-    protected VisionStatus reportStatus() {
+    protected VisionStatus updateStatus() {
         double[] poseData;
         try {
             poseData = camera.getRawPoseData();
