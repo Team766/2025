@@ -108,6 +108,8 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
         // https://github.com/Team766/2024/pull/49 adds support to address this
         // until then, this is equivalent to the earlier approach
         if (speedUpdated || setSpeedLimiter.next()) {
+            SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
+
             if (shouldRun) {
                 shooterMotorTop.set(ControlMode.Velocity, targetSpeed);
                 shooterMotorBottom.set(ControlMode.Velocity, targetSpeed);
@@ -126,7 +128,6 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
         // SmartDashboard.putNumber(
         //         "[SHOOTER] Bottom Motor Current",
         //         MotorUtil.getCurrentUsage(shooterMotorBottom));
-        SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
         SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", shooterMotorTop.getSensorVelocity());
         SmartDashboard.putNumber(
                 "[SHOOTER BOTTOM MOTOR SPEED]", shooterMotorBottom.getSensorVelocity());
