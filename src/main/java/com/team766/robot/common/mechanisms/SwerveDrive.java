@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.controllers.PIDController;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
+import com.team766.framework3.StatusBus;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
@@ -14,9 +15,11 @@ import com.team766.localization.KalmanFilter;
 import com.team766.localization.Odometry;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.orin.KalamanApriltag;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.ControlConstants;
+import com.team766.robot.reva_2025.mechanisms.Vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,6 +29,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.ArrayList;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -351,12 +355,22 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         kalmanFilter.addOdometryInput(
                 swerveOdometry.calculateCurrentPositionChange(),
                 RobotProvider.instance.getClock().getTime());
-
+        
         final double heading = gyro.getAngle();
         final double pitch = gyro.getPitch();
         final double roll = gyro.getRoll();
         final Pose2d currentPosition =
                 new Pose2d(kalmanFilter.getPos(), Rotation2d.fromDegrees(heading));
+
+        var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
+        if (visionStatus.isPresent()) {
+            var tags = visionStatus.get().apriltags();
+            ArrayList<Translation2d> tagPoses = new ArrayList<>();
+            for (KalamanApriltag tag : tags) {
+                tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
+            }
+            kalmanFilter.updateWithVisionMeasurement(tagPoses, );
+        }
 
         final ChassisSpeeds robotOrientedChassisSpeeds =
                 swerveDriveKinematics.toChassisSpeeds(

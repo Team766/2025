@@ -11,6 +11,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -247,7 +248,7 @@ public class KalmanFilter {
      * @param measurements map key is the vision measurements (x, y), value is covariance matrix of that measurement
      * @param time the time that the measurement took place, in seconds
      */
-    public void updateWithVisionMeasurement(Translation2d[] measurements, double time) {
+    public void updateWithVisionMeasurement(List<Translation2d> measurements, double time) {
         TreeMap<Translation2d, Matrix<N2, N2>> measurementTreeMap = new TreeMap<>();
         for (Translation2d measurement : measurements) {
             measurementTreeMap.put(measurement, visionCovariance);

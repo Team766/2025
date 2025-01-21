@@ -10,11 +10,13 @@ import com.team766.robot.reva_2025.mechanisms.*;
 public class Robot implements RobotConfigurator3 {
 
     private SwerveDrive drive;
+    private Vision vision;
 
     @Override
     public void initializeMechanisms() {
         SwerveConfig swerveConfig = new SwerveConfig();
         drive = new SwerveDrive(swerveConfig);
+        vision = new Vision();
     }
 
     @Override
