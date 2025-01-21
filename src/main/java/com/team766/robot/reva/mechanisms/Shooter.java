@@ -7,14 +7,28 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.team766.framework.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
+import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Shooter extends Mechanism {
+public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
+    public record ShooterStatus(
+            double targetSpeed, double shooterSpeedTop, double shooterSpeedBottom)
+            implements Status {
+        public boolean isCloseToTargetSpeed() {
+            return isCloseToSpeed(targetSpeed());
+        }
+
+        public boolean isCloseToSpeed(double targetSpeed) {
+            return ((Math.abs(targetSpeed - shooterSpeedTop()) < SPEED_TOLERANCE)
+                    && (Math.abs(targetSpeed - shooterSpeedBottom()) < SPEED_TOLERANCE));
+        }
+    }
+
     public static final double DEFAULT_SPEED =
             4800.0; // motor shaft rps, does not take gearing into account
     public static final double SHOOTER_ASSIST_SPEED = 4000.0;
@@ -28,8 +42,6 @@ public class Shooter extends Mechanism {
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;
-    // decrease period if we're tuning PID
-    private RateLimiter rateLimiter = new RateLimiter(10.0);
     private RateLimiter setSpeedLimiter = new RateLimiter(0.1);
     private boolean shouldRun = false;
     // only used if shouldRun is true
@@ -57,67 +69,47 @@ public class Shooter extends Mechanism {
         shooterMotorBottom.setCurrentLimit(CURRENT_LIMIT);
     }
 
-    public boolean isCloseToExpectedSpeed() {
-        return ((Math.abs(targetSpeed - getShooterSpeedTop()) < SPEED_TOLERANCE)
-                && (Math.abs(targetSpeed - getShooterSpeedBottom()) < SPEED_TOLERANCE));
-    }
-
-    private double getShooterSpeedTop() {
-        return shooterMotorTop.getSensorVelocity();
-    }
-
-    private double getShooterSpeedBottom() {
-        return shooterMotorBottom.getSensorVelocity();
-    }
-
-    public boolean getShouldRun() {
-        return shouldRun;
-    }
-
     public void shoot(double speed) {
+        checkContextReservation();
         targetSpeed = com.team766.math.Math.clamp(speed, MIN_SPEED, MAX_SPEED);
         shoot();
     }
 
     public void shoot() {
-        checkContextOwnership();
+        checkContextReservation();
         shouldRun = targetSpeed > 0.0;
         speedUpdated = true;
     }
 
     public void stop() {
+        checkContextReservation();
         shouldRun = false;
         speedUpdated = true;
     }
 
     public void nudgeUp() {
+        checkContextReservation();
         shoot(Math.min(targetSpeed + NUDGE_INCREMENT, MAX_SPEED));
     }
 
     public void nudgeDown() {
+        checkContextReservation();
         shoot(Math.max(targetSpeed - NUDGE_INCREMENT, MIN_SPEED));
     }
 
-    public void run() {
-        if (speedUpdated || rateLimiter.next()) {
-            SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
-            SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
-            SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
-            // SmartDashboard.putNumber(
-            //         "[SHOOTER] Top Motor Current", MotorUtil.getCurrentUsage(shooterMotorTop));
-            // SmartDashboard.putNumber(
-            //         "[SHOOTER] Bottom Motor Current",
-            //         MotorUtil.getCurrentUsage(shooterMotorBottom));
-        }
+    @Override
+    protected void onMechanismIdle() {
+        stop();
+    }
 
-        // SmartDashboard.putBoolean("Shooter At Speed", isCloseToExpectedSpeed());
-        SmartDashboard.putBoolean("[SHOOTER SPEED UPDATED]", speedUpdated);
-        SmartDashboard.putBoolean("[SHOOTER SHOULD RUN]", shouldRun);
-
+    @Override
+    protected void run() {
         // FIXME: problem with this - does not pay attention to changes in PID values
         // https://github.com/Team766/2024/pull/49 adds support to address this
         // until then, this is equivalent to the earlier approach
         if (speedUpdated || setSpeedLimiter.next()) {
+            SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
+
             if (shouldRun) {
                 shooterMotorTop.set(ControlMode.Velocity, targetSpeed);
                 shooterMotorBottom.set(ControlMode.Velocity, targetSpeed);
@@ -127,5 +119,22 @@ public class Shooter extends Mechanism {
             }
             speedUpdated = false;
         }
+    }
+
+    @Override
+    protected ShooterStatus updateStatus() {
+        // SmartDashboard.putNumber(
+        //         "[SHOOTER] Top Motor Current", MotorUtil.getCurrentUsage(shooterMotorTop));
+        // SmartDashboard.putNumber(
+        //         "[SHOOTER] Bottom Motor Current",
+        //         MotorUtil.getCurrentUsage(shooterMotorBottom));
+        SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", shooterMotorTop.getSensorVelocity());
+        SmartDashboard.putNumber(
+                "[SHOOTER BOTTOM MOTOR SPEED]", shooterMotorBottom.getSensorVelocity());
+
+        return new ShooterStatus(
+                targetSpeed,
+                shooterMotorTop.getSensorVelocity(),
+                shooterMotorBottom.getSensorVelocity());
     }
 }

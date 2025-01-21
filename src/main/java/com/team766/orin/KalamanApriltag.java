@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class KalamanApriltag extends AprilTag {
-    private double collectTime = -1;
+    private final double collectTime;
 
     public KalamanApriltag(double collectTime, int tagId, Pose3d pose) {
         super(tagId, pose);
