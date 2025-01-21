@@ -1,15 +1,20 @@
 package com.team766.robot.reva_2025.mechanisms;
+import com.team766.framework3.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-public class AlgaeIntake {
-    private MotorController intakemotor;
-    private MotorController armmotor;
+public class AlgaeIntake extends Mechanism {
+    private MotorController intakeMotor;
+    private MotorController armMotor;
+    private MotorController shooterMotor;
     private State state;
     private Level level;
+    private boolean shoot=false;
 
     public AlgaeIntake() {
-        intakemotor = RobotProvider.instance.getMotor("AlgaeIntake.RollerMotor");
-        armmotor = RobotProvider.instance.getMotor("AlgaeArm.RollerMotor");
+        intakeMotor = RobotProvider.instance.getMotor("AlgaeIntake.RollerMotor");
+        armMotor = RobotProvider.instance.getMotor("AlgaeArm.RollerMotor");
+        shooterMotor = RobotProvider.instance.getMotor("AlgaeShooter.RollerMotor");
+
         level=Level.Stow;
 
     }
@@ -25,45 +30,49 @@ public class AlgaeIntake {
         L2L3AlgaeIntake(90),
         L3L4AlgaeIntake(180),
         Stow(0);
-        private final double height;
+        private final double angle;
         Level(double level) {
-            this.height = level;
+            this.angle = level;
         }
 
         private double getAngle() {
-            return height;
+            return angle;
         }
     }
 
     public void setArmAngle(Level level) {
-        armmotor.set(MotorController.ControlMode.Position,level.getAngle());
+        armMotor.set(MotorController.ControlMode.Position,level.getAngle());
         this.level=level;
     }
 
     public void out(){
         if (level == Level.GroundIntake || level==Level.L2L3AlgaeIntake){
-            intakemotor.set(-1);
+            intakeMotor.set(-1);
         }
-        if (level == Level.L3L4AlgaeIntake){
-            intakemotor.set(1);
+        else if (level == Level.L3L4AlgaeIntake){
+            intakeMotor.set(1);
         }
         state=State.Out;
 
     }
     public void in (){
         if (level == Level.GroundIntake || level==Level.L2L3AlgaeIntake){
-            intakemotor.set(1);
+            intakeMotor.set(1);
         }
-        if (level == Level.L3L4AlgaeIntake){
-            intakemotor.set(-1);
+        else if (level == Level.L3L4AlgaeIntake){
+            intakeMotor.set(-1);
         }
         state=State.In;
 
     }
 
     public void stop(){
-        intakemotor.set(0);
-        state=State.Out;
+        intakeMotor.set(0);
+        state=State.Stop;
+    }
+
+    public void shooterOn(){
+       shooterMotor.set(1);
     }
     }
 

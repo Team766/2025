@@ -5,20 +5,26 @@ import com.team766.framework3.RuleEngine;
 import com.team766.hal.RobotConfigurator3;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
+import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
+
 
 public class Robot implements RobotConfigurator3 {
 
     private SwerveDrive drive;
+    private AlgaeIntake algaeIntake;
 
     @Override
     public void initializeMechanisms() {
         SwerveConfig swerveConfig = new SwerveConfig();
+        algaeIntake = new AlgaeIntake();
         drive = new SwerveDrive(swerveConfig);
     }
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive);
+        return new OI(drive, algaeIntake);
+        
+
     }
 
     @Override
