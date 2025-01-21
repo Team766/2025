@@ -1,0 +1,18 @@
+package com.team766.robot.example;
+
+import com.team766.framework3.RuleEngine;
+import com.team766.logging.Category;
+import com.team766.robot.common.mechanisms.LEDString;
+
+public class Lights extends RuleEngine {
+    private LEDString leds = new LEDString("leds");
+
+    public Lights() {
+        // Add lights rules here.
+    }
+
+    @Override
+    public Category getLoggerCategory() {
+        return Category.LIGHTS;
+    }
+}

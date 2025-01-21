@@ -12,10 +12,10 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
+import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Severity;
 import edu.wpi.first.math.MathUtil;
@@ -27,7 +27,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * and {@link Intake} closer to a game piece or game element (eg node in the
  * field, human player station).
  */
-public class Elevator extends Mechanism {
+public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
+    /**
+     * @param height the current height of the elevator, in inches ('Murica).
+     */
+    public record ElevatorStatus(double rotations, double height) implements Status {
+        public boolean isNearTo(Position position) {
+            return isNearTo(position.getHeight());
+        }
+
+        public boolean isNearTo(double position) {
+            return Math.abs(position - height) < NEAR_THRESHOLD;
+        }
+    }
+
     public enum Position {
 
         /** Elevator is fully retracted.  Starting position. */
@@ -71,8 +84,6 @@ public class Elevator extends Mechanism {
     private final ValueProvider<Double> maxVelocity;
     private final ValueProvider<Double> minOutputVelocity;
     private final ValueProvider<Double> maxAccel;
-
-    private final RateLimiter rateLimiter = new RateLimiter(1.0 /* seconds */);
 
     /**
      * Contructs a new Elevator.
@@ -118,41 +129,23 @@ public class Elevator extends Mechanism {
         maxAccel = ConfigFileReader.getInstance().getDouble(ELEVATOR_MAX_ACCEL);
     }
 
-    public double getRotations() {
-        return leftMotor.getEncoder().getPosition();
-    }
-
-    /**
-     * Returns the current height of the elevator, in inches ('Murica).
-     */
-    public double getHeight() {
-        return EncoderUtils.elevatorRotationsToHeight(leftMotor.getEncoder().getPosition());
-    }
-
-    public boolean isNearTo(Position position) {
-        return isNearTo(position.getHeight());
-    }
-
-    public boolean isNearTo(double position) {
-        return Math.abs(position - getHeight()) < NEAR_THRESHOLD;
-    }
-
     public void nudgeNoPID(double value) {
-        checkContextOwnership();
+        checkContextReservation();
         double clampedValue = MathUtil.clamp(value, -1, 1);
         clampedValue *= NUDGE_DAMPENER; // make nudges less forceful.  TODO: make this non-linear
         leftMotor.set(clampedValue);
     }
 
     public void stopElevator() {
-        checkContextOwnership();
+        checkContextReservation();
         leftMotor.set(0);
     }
 
     public void nudgeUp() {
+        checkContextReservation();
         System.err.println("Nudging up.");
 
-        double height = getHeight();
+        double height = getStatus().height();
         // NOTE: this could artificially limit nudge range
         double targetHeight = Math.min(height + NUDGE_INCREMENT, Position.EXTENDED.getHeight());
 
@@ -160,7 +153,8 @@ public class Elevator extends Mechanism {
     }
 
     public void nudgeDown() {
-        double height = getHeight();
+        checkContextReservation();
+        double height = getStatus().height();
         // NOTE: this could artificially limit nudge range
         double targetHeight = Math.max(height - NUDGE_INCREMENT, Position.RETRACTED.getHeight());
         moveTo(targetHeight);
@@ -170,6 +164,7 @@ public class Elevator extends Mechanism {
      * Moves the elevator to a pre-set {@link Position}.
      */
     public void moveTo(Position position) {
+        checkContextReservation();
         moveTo(position.getHeight());
     }
 
@@ -177,7 +172,7 @@ public class Elevator extends Mechanism {
      * Moves the elevator to a specific position (in inches).
      */
     public void moveTo(double position) {
-        checkContextOwnership();
+        checkContextReservation();
 
         System.err.println("Setting target position to " + position);
         // set the PID controller values with whatever the latest is in the config
@@ -205,10 +200,9 @@ public class Elevator extends Mechanism {
     }
 
     @Override
-    public void run() {
-        if (rateLimiter.next()) {
-            SmartDashboard.putNumber("[ELEVATOR] Height", getHeight());
-            SmartDashboard.putNumber("[ELEVATOR] Rotations", getRotations());
-        }
+    protected ElevatorStatus updateStatus() {
+        return new ElevatorStatus(
+                leftMotor.getEncoder().getPosition(),
+                EncoderUtils.elevatorRotationsToHeight(leftMotor.getEncoder().getPosition()));
     }
 }
