@@ -15,7 +15,7 @@ import com.team766.localization.KalmanFilter;
 import com.team766.localization.Odometry;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
-import com.team766.orin.KalamanApriltag;
+import com.team766.orin.TimestampedApriltag;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.ControlConstants;
@@ -366,10 +366,12 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         if (visionStatus.isPresent()) {
             var tags = visionStatus.get().apriltags();
             ArrayList<Translation2d> tagPoses = new ArrayList<>();
-            for (KalamanApriltag tag : tags) {
+            for (TimestampedApriltag tag : tags) {
                 tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
             }
-            kalmanFilter.updateWithVisionMeasurement(tagPoses, );
+            // TODO: Assumes that ALL tags are measured at the same time (even on different cameras). 
+            // This is most likely not the behavior we want.
+            kalmanFilter.updateWithVisionMeasurement(tagPoses, tags.get(0).getCollectTime());
         }
 
         final ChassisSpeeds robotOrientedChassisSpeeds =
