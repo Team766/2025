@@ -1,9 +1,11 @@
 package com.team766.hal.wpilib;
 
+import com.team766.BuildConstants;
 import com.team766.config.ConfigFileReader;
 import com.team766.hal.CanivPoller;
-import com.team766.hal.GenericRobotMain;
+import com.team766.hal.GenericRobotMainBase;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.RobotSelector;
 import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,7 +25,7 @@ public class RobotMain extends LoggedRobot {
     private static final String USB_CONFIG_FILE = "/U/config/robotConfig.txt";
     private static final String INTERNAL_CONFIG_FILE = "/home/lvuser/robotConfig.txt";
 
-    private GenericRobotMain robot;
+    private GenericRobotMainBase robot;
 
     public static void main(final String... args) {
         Supplier<RobotMain> supplier =
@@ -96,7 +98,7 @@ public class RobotMain extends LoggedRobot {
             ConfigFileReader.instance =
                     new ConfigFileReader(filename, configFromUSB ? INTERNAL_CONFIG_FILE : null);
             RobotProvider.instance = new WPIRobotProvider();
-            robot = new GenericRobotMain();
+            robot = RobotSelector.createConfigurator().createRobotMain();
 
             DriverStation.startDataLog(DataLogManager.getLog());
 
@@ -113,6 +115,10 @@ public class RobotMain extends LoggedRobot {
             } else {
                 // TODO: add support for simulation logging/replay
             }
+
+            Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+            Logger.recordMetadata("GitDirty", BuildConstants.DIRTY != 0 ? "Yes" : "No");
+            Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
 
             Logger.start();
 

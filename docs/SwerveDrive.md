@@ -111,6 +111,6 @@ These inputs can be from the joysticks in `OI`.
 
 You can also input a `chassisSpeeds`, which is useful for path following.
 
-The methods `stopDrive()` and `setCross()` can also be useful, causing the robot to stop its drive motors and orient the wheels in a cross as described earlier, respectively.
+The method `stopDrive()` can also be useful, causing the robot to stop its drive motors and orient the wheels in a cross as described earlier.
 
 Additionally, since both gyro and odometry run through drive, the getter and resetter methods for the current position and rotations (yaw, pitch, roll) are called from `Drive`.

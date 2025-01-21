@@ -13,6 +13,22 @@ public class Math {
         return x;
     }
 
+    public static double deadzone(double value, double deadzone) {
+        return java.lang.Math.abs(value) >= deadzone ? value : 0;
+    }
+
+    public static boolean overlaps(int start1, int end1, int start2, int end2) {
+        return start1 < end2 && start2 < end1;
+    }
+
+    public static boolean overlaps(double start1, double end1, double start2, double end2) {
+        return start1 < end2 && start2 < end1;
+    }
+
+    public static <T extends Comparable<T>> boolean overlaps(T start1, T end1, T start2, T end2) {
+        return start1.compareTo(end2) < 0 && start2.compareTo(end1) < 0;
+    }
+
     /**
      * Returns the given angle, normalized to be within the range [-180, 180)
      */
