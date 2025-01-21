@@ -22,7 +22,6 @@ public class KalamanApriltag extends AprilTag {
         return AprilTagPositions.TAGS_2025
                 .get(this.ID)
                 .getTranslation()
-                .rotateBy(gyro.times(-1.0))
-                .minus(this.pose.getTranslation().toTranslation2d());
+                .minus(this.pose.getTranslation().toTranslation2d().rotateBy(gyro));
     }
 }
