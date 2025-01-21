@@ -10,7 +10,6 @@ import com.team766.robot.reva_2025.mechanisms.*;
 public class Robot implements RobotConfigurator3 {
 
     private SwerveDrive drive;
-    private Elevator elevator;
 
     @Override
     public void initializeMechanisms() {
