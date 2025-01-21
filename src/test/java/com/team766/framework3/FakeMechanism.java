@@ -16,7 +16,7 @@ class FakeMechanism extends MechanismWithStatus<FakeMechanism.FakeStatus> {
     }
 
     @Override
-    protected FakeStatus reportStatus() {
+    protected FakeStatus updateStatus() {
         return new FakeStatus(currentState);
     }
 }
