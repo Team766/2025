@@ -54,37 +54,31 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     }
 
     public void in() {
-        checkContextReservation();
         intakeMotor.set(DEFAULT_POWER);
         setIntakePowerForSensorDistance = false;
     }
 
     public void out() {
-        checkContextReservation();
         intakeMotor.set(-1 * DEFAULT_POWER);
         setIntakePowerForSensorDistance = false;
     }
 
     public void stop() {
-        checkContextReservation();
         intakeMotor.set(0.0);
         setIntakePowerForSensorDistance = false;
     }
 
     public void nudgeUp() {
-        checkContextReservation();
         intakeMotor.set(Math.min(intakeMotor.get() + NUDGE_INCREMENT, MAX_POWER));
         setIntakePowerForSensorDistance = false;
     }
 
     public void nudgeDown() {
-        checkContextReservation();
         intakeMotor.set(Math.max(intakeMotor.get() - NUDGE_INCREMENT, MIN_POWER));
         setIntakePowerForSensorDistance = false;
     }
 
     public void setIntakePowerFromSensorDistance() {
-        checkContextReservation();
         setIntakePowerForSensorDistance = true;
     }
 

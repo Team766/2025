@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.team766.TestCase3;
+import com.team766.framework3.test.FakeMechanism;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
@@ -16,8 +17,8 @@ public class Context3Test extends TestCase3 {
     /// Test basic operation of a procedure running in a Context.
     @Test
     public void testBasic() {
-        var mech1 = new FakeMechanism1();
-        var mech2 = new FakeMechanism2();
+        var mech1 = new FakeMechanism();
+        var mech2 = new FakeMechanism();
 
         var proc = new FakeProcedure(2, Set.of(mech1, mech2));
         var context = new ContextImpl(proc);
@@ -113,8 +114,8 @@ public class Context3Test extends TestCase3 {
     /// Test Context.runSync
     @Test
     public void testRunSync() {
-        var mech1 = new FakeMechanism1();
-        var mech2 = new FakeMechanism2();
+        var mech1 = new FakeMechanism();
+        var mech2 = new FakeMechanism();
         var proc1 = new FakeProcedure(1, Set.of(mech1));
         var proc2 = new FakeProcedure(1, Set.of(mech1, mech2));
 
@@ -163,8 +164,8 @@ public class Context3Test extends TestCase3 {
     /// Test Context.runParallel
     @Test
     public void testRunParallel() {
-        var mech1 = new FakeMechanism1();
-        var mech2 = new FakeMechanism2();
+        var mech1 = new FakeMechanism();
+        var mech2 = new FakeMechanism();
         var proc1 = new FakeProcedure(1, Set.of(mech1));
         var proc2 = new FakeProcedure(2, Set.of(mech2));
 
@@ -212,8 +213,8 @@ public class Context3Test extends TestCase3 {
     /// Test Context.runParallelRace
     @Test
     public void testRunParallelRace() {
-        var mech1 = new FakeMechanism1();
-        var mech2 = new FakeMechanism2();
+        var mech1 = new FakeMechanism();
+        var mech2 = new FakeMechanism();
         var proc1 = new FakeProcedure(1, Set.of(mech1));
         var proc2 = new FakeProcedure(3, Set.of(mech2));
 

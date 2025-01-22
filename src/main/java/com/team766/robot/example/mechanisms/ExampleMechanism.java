@@ -14,8 +14,6 @@ public class ExampleMechanism extends Mechanism {
     }
 
     public void setMotorPower(final double leftPower, final double rightPower) {
-        checkContextReservation();
-
         leftMotor.set(leftPower);
         rightMotor.set(rightPower);
     }

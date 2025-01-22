@@ -182,8 +182,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
      * @param turn the turn value from the rotation joystick, positive being CCW
      */
     public void controlRobotOriented(double x, double y, double turn) {
-        checkContextReservation();
-
         // Calculate the necessary turn velocity (m/s) for each motor:
         double turnVelocity = config.wheelDistanceFromCenter() * turn;
 
@@ -222,8 +220,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
      * @param turn the turn value from the rotation joystick, positive being CCW, in radians/sec
      */
     private void controlFieldOrientedBase(double x, double y, double turn) {
-        checkContextReservation();
-
         SmartDashboard.putString("Swerve Commands", "x: " + x + ", y: " + y + ", turn: " + turn);
 
         final Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -261,7 +257,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
      * @param target rotational target as a Rotation2d, can input a null value
      */
     public void controlFieldOrientedWithRotationTarget(double x, double y, Rotation2d target) {
-        checkContextReservation();
         if (target != null) {
             rotationPID.setSetpoint(target.getDegrees());
             // SmartDashboard.putNumber("Rotation Target", target.getDegrees());
@@ -304,7 +299,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
      * Stops each drive motor and turns wheels in a cross formation to prevent robot from moving
      */
     public void stopDrive() {
-        checkContextReservation();
         swerveFR.stopDrive();
         swerveFL.stopDrive();
         swerveBR.stopDrive();
@@ -320,7 +314,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
      * Sets to 180 degrees if the driver is on red (facing backwards)
      */
     public void resetGyro() {
-        checkContextReservation();
         final Optional<Alliance> alliance = DriverStation.getAlliance();
         resetGyro(alliance.isPresent() && alliance.get().equals(Alliance.Blue) ? 0 : 180);
     }
@@ -330,17 +323,14 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
      * @param angle in degrees
      */
     public void resetGyro(double angle) {
-        checkContextReservation();
         gyro.setAngle(angle);
     }
 
     public void setCurrentPosition(Pose2d P) {
-        checkContextReservation();
         kalmanFilter.setPos(P.getTranslation());
     }
 
     public void resetCurrentPosition() {
-        checkContextReservation();
         kalmanFilter.setPos(new Translation2d());
     }
 
