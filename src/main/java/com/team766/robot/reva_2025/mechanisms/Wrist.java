@@ -1,3 +1,5 @@
+package com.team766.robot.reva_2025.mechanisms;
+
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
