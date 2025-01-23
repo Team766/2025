@@ -9,16 +9,16 @@ import java.util.function.Supplier;
 public class AutonomousModeStateMachine {
     private enum AutonomousState {
         /**
-         * m_autonomous has not been started yet.
+         * {@link #autonomous} has not been started yet.
          * It can be scheduled the next time autonomousInit is called.
          */
         NEW,
         /**
-         * m_autonomous is currently running.
+         * {@link #autonomous} is currently running.
          */
         SCHEDULED,
         /**
-         * m_autonomous has finished, has been canceled, or is null.
+         * {@link #autonomous} has finished, has been canceled, or is null.
          * A new instance of the autonomous Command needs to be created before
          * autonomous mode can be enabled.
          */
@@ -26,18 +26,18 @@ public class AutonomousModeStateMachine {
     }
 
     private final Supplier<AutonomousMode> selector;
-    private AutonomousMode m_autonMode = null;
-    private Command m_autonomous = null;
-    private AutonomousState m_autonState = AutonomousState.INVALID;
+    private AutonomousMode autonMode = null;
+    private Command autonomous = null;
+    private AutonomousState autonState = AutonomousState.INVALID;
 
     public AutonomousModeStateMachine(Supplier<AutonomousMode> selector) {
         this.selector = selector;
     }
 
     public void stopAutonomousMode(final String reason) {
-        if (m_autonState == AutonomousState.SCHEDULED) {
-            m_autonomous.cancel();
-            m_autonState = AutonomousState.INVALID;
+        if (autonState == AutonomousState.SCHEDULED) {
+            autonomous.cancel();
+            autonState = AutonomousState.INVALID;
             Logger.get(Category.AUTONOMOUS)
                     .logRaw(Severity.INFO, "Resetting autonomus procedure from " + reason);
         }
@@ -45,24 +45,24 @@ public class AutonomousModeStateMachine {
 
     private void refreshAutonomousMode() {
         final AutonomousMode autonomousMode = selector.get();
-        if (m_autonMode != autonomousMode) {
+        if (autonMode != autonomousMode) {
             stopAutonomousMode("selection of new autonomous mode " + autonomousMode);
-            m_autonState = AutonomousState.INVALID;
+            autonState = AutonomousState.INVALID;
         }
-        if (m_autonState == AutonomousState.INVALID && autonomousMode != null) {
-            m_autonomous = autonomousMode.instantiate();
-            m_autonMode = autonomousMode;
-            m_autonState = AutonomousState.NEW;
+        if (autonState == AutonomousState.INVALID && autonomousMode != null) {
+            autonomous = autonomousMode.instantiate();
+            autonMode = autonomousMode;
+            autonState = AutonomousState.NEW;
             Logger.get(Category.AUTONOMOUS)
                     .logRaw(
                             Severity.INFO,
-                            "Initialized new autonomus procedure " + m_autonomous.getName());
+                            "Initialized new autonomus procedure " + autonomous.getName());
         }
     }
 
     public void startAutonomousMode() {
         refreshAutonomousMode();
-        switch (m_autonState) {
+        switch (autonState) {
             case INVALID -> {
                 Logger.get(Category.AUTONOMOUS)
                         .logRaw(Severity.WARNING, "No autonomous mode selected");
@@ -72,15 +72,15 @@ public class AutonomousModeStateMachine {
                         .logRaw(
                                 Severity.INFO,
                                 "Continuing previous autonomus procedure "
-                                        + m_autonomous.getName());
+                                        + autonomous.getName());
             }
             case NEW -> {
-                m_autonomous.schedule();
-                m_autonState = AutonomousState.SCHEDULED;
+                autonomous.schedule();
+                autonState = AutonomousState.SCHEDULED;
                 Logger.get(Category.AUTONOMOUS)
                         .logRaw(
                                 Severity.INFO,
-                                "Starting new autonomus procedure " + m_autonomous.getName());
+                                "Starting new autonomus procedure " + autonomous.getName());
             }
         }
     }
