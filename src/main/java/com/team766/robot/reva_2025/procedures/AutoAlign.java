@@ -3,46 +3,60 @@ package com.team766.robot.reva_2025.procedures;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.Robot;
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class AutoAlign extends Procedure {
-    public Pose2d targetPosition;
+    private Pose2d targetPosition;
+    private SwerveDrive drive;
+    private PIDController pidControllerX;
+    private PIDController pidControllerY;
+    private PIDController pidControllerRotation;
+    private double P_translation;
+    private double I_translation;
+    private double D_translation;
+    private double P_rotation;
+    private double I_rotation;
+    private double D_rotation;
+    private double threshold_translation;
+    private double threshold_rotation; 
 
-    public AutoAlign(Pose2d targetPosition) {
+    public AutoAlign(Pose2d targetPosition, SwerveDrive drive) {
         this.targetPosition = targetPosition;
+        this.drive = drive;
+        this.P_translation = 0;
+        this.I_translation = 0;
+        this.D_translation = 0;
+        this.P_rotation = 0;
+        this.I_rotation = 0;
+        this.D_rotation = 0;
+        this.threshold = 0.01;
+        this.threshold_translation = 0.01;
+        this.threshold_rotation = 0.01;
+        this.pidControllerX = new PIDController(this.P_translation, this.I_translation, this.D_translation, 0, 1, this.threshold_translation);
+        this.pidControllerY = new PIDController(this.P_translation, this.I_translation, this.D_translation, 0, 1, this.threshold_translation);
+        this.pidControllerRotation = new PIDController(this.P_rotation, this.I_rotation, this.D_rotation, -1, 1, this.threshold_rotation);  
     }
     public void run(Context context) {
-        double P = 0;
-        double I = 0;
-        double D = 0;
-        double threshold = 0.01;
-        PIDController pidControllerX = new PIDController(P, I, D, 0, 1, threshold);
-        PIDController pidControllerY = new PIDController(P, I, D, 0, 1, threshold);
-        PIDController pidControllerRotation = new PIDController(P, I, D, -1, 1, threshold);
         Pose2d currentPosition;
-        double currentHeading;
-        double motorX;
-        double motorY; 
-        double motorRotation;  
-        
-        context.takeOwnership(Robot.drive);
-        pidControllerX.setSetpoint(targetPosition.getX());
-        pidControllerY.setSetpoint(targetPosition.getY());
-        pidControllerRotation.setSetpoint(targetPosition.getRotation().getDegrees());
-        while(!pidControllerX.isDone() || !pidControllerY.isDone() || !pidControllerRotation.isDone()) {
-            currentPosition = Robot.drive.getCurrentPosition();
-            currentHeading = Robot.drive.getHeading();
-            pidControllerX.calculate(currentPosition.getX());
-            pidControllerY.calculate(currentPosition.getY());
-            pidControllerRotation.calculate(currentHeading);
-            motorX = pidControllerX.getOutput();
-            motorY = pidControllerY.getOutput();
-            motorRotation = pidControllerRotation.getOutput();
-            Robot.drive.controlFieldOriented(motorX, motorY, motorRotation);
+        double currentHeading;  
+
+        context.takeOwnership(this.drive);
+        this.pidControllerX.setSetpoint(targetPosition.getX());
+        this.pidControllerY.setSetpoint(targetPosition.getY());
+        this.pidControllerRotation.setSetpoint(targetPosition.getRotation().getDegrees());
+        while (!this.pidControllerX.isDone() || !this.pidControllerY.isDone() || !this.pidControllerRotation.isDone()) {
+            currentPosition = this.drive.getCurrentPosition();
+            currentHeading = this.drive.getHeading();
+            this.pidControllerX.calculate(currentPosition.getX());
+            this.pidControllerY.calculate(currentPosition.getY());
+            this.pidControllerRotation.calculate(currentHeading);
+            this.drive.controlFieldOriented(this.pidControllerX.getOutput(), this.pidControllerY.getOutput(), this.pidControllerRotation.getOutput());
+            context.yield();
         }
-        Robot.drive.stopDrive();
-        Robot.drive.setCross();
+        this.drive.stopDrive();
+        this.drive.setCross();
     } 
 
 }
