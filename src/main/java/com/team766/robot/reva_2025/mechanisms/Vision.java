@@ -49,6 +49,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
         }
 
         ArrayList<TimestampedApriltag> tags = GetApriltagPoseData.getAllTags(poseData);
+        log("Looped here!");
         return new VisionStatus(Collections.unmodifiableList(tags));
     }
 }
