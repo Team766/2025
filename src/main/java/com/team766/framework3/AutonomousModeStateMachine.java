@@ -71,8 +71,7 @@ public class AutonomousModeStateMachine {
                 Logger.get(Category.AUTONOMOUS)
                         .logRaw(
                                 Severity.INFO,
-                                "Continuing previous autonomus procedure "
-                                        + autonomous.getName());
+                                "Continuing previous autonomus procedure " + autonomous.getName());
             }
             case NEW -> {
                 autonomous.schedule();
