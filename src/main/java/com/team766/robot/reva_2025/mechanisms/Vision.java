@@ -27,12 +27,13 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
     public Vision() {
         // TODO: have this as a config input
 
-        cameraList = new GetOrinRawValue[]{
-            new GetOrinRawValue("red"), 
-            new GetOrinRawValue("white"), 
-            new GetOrinRawValue("green"), 
-            new GetOrinRawValue("blue")
-        };
+        cameraList =
+                new GetOrinRawValue[] {
+                    new GetOrinRawValue("red"),
+                    new GetOrinRawValue("white"),
+                    new GetOrinRawValue("green"),
+                    new GetOrinRawValue("blue")
+                };
     }
 
     @Override
@@ -40,7 +41,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
         ArrayList<Double> poseData = new ArrayList<>();
         try {
             for (GetOrinRawValue camera : cameraList) {
-                for(double data: camera.getRawPoseData()) {
+                for (double data : camera.getRawPoseData()) {
                     poseData.add(data);
                 }
             }

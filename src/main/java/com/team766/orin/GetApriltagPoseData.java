@@ -23,7 +23,9 @@ public class GetApriltagPoseData {
                             tagData.get(i + 1).intValue(),
                             new Pose3d(
                                     new Translation3d(
-                                            tagData.get(i + 2), tagData.get(i + 3), tagData.get(i + 4)),
+                                            tagData.get(i + 2),
+                                            tagData.get(i + 3),
+                                            tagData.get(i + 4)),
                                     new Rotation3d()));
             apriltags.add(tag);
         }

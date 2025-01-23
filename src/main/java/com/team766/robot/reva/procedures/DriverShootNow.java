@@ -137,7 +137,8 @@ public class DriverShootNow extends VisionPIDProcedure {
     }
 
     private Optional<Transform3d> getTransform3dOfRobotToTagOrin() {
-        Optional<TimestampedApriltag> tag = getStatusOrThrow(Orin.OrinStatus.class).getTagById(tagId);
+        Optional<TimestampedApriltag> tag =
+                getStatusOrThrow(Orin.OrinStatus.class).getTagById(tagId);
 
         if (tag.isEmpty()) {
             return Optional.empty();

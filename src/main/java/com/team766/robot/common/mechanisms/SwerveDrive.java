@@ -355,12 +355,10 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         kalmanFilter.addOdometryInput(
                 swerveOdometry.calculateCurrentPositionChange(),
                 RobotProvider.instance.getClock().getTime());
-        
+
         final double heading = gyro.getAngle();
         final double pitch = gyro.getPitch();
         final double roll = gyro.getRoll();
-        final Pose2d currentPosition =
-                new Pose2d(kalmanFilter.getPos(), Rotation2d.fromDegrees(heading));
 
         var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
         if (visionStatus.isPresent()) {
@@ -369,11 +367,15 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
             for (TimestampedApriltag tag : tags) {
                 tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
             }
-            // TODO: Assumes that ALL tags are measured at the same time (even on different cameras). 
+            // TODO: Assumes that ALL tags are measured at the same time (even on different
+            // cameras).
             // This is most likely not the behavior we want.
             kalmanFilter.updateWithVisionMeasurement(tagPoses, tags.get(0).getCollectTime());
         }
 
+        final Pose2d currentPosition =
+                new Pose2d(kalmanFilter.getPos(), Rotation2d.fromDegrees(heading));
+        
         final ChassisSpeeds robotOrientedChassisSpeeds =
                 swerveDriveKinematics.toChassisSpeeds(
                         swerveFR.getModuleState(),
