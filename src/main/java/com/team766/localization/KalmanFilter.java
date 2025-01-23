@@ -11,6 +11,8 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -38,7 +40,7 @@ public class KalmanFilter {
 
     // FIXME: placeholder values
     private static final Matrix<N2, N2> VISION_COVARIANCE_DEFAULT =
-            MatBuilder.fill(Nat.N2(), Nat.N2(), .5, 0, 0, .5);
+            MatBuilder.fill(Nat.N2(), Nat.N2(), 5, 0, 0, 5);
 
     private static final double VELOCITY_INPUT_DELETION_TIME_DEFAULT = 1; // in seconds
 
@@ -83,12 +85,12 @@ public class KalmanFilter {
 
     public void addOdometryInput(Translation2d odometryInput, double time) {
 
-        // short circuits if inputting a value with the wrong time
-        if (time <= inputLog.lastKey()) {
+        /*// short circuits if inputting a value with the wrong time
+        if (time <= inputLog.lastKey() ) {
             Logger.get(Category.ODOMETRY)
                     .logRaw(Severity.ERROR, "tried to input an old odometry value");
             return;
-        }
+        } */
 
         inputLog.put(time, odometryInput);
         if (inputLog.size() > 1) {
@@ -202,7 +204,7 @@ public class KalmanFilter {
      * @param time the time that the measurement took place, in seconds
      */
     private void updateWithPositionMeasurement(
-            Map<Translation2d, Matrix<N2, N2>> measurements, double time) {
+            HashMap<Translation2d, Matrix<N2, N2>> measurements, double time) {
 
         try {
             resetToPrevState(time);
@@ -239,7 +241,7 @@ public class KalmanFilter {
      * @param time the time that the measurement took place, in seconds
      */
     public void updateWithVisionMeasurement(
-            Map<Translation2d, Matrix<N2, N2>> measurements, double time) {
+            HashMap<Translation2d, Matrix<N2, N2>> measurements, double time) {
         updateWithPositionMeasurement(measurements, time);
     }
 
@@ -248,10 +250,10 @@ public class KalmanFilter {
      * @param measurements map key is the vision measurements (x, y), value is covariance matrix of that measurement
      * @param time the time that the measurement took place, in seconds
      */
-    public void updateWithVisionMeasurement(List<Translation2d> measurements, double time) {
-        TreeMap<Translation2d, Matrix<N2, N2>> measurementTreeMap = new TreeMap<>();
+    public void updateWithVisionMeasurement(ArrayList<Translation2d> measurements, double time) {
+        HashMap<Translation2d, Matrix<N2, N2>> measurementTreeMap = new HashMap<>();
         for (Translation2d measurement : measurements) {
-            measurementTreeMap.put(measurement, visionCovariance);
+            measurementTreeMap.put(new Translation2d(measurement.getX(), measurement.getY()), visionCovariance);
         }
         updateWithPositionMeasurement(measurementTreeMap, time);
     }

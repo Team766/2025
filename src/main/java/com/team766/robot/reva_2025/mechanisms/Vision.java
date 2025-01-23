@@ -29,8 +29,8 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
         cameraList =
                 new GetOrinRawValue[] {
-                    new GetOrinRawValue("red"),
-                    new GetOrinRawValue("white"),
+                    new GetOrinRawValue("cam199"),
+                    new GetOrinRawValue("camUC762"),
                     new GetOrinRawValue("green"),
                     new GetOrinRawValue("blue")
                 };
@@ -51,6 +51,6 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
         ArrayList<TimestampedApriltag> tags = GetApriltagPoseData.getAllTags(poseData);
         log("Looped here!");
-        return new VisionStatus(Collections.unmodifiableList(tags));
+        return new VisionStatus(tags);
     }
 }

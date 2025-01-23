@@ -361,7 +361,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         final double roll = gyro.getRoll();
 
         var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
-        if (visionStatus.isPresent()) {
+        if (visionStatus.isPresent() && visionStatus.get().apriltags().size() > 0) {
             var tags = visionStatus.get().apriltags();
             ArrayList<Translation2d> tagPoses = new ArrayList<>();
             for (TimestampedApriltag tag : tags) {
@@ -399,7 +399,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                     swerveBR.getModuleState(),
                     swerveBL.getModuleState(),
                 };
-        if (Logger.isLoggingToDataLog()) {
+        if (true || Logger.isLoggingToDataLog()) {
             org.littletonrobotics.junction.Logger.recordOutput("curPose", currentPosition);
             org.littletonrobotics.junction.Logger.recordOutput(
                     "current rotational velocity",
