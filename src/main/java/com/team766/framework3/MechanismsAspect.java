@@ -1,5 +1,7 @@
 package com.team766.framework3;
 
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 import java.util.StringJoiner;
 import org.aspectj.lang.JoinPoint;
@@ -42,6 +44,7 @@ public class MechanismsAspect {
         for (var arg : joinPoint.getArgs()) {
             argsJoiner.add(String.valueOf(arg));
         }
-        mechanism.log(Severity.DEBUG, argsJoiner.toString());
+        // TODO: should this log to mechanism's logger category?
+        Logger.get(Category.FRAMEWORK).logRaw(Severity.DEBUG, argsJoiner.toString());
     }
 }
