@@ -26,7 +26,7 @@ public class MechanismsAspect {
     // framework3 package. Also ignore any methods that are annotated with NoReservationRequired.
     @Before(
             "execution(public * com.team766.framework3.Mechanism+.*(..))"
-                    + " && !execution(public * com.team766.framework3.*.*(..))"
+                    + " && !within(com.team766.framework3.*)"
                     + " && !@annotation(com.team766.framework3.NoReservationRequired)")
     public void mechanismCheckedPublicMethods(JoinPoint joinPoint) {
         final Mechanism mechanism = (Mechanism) joinPoint.getTarget();
