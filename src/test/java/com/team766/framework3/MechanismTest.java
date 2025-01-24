@@ -67,8 +67,12 @@ public class MechanismTest extends TestCase3 {
                         new FunctionalProcedure(
                                 Set.of(),
                                 context -> {
+                                    // methods with NoReservationRequired should be allowed to run
+                                    // when the mechanism is not reserved.
                                     mech.nonMutatingMethod();
 
+                                    // methods without NoReservationRequired should fail the call to
+                                    // checkContextReservation.
                                     try {
                                         mech.mutateMechanism(0);
                                     } catch (Throwable ex) {
