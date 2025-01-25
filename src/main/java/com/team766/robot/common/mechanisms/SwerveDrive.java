@@ -398,7 +398,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                     swerveBR.getModuleState(),
                     swerveBL.getModuleState(),
                 };
-        if (true || Logger.isLoggingToDataLog()) {
+        if (Logger.isLoggingToDataLog()) {
             org.littletonrobotics.junction.Logger.recordOutput("curPose", currentPosition);
             org.littletonrobotics.junction.Logger.recordOutput(
                     "current rotational velocity",
