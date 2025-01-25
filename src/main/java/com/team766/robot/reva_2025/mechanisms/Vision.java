@@ -3,6 +3,7 @@ package com.team766.robot.reva_2025.mechanisms;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.logging.LoggerExceptionUtils;
+import com.team766.logging.Severity;
 import com.team766.orin.*;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -44,14 +45,15 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
         for (GetOrinRawValue camera : cameraList) {
             try {
                 double[] poseData = camera.getRawPoseData();
-                tags.add(GetApriltagPoseData.getAllTags(poseData));
+                if (poseData.length > 0) {
+                    tags.add(GetApriltagPoseData.getAllTags(poseData));
+                }
             } catch (ValueNotFoundOnTableError e) {
                 // the outer tags list will be empty if no tags are seen, since no inner lists will
                 // be added
-                log(LoggerExceptionUtils.exceptionToString(e));
+                log(Severity.ERROR, LoggerExceptionUtils.exceptionToString(e));
             }
         }
-        log("Looped here!");
         return new VisionStatus(tags);
     }
 }

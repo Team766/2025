@@ -1,8 +1,7 @@
 package com.team766.orin;
 
+import com.team766.robot.reva_2025.constants.FieldConstants;
 import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -20,7 +19,7 @@ public class TimestampedApriltag extends AprilTag {
     }
 
     public Translation2d toRobotPosition(Rotation2d gyro) {
-        return AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape)
+        return FieldConstants.APRIL_TAG_REEFSCAPE_LAYOUT
                 .getTagPose(this.ID)
                 .get()
                 .getTranslation()

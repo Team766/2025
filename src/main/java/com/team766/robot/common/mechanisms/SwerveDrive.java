@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+import org.checkerframework.checker.units.qual.C;
 
 public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     /**
@@ -364,11 +365,13 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         if (visionStatus.isPresent() && visionStatus.get().allTags().size() > 0) {
             for (ArrayList<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
                 ArrayList<Translation2d> tagPoses = new ArrayList<>();
-                for (TimestampedApriltag tag : cameraTags) {
-                    tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
+                if (cameraTags.size() > 0) {
+                    for (TimestampedApriltag tag : cameraTags) {
+                        tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
+                    }
+                    kalmanFilter.updateWithVisionMeasurement(
+                            tagPoses, cameraTags.get(0).getCollectTime());
                 }
-                kalmanFilter.updateWithVisionMeasurement(
-                        tagPoses, cameraTags.get(0).getCollectTime());
             }
         }
 
