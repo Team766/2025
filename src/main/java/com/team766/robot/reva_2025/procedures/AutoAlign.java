@@ -22,18 +22,6 @@ public class AutoAlign extends Procedure {
         pidControllerRotation = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
     }
 
-    public double getXPIDOutput() {
-        return pidControllerX.getOutput();
-    }
-    
-    public double getYPIDOutput() {
-        return pidControllerY.getOutput();
-    }
-
-    public double getRotationPIDOutput() {
-        return pidControllerRotation.getOutput();
-    }
-
     public void run(Context context) {
         Pose2d currentPosition;
         double currentHeading;  
