@@ -11,8 +11,9 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class KalmanFilter {
@@ -202,7 +203,7 @@ public class KalmanFilter {
      * @param time the time that the measurement took place, in seconds
      */
     private void updateWithPositionMeasurement(
-            HashMap<Translation2d, Matrix<N2, N2>> measurements, double time) {
+            Map<Translation2d, Matrix<N2, N2>> measurements, double time) {
 
         try {
             resetToPrevState(time);
@@ -239,7 +240,7 @@ public class KalmanFilter {
      * @param time the time that the measurement took place, in seconds
      */
     public void updateWithVisionMeasurement(
-            HashMap<Translation2d, Matrix<N2, N2>> measurements, double time) {
+            Map<Translation2d, Matrix<N2, N2>> measurements, double time) {
         updateWithPositionMeasurement(measurements, time);
     }
 
@@ -248,8 +249,8 @@ public class KalmanFilter {
      * @param measurements map key is the vision measurements (x, y), value is covariance matrix of that measurement
      * @param time the time that the measurement took place, in seconds
      */
-    public void updateWithVisionMeasurement(ArrayList<Translation2d> measurements, double time) {
-        HashMap<Translation2d, Matrix<N2, N2>> measurementTreeMap = new HashMap<>();
+    public void updateWithVisionMeasurement(List<Translation2d> measurements, double time) {
+        Map<Translation2d, Matrix<N2, N2>> measurementTreeMap = new HashMap<>();
         for (Translation2d measurement : measurements) {
             measurementTreeMap.put(
                     new Translation2d(measurement.getX(), measurement.getY()), visionCovariance);

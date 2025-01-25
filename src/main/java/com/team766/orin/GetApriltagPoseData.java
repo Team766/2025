@@ -4,10 +4,11 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GetApriltagPoseData {
 
-    public static ArrayList<TimestampedApriltag> getAllTags(double[] ntArray) {
+    public static List<TimestampedApriltag> getAllTags(double[] ntArray) {
         ArrayList<TimestampedApriltag> apriltags = new ArrayList<TimestampedApriltag>();
 
         double[] tagData;

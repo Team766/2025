@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.checkerframework.checker.units.qual.C;
@@ -362,9 +363,9 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         final double roll = gyro.getRoll();
 
         var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
-        if (visionStatus.isPresent() && visionStatus.get().allTags().size() > 0) {
-            for (ArrayList<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
-                ArrayList<Translation2d> tagPoses = new ArrayList<>();
+        if (visionStatus.isPresent() && visionStatus.get().allTags().isEmpty()) {
+            for (List<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
+                List<Translation2d> tagPoses = new ArrayList<>();
                 if (cameraTags.size() > 0) {
                     for (TimestampedApriltag tag : cameraTags) {
                         tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));

@@ -6,14 +6,15 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import com.team766.orin.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
-    public record VisionStatus(ArrayList<ArrayList<TimestampedApriltag>> allTags)
+    public record VisionStatus(List<List<TimestampedApriltag>> allTags)
             implements Status {
-        public Optional<ArrayList<TimestampedApriltag>> getTagById(int id) {
-            ArrayList<TimestampedApriltag> tagList = new ArrayList<>();
-            for (ArrayList<TimestampedApriltag> cameraTags : allTags) {
+        public Optional<List<TimestampedApriltag>> getTagById(int id) {
+            List<TimestampedApriltag> tagList = new ArrayList<>();
+            for (List<TimestampedApriltag> cameraTags : allTags) {
                 for (TimestampedApriltag tag : cameraTags) {
                     if (tag.ID == id) {
                         tagList.add(tag);
@@ -41,7 +42,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
     @Override
     protected VisionStatus updateStatus() {
-        ArrayList<ArrayList<TimestampedApriltag>> tags = new ArrayList<>();
+        List<List<TimestampedApriltag>> tags = new ArrayList<>();
         for (GetOrinRawValue camera : cameraList) {
             try {
                 double[] poseData = camera.getRawPoseData();
