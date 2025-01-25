@@ -24,7 +24,7 @@ public class Elevator extends Mechanism {
     }
 
     public void setPosition(double setPosition) {
-        checkContextOwnership();
+        checkContextReservation();
         setPoint = setPosition;
         if (setPosition >= MIN_HEIGHT && setPosition <= MAX_HEIGHT) {
             elevatorLeftMotor.set(MotorController.ControlMode.Position, setPosition);
@@ -32,14 +32,14 @@ public class Elevator extends Mechanism {
     }
 
     public void nudgeUp() {
-        checkContextOwnership();
+        checkContextReservation();
         double nudgePosition = elevatorLeftMotor.getSensorPosition() + NUDGE_AMOUNT;
         setPoint = elevatorLeftMotor.getSensorPosition() + NUDGE_AMOUNT;
         setPosition(nudgePosition);
     }
 
     public void nudgeDown() {
-        checkContextOwnership();
+        checkContextReservation();
         double nudgePosition = elevatorLeftMotor.getSensorPosition() - NUDGE_AMOUNT;
         setPoint = elevatorLeftMotor.getSensorPosition() - NUDGE_AMOUNT;
         setPosition(nudgePosition);
