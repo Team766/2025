@@ -362,18 +362,19 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
         var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
         if (visionStatus.isPresent() && visionStatus.get().allTags().size() > 0) {
-            for(ArrayList<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
+            for (ArrayList<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
                 ArrayList<Translation2d> tagPoses = new ArrayList<>();
                 for (TimestampedApriltag tag : cameraTags) {
                     tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
                 }
-                kalmanFilter.updateWithVisionMeasurement(tagPoses, cameraTags.get(0).getCollectTime());
+                kalmanFilter.updateWithVisionMeasurement(
+                        tagPoses, cameraTags.get(0).getCollectTime());
             }
         }
 
         final Pose2d currentPosition =
                 new Pose2d(kalmanFilter.getPos(), Rotation2d.fromDegrees(heading));
-        
+
         final ChassisSpeeds robotOrientedChassisSpeeds =
                 swerveDriveKinematics.toChassisSpeeds(
                         swerveFR.getModuleState(),

@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
-    public record VisionStatus(ArrayList<ArrayList<TimestampedApriltag>> allTags) implements Status {
+    public record VisionStatus(ArrayList<ArrayList<TimestampedApriltag>> allTags)
+            implements Status {
         public Optional<ArrayList<TimestampedApriltag>> getTagById(int id) {
             ArrayList<TimestampedApriltag> tagList = new ArrayList<>();
             for (ArrayList<TimestampedApriltag> cameraTags : allTags) {
@@ -45,7 +46,8 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
                 double[] poseData = camera.getRawPoseData();
                 tags.add(GetApriltagPoseData.getAllTags(poseData));
             } catch (ValueNotFoundOnTableError e) {
-                // the outer tags list will be empty if no tags are seen, since no inner lists will be added
+                // the outer tags list will be empty if no tags are seen, since no inner lists will
+                // be added
                 log(LoggerExceptionUtils.exceptionToString(e));
             }
         }

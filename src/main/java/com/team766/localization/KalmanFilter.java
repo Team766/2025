@@ -13,8 +13,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class KalmanFilter {
@@ -253,7 +251,8 @@ public class KalmanFilter {
     public void updateWithVisionMeasurement(ArrayList<Translation2d> measurements, double time) {
         HashMap<Translation2d, Matrix<N2, N2>> measurementTreeMap = new HashMap<>();
         for (Translation2d measurement : measurements) {
-            measurementTreeMap.put(new Translation2d(measurement.getX(), measurement.getY()), visionCovariance);
+            measurementTreeMap.put(
+                    new Translation2d(measurement.getX(), measurement.getY()), visionCovariance);
         }
         updateWithPositionMeasurement(measurementTreeMap, time);
     }

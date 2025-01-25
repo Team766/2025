@@ -4,7 +4,6 @@ import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.orin.GetApriltagPoseData;
 import com.team766.orin.TimestampedApriltag;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +25,7 @@ public class Orin extends MechanismWithStatus<Orin.OrinStatus> {
 
     @Override
     protected OrinStatus updateStatus() {
-        var tags = GetApriltagPoseData.getAllTags(new ArrayList<>());
+        var tags = GetApriltagPoseData.getAllTags(new double[0]);
 
         return new OrinStatus(Collections.unmodifiableList(tags));
     }
