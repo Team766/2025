@@ -10,11 +10,14 @@ import com.team766.robot.reva_2025.mechanisms.*;
 public class Robot implements RobotConfigurator3 {
 
     private SwerveDrive drive;
-
+    private Wrist wrist;
+    private Elevator elevator;
     @Override
     public void initializeMechanisms() {
         SwerveConfig swerveConfig = new SwerveConfig();
         drive = new SwerveDrive(swerveConfig);
+        wrist = new Wrist();
+        elevator = new Elevator();
     }
 
     @Override
@@ -26,6 +29,20 @@ public class Robot implements RobotConfigurator3 {
     public RuleEngine createLights() {
         return new Lights();
     }
+
+    public SwerveDrive getDrive() {
+        return drive;
+    }
+
+    public Wrist geWrist(){
+        return wrist;
+    }
+
+    public Elevator getElevator(){
+        return elevator;
+    }
+
+
 
     @Override
     public AutonomousMode[] getAutonomousModes() {
