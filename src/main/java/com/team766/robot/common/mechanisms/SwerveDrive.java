@@ -361,16 +361,14 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         final double roll = gyro.getRoll();
 
         var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
-        if (visionStatus.isPresent() && visionStatus.get().apriltags().size() > 0) {
-            var tags = visionStatus.get().apriltags();
-            ArrayList<Translation2d> tagPoses = new ArrayList<>();
-            for (TimestampedApriltag tag : tags) {
-                tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
+        if (visionStatus.isPresent() && visionStatus.get().allTags().size() > 0) {
+            for(ArrayList<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
+                ArrayList<Translation2d> tagPoses = new ArrayList<>();
+                for (TimestampedApriltag tag : cameraTags) {
+                    tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
+                }
+                kalmanFilter.updateWithVisionMeasurement(tagPoses, cameraTags.get(0).getCollectTime());
             }
-            // TODO: Assumes that ALL tags are measured at the same time (even on different
-            // cameras).
-            // This is most likely not the behavior we want.
-            kalmanFilter.updateWithVisionMeasurement(tagPoses, tags.get(0).getCollectTime());
         }
 
         final Pose2d currentPosition =

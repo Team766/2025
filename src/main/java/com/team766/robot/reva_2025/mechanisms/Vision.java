@@ -5,20 +5,21 @@ import com.team766.framework3.Status;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.orin.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
-    public record VisionStatus(List<TimestampedApriltag> apriltags) implements Status {
-        public Optional<TimestampedApriltag> getTagById(int id) {
-            for (TimestampedApriltag tag : apriltags) {
-                if (tag.ID == id) {
-                    return Optional.of(tag);
+    public record VisionStatus(ArrayList<ArrayList<TimestampedApriltag>> allTags) implements Status {
+        public Optional<ArrayList<TimestampedApriltag>> getTagById(int id) {
+            ArrayList<TimestampedApriltag> tagList = new ArrayList<>();
+            for (ArrayList<TimestampedApriltag> cameraTags : allTags) {
+                for (TimestampedApriltag tag : cameraTags) {
+                    if (tag.ID == id) {
+                        tagList.add(tag);
+                    }
                 }
             }
 
-            return Optional.empty();
+            return tagList.isEmpty() ? Optional.empty() : Optional.of(tagList);
         }
     }
 
@@ -38,18 +39,16 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
     @Override
     protected VisionStatus updateStatus() {
-        ArrayList<Double> poseData = new ArrayList<>();
-        try {
-            for (GetOrinRawValue camera : cameraList) {
-                for (double data : camera.getRawPoseData()) {
-                    poseData.add(data);
-                }
+        ArrayList<ArrayList<TimestampedApriltag>> tags = new ArrayList<>();
+        for (GetOrinRawValue camera : cameraList) {
+            try {
+                double[] poseData = camera.getRawPoseData();
+                tags.add(GetApriltagPoseData.getAllTags(poseData));
+            } catch (ValueNotFoundOnTableError e) {
+                // the outer tags list will be empty if no tags are seen, since no inner lists will be added
+                log(LoggerExceptionUtils.exceptionToString(e));
             }
-        } catch (ValueNotFoundOnTableError e) {
-            log(LoggerExceptionUtils.exceptionToString(e));
         }
-
-        ArrayList<TimestampedApriltag> tags = GetApriltagPoseData.getAllTags(poseData);
         log("Looped here!");
         return new VisionStatus(tags);
     }

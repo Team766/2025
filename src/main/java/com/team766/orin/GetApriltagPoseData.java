@@ -7,25 +7,25 @@ import java.util.ArrayList;
 
 public class GetApriltagPoseData {
 
-    public static ArrayList<TimestampedApriltag> getAllTags(ArrayList<Double> ntList) {
+    public static ArrayList<TimestampedApriltag> getAllTags(double[] ntArray) {
         ArrayList<TimestampedApriltag> apriltags = new ArrayList<TimestampedApriltag>();
 
-        ArrayList<Double> tagData;
+        double[] tagData;
 
-        tagData = ntList;
+        tagData = ntArray;
 
-        if (tagData.size() % 5 != 0 || tagData.size() == 0) return apriltags;
+        if (tagData.length % 5 != 0 || tagData.length == 0) return apriltags;
 
-        for (int i = 0; i < tagData.size(); i += 5) {
+        for (int i = 0; i < tagData.length; i += 5) {
             TimestampedApriltag tag =
                     new TimestampedApriltag(
-                            tagData.get(i),
-                            tagData.get(i + 1).intValue(),
+                            tagData[i],
+                            (int) tagData[i + 1],
                             new Pose3d(
                                     new Translation3d(
-                                            tagData.get(i + 2),
-                                            tagData.get(i + 3),
-                                            tagData.get(i + 4)),
+                                            tagData[i + 2],
+                                            tagData[i + 3],
+                                            tagData[i + 4]),
                                     new Rotation3d()));
             apriltags.add(tag);
         }
