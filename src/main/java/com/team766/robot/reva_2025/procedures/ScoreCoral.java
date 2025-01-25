@@ -6,12 +6,17 @@ import com.team766.robot.reva_2025.constants.CoralConstants.CoralConstant;
 
 public class ScoreCoral extends Procedure{
 
-
-    public void run(Context context, CoralConstant position, double levelHeight, double angle){
-        
+    private CoralConstant position;
+    private double levelHeight;
+    private double angle;
+    public ScoreCoral(CoralConstant position, double levelHeight, double angle){
+        this.position = position;
+        this.levelHeight = levelHeight;
+        this.angle = angle;
     }
+
     public void run(Context context) {
-        throw new UnsupportedOperationException("Please use the overloaded method (context, CoralConstant).");
+        
     }
     
 }
