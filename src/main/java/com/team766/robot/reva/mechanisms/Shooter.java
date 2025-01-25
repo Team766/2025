@@ -70,30 +70,25 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
     }
 
     public void shoot(double speed) {
-        checkContextReservation();
         targetSpeed = com.team766.math.Math.clamp(speed, MIN_SPEED, MAX_SPEED);
         shoot();
     }
 
     public void shoot() {
-        checkContextReservation();
         shouldRun = targetSpeed > 0.0;
         speedUpdated = true;
     }
 
     public void stop() {
-        checkContextReservation();
         shouldRun = false;
         speedUpdated = true;
     }
 
     public void nudgeUp() {
-        checkContextReservation();
         shoot(Math.min(targetSpeed + NUDGE_INCREMENT, MAX_SPEED));
     }
 
     public void nudgeDown() {
-        checkContextReservation();
         shoot(Math.max(targetSpeed - NUDGE_INCREMENT, MIN_SPEED));
     }
 

@@ -56,7 +56,8 @@ public class StatusBus {
         Objects.requireNonNull(status);
         var entry = new Entry<>(status, RobotProvider.instance.getClock().getTime());
         statuses.put(status.getClass(), entry);
-        // TODO(MF3): also publish to data logs
+        org.littletonrobotics.junction.Logger.recordOutput(
+                "Statuses/" + status.getClass().getName(), status);
         Logger.get(Category.FRAMEWORK)
                 .logRaw(
                         Severity.INFO,

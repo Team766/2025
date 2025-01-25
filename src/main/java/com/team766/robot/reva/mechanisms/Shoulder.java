@@ -89,7 +89,6 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public void reset() {
-        checkContextReservation();
         targetRotations = 0.0;
         leftMotor.setSensorPosition(0.0);
     }
@@ -121,7 +120,6 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public void rotate(double angle) {
-        checkContextReservation();
         double targetAngle =
                 com.team766.math.Math.clamp(
                         angle, ShoulderPosition.BOTTOM.getAngle(), ShoulderPosition.TOP.getAngle());

@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.team766.TestCase3;
+import com.team766.framework3.test.FakeMechanism;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.util.Set;
@@ -59,10 +60,10 @@ public class RuleEngineTest extends TestCase3 {
         }
     }
 
-    private final FakeMechanism1 fm1 = new FakeMechanism1();
-    private final FakeMechanism2 fm2 = new FakeMechanism2();
-    private final FakeMechanism3 fm3 = new FakeMechanism3();
-    private final FakeMechanism4 fm4 = new FakeMechanism4();
+    private final FakeMechanism fm1 = new FakeMechanism();
+    private final FakeMechanism fm2 = new FakeMechanism();
+    private final FakeMechanism fm3 = new FakeMechanism();
+    private final FakeMechanism fm4 = new FakeMechanism();
 
     @Test
     public void testSeal() {
