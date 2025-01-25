@@ -12,12 +12,14 @@ public class Robot implements RobotConfigurator3 {
     private SwerveDrive drive;
     private Wrist wrist;
     private Elevator elevator;
+    private CoralIntake coral;
     @Override
     public void initializeMechanisms() {
         SwerveConfig swerveConfig = new SwerveConfig();
         drive = new SwerveDrive(swerveConfig);
         wrist = new Wrist();
         elevator = new Elevator();
+        coral = new CoralIntake();
     }
 
     @Override
@@ -42,6 +44,9 @@ public class Robot implements RobotConfigurator3 {
         return elevator;
     }
 
+    public CoralIntake getCoralIntake(){
+        return coral;
+    }
 
 
     @Override
