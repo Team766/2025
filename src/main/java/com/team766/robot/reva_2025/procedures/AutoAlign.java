@@ -19,28 +19,31 @@ public class AutoAlign extends Procedure {
         this.drive = reserve(drive);
         pidControllerY = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_TRANSLATION_PID);
         pidControllerY = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_TRANSLATION_PID);
-        pidControllerRotation = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
+        pidControllerRotation =
+                PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
     }
 
     public void run(Context context) {
         Pose2d currentPosition;
-        double currentHeading;  
+        double currentHeading;
 
         pidControllerX.setSetpoint(targetPosition.getX());
         pidControllerY.setSetpoint(targetPosition.getY());
         pidControllerRotation.setSetpoint(targetPosition.getRotation().getDegrees());
-        while (!pidControllerX.isDone() || !pidControllerY.isDone() || !pidControllerRotation.isDone()) {
+        while (!pidControllerX.isDone()
+                || !pidControllerY.isDone()
+                || !pidControllerRotation.isDone()) {
             currentPosition = getStatusOrThrow(SwerveDrive.DriveStatus.class).currentPosition();
-            currentHeading =  getStatusOrThrow(SwerveDrive.DriveStatus.class).heading();
+            currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading();
             pidControllerX.calculate(currentPosition.getX());
             pidControllerY.calculate(currentPosition.getY());
             pidControllerRotation.calculate(currentHeading);
-            drive.controlFieldOriented(pidControllerX.getOutput(), pidControllerY.getOutput(), pidControllerRotation.getOutput());
+            drive.controlFieldOriented(
+                    pidControllerX.getOutput(),
+                    pidControllerY.getOutput(),
+                    pidControllerRotation.getOutput());
             context.yield();
         }
         drive.stopDrive();
-    } 
-
+    }
 }
-
-
