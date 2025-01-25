@@ -1,6 +1,6 @@
 package com.team766.robot.example.mechanisms;
 
-import com.team766.framework.Mechanism;
+import com.team766.framework3.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
@@ -14,9 +14,13 @@ public class ExampleMechanism extends Mechanism {
     }
 
     public void setMotorPower(final double leftPower, final double rightPower) {
-        checkContextOwnership();
-
         leftMotor.set(leftPower);
         rightMotor.set(rightPower);
+    }
+
+    @Override
+    protected void onMechanismIdle() {
+        // Stop mechanism when nothing is using it.
+        setMotorPower(0, 0);
     }
 }

@@ -15,9 +15,9 @@ public abstract class MechanismWithStatus<S extends Record & Status> extends Mec
 
     @Override
     /* package */ final void publishStatus() {
-        status = reportStatus();
+        status = updateStatus();
         StatusBus.getInstance().publishStatus(status);
     }
 
-    protected abstract S reportStatus();
+    protected abstract S updateStatus();
 }
