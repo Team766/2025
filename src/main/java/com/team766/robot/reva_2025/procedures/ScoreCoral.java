@@ -31,6 +31,7 @@ public class ScoreCoral extends Procedure{
     }
 
     public void run(Context context) {
+        context.yield();
 
         AutoAlign launchedAutoAlign = new AutoAlign(new Pose2d(position.getX(), position.getZ()), drive).run(context);
 
@@ -39,7 +40,7 @@ public class ScoreCoral extends Procedure{
 
 
         while(!elevator.isAtPosition() || !wrist.isAtPosition() || Math.abs(launchedAutoAlign.getXPIDOutput()) < positionPIDConstant || Math.abs(launchedAutoAlign.getYPIDOutput()) < positionPIDConstant || Math.abs(launchedAutoAlign.getRotationPIDOutput()) < rotationPIDConstant){
-            continue;
+            context.yield();
         }
 
         //Outtake
