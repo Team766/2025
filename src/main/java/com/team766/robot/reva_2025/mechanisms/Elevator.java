@@ -45,7 +45,7 @@ public class Elevator extends Mechanism {
         setPosition(nudgePosition);
     }
 
-    
-    public boolean isAtPosition(){ return (Math.abs(setPoint - elevatorLeftMotor.getSensorPosition()) < thresholdConstant);}
-    
+    public boolean isAtPosition() {
+        return (Math.abs(setPoint - elevatorLeftMotor.getSensorPosition()) < thresholdConstant);
+    }
 }

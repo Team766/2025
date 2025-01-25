@@ -6,8 +6,9 @@ import com.team766.hal.RobotProvider;
 
 public class Wrist extends Mechanism {
 
-    private final double thresholdConstant = 0; //TODO: Update me after testing!
+    private final double thresholdConstant = 0; // TODO: Update me after testing!
     private double setPoint = 0;
+
     public enum WristPosition {
 
         // TODO: update all of these to real things!
@@ -42,5 +43,7 @@ public class Wrist extends Mechanism {
         wristMotor.set(MotorController.ControlMode.Position, angle);
     }
 
-    public boolean isAtPosition(){return (Math.abs(setPoint - wristMotor.getSensorPosition()) < thresholdConstant);}
+    public boolean isAtPosition() {
+        return (Math.abs(setPoint - wristMotor.getSensorPosition()) < thresholdConstant);
+    }
 }

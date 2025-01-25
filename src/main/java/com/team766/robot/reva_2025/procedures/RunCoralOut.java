@@ -8,10 +8,12 @@ public class RunCoralOut extends Procedure {
 
     private CoralIntake coral;
     private double seconds;
-    public RunCoralOut(CoralIntake coral, double seconds){
+
+    public RunCoralOut(CoralIntake coral, double seconds) {
         this.coral = reserve(coral);
         this.seconds = seconds;
     }
+
     @Override
     public void run(Context context) {
         context.yield();
@@ -19,5 +21,4 @@ public class RunCoralOut extends Procedure {
         context.waitForSeconds(seconds);
         coral.stop();
     }
-    
 }
