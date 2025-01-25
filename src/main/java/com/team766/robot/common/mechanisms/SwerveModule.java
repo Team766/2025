@@ -93,7 +93,7 @@ public class SwerveModule {
      * @param vector the vector specifying the module's motion
      */
     public void steer(Vector2D vector) {
-        //boolean reversed = false;
+        // boolean reversed = false;
         SmartDashboard.putString(
                 "[" + modulePlacement + "]" + "x, y",
                 String.format("%.2f, %.2f", vector.getX(), vector.getY()));
