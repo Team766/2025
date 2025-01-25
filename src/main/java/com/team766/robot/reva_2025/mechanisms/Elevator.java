@@ -13,7 +13,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private final double MAX_HEIGHT = 150;
     private final double NUDGE_AMOUNT = 5;
 
-    // values are untested and are set to 
+    // values are untested and are set to
 
     public static record ElevatorStatus(double currentPosition) implements Status {}
 
@@ -40,7 +40,6 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     public void nudgeDown() {
         double nudgePosition = elevatorLeftMotor.getSensorPosition() - NUDGE_AMOUNT;
         setPosition(nudgePosition);
-
     }
 
     protected ElevatorStatus updateStatus() {
