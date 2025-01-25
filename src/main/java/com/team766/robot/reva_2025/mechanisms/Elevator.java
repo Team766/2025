@@ -10,7 +10,7 @@ public class Elevator extends Mechanism {
     private final double MIN_HEIGHT = 0;
     private final double MAX_HEIGHT = 150;
     private final double NUDGE_AMOUNT = 5;
-    private double setPoint = 0;
+    private double setPoint;
     private final double thresholdConstant = 0; // TODO: Update me after testing!
 
     // values are untested and are set to change
@@ -25,8 +25,9 @@ public class Elevator extends Mechanism {
 
     public void setPosition(double setPosition) {
         checkContextReservation();
-        setPoint = setPosition;
+        
         if (setPosition >= MIN_HEIGHT && setPosition <= MAX_HEIGHT) {
+            setPoint = setPosition;
             elevatorLeftMotor.set(MotorController.ControlMode.Position, setPosition);
         }
     }
@@ -34,14 +35,12 @@ public class Elevator extends Mechanism {
     public void nudgeUp() {
         checkContextReservation();
         double nudgePosition = elevatorLeftMotor.getSensorPosition() + NUDGE_AMOUNT;
-        setPoint = elevatorLeftMotor.getSensorPosition() + NUDGE_AMOUNT;
         setPosition(nudgePosition);
     }
 
     public void nudgeDown() {
         checkContextReservation();
         double nudgePosition = elevatorLeftMotor.getSensorPosition() - NUDGE_AMOUNT;
-        setPoint = elevatorLeftMotor.getSensorPosition() - NUDGE_AMOUNT;
         setPosition(nudgePosition);
     }
 

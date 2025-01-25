@@ -34,10 +34,10 @@ public class ScoreCoral extends Procedure {
         this.levelHeight = levelHeight;
         this.angle = angle;
 
-        this.drive = drive;
+        this.drive = reserve(drive);
         this.elevator = reserve(elevator);
         this.wrist = reserve(wrist);
-        this.coral = coral;
+        this.coral = reserve(coral);
     }
 
     public void run(Context context) {

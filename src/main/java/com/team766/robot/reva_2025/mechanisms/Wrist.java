@@ -7,7 +7,7 @@ import com.team766.hal.RobotProvider;
 public class Wrist extends Mechanism {
 
     private final double thresholdConstant = 0; // TODO: Update me after testing!
-    private double setPoint = 0;
+    private double setPoint;
 
     public enum WristPosition {
 
@@ -33,7 +33,6 @@ public class Wrist extends Mechanism {
     }
 
     public void setAngle(WristPosition position) {
-        setPoint = position.getAngle();
         setAngle(position.getAngle());
     }
 
