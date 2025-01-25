@@ -363,7 +363,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         final double roll = gyro.getRoll();
 
         var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
-        if (visionStatus.isPresent() && visionStatus.get().allTags().isEmpty()) {
+        if (visionStatus.isPresent() && !visionStatus.get().allTags().isEmpty()) {
             for (List<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
                 List<Translation2d> tagPoses = new ArrayList<>();
                 if (cameraTags.size() > 0) {

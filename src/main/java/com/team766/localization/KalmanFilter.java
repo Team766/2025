@@ -85,7 +85,7 @@ public class KalmanFilter {
     public void addOdometryInput(Translation2d odometryInput, double time) {
 
         // short circuits if inputting a value with the wrong time
-        if (inputLog.size() > 0 && time <= inputLog.lastKey()) {
+        if (!inputLog.isEmpty() && time <= inputLog.lastKey()) {
             Logger.get(Category.ODOMETRY)
                     .logRaw(Severity.ERROR, "tried to input an old odometry value");
             return;
