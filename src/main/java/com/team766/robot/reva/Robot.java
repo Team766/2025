@@ -1,59 +1,99 @@
 package com.team766.robot.reva;
 
-import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
-import com.team766.framework.AutonomousMode;
-import com.team766.framework.Procedure;
-import com.team766.hal.RobotConfigurator;
-import com.team766.logging.LoggerExceptionUtils;
+import com.team766.framework3.AutonomousMode;
+import com.team766.framework3.RuleEngine;
+import com.team766.hal.RobotConfigurator3;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.NoteCamera;
 import com.team766.robot.reva.mechanisms.Orin;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.procedures.auton_routines.*;
 
-public class Robot implements RobotConfigurator {
-    // Declare mechanisms (as static fields) here
-    public static SwerveDrive drive;
-    public static Climber climber;
-    public static Shoulder shoulder;
-    public static Intake intake;
-    public static Shooter shooter;
-    // not yet initialized, until we have the camera on the robot and test it.
-    public static ForwardApriltagCamera forwardApriltagCamera;
-    public static NoteCamera noteCamera;
-    public static Lights lights;
-    public static Orin orin;
+public class Robot implements RobotConfigurator3 {
+    private SwerveDrive drive;
+    private Climber climber;
+    private Shoulder shoulder;
+    private Intake intake;
+    private Shooter shooter;
+    private ForwardApriltagCamera forwardApriltagCamera;
+    private NoteCamera noteCamera;
+    private Orin orin;
 
     @Override
     public void initializeMechanisms() {
         SwerveConfig config = new SwerveConfig();
-        lights = new Lights();
         drive = new SwerveDrive(config);
         climber = new Climber();
         shoulder = new Shoulder();
         intake = new Intake();
         shooter = new Shooter();
         noteCamera = new NoteCamera();
-        try {
-            forwardApriltagCamera = new ForwardApriltagCamera();
-        } catch (AprilTagGeneralCheckedException e) {
-            LoggerExceptionUtils.logException(e);
-        }
+        forwardApriltagCamera = new ForwardApriltagCamera();
         orin = new Orin();
     }
 
     @Override
-    public Procedure createOI() {
-        return new OI();
+    public RuleEngine createOI() {
+        return new OI(drive, climber, shoulder, intake, shooter);
+    }
+
+    @Override
+    public RuleEngine createLights() {
+        return new Lights();
     }
 
     @Override
     public AutonomousMode[] getAutonomousModes() {
-        return AutonomousModes.AUTONOMOUS_MODES;
+        return new AutonomousMode[] {
+            // Add autonomous modes here like this:
+            //    new AutonomousMode("NameOfAutonomousMode", () -> new MyAutonomousProcedure()),
+            //
+            // If your autonomous procedure has constructor arguments, you can
+            // define one or more different autonomous modes with it like this:
+            //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
+            //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
+            new AutonomousMode(
+                    "3p Start Amp, Amp and Center Pieces",
+                    () ->
+                            new LowerClimbersInParallel(
+                                    new ThreePieceAmpSide(drive, shoulder, shooter, intake),
+                                    climber)),
+            new AutonomousMode(
+                    "4p Start Amp, All Close Pieces",
+                    () ->
+                            new LowerClimbersInParallel(
+                                    new FourPieceAmpSide(drive, shoulder, shooter, intake),
+                                    climber)),
+            new AutonomousMode(
+                    "2p Start Source, Bottom Midfield Piece",
+                    () ->
+                            new LowerClimbersInParallel(
+                                    new TwoPieceMidfieldSourceSide(
+                                            drive, shoulder, shooter, intake),
+                                    climber)),
+            new AutonomousMode(
+                    "3p Start Amp, Amp and Top Midfield Pieces",
+                    () ->
+                            new LowerClimbersInParallel(
+                                    new ThreePieceMidfieldAmpSide(drive, shoulder, shooter, intake),
+                                    climber)),
+            new AutonomousMode(
+                    "3p Start Center, Amp and Center Pieces",
+                    () ->
+                            new LowerClimbersInParallel(
+                                    new ThreePieceStartCenterTopAndAmp(
+                                            drive, shoulder, shooter, intake),
+                                    climber)),
+            new AutonomousMode(
+                    "Just Shoot Amp",
+                    () ->
+                            new LowerClimbersInParallel(
+                                    new JustShootAmp(drive, shoulder, shooter, intake), climber)),
+        };
     }
 }

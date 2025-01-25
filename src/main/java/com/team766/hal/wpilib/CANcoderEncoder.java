@@ -23,6 +23,11 @@ public class CANcoderEncoder implements EncoderReader {
     }
 
     @Override
+    public boolean isConnected() {
+        return cancoder.getPosition().getStatus().isOK();
+    }
+
+    @Override
     public double getDistance() {
         StatusSignal<Angle> position = cancoder.getPosition();
         if (!position.getStatus().isOK()) {
