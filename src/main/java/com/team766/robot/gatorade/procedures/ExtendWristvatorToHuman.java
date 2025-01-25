@@ -1,14 +1,18 @@
 package com.team766.robot.gatorade.procedures;
 
+import com.team766.robot.gatorade.GamePieceType;
 import com.team766.robot.gatorade.mechanisms.Elevator;
-import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import com.team766.robot.gatorade.mechanisms.Shoulder;
 import com.team766.robot.gatorade.mechanisms.Wrist;
 
 public class ExtendWristvatorToHuman extends MoveWristvator {
 
-    public ExtendWristvatorToHuman(GamePieceType gamePieceType) {
+    public ExtendWristvatorToHuman(
+            GamePieceType gamePieceType, Shoulder shoulder, Elevator elevator, Wrist wrist) {
         super(
+                shoulder,
+                elevator,
+                wrist,
                 Shoulder.Position.RAISED,
                 gamePieceType == GamePieceType.CONE
                         ? Elevator.Position.HUMAN_CONES

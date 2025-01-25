@@ -1,8 +1,9 @@
 package com.team766.framework;
 
+import com.team766.web.AutonomousSelector;
 import java.util.function.Supplier;
 
-public class AutonomousMode {
+public class AutonomousMode implements AutonomousSelector.Selectable<AutonomousMode> {
     private final Supplier<Procedure> m_constructor;
     private final String m_name;
 
