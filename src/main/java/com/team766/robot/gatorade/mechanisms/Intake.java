@@ -51,8 +51,6 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
      * Turns the intake motor on in order to pull a game piece into the mechanism.
      */
     public void in(GamePieceType gamePieceType) {
-        checkContextReservation();
-
         double power = (gamePieceType == GamePieceType.CONE) ? POWER_IN : (-1 * POWER_IN);
         motor.set(power);
         state = State.IN;
@@ -62,8 +60,6 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
      * Turns the intake motor on in reverse direction, to release any contained game piece.
      */
     public void out(GamePieceType gamePieceType) {
-        checkContextReservation();
-
         double power = (gamePieceType == GamePieceType.CONE) ? (-1 * POWER_OUT) : POWER_OUT;
         motor.set(power);
         state = State.OUT;
@@ -73,7 +69,6 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
      * Turns off the intake motor.
      */
     public void stop() {
-        checkContextReservation();
         motor.set(0.0);
         state = State.STOPPED;
     }
@@ -82,8 +77,6 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
      * Turns the intake to idle - run at low power to keep the game piece contained.
      */
     public void idle(GamePieceType gamePieceType) {
-        checkContextReservation();
-
         double power = (gamePieceType == GamePieceType.CONE) ? POWER_IDLE : (-1 * POWER_IDLE);
         motor.set(power);
         state = State.IDLE;

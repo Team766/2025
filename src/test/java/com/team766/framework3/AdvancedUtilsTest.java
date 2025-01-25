@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.team766.TestCase3;
+import com.team766.framework3.test.FakeMechanism;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test;
 public class AdvancedUtilsTest extends TestCase3 {
     @Test
     public void testStartAsync() {
-        var mech = new FakeMechanism1();
+        var mech = new FakeMechanism();
         var proc2 = new FakeProcedure(1, Set.of(mech));
 
         var proc1age = new AtomicInteger(0);

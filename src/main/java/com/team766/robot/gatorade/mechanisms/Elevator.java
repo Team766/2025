@@ -130,19 +130,16 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public void nudgeNoPID(double value) {
-        checkContextReservation();
         double clampedValue = MathUtil.clamp(value, -1, 1);
         clampedValue *= NUDGE_DAMPENER; // make nudges less forceful.  TODO: make this non-linear
         leftMotor.set(clampedValue);
     }
 
     public void stopElevator() {
-        checkContextReservation();
         leftMotor.set(0);
     }
 
     public void nudgeUp() {
-        checkContextReservation();
         System.err.println("Nudging up.");
 
         double height = getStatus().height();
@@ -153,7 +150,6 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public void nudgeDown() {
-        checkContextReservation();
         double height = getStatus().height();
         // NOTE: this could artificially limit nudge range
         double targetHeight = Math.max(height - NUDGE_INCREMENT, Position.RETRACTED.getHeight());
@@ -164,7 +160,6 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
      * Moves the elevator to a pre-set {@link Position}.
      */
     public void moveTo(Position position) {
-        checkContextReservation();
         moveTo(position.getHeight());
     }
 
@@ -172,8 +167,6 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
      * Moves the elevator to a specific position (in inches).
      */
     public void moveTo(double position) {
-        checkContextReservation();
-
         System.err.println("Setting target position to " + position);
         // set the PID controller values with whatever the latest is in the config
         SparkMaxConfig config = new SparkMaxConfig();
