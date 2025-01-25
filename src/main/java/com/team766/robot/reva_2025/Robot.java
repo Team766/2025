@@ -33,22 +33,6 @@ public class Robot implements RobotConfigurator3 {
         return new Lights();
     }
 
-    public SwerveDrive getDrive() {
-        return drive;
-    }
-
-    public Wrist geWrist() {
-        return wrist;
-    }
-
-    public Elevator getElevator() {
-        return elevator;
-    }
-
-    public CoralIntake getCoralIntake() {
-        return coral;
-    }
-
     @Override
     public AutonomousMode[] getAutonomousModes() {
         return new AutonomousMode[] {
