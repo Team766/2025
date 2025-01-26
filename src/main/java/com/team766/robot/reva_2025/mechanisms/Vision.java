@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
-    public record VisionStatus(List<List<TimestampedApriltag>> allTags)
-            implements Status {
+    public record VisionStatus(List<List<TimestampedApriltag>> allTags) implements Status {
         public Optional<List<TimestampedApriltag>> getTagById(int id) {
             List<TimestampedApriltag> tagList = new ArrayList<>();
             for (List<TimestampedApriltag> cameraTags : allTags) {

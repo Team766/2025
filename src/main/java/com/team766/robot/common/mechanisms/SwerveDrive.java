@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
-import org.checkerframework.checker.units.qual.C;
 
 public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     /**

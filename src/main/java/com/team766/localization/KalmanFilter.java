@@ -89,7 +89,7 @@ public class KalmanFilter {
             Logger.get(Category.ODOMETRY)
                     .logRaw(Severity.ERROR, "tried to input an old odometry value");
             return;
-        } 
+        }
 
         inputLog.put(time, odometryInput);
         if (inputLog.size() > 1) {

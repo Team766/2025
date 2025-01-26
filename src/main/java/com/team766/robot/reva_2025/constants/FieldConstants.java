@@ -7,5 +7,6 @@ public class FieldConstants {
     // utility class
     private FieldConstants() {}
 
-    public static final AprilTagFieldLayout APRIL_TAG_REEFSCAPE_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+    public static final AprilTagFieldLayout APRIL_TAG_REEFSCAPE_LAYOUT =
+            AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 }
