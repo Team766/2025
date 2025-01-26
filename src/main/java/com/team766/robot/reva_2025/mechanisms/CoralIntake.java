@@ -16,17 +16,14 @@ public class CoralIntake extends Mechanism {
     }
 
     public void in() {
-        checkContextReservation();
         motor.set(POWER_IN);
     }
 
     public void out() {
-        checkContextReservation();
         motor.set(POWER_OUT);
     }
 
     public void stop() {
-        checkContextReservation();
         motor.set(0.0);
     }
 }

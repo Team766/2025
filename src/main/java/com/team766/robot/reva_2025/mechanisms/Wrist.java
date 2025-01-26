@@ -37,7 +37,6 @@ public class Wrist extends Mechanism {
     }
 
     public void setAngle(double angle) {
-        checkContextReservation();
         setPoint = angle;
         wristMotor.set(MotorController.ControlMode.Position, angle);
     }

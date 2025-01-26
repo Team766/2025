@@ -39,7 +39,6 @@ public class ScoreCoral extends Procedure {
     }
 
     public void run(Context context) {
-        context.yield();
 
         elevator.setPosition(levelHeight);
         wrist.setAngle(angle);
@@ -52,9 +51,7 @@ public class ScoreCoral extends Procedure {
                                 new Rotation2d(position.getAngle())),
                         drive));
 
-        while (!elevator.isAtPosition() || !wrist.isAtPosition()) {
-            context.yield();
-        }
+        context.waitFor(() -> !elevator.isAtPosition() || !wrist.isAtPosition());
 
         context.runSync(new RunCoralOut(coral, 0.5));
     }
