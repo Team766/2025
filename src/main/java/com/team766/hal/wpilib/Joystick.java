@@ -21,7 +21,8 @@ public class Joystick extends edu.wpi.first.wpilibj.Joystick implements Joystick
 
     @Override
     public boolean isAxisMoved(int axis) {
-        return java.lang.Math.abs(getAxis(axis)) >= axisDeadzoneMap.getOrDefault(axis, defaultAxisDeadzone);
+        return java.lang.Math.abs(getAxis(axis))
+                >= axisDeadzoneMap.getOrDefault(axis, defaultAxisDeadzone);
     }
 
     @Override

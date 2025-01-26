@@ -110,7 +110,10 @@ public class KalmanFilter {
 
         curState = curState.plus(positionChange.toVector());
 
-        double angleRad = positionChange.equals(Translation2d.kZero) ? 0 : positionChange.getAngle().getRadians();
+        double angleRad =
+                positionChange.equals(Translation2d.kZero)
+                        ? 0
+                        : positionChange.getAngle().getRadians();
         Matrix<N2, N2> track =
                 MatBuilder.fill(
                         Nat.N2(),
