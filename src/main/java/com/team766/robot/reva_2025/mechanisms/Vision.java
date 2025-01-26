@@ -45,12 +45,10 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
         for (GetOrinRawValue camera : cameraList) {
             try {
                 double[] poseData = camera.getRawPoseData();
-                if (poseData.length > 0) {
-                    tags.add(GetApriltagPoseData.getAllTags(poseData));
-                }
+                tags.add(GetApriltagPoseData.getAllTags(poseData));
             } catch (ValueNotFoundOnTableError e) {
-                // the outer tags list will be empty if no tags are seen, since no inner lists will
-                // be added
+                // maintain camera list order even if one is not connected
+                tags.add(new ArrayList<>());
                 log(Severity.ERROR, LoggerExceptionUtils.exceptionToString(e));
             }
         }
