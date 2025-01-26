@@ -1,17 +1,12 @@
 package com.team766.robot.common.mechanisms;
 
-import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.hardware.CANcoder;
+import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
-import com.team766.logging.Category;
-import com.team766.logging.Logger;
-import com.team766.logging.Severity;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -23,7 +18,7 @@ public class SwerveModule {
     private final String modulePlacement;
     private final MotorController drive;
     private final MotorController steer;
-    private final CANcoder encoder;
+    private final EncoderReader encoder;
     private final double offset;
 
     // In meters
@@ -57,7 +52,7 @@ public class SwerveModule {
             String modulePlacement,
             MotorController drive,
             MotorController steer,
-            CANcoder encoder,
+            EncoderReader encoder,
             SwerveConfig config) {
 
         wheelCircumference = config.wheelCircumference();
@@ -88,18 +83,8 @@ public class SwerveModule {
     }
 
     private double computeEncoderOffset() {
-        StatusSignal<Angle> value = encoder.getAbsolutePosition();
-        if (!value.getStatus().isOK()) {
-            Logger.get(Category.DRIVE)
-                    .logData(
-                            Severity.ERROR,
-                            "%s unable to read encoder: %s",
-                            modulePlacement,
-                            value.getStatus().toString());
-            return 0; // ??
-        }
         return (steer.getSensorPosition() / encoderConversionFactor) % 360
-                - (value.getValueAsDouble() * 360);
+                - (encoder.getPosition() * 360);
     }
 
     /**
@@ -108,7 +93,7 @@ public class SwerveModule {
      * @param vector the vector specifying the module's motion
      */
     public void steer(Vector2D vector) {
-        boolean reversed = false;
+        // boolean reversed = false;
         SmartDashboard.putString(
                 "[" + modulePlacement + "]" + "x, y",
                 String.format("%.2f, %.2f", vector.getX(), vector.getY()));
