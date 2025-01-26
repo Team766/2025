@@ -7,11 +7,14 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public record TimestampedApriltag(double collectTime, int tagId, Pose3d pose) {
     public Translation2d toRobotPosition(Rotation2d gyro) {
-        return FieldConstants.APRIL_TAG_REEFSCAPE_LAYOUT
-                .getTagPose(this.tagId())
-                .get()
-                .getTranslation()
-                .toTranslation2d()
-                .minus(this.pose.getTranslation().toTranslation2d().rotateBy(gyro));
+        Translation2d tagPosition =
+                (this.ID == FieldConstants.TEST_TAG_ID)
+                        ? FieldConstants.APRIL_TAG_REEFSCAPE_LAYOUT
+                                .getTagPose(this.ID)
+                                .get()
+                                .getTranslation()
+                                .toTranslation2d()
+                        : FieldConstants.TEST_TAG_POSITION.getTranslation();
+        return tagPosition.minus(this.pose.getTranslation().toTranslation2d().rotateBy(gyro));
     }
 }
