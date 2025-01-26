@@ -252,8 +252,7 @@ public class KalmanFilter {
     public void updateWithVisionMeasurement(List<Translation2d> measurements, double time) {
         Map<Translation2d, Matrix<N2, N2>> measurementTreeMap = new HashMap<>();
         for (Translation2d measurement : measurements) {
-            measurementTreeMap.put(
-                    new Translation2d(measurement.getX(), measurement.getY()), visionCovariance);
+            measurementTreeMap.put(measurement, visionCovariance);
         }
         updateWithPositionMeasurement(measurementTreeMap, time);
     }
