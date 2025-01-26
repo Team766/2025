@@ -6,8 +6,8 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import com.pathplanner.lib.util.FileVersionException;
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework3.Context;
+import com.team766.framework3.Procedure;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -35,7 +35,7 @@ public class FollowPath extends Procedure {
         this.path = path;
         this.controller = controller;
         this.config = config;
-        this.drive = drive;
+        this.drive = reserve(drive);
     }
 
     public FollowPath(
@@ -49,8 +49,6 @@ public class FollowPath extends Procedure {
 
     @Override
     public void run(Context context) {
-        context.takeOwnership(drive);
-
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
             boolean flip = (alliance.get() == Alliance.Red);
@@ -64,8 +62,10 @@ public class FollowPath extends Procedure {
 
         // intitialization
 
-        Pose2d curPose = drive.getCurrentPosition();
-        ChassisSpeeds currentSpeeds = drive.getChassisSpeeds();
+        var driveStatus = getStatusOrThrow(SwerveDrive.DriveStatus.class);
+        Pose2d curPose = driveStatus.currentPosition();
+        ChassisSpeeds currentSpeeds =
+                driveStatus.robotOrientedChassisSpeeds(); // FIXME: MIGHT HAVE TO BE ABSOLUTE
 
         controller.reset(curPose, currentSpeeds);
 
@@ -79,8 +79,8 @@ public class FollowPath extends Procedure {
         while (!timer.hasElapsed(generatedTrajectory.getTotalTimeSeconds())) {
             double currentTime = timer.get();
             PathPlannerTrajectoryState targetState = generatedTrajectory.sample(currentTime);
-            curPose = drive.getCurrentPosition();
-            currentSpeeds = drive.getChassisSpeeds();
+            driveStatus = getStatusOrThrow(SwerveDrive.DriveStatus.class);
+            curPose = driveStatus.currentPosition();
 
             ChassisSpeeds targetSpeeds =
                     controller.calculateRobotRelativeSpeeds(curPose, targetState);
@@ -97,7 +97,6 @@ public class FollowPath extends Procedure {
 
         if (path.getGoalEndState().velocity().magnitude() < 0.1) {
             drive.stopDrive();
-            drive.setCross();
         }
     }
 }

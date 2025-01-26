@@ -8,14 +8,25 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Mechanism;
+import com.team766.framework3.MechanismWithStatus;
+import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.library.ValueProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Shoulder extends Mechanism {
+public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
+    public record ShoulderStatus(double angle) implements Status {
+        public boolean isNearTo(ShoulderPosition target) {
+            return isNearTo(target.getAngle());
+        }
+
+        public boolean isNearTo(double targetAngle) {
+            return Math.abs(angle() - targetAngle) < 2.5;
+        }
+    }
+
     public enum ShoulderPosition {
         // TODO: Find actual values.
         BOTTOM(0),
@@ -38,12 +49,10 @@ public class Shoulder extends Mechanism {
         }
     }
 
-    private double targetAngle;
     private static final double NUDGE_AMOUNT = 1; // degrees
-    private static final double ENCODER_INITIALIZATION_LOOPS = 350;
 
     private final REVThroughBoreDutyCycleEncoder absoluteEncoder;
-    private int encoderInitializationCount = 0;
+    private boolean encoderInitialized = false;
     private static final double SUPPLY_CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
     private static final double STATOR_CURRENT_LIMIT = 80.0; // TUNE THIS!
     private static final double DEFAULT_POSITION = 77.0;
@@ -73,7 +82,6 @@ public class Shoulder extends Mechanism {
                 (REVThroughBoreDutyCycleEncoder)
                         RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
         leftMotor.setSensorPosition(DEFAULT_POSITION);
-        targetAngle = -1;
     }
 
     public void stop() {
@@ -86,23 +94,11 @@ public class Shoulder extends Mechanism {
     }
 
     public void nudgeUp() {
-        rotate(getAngle() + NUDGE_AMOUNT);
+        rotate(getStatus().angle() + NUDGE_AMOUNT);
     }
 
     public void nudgeDown() {
-        rotate(getAngle() - NUDGE_AMOUNT);
-    }
-
-    public double getTargetAngle() {
-        return targetAngle;
-    }
-
-    public double getRotations() {
-        return leftMotor.getSensorPosition();
-    }
-
-    public double getAngle() {
-        return rotationsToDegrees(leftMotor.getSensorPosition());
+        rotate(getStatus().angle() - NUDGE_AMOUNT);
     }
 
     private double degreesToRotations(double angle) {
@@ -124,8 +120,7 @@ public class Shoulder extends Mechanism {
     }
 
     public void rotate(double angle) {
-        checkContextOwnership();
-        targetAngle =
+        double targetAngle =
                 com.team766.math.Math.clamp(
                         angle, ShoulderPosition.BOTTOM.getAngle(), ShoulderPosition.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
@@ -133,30 +128,31 @@ public class Shoulder extends Mechanism {
         // actual rotation will happen in run()
     }
 
-    public boolean isFinished() {
-        return Math.abs(getAngle() - targetAngle) < 2.5;
+    @Override
+    public void run() {
+        TalonFX leftTalon = (TalonFX) leftMotor;
+        double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getStatus().angle()));
+        PositionDutyCycle positionRequest = new PositionDutyCycle(targetRotations);
+        positionRequest.FeedForward = ff;
+        leftTalon.setControl(positionRequest);
     }
 
     @Override
-    public void run() {
+    protected ShoulderStatus updateStatus() {
         // encoder takes some time to settle.
         // this threshold was determined very scientifically around 3:20am.
-        if (encoderInitializationCount < ENCODER_INITIALIZATION_LOOPS
-                && absoluteEncoder.isConnected()) {
+        if (!encoderInitialized && absoluteEncoder.isConnected()) {
             double absPos = absoluteEncoder.get() - 0.071;
             double convertedPos = absoluteEncoderToMotorRotations(absPos);
-            // TODO: only set the sensor position after this has settled?
-            // can try in the next round of testing.
             leftMotor.setSensorPosition(convertedPos);
-            encoderInitializationCount++;
+            encoderInitialized = true;
         }
-        SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
-        SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
-        // SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
-        // SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
+
+        final double rotations = leftMotor.getSensorPosition();
+        final double angle = rotationsToDegrees(rotations);
+        // SmartDashboard.putNumber("[SHOULDER] Rotations", rotations);
         // SmartDashboard.putNumber("[SHOULDER] Encoder Frequency", absoluteEncoder.getFrequency());
-        // SmartDashboard.putNumber(
-        //         "[SHOULDER] Absolute Encoder Position", getAbsoluteEncoderPosition());
+        // SmartDashboard.putNumber("[SHOULDER] Absolute Encoder Position", absPos);
         // SmartDashboard.putNumber(
         //         "[SHOULDER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
         // SmartDashboard.putNumber(
@@ -167,15 +163,10 @@ public class Shoulder extends Mechanism {
         // SmartDashboard.putNumber(
         //         "[SHOULDER] Right Motor Stator Current",
         //         MotorUtil.getStatorCurrentUsage(rightMotor));
-        // SmartDashboard.putBoolean("Shoulder at angle", isFinished());
-
-        TalonFX leftTalon = (TalonFX) leftMotor;
-        // SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());
-        double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getAngle()));
-        // SmartDashboard.putNumber("[SHOULDER] FF", ff);
         // SmartDashboard.putNumber("[SHOULDER VELOCITY]", Math.abs(leftMotor.getSensorVelocity()));
-        PositionDutyCycle positionRequest = new PositionDutyCycle(targetRotations);
-        positionRequest.FeedForward = ff;
-        leftTalon.setControl(positionRequest);
+        SmartDashboard.putNumber("[SHOULDER] Angle", angle);
+        SmartDashboard.putNumber("[SHOULDER] Target Angle", rotationsToDegrees(targetRotations));
+
+        return new ShoulderStatus(angle);
     }
 }

@@ -1,9 +1,13 @@
 package com.team766.robot.gatorade.procedures;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
-import com.team766.robot.gatorade.Robot;
-import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
+import com.team766.framework3.Context;
+import com.team766.framework3.Procedure;
+import com.team766.robot.common.mechanisms.SwerveDrive;
+import com.team766.robot.gatorade.GamePieceType;
+import com.team766.robot.gatorade.mechanisms.Elevator;
+import com.team766.robot.gatorade.mechanisms.Intake;
+import com.team766.robot.gatorade.mechanisms.Shoulder;
+import com.team766.robot.gatorade.mechanisms.Wrist;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -12,25 +16,39 @@ import java.util.Optional;
 
 public class OnePieceExitCommunity extends Procedure {
     private final GamePieceType type;
+    private final SwerveDrive drive;
+    private final Shoulder shoulder;
+    private final Elevator elevator;
+    private final Wrist wrist;
+    private final Intake intake;
 
-    public OnePieceExitCommunity(GamePieceType type) {
+    public OnePieceExitCommunity(
+            GamePieceType type,
+            SwerveDrive drive,
+            Shoulder shoulder,
+            Elevator elevator,
+            Wrist wrist,
+            Intake intake) {
         this.type = type;
+        this.drive = reserve(drive);
+        this.shoulder = reserve(shoulder);
+        this.elevator = reserve(elevator);
+        this.wrist = reserve(wrist);
+        this.intake = reserve(intake);
     }
 
     public void run(Context context) {
-        context.takeOwnership(Robot.drive);
-        // context.takeOwnership(Robot.intake);
-        Robot.drive.resetGyro();
+        drive.resetGyro();
 
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
         if (alliance.isPresent()) {
             switch (alliance.get()) {
                 case Blue:
-                    Robot.drive.setCurrentPosition(new Pose2d(0.75, 2, new Rotation2d()));
+                    drive.setCurrentPosition(new Pose2d(0.75, 2, new Rotation2d()));
                     break;
                 case Red:
-                    Robot.drive.setCurrentPosition(new Pose2d(0.75, 14.5, new Rotation2d()));
+                    drive.setCurrentPosition(new Pose2d(0.75, 14.5, new Rotation2d()));
                     break;
                 default:
                     log("invalid alliance");
@@ -41,8 +59,8 @@ public class OnePieceExitCommunity extends Procedure {
             return;
         }
         log("exiting");
-        context.runSync(new ScoreHigh(type));
-        context.runSync(new RetractWristvator());
-        context.runSync(new ExitCommunity());
+        context.runSync(new ScoreHigh(type, shoulder, elevator, wrist, intake));
+        context.runSync(new RetractWristvator(shoulder, elevator, wrist));
+        context.runSync(new ExitCommunity(drive));
     }
 }

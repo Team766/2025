@@ -1,43 +1,30 @@
 package com.team766.robot.reva_2025;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework3.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.common.DriverOI;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.constants.InputConstants;
-import com.team766.robot.reva_2025.procedures.*;
+import com.team766.robot.reva_2025.mechanisms.*;
 
-/**
- * This class is the glue that binds the controls on the physical operator
- * interface to the code that allow control of the robot.
- */
-public class OI extends Procedure {
-    private JoystickReader leftJoystick;
-    private JoystickReader rightJoystick;
-    private JoystickReader boxopGamepad;
-    private final DriverOI driverOI;
+public class OI extends RuleEngine {
+    public OI(SwerveDrive drive) {
+        final JoystickReader leftJoystick =
+                RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
+        final JoystickReader rightJoystick =
+                RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
+        final JoystickReader boxopGamepad =
+                RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
 
-    public OI() {
-        loggerCategory = Category.OPERATOR_INTERFACE;
+        // Add driver control rules here.
 
-        leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
-        rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
-        boxopGamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
-
-        driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
+        addRules(new DriverOI(leftJoystick, rightJoystick, drive));
     }
 
-    public void run(final Context context) {
-        while (true) {
-            // wait for driver station data (and refresh it using the WPILib APIs)
-            context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
-            RobotProvider.instance.refreshDriverStationData();
-
-            // Add driver controls here - make sure to take/release ownership
-            driverOI.runOI(context);
-            // of mechanisms when appropriate.
-        }
+    @Override
+    public Category getLoggerCategory() {
+        return Category.OPERATOR_INTERFACE;
     }
 }

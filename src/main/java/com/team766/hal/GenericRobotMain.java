@@ -3,7 +3,6 @@ package com.team766.hal;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.LaunchedContext;
 import com.team766.framework.Procedure;
-// import com.team766.hal.GenericRobotMain;
 import com.team766.framework.Scheduler;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -18,12 +17,12 @@ import com.team766.web.WebServer;
 
 // Team 766 - Robot Interface Base class
 
-public final class GenericRobotMain {
+public final class GenericRobotMain implements GenericRobotMainBase {
     private RobotConfigurator configurator;
     private Procedure m_oi;
 
     private WebServer m_webServer;
-    private AutonomousSelector m_autonSelector;
+    private AutonomousSelector<AutonomousMode> m_autonSelector;
     private AutonomousMode m_autonMode = null;
     private LaunchedContext m_autonomous = null;
     private LaunchedContext m_oiContext = null;
@@ -37,11 +36,11 @@ public final class GenericRobotMain {
     private boolean faultInAutoInit = false;
     private boolean faultInTeleopInit = false;
 
-    public GenericRobotMain() {
+    public GenericRobotMain(RobotConfigurator configurator) {
         Scheduler.getInstance().reset();
 
-        configurator = RobotSelector.createConfigurator();
-        m_autonSelector = new AutonomousSelector(configurator.getAutonomousModes());
+        this.configurator = configurator;
+        m_autonSelector = new AutonomousSelector<>(configurator.getAutonomousModes());
         m_webServer = new WebServer();
         m_webServer.addHandler(new Dashboard());
         m_webServer.addHandler(new DriverInterface(m_autonSelector));
