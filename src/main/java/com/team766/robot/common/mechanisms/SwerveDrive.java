@@ -3,11 +3,11 @@ package com.team766.robot.common.mechanisms;
 import static com.team766.math.Math.normalizeAngleDegrees;
 import static com.team766.robot.common.constants.ConfigConstants.*;
 
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.controllers.PIDController;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.framework3.StatusBus;
+import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
@@ -127,10 +127,10 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         MotorController steerBL = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_LEFT);
 
         // create the encoders
-        CANcoder encoderFR = new CANcoder(2, config.canBus());
-        CANcoder encoderFL = new CANcoder(4, config.canBus());
-        CANcoder encoderBR = new CANcoder(3, config.canBus());
-        CANcoder encoderBL = new CANcoder(1, config.canBus());
+        EncoderReader encoderFR = RobotProvider.instance.getEncoder(DRIVE_ENCODER_FRONT_RIGHT);
+        EncoderReader encoderFL = RobotProvider.instance.getEncoder(DRIVE_ENCODER_FRONT_LEFT);
+        EncoderReader encoderBR = RobotProvider.instance.getEncoder(DRIVE_ENCODER_BACK_RIGHT);
+        EncoderReader encoderBL = RobotProvider.instance.getEncoder(DRIVE_ENCODER_BACK_LEFT);
 
         // initialize the swerve modules
         swerveFR = new SwerveModule("FR", driveFR, steerFR, encoderFR, config);
@@ -144,6 +144,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         rotationPID = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
 
         SwerveModule[] moduleList = new SwerveModule[] {swerveFR, swerveFL, swerveBR, swerveBL};
+        EncoderReader[] encoderList =
+                new EncoderReader[] {encoderFR, encoderFL, encoderBR, encoderBL};
         double halfDistanceBetweenWheels = config.distanceBetweenWheels() / 2;
         this.wheelPositions =
                 new Translation2d[] {
