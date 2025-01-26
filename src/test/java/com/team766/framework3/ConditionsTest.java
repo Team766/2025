@@ -115,6 +115,20 @@ public class ConditionsTest extends TestCase3 implements StatusesMixin {
     }
 
     @Test
+    public void testWhenStatusMatching() {
+        assertFalse(
+                whenStatusMatching(FakeStatus.class, s -> s.currentState() == 1).getAsBoolean());
+        statusBus.publishStatus(new OtherStatus(1));
+        assertFalse(
+                whenStatusMatching(FakeStatus.class, s -> s.currentState() == 1).getAsBoolean());
+        statusBus.publishStatus(new FakeStatus(0));
+        assertFalse(
+                whenStatusMatching(FakeStatus.class, s -> s.currentState() == 1).getAsBoolean());
+        statusBus.publishStatus(new FakeStatus(1));
+        assertTrue(whenStatusMatching(FakeStatus.class, s -> s.currentState() == 1).getAsBoolean());
+    }
+
+    @Test
     public void testWaitForStatus() {
         var c =
                 startContext(

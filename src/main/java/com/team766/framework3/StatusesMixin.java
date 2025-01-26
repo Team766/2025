@@ -85,6 +85,11 @@ public interface StatusesMixin {
         return () -> checkForStatusMatching(statusClass, predicate);
     }
 
+    default <S extends Status> BooleanSupplier whenRecentStatusMatching(
+            Class<S> statusClass, double maxAgeSeconds, Predicate<S> predicate) {
+        return () -> checkForRecentStatusMatching(statusClass, maxAgeSeconds, predicate);
+    }
+
     /**
      * Suspend the Procedure until a {@link Status} with the given class has been published, then
      * return that Status.
