@@ -15,7 +15,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
             List<TimestampedApriltag> tagList = new ArrayList<>();
             for (List<TimestampedApriltag> cameraTags : allTags) {
                 for (TimestampedApriltag tag : cameraTags) {
-                    if (tag.ID == id) {
+                    if (tag.tagId() == id) {
                         tagList.add(tag);
                     }
                 }
