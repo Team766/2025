@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * {@link RuleEngine}s manage and x process a set of {@link Rule}s.  Subclasses should add rules via
+ * {@link RuleEngine}s manage and process a set of {@link Rule}s.  Subclasses should add rules via
  * {@link #addRule(com.team766.framework3.Rule.Builder)}.  {@link Rule}s have an implicit priority based on insertion order - the first {@link Rule} to be added is highest priority, etc.
  *
  * Callers should then call {@link #run} once per iteration.  Each call to {@link #run} evaluates each of the contained {@link Rule}s, firing the associated {@link Procedure}
