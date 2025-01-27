@@ -130,12 +130,8 @@ public abstract class RobotProvider {
             if (sensorScaleConfig.hasValue()) {
                 motor = new MotorControllerWithSensorScale(motor, sensorScaleConfig.get());
             }
-            if (invertedConfig.valueOr(false)) {
-                motor.setInverted(true);
-            }
-            if (sensorInvertedConfig.valueOr(false)) {
-                motor.setSensorInverted(true);
-            }
+            motor.setInverted(invertedConfig.valueOr(false));
+            motor.setSensorInverted(sensorInvertedConfig.valueOr(false));
             // check for, apply any PID settings that are in a sub-config
             configurePID(configName + ".pid.", motor);
 
