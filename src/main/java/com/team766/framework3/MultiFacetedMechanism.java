@@ -28,13 +28,15 @@ public abstract class MultiFacetedMechanism implements Reservable, LoggingBase {
         }
     }
 
+    protected class MechanismFacet extends Mechanism {}
+
     @SuppressWarnings("unused")
     private final MechanismSubsystem outerSubsystem = new ProxySubsystem();
 
-    private final ArrayList<Mechanism> facets = new ArrayList<>();
+    private final ArrayList<MechanismFacet> facets = new ArrayList<>();
     private final HashSet<MechanismSubsystem> facetSubsystems = new HashSet<>();
 
-    protected final <M extends Mechanism> M addFacet(M facet) {
+    protected final <M extends MechanismFacet> M addFacet(M facet) {
         Objects.requireNonNull(facet);
         facet.setContainer(this);
         facets.add(facet);
