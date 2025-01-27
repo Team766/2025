@@ -36,10 +36,10 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     /**
-     * @param heading current heading in degrees
+     * @param headingDeg current heading in degrees
      */
     public static record DriveStatus(
-            double heading,
+            double headingDeg,
             double pitch,
             double roll,
             Pose2d currentPosition,
@@ -49,7 +49,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
             implements Status {
 
         public boolean isAtRotationHeading(double targetHeading) {
-            return Math.abs(normalizeAngleDegrees(targetHeading - heading))
+            return Math.abs(normalizeAngleDegrees(targetHeading - headingDeg))
                     < ControlConstants.AT_ROTATIONAL_ANGLE_THRESHOLD;
         }
 
@@ -82,7 +82,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                 ChassisSpeeds targetChassisSpeeds, boolean includeRotation) {
             return isAtRobotOrientedSpeeds(
                     ChassisSpeeds.fromFieldRelativeSpeeds(
-                            targetChassisSpeeds, Rotation2d.fromDegrees(heading)),
+                            targetChassisSpeeds, Rotation2d.fromDegrees(headingDeg)),
                     includeRotation);
         }
     }
@@ -232,7 +232,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         final Optional<Alliance> alliance = DriverStation.getAlliance();
         double yawRad =
                 Math.toRadians(
-                        getStatus().heading()
+                        getStatus().headingDeg()
                                 + (alliance.isPresent() && alliance.get() == Alliance.Blue
                                         ? 0
                                         : 180));
@@ -424,7 +424,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     @Override
     protected void run() {
         if (movingToTarget) {
-            rotationPID.calculate(getStatus().heading());
+            rotationPID.calculate(getStatus().headingDeg());
             controlFieldOrientedBase(
                     x,
                     y,

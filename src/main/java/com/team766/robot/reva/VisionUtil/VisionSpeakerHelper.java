@@ -55,7 +55,8 @@ public class VisionSpeakerHelper {
                             .getTranslation()
                             .plus(
                                     relativeTarget.rotateBy(
-                                            Rotation2d.fromDegrees((driveStatus.heading() + 180))));
+                                            Rotation2d.fromDegrees(
+                                                    (driveStatus.headingDeg() + 180))));
 
             // SmartDashboard.putString("target pos", absTargetPos.toString());
 
@@ -89,7 +90,7 @@ public class VisionSpeakerHelper {
             relativeTranslation2d =
                     absTargetPos
                             .minus(driveStatus.currentPosition().getTranslation())
-                            .rotateBy(Rotation2d.fromDegrees(-driveStatus.heading() - 180));
+                            .rotateBy(Rotation2d.fromDegrees(-driveStatus.headingDeg() - 180));
         }
     }
 
@@ -113,7 +114,7 @@ public class VisionSpeakerHelper {
         // if the target is not currently seen
         // Calculated the heading the robot needs to face from this translation
 
-        double val = relativeTranslation2d.getAngle().getDegrees() + driveStatus.heading();
+        double val = relativeTranslation2d.getAngle().getDegrees() + driveStatus.headingDeg();
         // SmartDashboard.putNumber(
         //         "relativeTranslation2d angle", relativeTranslation2d.getAngle().getDegrees());
         // SmartDashboard.putNumber(
