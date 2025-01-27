@@ -4,7 +4,7 @@ import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework3.Context;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
-import com.team766.orin.KalamanApriltag;
+import com.team766.orin.TimestampedApriltag;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import com.team766.robot.reva.constants.VisionConstants;
@@ -137,7 +137,8 @@ public class DriverShootNow extends VisionPIDProcedure {
     }
 
     private Optional<Transform3d> getTransform3dOfRobotToTagOrin() {
-        Optional<KalamanApriltag> tag = getStatusOrThrow(Orin.OrinStatus.class).getTagById(tagId);
+        Optional<TimestampedApriltag> tag =
+                getStatusOrThrow(Orin.OrinStatus.class).getTagById(tagId);
 
         if (tag.isEmpty()) {
             return Optional.empty();

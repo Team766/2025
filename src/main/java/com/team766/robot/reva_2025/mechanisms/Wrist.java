@@ -1,10 +1,13 @@
 package com.team766.robot.reva_2025.mechanisms;
 
-import com.team766.framework.Mechanism;
+import com.team766.framework3.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
 public class Wrist extends Mechanism {
+
+    private final double thresholdConstant = 0; // TODO: Update me after testing!
+    private double setPoint;
 
     public enum WristPosition {
 
@@ -34,7 +37,11 @@ public class Wrist extends Mechanism {
     }
 
     public void setAngle(double angle) {
-        checkContextOwnership();
+        setPoint = angle;
         wristMotor.set(MotorController.ControlMode.Position, angle);
+    }
+
+    public boolean isAtPosition() {
+        return (Math.abs(setPoint - wristMotor.getSensorPosition()) < thresholdConstant);
     }
 }
