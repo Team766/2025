@@ -12,7 +12,7 @@ public class Orin extends MechanismWithStatus<Orin.OrinStatus> {
     public record OrinStatus(List<TimestampedApriltag> apriltags) implements Status {
         public Optional<TimestampedApriltag> getTagById(int id) {
             for (TimestampedApriltag tag : apriltags) {
-                if (tag.ID == id) {
+                if (tag.tagId() == id) {
                     return Optional.of(tag);
                 }
             }
