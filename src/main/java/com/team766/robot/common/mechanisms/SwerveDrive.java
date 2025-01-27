@@ -354,7 +354,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
     // Odometry
     @Override
-    public DriveStatus updateStatus() {
+    protected DriveStatus updateStatus() {
         kalmanFilter.addOdometryInput(
                 swerveOdometry.calculateCurrentPositionChange(),
                 RobotProvider.instance.getClock().getTime());
@@ -372,7 +372,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                         tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
                     }
                     kalmanFilter.updateWithVisionMeasurement(
-                            tagPoses, cameraTags.get(0).getCollectTime());
+                            tagPoses, cameraTags.get(0).collectTime());
                 }
             }
         }
