@@ -32,13 +32,11 @@ public final class EncoderUtils {
     /**
      * Converts a desired height (in inches) to rotations for the elevator motors.
      *
-     */ 
-
+     */
     public static double elevatorHeightToRotations(double height) {
         // height * net gear ratio * (rotations / height)
         return height * (120. / 1.) * (1. / (1.641 * Math.PI));
     }
-
 
     /**
      * Converts the elevator motor's rotations to a height (in inches).
