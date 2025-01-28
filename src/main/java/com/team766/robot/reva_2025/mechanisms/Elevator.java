@@ -8,17 +8,17 @@ import com.team766.hal.RobotProvider;
 public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private MotorController elevatorLeftMotor;
     private MotorController elevatorRightMotor;
-    private static double MIN_HEIGHT = 0;
-    private static double MAX_HEIGHT = 150;
-    private static double NUDGE_AMOUNT = 5;
+    private static final double MIN_HEIGHT = 0;
+    private static final double MAX_HEIGHT = 150;
+    private static final double NUDGE_AMOUNT = 5;
 
     // values are untested and are set to
 
     public static record ElevatorStatus(double currentHeight) implements Status {}
 
     public enum Position {
-        ELEVATOR_TOP(MAX_HEIGHT),
-        ELEVATOR_BOTTOM(MIN_HEIGHT);
+        ELEVATOR_TOP(EncoderUtils.elevatorRotationsToHeight(MAX_HEIGHT)),
+        ELEVATOR_BOTTOM(EncoderUtils.elevatorRotationsToHeight(MIN_HEIGHT));
 
         private double height;
 
@@ -28,6 +28,10 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
         public double getHeight() {
             return height;
+        }
+
+        public double getElevatorRotations() {
+            return EncoderUtils.elevatorHeightToRotations(height);
         }
     }
 
@@ -45,7 +49,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public void setPosition(Position position) {
-        setPosition(position.getHeight());
+        setPosition(position.getElevatorRotations());
     }
 
     public void nudgeUp() {
