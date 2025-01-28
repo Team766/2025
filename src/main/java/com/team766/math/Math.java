@@ -52,7 +52,7 @@ public class Math {
      *
      * Example usage:
      * <pre>
-     *   public record Data(double x, double y);
+     *   public record Data(double x, double y) {};
      *   ...
      *   Data[] data = new Data[] { new Data(0.0, 1.0), new Data(1.0, 32.0), ... };
      *   double interpolatedY = Math.interpolate(data, 0.5, Data::x, Data::y);
