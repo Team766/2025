@@ -47,7 +47,7 @@ public class AutoAlign extends Procedure {
         Rotation2d vectorAngle = currentDistToTarget.getAngle();
         double currentHeading = getCurrentHeading();
 
-        // calculates with distance away from setpoint setpoint, so the target is 0
+        // calculates with distance away from setpoint, so the target is 0
         pidControllerTranslaton.setSetpoint(0); 
         pidControllerRotation.setSetpoint(targetPosition.getRotation().getRadians());
         while (!pidControllerTranslaton.isDone()
