@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     /**
@@ -178,8 +177,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
      * @param vector input vector
      * @return clockwise orthoginal output vector
      */
-    private static Vector2D createOrthogonalVector(Vector2D vector) {
-        return new Vector2D(-vector.getY(), vector.getX());
+    private static Translation2d createOrthogonalUnitVector(Translation2d vector) {
+        return new Translation2d(-vector.getY(), vector.getX()).div(vector.getNorm());
     }
 
     /**
@@ -195,25 +194,25 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         // Finds the vectors for turning and for translation of each module, and adds them
         // Applies this for each module
         swerveFR.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turnVelocity,
-                                createOrthogonalVector(config.frontRightLocation()).normalize()));
+                new Translation2d(x, y)
+                        .plus(
+                                createOrthogonalUnitVector(config.frontRightLocation())
+                                        .times(turnVelocity)));
         swerveFL.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turnVelocity,
-                                createOrthogonalVector(config.frontLeftLocation()).normalize()));
+                new Translation2d(x, y)
+                        .plus(
+                                createOrthogonalUnitVector(config.frontLeftLocation())
+                                        .times(turnVelocity)));
         swerveBR.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turnVelocity,
-                                createOrthogonalVector(config.backRightLocation()).normalize()));
+                new Translation2d(x, y)
+                        .plus(
+                                createOrthogonalUnitVector(config.backRightLocation())
+                                        .times(turnVelocity)));
         swerveBL.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turnVelocity,
-                                createOrthogonalVector(config.backLeftLocation()).normalize()));
+                new Translation2d(x, y)
+                        .plus(
+                                createOrthogonalUnitVector(config.backLeftLocation())
+                                        .times(turnVelocity)));
     }
 
     public SwerveConfig getSwerveConfig() {
@@ -310,10 +309,10 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         swerveFL.stopDrive();
         swerveBR.stopDrive();
         swerveBL.stopDrive();
-        swerveFR.steer(config.frontRightLocation());
-        swerveFL.steer(config.frontLeftLocation());
-        swerveBR.steer(config.backRightLocation());
-        swerveBL.steer(config.backLeftLocation());
+        swerveFR.steer(config.frontRightLocation().getAngle());
+        swerveFL.steer(config.frontLeftLocation().getAngle());
+        swerveBR.steer(config.backRightLocation().getAngle());
+        swerveBL.steer(config.backLeftLocation().getAngle());
     }
 
     /**
@@ -342,7 +341,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     }
 
     private static Translation2d getPositionForWheel(
-            Vector2D relativeLocation, double halfDistance) {
+            Translation2d relativeLocation, double halfDistance) {
         return new Translation2d(
                 relativeLocation.getX() * halfDistance, relativeLocation.getY() * halfDistance);
     }

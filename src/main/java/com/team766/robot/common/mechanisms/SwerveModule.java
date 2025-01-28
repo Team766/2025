@@ -6,9 +6,9 @@ import com.team766.hal.MotorController.ControlMode;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /**
  * Encapsulates the motors and encoders used for each physical swerve module and
@@ -72,7 +72,6 @@ public class SwerveModule {
         this.steer = steer;
         this.encoder = encoder;
         this.offset = computeEncoderOffset();
-        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "Offset", offset);
 
         // Current limit for motors to avoid breaker problems
         drive.setCurrentLimit(config.driveMotorCurrentLimit());
@@ -92,78 +91,40 @@ public class SwerveModule {
      * Can be used to turn the wheels without moving
      * @param vector the vector specifying the module's motion
      */
-    public void steer(Vector2D vector) {
-        // boolean reversed = false;
-        SmartDashboard.putString(
-                "[" + modulePlacement + "]" + "x, y",
-                String.format("%.2f, %.2f", vector.getX(), vector.getY()));
+    public void steer(Rotation2d angle) {
 
-        // Calculates the angle of the vector from -180° to 180°
-        final double vectorTheta = Math.toDegrees(Math.atan2(vector.getY(), vector.getX()));
-
-        // Add 360 * number of full rotations to vectorTheta, then add offset
+        // Add 360 * number of full rotations to angle, then add offset
         double realAngleDegrees =
-                vectorTheta
+                angle.getDegrees()
                         + 360
                                 * (Math.round(
                                         (steer.getSensorPosition() / encoderConversionFactor
                                                         - offset
-                                                        - vectorTheta)
+                                                        - angle.getDegrees())
                                                 / 360))
                         + offset;
-        // double degreeChange =
-        //         realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR);
-        // checks if it would be more efficient to move the wheel in the opposite direction
-        // if (degreeChange > 90) {
-        //     realAngleDegrees -= 180;
-        //     reversed = true;
-        // } else if (degreeChange < -90) {
-        //     realAngleDegrees += 180;
-        //     reversed = true;
-        // } else {
-        //     reversed = false;
-        // }
-        final double angleDegrees = realAngleDegrees;
 
         // Sets the degree of the steer wheel
         // Needs to multiply by ENCODER_CONVERSION_FACTOR to translate into a unit the motor
         // understands
-        // SmartDashboard.putNumber(
-        //         "[" + modulePlacement + "]" + "Steer", angleDegrees);
-
-        steer.set(ControlMode.Position, encoderConversionFactor * angleDegrees);
-
-        SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
-        // SmartDashboard.putNumber(
-        //         "[" + modulePlacement + "]" + "RelativeAngle",
-        //         (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset) % 360);
-        // SmartDashboard.putNumber(
-        //         "[" + modulePlacement + "]" + "CANCoder",
-        //         encoder.getAbsolutePosition().getValueAsDouble() * 360);
-        // return reversed;
+        steer.set(ControlMode.Position, encoderConversionFactor * realAngleDegrees);
     }
 
     /**
      * Controls both steer and power (based on the target vector) for this module.
      * @param vector the vector specifying the module's velocity in m/s and direction
      */
-    public void driveAndSteer(Vector2D vector) {
+    public void driveAndSteer(Translation2d vector) {
+        // checks if driving the wheel forward or backwards would be more efficient
+        boolean reversed = Math.abs(vector.getAngle().minus(getSteerAngle()).getDegrees()) < 90;
+
         // apply the steer
-        steer(vector);
+        steer(reversed ? vector.getAngle().plus(Rotation2d.k180deg) : vector.getAngle());
 
         // sets the power to the magnitude of the vector and reverses power if necessary
-        // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
-        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive",
-        // vector.getNorm());
-        double power;
-        // if (reversed) {
-        //    power = -vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
-        //    reversed = false;
-
-        // } else {
-        power = vector.getNorm() * motorWheelFactorMPS;
-        // }
+        double power = vector.getNorm() * motorWheelFactorMPS * (reversed ? -1 : 1);
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Input motor velocity", power);
+
         drive.set(ControlMode.Velocity, power);
 
         SmartDashboard.putNumber(
