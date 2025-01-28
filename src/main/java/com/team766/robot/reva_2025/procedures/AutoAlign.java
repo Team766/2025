@@ -35,19 +35,15 @@ public class AutoAlign extends Procedure {
                 || !pidControllerRotation.isDone()) {
             currentPosition = getStatusOrThrow(SwerveDrive.DriveStatus.class).currentPosition();
             currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading();
-            if (!pidControllerX.isDone()) {
-                pidControllerX.calculate(currentPosition.getX());
-            }
-            if (!pidControllerY.isDone()) {
-                pidControllerY.calculate(currentPosition.getY());
-            }
-            if (!pidControllerRotation.isDone()) {
-                pidControllerRotation.calculate(currentHeading);
-            }
+            
+            pidControllerX.calculate(currentPosition.getX());
+            pidControllerY.calculate(currentPosition.getY());
+            pidControllerRotation.calculate(currentHeading);
+
             drive.controlFieldOriented(
-                    pidControllerX.getOutput(),
-                    pidControllerY.getOutput(),
-                    pidControllerRotation.getOutput());
+                    pidControllerX.isDone() ? 0 : pidControllerX.getOutput(),
+                    pidControllerY.isDone() ? 0 : pidControllerY.getOutput(),
+                    pidControllerRotation.isDone() ? 0 : pidControllerRotation.getOutput());
             context.yield();
         }
         drive.stopDrive();
