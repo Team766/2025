@@ -116,7 +116,7 @@ public class SwerveModule {
      */
     public void driveAndSteer(Translation2d vector) {
         // checks if driving the wheel forward or backwards would be more efficient
-        boolean reversed = Math.abs(vector.getAngle().minus(getSteerAngle()).getDegrees()) < 90;
+        boolean reversed = Math.abs(vector.getAngle().minus(getSteerAngle()).getDegrees()) > 90;
 
         // apply the steer
         steer(reversed ? vector.getAngle().plus(Rotation2d.k180deg) : vector.getAngle());
