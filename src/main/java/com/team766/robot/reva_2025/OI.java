@@ -5,12 +5,13 @@ import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.common.DriverOI;
+import com.team766.robot.reva_2025.AlgaeIntakeOI;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.*;
 
 public class OI extends RuleEngine {
-    public OI(SwerveDrive drive) {
+    public OI(SwerveDrive drive, AlgaeIntake algaeIntake) {
         final JoystickReader leftJoystick =
                 RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         final JoystickReader rightJoystick =
@@ -21,6 +22,7 @@ public class OI extends RuleEngine {
         // Add driver control rules here.
 
         addRules(new DriverOI(leftJoystick, rightJoystick, drive));
+        addRules(new AlgaeIntakeOI(leftJoystick, rightJoystick, algaeIntake));
     }
 
     @Override
