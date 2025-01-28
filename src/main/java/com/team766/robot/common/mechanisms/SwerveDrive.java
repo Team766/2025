@@ -3,10 +3,11 @@ package com.team766.robot.common.mechanisms;
 import static com.team766.math.Math.normalizeAngleDegrees;
 import static com.team766.robot.common.constants.ConfigConstants.*;
 
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.controllers.PIDController;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
+import com.team766.framework3.StatusBus;
+import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
@@ -14,9 +15,11 @@ import com.team766.localization.KalmanFilter;
 import com.team766.localization.Odometry;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.orin.TimestampedApriltag;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.ControlConstants;
+import com.team766.robot.reva_2025.mechanisms.Vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,8 +29,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     /**
@@ -122,10 +126,10 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         MotorController steerBL = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_LEFT);
 
         // create the encoders
-        CANcoder encoderFR = new CANcoder(2, config.canBus());
-        CANcoder encoderFL = new CANcoder(4, config.canBus());
-        CANcoder encoderBR = new CANcoder(3, config.canBus());
-        CANcoder encoderBL = new CANcoder(1, config.canBus());
+        EncoderReader encoderFR = RobotProvider.instance.getEncoder(DRIVE_ENCODER_FRONT_RIGHT);
+        EncoderReader encoderFL = RobotProvider.instance.getEncoder(DRIVE_ENCODER_FRONT_LEFT);
+        EncoderReader encoderBR = RobotProvider.instance.getEncoder(DRIVE_ENCODER_BACK_RIGHT);
+        EncoderReader encoderBL = RobotProvider.instance.getEncoder(DRIVE_ENCODER_BACK_LEFT);
 
         // initialize the swerve modules
         swerveFR = new SwerveModule("FR", driveFR, steerFR, encoderFR, config);
@@ -139,6 +143,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         rotationPID = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
 
         SwerveModule[] moduleList = new SwerveModule[] {swerveFR, swerveFL, swerveBR, swerveBL};
+        EncoderReader[] encoderList =
+                new EncoderReader[] {encoderFR, encoderFL, encoderBR, encoderBL};
         double halfDistanceBetweenWheels = config.distanceBetweenWheels() / 2;
         this.wheelPositions =
                 new Translation2d[] {
@@ -171,8 +177,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
      * @param vector input vector
      * @return clockwise orthoginal output vector
      */
-    private static Vector2D createOrthogonalVector(Vector2D vector) {
-        return new Vector2D(-vector.getY(), vector.getX());
+    private static Translation2d createOrthogonalUnitVector(Translation2d vector) {
+        return new Translation2d(-vector.getY(), vector.getX()).div(vector.getNorm());
     }
 
     /**
@@ -188,25 +194,25 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         // Finds the vectors for turning and for translation of each module, and adds them
         // Applies this for each module
         swerveFR.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turnVelocity,
-                                createOrthogonalVector(config.frontRightLocation()).normalize()));
+                new Translation2d(x, y)
+                        .plus(
+                                createOrthogonalUnitVector(config.frontRightLocation())
+                                        .times(turnVelocity)));
         swerveFL.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turnVelocity,
-                                createOrthogonalVector(config.frontLeftLocation()).normalize()));
+                new Translation2d(x, y)
+                        .plus(
+                                createOrthogonalUnitVector(config.frontLeftLocation())
+                                        .times(turnVelocity)));
         swerveBR.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turnVelocity,
-                                createOrthogonalVector(config.backRightLocation()).normalize()));
+                new Translation2d(x, y)
+                        .plus(
+                                createOrthogonalUnitVector(config.backRightLocation())
+                                        .times(turnVelocity)));
         swerveBL.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turnVelocity,
-                                createOrthogonalVector(config.backLeftLocation()).normalize()));
+                new Translation2d(x, y)
+                        .plus(
+                                createOrthogonalUnitVector(config.backLeftLocation())
+                                        .times(turnVelocity)));
     }
 
     public SwerveConfig getSwerveConfig() {
@@ -303,10 +309,10 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         swerveFL.stopDrive();
         swerveBR.stopDrive();
         swerveBL.stopDrive();
-        swerveFR.steer(config.frontRightLocation());
-        swerveFL.steer(config.frontLeftLocation());
-        swerveBR.steer(config.backRightLocation());
-        swerveBL.steer(config.backLeftLocation());
+        swerveFR.steer(config.frontRightLocation().getAngle());
+        swerveFL.steer(config.frontLeftLocation().getAngle());
+        swerveBR.steer(config.backRightLocation().getAngle());
+        swerveBL.steer(config.backLeftLocation().getAngle());
     }
 
     /**
@@ -335,7 +341,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     }
 
     private static Translation2d getPositionForWheel(
-            Vector2D relativeLocation, double halfDistance) {
+            Translation2d relativeLocation, double halfDistance) {
         return new Translation2d(
                 relativeLocation.getX() * halfDistance, relativeLocation.getY() * halfDistance);
     }
@@ -347,7 +353,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
     // Odometry
     @Override
-    public DriveStatus updateStatus() {
+    protected DriveStatus updateStatus() {
         kalmanFilter.addOdometryInput(
                 swerveOdometry.calculateCurrentPositionChange(),
                 RobotProvider.instance.getClock().getTime());
@@ -355,6 +361,21 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         final double heading = gyro.getAngle();
         final double pitch = gyro.getPitch();
         final double roll = gyro.getRoll();
+
+        var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
+        if (visionStatus.isPresent() && !visionStatus.get().allTags().isEmpty()) {
+            for (List<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
+                List<Translation2d> tagPoses = new ArrayList<>();
+                if (cameraTags.size() > 0) {
+                    for (TimestampedApriltag tag : cameraTags) {
+                        tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
+                    }
+                    kalmanFilter.updateWithVisionMeasurement(
+                            tagPoses, cameraTags.get(0).collectTime());
+                }
+            }
+        }
+
         final Pose2d currentPosition =
                 new Pose2d(kalmanFilter.getPos(), Rotation2d.fromDegrees(heading));
 

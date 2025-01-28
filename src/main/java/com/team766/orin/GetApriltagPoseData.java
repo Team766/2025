@@ -4,21 +4,22 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GetApriltagPoseData {
 
-    public static ArrayList<KalamanApriltag> getAllTags(double[] ntArr) {
-        ArrayList<KalamanApriltag> apriltags = new ArrayList<KalamanApriltag>();
+    public static List<TimestampedApriltag> getAllTags(double[] ntArray) {
+        ArrayList<TimestampedApriltag> apriltags = new ArrayList<TimestampedApriltag>();
 
         double[] tagData;
 
-        tagData = ntArr;
+        tagData = ntArray;
 
         if (tagData.length % 5 != 0 || tagData.length == 0) return apriltags;
 
         for (int i = 0; i < tagData.length; i += 5) {
-            KalamanApriltag tag =
-                    new KalamanApriltag(
+            TimestampedApriltag tag =
+                    new TimestampedApriltag(
                             tagData[i],
                             (int) tagData[i + 1],
                             new Pose3d(

@@ -11,6 +11,8 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private static final double MIN_HEIGHT = 0;
     private static final double MAX_HEIGHT = 150;
     private static final double NUDGE_AMOUNT = 5;
+    private double setPoint;
+    private final double thresholdConstant = 0; // TODO: Update me after testing!
 
     // values are untested and are set to
 
@@ -40,10 +42,12 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         elevatorRightMotor = RobotProvider.instance.getMotor("elevator.rightMotor");
         elevatorRightMotor.follow(elevatorLeftMotor);
         elevatorLeftMotor.setSensorPosition(0);
+        setPoint = 0;
     }
 
     public void setPosition(double setPosition) {
         if (setPosition >= MIN_HEIGHT && setPosition <= MAX_HEIGHT) {
+            setPoint = setPosition;
             elevatorLeftMotor.set(MotorController.ControlMode.Position, setPosition);
         }
     }
@@ -66,5 +70,9 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     protected ElevatorStatus updateStatus() {
         return new ElevatorStatus(
                 EncoderUtils.elevatorRotationsToHeight(elevatorLeftMotor.getSensorPosition()));
+    }
+  
+    public boolean isAtPosition() {
+        return (Math.abs(setPoint - elevatorLeftMotor.getSensorPosition()) < thresholdConstant);
     }
 }
