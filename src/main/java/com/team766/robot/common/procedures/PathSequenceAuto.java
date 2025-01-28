@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Set;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public abstract class PathSequenceAuto extends Procedure {
 
@@ -47,8 +46,8 @@ public abstract class PathSequenceAuto extends Procedure {
     }
 
     private static Translation2d wheelLocationAsTranslation(
-            double distanceFromCenter, Vector2D vector) {
-        vector = vector.normalize().scalarMultiply(distanceFromCenter);
+            double distanceFromCenter, Translation2d vector) {
+        vector = vector.div(vector.getNorm()).times(distanceFromCenter);
         return new Translation2d(vector.getX(), vector.getY());
     }
 
