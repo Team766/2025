@@ -3,7 +3,7 @@ package com.team766.framework3;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.team766.TestCase3;
-import com.team766.framework3.FakeMechanism.FakeStatus;
+import com.team766.framework3.test.FakeMechanism.FakeStatus;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
 import java.util.Set;
@@ -112,6 +112,20 @@ public class ConditionsTest extends TestCase3 implements StatusesMixin {
         statusBus.publishStatus(new FakeStatus(1));
         assertTrue(
                 checkForStatusEntryMatching(FakeStatus.class, s -> s.status().currentState() == 1));
+    }
+
+    @Test
+    public void testWhenStatusMatching() {
+        assertFalse(
+                whenStatusMatching(FakeStatus.class, s -> s.currentState() == 1).getAsBoolean());
+        statusBus.publishStatus(new OtherStatus(1));
+        assertFalse(
+                whenStatusMatching(FakeStatus.class, s -> s.currentState() == 1).getAsBoolean());
+        statusBus.publishStatus(new FakeStatus(0));
+        assertFalse(
+                whenStatusMatching(FakeStatus.class, s -> s.currentState() == 1).getAsBoolean());
+        statusBus.publishStatus(new FakeStatus(1));
+        assertTrue(whenStatusMatching(FakeStatus.class, s -> s.currentState() == 1).getAsBoolean());
     }
 
     @Test

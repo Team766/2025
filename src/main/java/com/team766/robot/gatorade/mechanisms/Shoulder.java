@@ -131,19 +131,16 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public void nudgeNoPID(double value) {
-        checkContextReservation();
         double clampedValue = MathUtil.clamp(value, -1, 1);
         clampedValue *= NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
         leftMotor.set(clampedValue);
     }
 
     public void stopShoulder() {
-        checkContextReservation();
         leftMotor.set(0);
     }
 
     public void nudgeUp() {
-        checkContextReservation();
         System.err.println("Nudging up.");
         double angle = getStatus().angle();
         double targetAngle = Math.min(angle + NUDGE_INCREMENT, Position.TOP.getAngle());
@@ -152,7 +149,6 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public void nudgeDown() {
-        checkContextReservation();
         System.err.println("Nudging down.");
         double angle = getStatus().angle();
         double targetAngle = Math.max(angle - NUDGE_INCREMENT, Position.BOTTOM.getAngle());
@@ -163,7 +159,6 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
      * Rotates the wrist to a pre-set {@link Position}.
      */
     public void rotate(Position position) {
-        checkContextReservation();
         rotate(position.getAngle());
     }
 
@@ -173,8 +168,6 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
      * with {@link #getAngle()}.
      */
     public void rotate(double angle) {
-        checkContextReservation();
-
         System.err.println("Setting target angle to " + angle);
         // set the PID controller values with whatever the latest is in the config
         SparkMaxConfig config = new SparkMaxConfig();

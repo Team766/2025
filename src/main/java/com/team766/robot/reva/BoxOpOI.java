@@ -94,15 +94,11 @@ public class BoxOpOI extends RuleGroup {
                                                     {
                                                         addRule(
                                                                 "Spin shooter for assist shot",
-                                                                () ->
-                                                                        checkForStatusMatching(
-                                                                                Shooter
-                                                                                        .ShooterStatus
-                                                                                        .class,
-                                                                                s ->
-                                                                                        s
-                                                                                                        .targetSpeed()
-                                                                                                != 0.0),
+                                                                whenStatusMatching(
+                                                                        Shooter.ShooterStatus.class,
+                                                                        s ->
+                                                                                s.targetSpeed()
+                                                                                        != 0.0),
                                                                 shooter,
                                                                 () ->
                                                                         shooter.shoot(

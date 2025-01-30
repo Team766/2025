@@ -52,20 +52,14 @@ public class Lights extends RuleEngine {
 
         addRule(
                 "Note in intake",
-                () ->
-                        checkForRecentStatusMatching(
-                                IntakeUntilIn.IntakeUntilInStatus.class,
-                                2.0,
-                                s -> s.noteInIntake()),
+                whenRecentStatusMatching(
+                        IntakeUntilIn.IntakeUntilInStatus.class, 2.0, s -> s.noteInIntake()),
                 leds,
                 () -> signalNoteInIntake());
         addRule(
                 "No note in intake yet",
-                () ->
-                        checkForRecentStatusMatching(
-                                IntakeUntilIn.IntakeUntilInStatus.class,
-                                2.0,
-                                s -> !s.noteInIntake()),
+                whenRecentStatusMatching(
+                        IntakeUntilIn.IntakeUntilInStatus.class, 2.0, s -> !s.noteInIntake()),
                 leds,
                 () -> signalNoNoteInIntakeYet());
 
@@ -78,35 +72,32 @@ public class Lights extends RuleEngine {
                 () -> signalCameraNotConnected());
         addRule(
                 "Shooting procedure: starting",
-                () ->
-                        checkForRecentStatusMatching(
-                                ShootingProcedureStatus.class,
-                                2.0,
-                                s -> s.status() == ShootingProcedureStatus.Status.RUNNING),
+                whenRecentStatusMatching(
+                        ShootingProcedureStatus.class,
+                        2.0,
+                        s -> s.status() == ShootingProcedureStatus.Status.RUNNING),
                 leds,
                 () -> signalStartingShootingProcedure());
         addRule(
                 "Shooting procedure: out of range",
-                () ->
-                        checkForRecentStatusMatching(
-                                ShootingProcedureStatus.class,
-                                2.0,
-                                s -> s.status() == ShootingProcedureStatus.Status.OUT_OF_RANGE),
+                whenRecentStatusMatching(
+                        ShootingProcedureStatus.class,
+                        2.0,
+                        s -> s.status() == ShootingProcedureStatus.Status.OUT_OF_RANGE),
                 leds,
                 context -> signalShooterOutOfRange(context));
         addRule(
                 "Shooting procedure: finished",
-                () ->
-                        checkForRecentStatusMatching(
-                                ShootingProcedureStatus.class,
-                                2.0,
-                                s -> s.status() == ShootingProcedureStatus.Status.FINISHED),
+                whenRecentStatusMatching(
+                        ShootingProcedureStatus.class,
+                        2.0,
+                        s -> s.status() == ShootingProcedureStatus.Status.FINISHED),
                 leds,
                 () -> signalFinishingShootingProcedure());
 
         addRule(
                 "Has tag",
-                () -> checkForStatusMatching(Orin.OrinStatus.class, s -> s.apriltags().size() > 0),
+                whenStatusMatching(Orin.OrinStatus.class, s -> s.apriltags().size() > 0),
                 leds,
                 () -> signalHasTag());
 

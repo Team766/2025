@@ -71,52 +71,43 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     }
 
     public void enableSoftLimits(boolean enabled) {
-        checkContextReservation();
         MotorUtil.enableSoftLimits(leftMotor, enabled);
         MotorUtil.enableSoftLimits(rightMotor, enabled);
     }
 
     public void resetLeftPosition() {
-        checkContextReservation();
         leftMotor.setSensorPosition(0);
     }
 
     public void resetRightPosition() {
-        checkContextReservation();
         rightMotor.setSensorPosition(0);
     }
 
     public void setPower(double power) {
-        checkContextReservation();
         setLeftPower(power);
         setRightPower(power);
     }
 
     public void setLeftPower(double power) {
-        checkContextReservation();
         power = com.team766.math.Math.clamp(power, -1, 1);
         leftMotor.set(power);
     }
 
     public void setRightPower(double power) {
-        checkContextReservation();
         power = com.team766.math.Math.clamp(power, -1, 1);
         rightMotor.set(power);
     }
 
     public void stop() {
-        checkContextReservation();
         stopLeft();
         stopRight();
     }
 
     public void stopLeft() {
-        checkContextReservation();
         leftMotor.stopMotor();
     }
 
     public void stopRight() {
-        checkContextReservation();
         rightMotor.stopMotor();
     }
 

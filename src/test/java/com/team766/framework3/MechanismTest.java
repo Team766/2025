@@ -4,7 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.team766.TestCase3;
-import com.team766.framework3.FakeMechanism.FakeStatus;
+import com.team766.framework3.test.FakeMechanism;
+import com.team766.framework3.test.FakeMechanism.FakeStatus;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,6 +26,8 @@ public class MechanismTest extends TestCase3 {
                                 Set.of(mech),
                                 context -> {
                                     mech.mutateMechanism(0);
+
+                                    mech.nonMutatingMethod();
 
                                     succeeded.set(true);
                                 }));
@@ -64,6 +67,12 @@ public class MechanismTest extends TestCase3 {
                         new FunctionalProcedure(
                                 Set.of(),
                                 context -> {
+                                    // methods with NoReservationRequired should be allowed to run
+                                    // when the mechanism is not reserved.
+                                    mech.nonMutatingMethod();
+
+                                    // methods without NoReservationRequired should fail the call to
+                                    // checkContextReservation.
                                     try {
                                         mech.mutateMechanism(0);
                                     } catch (Throwable ex) {
@@ -95,7 +104,7 @@ public class MechanismTest extends TestCase3 {
                     @Override
                     protected void run() {
                         try {
-                            checkContextReservation();
+                            mutateMechanism(2);
                         } catch (Throwable ex) {
                             thrownException.set(ex);
                         }

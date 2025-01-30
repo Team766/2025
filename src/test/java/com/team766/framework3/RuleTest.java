@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.team766.framework3.Rule.Cancellation;
 import com.team766.framework3.Rule.TriggerType;
+import com.team766.framework3.test.FakeMechanism;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -105,7 +106,7 @@ public class RuleTest {
 
     @Test
     public void testGetMechanismsToReserve() {
-        final Set<Mechanism> newlyMechanisms = Set.of(new FakeMechanism1(), new FakeMechanism2());
+        final Set<Mechanism> newlyMechanisms = Set.of(new FakeMechanism(), new FakeMechanism());
         final Set<Mechanism> finishedMechanisms = Set.of(new FakeMechanism());
 
         Rule duckDuckGooseGoose =

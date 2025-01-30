@@ -34,7 +34,6 @@ public class LEDString extends Mechanism {
     }
 
     public void setColor(int r, int g, int b) {
-        checkContextReservation();
         handleError(candle.setLEDs(r, g, b));
     }
 

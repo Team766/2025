@@ -1,7 +1,7 @@
 package com.team766.robot.common;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /**
  * Configuration for the Swerve Drive motors on this robot.
@@ -56,10 +56,10 @@ public class SwerveConfig {
 
     private String canBus = DEFAULT_CAN_BUS;
     // TODO: can we combine Drive's wheel locations and odometry's wheel locations?
-    private Vector2D frontLeftLocation = new Vector2D(DEFAULT_FL_X, DEFAULT_FL_Y);
-    private Vector2D frontRightLocation = new Vector2D(DEFAULT_FR_X, DEFAULT_FR_Y);
-    private Vector2D backLeftLocation = new Vector2D(DEFAULT_BL_X, DEFAULT_BL_Y);
-    private Vector2D backRightLocation = new Vector2D(DEFAULT_BR_X, DEFAULT_BR_Y);
+    private Translation2d frontLeftLocation = new Translation2d(DEFAULT_FL_X, DEFAULT_FL_Y);
+    private Translation2d frontRightLocation = new Translation2d(DEFAULT_FR_X, DEFAULT_FR_Y);
+    private Translation2d backLeftLocation = new Translation2d(DEFAULT_BL_X, DEFAULT_BL_Y);
+    private Translation2d backRightLocation = new Translation2d(DEFAULT_BR_X, DEFAULT_BR_Y);
     private double wheelRadius = DEFAULT_WHEEL_RADIUS;
     private double wheelCircumference = DEFAULT_WHEEL_CIRCUMFERENCE;
     private double driveGearRatio = DEFAULT_DRIVE_GEAR_RATIO;
@@ -81,19 +81,19 @@ public class SwerveConfig {
         return canBus;
     }
 
-    public Vector2D frontLeftLocation() {
+    public Translation2d frontLeftLocation() {
         return frontLeftLocation;
     }
 
-    public Vector2D frontRightLocation() {
+    public Translation2d frontRightLocation() {
         return frontRightLocation;
     }
 
-    public Vector2D backLeftLocation() {
+    public Translation2d backLeftLocation() {
         return backLeftLocation;
     }
 
-    public Vector2D backRightLocation() {
+    public Translation2d backRightLocation() {
         return backRightLocation;
     }
 
@@ -159,22 +159,22 @@ public class SwerveConfig {
     }
 
     public SwerveConfig withFrontLeftLocation(double x, double y) {
-        this.frontLeftLocation = new Vector2D(x, y);
+        this.frontLeftLocation = new Translation2d(x, y);
         return this;
     }
 
     public SwerveConfig withFrontRightLocation(double x, double y) {
-        this.frontRightLocation = new Vector2D(x, y);
+        this.frontRightLocation = new Translation2d(x, y);
         return this;
     }
 
     public SwerveConfig withBackLeftLocation(double x, double y) {
-        this.backLeftLocation = new Vector2D(x, y);
+        this.backLeftLocation = new Translation2d(x, y);
         return this;
     }
 
     public SwerveConfig withBackRightLocation(double x, double y) {
-        this.backRightLocation = new Vector2D(x, y);
+        this.backRightLocation = new Translation2d(x, y);
         return this;
     }
 
