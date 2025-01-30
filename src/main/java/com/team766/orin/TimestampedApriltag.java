@@ -9,12 +9,12 @@ public record TimestampedApriltag(double collectTime, int tagId, Pose3d pose) {
     public Translation2d toRobotPosition(Rotation2d gyro) {
         Translation2d tagPosition =
                 (this.ID == FieldConstants.TEST_TAG_ID)
-                        ? FieldConstants.APRIL_TAG_REEFSCAPE_LAYOUT
+                        ? FieldConstants.TEST_TAG_POSITION.getTranslation()
+                        : FieldConstants.APRIL_TAG_REEFSCAPE_LAYOUT
                                 .getTagPose(this.ID)
                                 .get()
                                 .getTranslation()
-                                .toTranslation2d()
-                        : FieldConstants.TEST_TAG_POSITION.getTranslation();
+                                .toTranslation2d();
         return tagPosition.minus(this.pose.getTranslation().toTranslation2d().rotateBy(gyro));
     }
 }
