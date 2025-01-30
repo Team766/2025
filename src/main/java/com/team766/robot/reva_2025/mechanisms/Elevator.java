@@ -71,7 +71,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         return new ElevatorStatus(
                 EncoderUtils.elevatorRotationsToHeight(elevatorLeftMotor.getSensorPosition()));
     }
-  
+
     public boolean isAtPosition() {
         return (Math.abs(setPoint - elevatorLeftMotor.getSensorPosition()) < thresholdConstant);
     }
