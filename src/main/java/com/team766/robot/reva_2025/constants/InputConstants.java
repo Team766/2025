@@ -10,5 +10,5 @@ public final class InputConstants {
     public static final int BUTTON_GROUND_LEVEL = 6;
     public static final int BUTTON_LEVEL23_LEVEL = 7;
     public static final int BUTTON_LEVEL34_LEVEL = 8;
-    public static final int BUTTON_ON_SHOOTER=7;
+    public static final int BUTTON_ON_SHOOTER = 7;
 }

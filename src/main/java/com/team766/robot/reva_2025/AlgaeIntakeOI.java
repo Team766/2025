@@ -1,93 +1,91 @@
 package com.team766.robot.reva_2025;
 
 import static com.team766.framework3.RulePersistence.*;
+
 import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
+import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 
 public class AlgaeIntakeOI extends RuleGroup {
-    public AlgaeIntakeOI (
-        JoystickReader leftJoystick,
-        JoystickReader rightJoystick,
-        AlgaeIntake algaeIntake ){
-            addRule(
-                "In for Intake",
-                leftJoystick.whenButton(InputConstants.BUTTON_IN_INTAKE),
-                REPEATEDLY,
-                algaeIntake,
-                () -> {
-                    algaeIntake.in();
-                }
-            );
+    public AlgaeIntakeOI(JoystickReader boxopGamepad, AlgaeIntake algaeIntake) {
+        addRule(
+                        "In for Intake",
+                        boxopGamepad.whenButton(InputConstants.BUTTON_IN_INTAKE),
+                        ONCE_AND_HOLD,
+                        algaeIntake,
+                        () -> {
+                            algaeIntake.in();
+                        })
+                .withFinishedTriggeringProcedure(
+                        algaeIntake,
+                        () -> {
+                            algaeIntake.stop();
+                        });
 
-            addRule(
-                "Out for Intake",
-                leftJoystick.whenButton(InputConstants.BUTTON_OUT_INTAKE),
-                REPEATEDLY,
-                algaeIntake,
-                () -> {
-                    algaeIntake.out();
-                }
+        addRule(
+                        "Out for Intake",
+                        boxopGamepad.whenButton(InputConstants.BUTTON_OUT_INTAKE),
+                        ONCE_AND_HOLD,
+                        algaeIntake,
+                        () -> {
+                            algaeIntake.out();
+                        })
+                .withFinishedTriggeringProcedure(
+                        algaeIntake,
+                        () -> {
+                            algaeIntake.stop();
+                        });
 
-            );
-            //Ask someone(probably Raj) about how to implement stop in Intake code
-            //Ask Raj about arm angle
-
-            addRule(
+        addRule(
                 " Stow for Level",
-                rightJoystick.whenButton(InputConstants.BUTTON_STOW_LEVEL),
+                boxopGamepad.whenButton(InputConstants.BUTTON_STOW_LEVEL),
                 ONCE,
                 algaeIntake,
                 () -> {
-                    algaeIntake.setArmAngle();
-                }
+                    algaeIntake.setArmAngle(Level.Stow);
+                });
 
-            );
-
-
-            addRule(
+        addRule(
                 " Ground for Level",
-                rightJoystick.whenButton(InputConstants.BUTTON_GROUND_LEVEL),
+                boxopGamepad.whenButton(InputConstants.BUTTON_GROUND_LEVEL),
                 ONCE,
                 algaeIntake,
                 () -> {
-                    algaeIntake.setArmAngle();
-                }
+                    algaeIntake.setArmAngle(Level.GroundIntake);
+                });
 
-            );
-
-            addRule(
+        addRule(
                 " Level 2/3 for Level",
-                rightJoystick.whenButton(InputConstants.BUTTON_LEVEL23_LEVEL),
+                boxopGamepad.whenButton(InputConstants.BUTTON_LEVEL23_LEVEL),
                 ONCE,
                 algaeIntake,
                 () -> {
-                    algaeIntake.setArmAngle();
-                }
+                    algaeIntake.setArmAngle(Level.L2L3AlgaeIntake);
+                });
 
-            );
-
-            addRule(
+        addRule(
                 " Level 3/4 for Level",
-                rightJoystick.whenButton(InputConstants.BUTTON_LEVEL34_LEVEL),
+                boxopGamepad.whenButton(InputConstants.BUTTON_LEVEL34_LEVEL),
                 ONCE,
                 algaeIntake,
                 () -> {
-                    algaeIntake.setArmAngle();
-                }
+                    algaeIntake.setArmAngle(Level.L3L4AlgaeIntake);
+                });
 
-            );
-
-            addRule(
-                " Shooter On for Shooter",
-                leftJoystick.whenButton(InputConstants.BUTTON_ON_SHOOTER),
-                REPEATEDLY,
-                algaeIntake,
-                () -> {
-                    algaeIntake.setArmAngle();
-                }
-
-            );
-        }
+        addRule(
+                        " Shooter On for Shooter",
+                        boxopGamepad.whenButton(InputConstants.BUTTON_ON_SHOOTER),
+                        ONCE_AND_HOLD,
+                        algaeIntake,
+                        () -> {
+                            algaeIntake.shooterOn();
+                        })
+                .withFinishedTriggeringProcedure(
+                        algaeIntake,
+                        () -> {
+                            algaeIntake.shooterOff();
+                        });
+    }
 }
