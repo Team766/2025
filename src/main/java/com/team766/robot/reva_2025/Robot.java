@@ -5,23 +5,26 @@ import com.team766.framework3.RuleEngine;
 import com.team766.hal.RobotConfigurator3;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
-<<<<<<< HEAD
 import com.team766.robot.reva_2025.mechanisms.*;
-=======
-import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
-
->>>>>>> 1b1e817313eb7688440ac7b78f8aa5cefce3919e
 
 public class Robot implements RobotConfigurator3 {
 
     private SwerveDrive drive;
     private AlgaeIntake algaeIntake;
+    private Vision vision;
+    private Wrist wrist;
+    private Elevator elevator;
+    private CoralIntake coral;
 
     @Override
     public void initializeMechanisms() {
         SwerveConfig swerveConfig = new SwerveConfig();
         algaeIntake = new AlgaeIntake();
         drive = new SwerveDrive(swerveConfig);
+        vision = new Vision();
+        wrist = new Wrist();
+        elevator = new Elevator();
+        coral = new CoralIntake();
     }
 
     @Override
