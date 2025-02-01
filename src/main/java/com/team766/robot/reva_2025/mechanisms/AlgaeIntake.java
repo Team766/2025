@@ -28,6 +28,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     public enum State {
         In(1),
+        Idle(0),
         Out(-1),
         Stop(0),
         Shoot(1);
@@ -72,28 +73,33 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     }
 
     public void out() {
-        intakeMotor.set(level.getPower());
         state = State.Out;
+        intakeMotor.set(state.getPower());
     }
 
     public void in() {
-        intakeMotor.set(level.getPower() * -1);
         state = State.In;
+        intakeMotor.set(state.getPower());
     }
 
     public void stop() {
-        intakeMotor.set(0);
         state = State.Stop;
+        intakeMotor.set(state.getPower());
+    }
+
+    public void Idle() {
+        state = State.Idle;
+        intakeMotor.set(state.getPower()); 
     }
 
     public void shooterOn() {
-        shooterMotor.set(1);
         state = State.Shoot;
+        shooterMotor.set(state.getPower());
     }
 
     public void shooterOff() {
-        shooterMotor.set(0);
         state = State.Stop;
+        shooterMotor.set(state.getPower());
     }
 
     protected AlgaeIntakeStatus updateStatus() {
