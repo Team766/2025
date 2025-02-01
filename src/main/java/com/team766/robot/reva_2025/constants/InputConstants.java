@@ -7,4 +7,5 @@ public final class InputConstants {
 
     public static final int GAMEPAD_BUTTON_A = 1;
     public static final int GAMEPAD_BUTTON_Y = 4;
+    public static final int GAMEPAD_BUTTON_CLIMB = 0;
 }
