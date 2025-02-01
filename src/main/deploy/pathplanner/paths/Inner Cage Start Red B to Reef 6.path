@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.269781465488856,
-        "y": 0.7617828013433814
+        "x": 7.581907894736841,
+        "y": 1.937088815789474
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.920007478903846,
-        "y": 0.739038584558651
+        "x": 6.542763157894736,
+        "y": 2.1872532894736842
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Inner Cage Start Red B"
     },
     {
       "anchor": {
-        "x": 6.981912459195289,
-        "y": 0.7617828013433814
+        "x": 5.311184210526315,
+        "y": 2.5817434210526313
       },
       "prevControl": {
-        "x": 7.541372684597221,
-        "y": 0.7143940676770252
+        "x": 5.888486842105262,
+        "y": 2.225740131578947
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Reef 6"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 119.99999999999999
   },
   "reversed": false,
-  "folder": "2024",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

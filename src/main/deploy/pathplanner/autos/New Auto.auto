@@ -1,0 +1,79 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Inner Cage Start Blue A to Reef 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef 2 to Coral Station 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Coral Station 1 to Reef 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef 3 to Coral Station 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Coral Station 1 to Reef 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef 4 to Coral Station 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Coral Station 2 to Reef 5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef 5 to Coral Station 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Coral Station 2 to Reef 6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef 6 to Coral Station 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Coral Station 2 to Reef 1"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
