@@ -27,6 +27,10 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
     public CANSparkMaxMotorController(final int deviceId) {
         super(deviceId, MotorType.kBrushless);
 
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.smartCurrentLimit(10, 80, 200);
+        configureAndCheckRevError(config);
+
         // Set default feedback device. This ensures that our implementations of
         // getSensorPosition/getSensorVelocity return values that match what the
         // device's PID controller is using.

@@ -38,6 +38,8 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
         super(deviceNumber, canBus);
         TalonFXConfigurator configurator = getConfigurator();
         statusCodeToException(ExceptionTarget.LOG, configurator.refresh(talonFXConfig));
+
+        setCurrentLimit(15);
     }
 
     public CANTalonFxMotorController(final int deviceNumber) {

@@ -17,6 +17,8 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
 
     public CANTalonMotorController(final int deviceNumber) {
         m_device = new WPI_TalonSRX(deviceNumber);
+
+        setCurrentLimit(15);
     }
 
     @Override

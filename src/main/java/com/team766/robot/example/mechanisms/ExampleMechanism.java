@@ -11,6 +11,9 @@ public class ExampleMechanism extends Mechanism {
     public ExampleMechanism() {
         leftMotor = RobotProvider.instance.getMotor("exampleMechanism.leftMotor");
         rightMotor = RobotProvider.instance.getMotor("exampleMechanism.rightMotor");
+
+        leftMotor.setCurrentLimit(20);
+        rightMotor.setCurrentLimit(20);
     }
 
     public void setMotorPower(final double leftPower, final double rightPower) {
