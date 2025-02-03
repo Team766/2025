@@ -22,11 +22,17 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorControllerCommandFailedException;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
+import com.team766.logging.Severity;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 public class CANTalonFxMotorController extends CoreTalonFX implements MotorController {
+
+    private final String deviceName;
+    private boolean shouldReportDefaultCurrentLimit;
 
     // NOTE: whenever we make changes to this (or embedded parts of it), we refresh the config
     // out of paranoia, in case some code casts this MotorController to a TalonFX directly
@@ -34,16 +40,21 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
     private TalonFXConfiguration talonFXConfig = new TalonFXConfiguration();
 
     // TODO: add support for taking a CANcoder as a ctor parameter
-    public CANTalonFxMotorController(final int deviceNumber, final String canBus) {
+    public CANTalonFxMotorController(
+            String deviceName, final int deviceNumber, final String canBus) {
         super(deviceNumber, canBus);
+
+        this.deviceName = deviceName;
+
         TalonFXConfigurator configurator = getConfigurator();
         statusCodeToException(ExceptionTarget.LOG, configurator.refresh(talonFXConfig));
 
         setCurrentLimit(15);
+        shouldReportDefaultCurrentLimit = true;
     }
 
-    public CANTalonFxMotorController(final int deviceNumber) {
-        this(deviceNumber, "");
+    public CANTalonFxMotorController(String deviceName, final int deviceNumber) {
+        this(deviceName, deviceNumber, "");
     }
 
     private enum ExceptionTarget {
@@ -72,6 +83,7 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
     }
 
     public void set(double value) {
+        reportDefaultCurrentLimit();
         setControl(new DutyCycleOut(value));
     }
 
@@ -99,8 +111,23 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
         return talonFXConfig.MotorOutput.Inverted == InvertedValue.Clockwise_Positive;
     }
 
+    private void reportDefaultCurrentLimit() {
+        if (shouldReportDefaultCurrentLimit) {
+            Logger.get(Category.HAL)
+                    .logRaw(
+                            Severity.ERROR,
+                            deviceName
+                                    + " is using the default current limit, which is probably"
+                                    + " lower than you want. Call"
+                                    + " yourMotor.setCurrentLimit(yourCurrentLimitValue); to"
+                                    + " resolve this error.");
+            shouldReportDefaultCurrentLimit = false;
+        }
+    }
+
     @Override
     public void set(final ControlMode mode, double value, double arbitraryFeedForward) {
+        reportDefaultCurrentLimit();
         switch (mode) {
             case Disabled:
                 NeutralOut neutral = new NeutralOut();
@@ -266,6 +293,7 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
         statusCodeToException(ExceptionTarget.LOG, getConfigurator().refresh(config));
         config.withSupplyCurrentLimit(ampsLimit).withSupplyCurrentLimitEnable(true);
         statusCodeToException(ExceptionTarget.LOG, super.getConfigurator().apply(config));
+        shouldReportDefaultCurrentLimit = false;
     }
 
     @Override

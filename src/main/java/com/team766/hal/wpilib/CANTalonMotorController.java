@@ -13,16 +13,35 @@ import com.team766.logging.Severity;
 
 public class CANTalonMotorController extends BaseCTREMotorController implements MotorController {
 
+    private final String deviceName;
     private WPI_TalonSRX m_device;
+    private boolean shouldReportDefaultCurrentLimit;
 
-    public CANTalonMotorController(final int deviceNumber) {
+    public CANTalonMotorController(String deviceName, final int deviceNumber) {
         m_device = new WPI_TalonSRX(deviceNumber);
+        this.deviceName = deviceName;
 
         setCurrentLimit(15);
+        shouldReportDefaultCurrentLimit = true;
+    }
+
+    private void reportDefaultCurrentLimit() {
+        if (shouldReportDefaultCurrentLimit) {
+            Logger.get(Category.HAL)
+                    .logRaw(
+                            Severity.ERROR,
+                            deviceName
+                                    + " is using the default current limit, which is probably"
+                                    + " lower than you want. Call"
+                                    + " yourMotor.setCurrentLimit(yourCurrentLimitValue); to"
+                                    + " resolve this error.");
+            shouldReportDefaultCurrentLimit = false;
+        }
     }
 
     @Override
     public void set(final ControlMode mode, double value, double arbitraryFeedForward) {
+        reportDefaultCurrentLimit();
         com.ctre.phoenix.motorcontrol.ControlMode ctre_mode = null;
         boolean useFourTermSet = true;
         switch (mode) {
@@ -154,6 +173,7 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
         errorCodeToException(
                 ExceptionTarget.LOG, m_device.configContinuousCurrentLimit((int) ampsLimit));
         m_device.enableCurrentLimit(true);
+        shouldReportDefaultCurrentLimit = false;
     }
 
     @Override
@@ -168,6 +188,7 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
 
     @Override
     public void set(final double power) {
+        reportDefaultCurrentLimit();
         m_device.set(power);
     }
 
