@@ -4,23 +4,28 @@ import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.robot.reva_2025.constants.EncoderUtils;
 
 public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private MotorController elevatorLeftMotor;
     private MotorController elevatorRightMotor;
     private static final double MIN_HEIGHT = 0;
-    private static final double MAX_HEIGHT = 150;
-    private static final double NUDGE_AMOUNT = 5;
-    private double setPoint;
-    private final double thresholdConstant = 0; // TODO: Update me after testing!
+    private static final double MAX_HEIGHT = 150; // inches
+    private static final double NUDGE_AMOUNT = EncoderUtils.elevatorHeightToRotations(5);
+    private static final double THRESHOLD_CONSTANT =
+            EncoderUtils.elevatorHeightToRotations(0); // TODO: Update me after testing!
 
     // values are untested and are set to
 
-    public static record ElevatorStatus(double currentHeight) implements Status {}
+    public record ElevatorStatus(double currentHeight) implements Status {
+        public boolean isAtPosition(double target) {
+            return (Math.abs(target - currentHeight) < THRESHOLD_CONSTANT);
+        }
+    }
 
     public enum Position {
-        ELEVATOR_TOP(EncoderUtils.elevatorRotationsToHeight(MAX_HEIGHT)),
-        ELEVATOR_BOTTOM(EncoderUtils.elevatorRotationsToHeight(MIN_HEIGHT));
+        ELEVATOR_TOP(MAX_HEIGHT),
+        ELEVATOR_BOTTOM(MIN_HEIGHT);
 
         private double height;
 
@@ -42,12 +47,14 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         elevatorRightMotor = RobotProvider.instance.getMotor("elevator.rightMotor");
         elevatorRightMotor.follow(elevatorLeftMotor);
         elevatorLeftMotor.setSensorPosition(0);
-        setPoint = 0;
     }
 
+    /**
+     *
+     * @param setPosition in encoder units
+     */
     public void setPosition(double setPosition) {
         if (setPosition >= MIN_HEIGHT && setPosition <= MAX_HEIGHT) {
-            setPoint = setPosition;
             elevatorLeftMotor.set(MotorController.ControlMode.Position, setPosition);
         }
     }
@@ -70,9 +77,5 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     protected ElevatorStatus updateStatus() {
         return new ElevatorStatus(
                 EncoderUtils.elevatorRotationsToHeight(elevatorLeftMotor.getSensorPosition()));
-    }
-
-    public boolean isAtPosition() {
-        return (Math.abs(setPoint - elevatorLeftMotor.getSensorPosition()) < thresholdConstant);
     }
 }

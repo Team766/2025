@@ -41,7 +41,7 @@ public class ScoreCoral extends Procedure {
     public void run(Context context) {
 
         elevator.setPosition(levelHeight);
-        wrist.setAngle(angle);
+        wrist.setPosition(angle);
 
         context.runSync(
                 new AutoAlign(
@@ -51,7 +51,10 @@ public class ScoreCoral extends Procedure {
                                 new Rotation2d(position.getAngle())),
                         drive));
 
-        context.waitFor(() -> elevator.isAtPosition() && wrist.isAtPosition());
+        waitForStatusMatching(
+                context, Elevator.ElevatorStatus.class, status -> status.isAtPosition(levelHeight));
+        waitForStatusMatching(
+                context, Wrist.WristStatus.class, status -> status.isAtPosition(levelHeight));
 
         context.runSync(new RunCoralOut(coral, 0.5));
     }

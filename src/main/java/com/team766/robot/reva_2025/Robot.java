@@ -5,6 +5,7 @@ import com.team766.framework3.RuleEngine;
 import com.team766.hal.RobotConfigurator3;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
+import com.team766.robot.reva_2025.OI.OI;
 import com.team766.robot.reva_2025.mechanisms.*;
 
 public class Robot implements RobotConfigurator3 {
@@ -14,7 +15,9 @@ public class Robot implements RobotConfigurator3 {
     private Vision vision;
     private Wrist wrist;
     private Elevator elevator;
-    private CoralIntake coral;
+    private Climber climber;
+
+    // private CoralIntake coral;
 
     @Override
     public void initializeMechanisms() {
@@ -24,12 +27,13 @@ public class Robot implements RobotConfigurator3 {
         vision = new Vision();
         wrist = new Wrist();
         elevator = new Elevator();
-        coral = new CoralIntake();
+        climber = new Climber();
+        // coral = new CoralIntake();
     }
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, algaeIntake);
+        return new OI(drive, algaeIntake, wrist, climber, elevator);
     }
 
     @Override

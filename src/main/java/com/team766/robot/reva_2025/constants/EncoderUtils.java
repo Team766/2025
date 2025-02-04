@@ -1,4 +1,4 @@
-package com.team766.robot.reva_2025.mechanisms;
+package com.team766.robot.reva_2025.constants;
 
 /**
  * Utility class to convert between encoder units and physical units we use for different
@@ -48,20 +48,35 @@ public final class EncoderUtils {
 
     /**
      * Converts a target rotation (in degrees) to encoder units for the shoulder motor.
-     *
-     * public static double shoulderDegreesToRotations(double angle) {
-     * // angle * sprocket ratio * net gear ratio * (rotations / degrees)
-     * return angle * (52.0 / 12.0) * (64.0 / 30.0) * (4. / 1.) * (3. / 1.) * (1. / 360.);
-     * }
      */
+    public static double coralWristDegreesToRotations(double angle) {
+        // angle * sprocket ratio * net gear ratio * (rotations / degrees)
+        return angle * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.);
+    }
 
     /**
      * Converts the shoulder motor's rotations to degrees.
-     * public static double shoulderRotationsToDegrees(double rotations) {
-     * // rotations * sprocket ratio * net gear ratio * (degrees / rotations)
-     * return rotations * (12.0 / 52.0) * (30.0 / 64.0) * (1. / 4.) * (1. / 3.) * (360. / 1.);
-     * }
      */
+    public static double coralWristRotationsToDegrees(double rotations) {
+        // rotations * sprocket ratio * net gear ratio * (degrees / rotations)
+        return rotations * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.);
+    }
+
+    /**
+     * Converts a target rotation (in degrees) to encoder units for the shoulder motor.
+     */
+    public static double algaeArmDegreesToRotations(double angle) {
+        // angle * sprocket ratio * net gear ratio * (rotations / degrees)
+        return angle * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.);
+    }
+
+    /**
+     * Converts the shoulder motor's rotations to degrees.
+     */
+    public static double algaeArmRotationsToDegrees(double rotations) {
+        // rotations * sprocket ratio * net gear ratio * (degrees / rotations)
+        return rotations * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.);
+    }
 
     /**
      * Cosine law

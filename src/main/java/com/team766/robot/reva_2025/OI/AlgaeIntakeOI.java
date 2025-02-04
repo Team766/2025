@@ -1,4 +1,4 @@
-package com.team766.robot.reva_2025;
+package com.team766.robot.reva_2025.OI;
 
 import static com.team766.framework3.RulePersistence.*;
 

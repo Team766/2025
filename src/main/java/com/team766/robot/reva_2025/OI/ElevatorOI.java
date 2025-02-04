@@ -1,30 +1,30 @@
-package com.team766.robot.reva_2025;
+package com.team766.robot.reva_2025.OI;
 
 import static com.team766.framework3.RulePersistence.*;
 
 import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva_2025.constants.InputConstants;
-import com.team766.robot.reva_2025.mechanisms.Wrist;
+import com.team766.robot.reva_2025.mechanisms.Elevator;
 
-public class WristOI extends RuleGroup {
-    public WristOI(JoystickReader gamePad, Wrist wrist) {
+public class ElevatorOI extends RuleGroup {
+    public ElevatorOI(JoystickReader gamePad, Elevator elevator) {
         addRule(
-                "Pickup Coral",
+                "Elevator Up",
                 gamePad.whenButton(InputConstants.GAMEPAD_A_BUTTON),
                 ONCE,
-                wrist,
+                elevator,
                 () -> {
-                    wrist.setAngle(Wrist.WristPosition.PICKUP_CORAL);
+                    elevator.nudgeUp();;
                 });
 
         addRule(
-                "Place Coral",
+                "Elevator Down",
                 gamePad.whenButton(InputConstants.GAMEPAD_Y_BUTTON),
                 ONCE,
-                wrist,
+                elevator,
                 () -> {
-                    wrist.setAngle(Wrist.WristPosition.PLACE_CORAL);
+                    elevator.nudgeDown();;
                 });
     }
 }
