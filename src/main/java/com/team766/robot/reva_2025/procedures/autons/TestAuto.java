@@ -13,7 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 public class TestAuto extends PathSequenceAuto {
     public TestAuto(SwerveDrive drive, Elevator elevator, Wrist wrist, CoralIntake intake) {
         super(drive, new Pose2d());
-        addPath("Inner Cage Start Blue A to Reef 2");
+        addPath("Inner Cage Start A to Reef 2");
         addProcedure(new ScoreCoral(CoralConstant.A_B, 0, 0, drive, elevator, wrist, intake));
         addPath("Reef 2 to Coral Station 1");
         addProcedure(new IntakeCoral());

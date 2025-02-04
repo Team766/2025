@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Inner Cage Start Blue A to Reef 2"
+            "pathName": "Inner Cage Start A to Reef 2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
           }
         },
         {

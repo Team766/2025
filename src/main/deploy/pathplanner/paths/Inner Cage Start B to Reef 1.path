@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3566611842105263,
-        "y": 0.8883223684210532
+        "x": 7.572286184210526,
+        "y": 6.141776315789473
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.223273026315789,
-        "y": 0.840213815789474
+        "x": 6.918009868421052,
+        "y": 6.28610197368421
       },
       "isLocked": false,
-      "linkedName": "Coral Station 2"
+      "linkedName": "Inner Cage Start B"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 4.053865131578948
       },
       "prevControl": {
-        "x": 7.485690789473682,
-        "y": 2.639473684210527
+        "x": 7.639638157894736,
+        "y": 3.7171052631578947
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "2025",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -126.43085812016241
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

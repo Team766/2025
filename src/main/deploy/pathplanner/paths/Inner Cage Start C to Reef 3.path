@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3566611842105263,
-        "y": 0.8883223684210532
+        "x": 7.591529605263157,
+        "y": 7.267516447368421
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.223273026315789,
-        "y": 0.840213815789474
+        "x": 6.590871710526316,
+        "y": 7.01735197368421
       },
       "isLocked": false,
-      "linkedName": "Coral Station 2"
+      "linkedName": "Inner Cage Start C"
     },
     {
       "anchor": {
-        "x": 6.148273026315788,
-        "y": 4.053865131578948
+        "x": 3.8005756578947363,
+        "y": 5.545230263157895
       },
       "prevControl": {
-        "x": 7.485690789473682,
-        "y": 2.639473684210527
+        "x": 4.27203947368421,
+        "y": 6.805674342105262
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef 1"
+      "linkedName": "Reef 3"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -59.99999999999999
   },
   "reversed": false,
   "folder": "2025",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -126.43085812016241
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
