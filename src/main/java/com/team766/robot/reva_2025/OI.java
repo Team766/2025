@@ -10,7 +10,7 @@ import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.*;
 
 public class OI extends RuleEngine {
-    public OI(SwerveDrive drive, AlgaeIntake algaeIntake) {
+    public OI(SwerveDrive drive, AlgaeIntake algaeIntake, Wrist wrist, Elevator elevator, CoralIntake coralIntake) {
         final JoystickReader leftJoystick =
                 RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         final JoystickReader rightJoystick =
@@ -22,6 +22,7 @@ public class OI extends RuleEngine {
 
         addRules(new DriverOI(leftJoystick, rightJoystick, drive));
         addRules(new AlgaeIntakeOI(boxopGamepad, algaeIntake));
+        addRules(new WristOI(boxopGamepad, wrist));
     }
 
     @Override

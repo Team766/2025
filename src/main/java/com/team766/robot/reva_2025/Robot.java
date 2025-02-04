@@ -14,7 +14,7 @@ public class Robot implements RobotConfigurator3 {
     private Vision vision;
     private Wrist wrist;
     private Elevator elevator;
-    private CoralIntake coral;
+    private CoralIntake coralIntake;
 
     @Override
     public void initializeMechanisms() {
@@ -24,12 +24,12 @@ public class Robot implements RobotConfigurator3 {
         vision = new Vision();
         wrist = new Wrist();
         elevator = new Elevator();
-        coral = new CoralIntake();
+        coralIntake = new CoralIntake();
     }
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, algaeIntake);
+        return new OI(drive, algaeIntake, wrist, elevator, coralIntake);
     }
 
     @Override
