@@ -15,7 +15,8 @@ public class ElevatorOI extends RuleGroup {
                 ONCE,
                 elevator,
                 () -> {
-                    elevator.nudgeUp();;
+                    elevator.nudgeUp();
+                    ;
                 });
 
         addRule(
@@ -24,7 +25,8 @@ public class ElevatorOI extends RuleGroup {
                 ONCE,
                 elevator,
                 () -> {
-                    elevator.nudgeDown();;
+                    elevator.nudgeDown();
+                    ;
                 });
     }
 }

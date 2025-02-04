@@ -63,17 +63,9 @@ public class DebugOI extends RuleGroup {
         // simple one-button controls for intake
         // used for testing and tuning
         // allows for running intake at default intake/outtake speeds.
-        addRule(
-                "Debug Algae Intake In",
-                macropad.whenButton(5),
-                algae,
-                () -> algae.in());
-        addRule(
-                "Debug Algae Intake Out",
-                macropad.whenButton(6),
-                algae,
-                () -> algae.out());
-                        
+        addRule("Debug Algae Intake In", macropad.whenButton(5), algae, () -> algae.in());
+        addRule("Debug Algae Intake Out", macropad.whenButton(6), algae, () -> algae.out());
+
         // fine-grained control of the climber
         // used for testing and tuning
         // press down the climber control button and nudge the climber up and down
@@ -115,20 +107,20 @@ public class DebugOI extends RuleGroup {
                         });
 
         addRule("Debug Control Climber", macropad.whenButton(4))
-        .whenTriggering(
-                new RuleGroup() {
-                        {
-                        addRule(
-                                "Debug Climber Up",
-                                macropad.whenButton(InputConstants.NUDGE_UP),
-                                climber,
-                                () -> climber.climberUp());
-                        addRule(
-                                "Debug Climber Down",
-                                macropad.whenButton(InputConstants.NUDGE_DOWN),
-                                climber,
-                                () -> climber.climberDown());
-                        }
-                });
-        }
+                .whenTriggering(
+                        new RuleGroup() {
+                            {
+                                addRule(
+                                        "Debug Climber Up",
+                                        macropad.whenButton(InputConstants.NUDGE_UP),
+                                        climber,
+                                        () -> climber.climberUp());
+                                addRule(
+                                        "Debug Climber Down",
+                                        macropad.whenButton(InputConstants.NUDGE_DOWN),
+                                        climber,
+                                        () -> climber.climberDown());
+                            }
+                        });
+    }
 }

@@ -10,7 +10,12 @@ import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.*;
 
 public class OI extends RuleEngine {
-    public OI(SwerveDrive drive, AlgaeIntake algaeIntake, Wrist wrist, Climber climber, Elevator elevator) {
+    public OI(
+            SwerveDrive drive,
+            AlgaeIntake algaeIntake,
+            Wrist wrist,
+            Climber climber,
+            Elevator elevator) {
         final JoystickReader leftJoystick =
                 RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         final JoystickReader rightJoystick =
