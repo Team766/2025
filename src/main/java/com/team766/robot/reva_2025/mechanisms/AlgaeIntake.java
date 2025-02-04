@@ -1,4 +1,4 @@
-package com.team766.robot.reva_2025.mechanisms;
+    package com.team766.robot.reva_2025.mechanisms;
 
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
@@ -19,9 +19,9 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     public record AlgaeIntakeStatus(State state, Level level) implements Status {}
 
     public AlgaeIntake() {
-        intakeMotor = RobotProvider.instance.getMotor("AlgaeIntake.RollerMotor");
-        armMotor = RobotProvider.instance.getMotor("AlgaeArm.RollerMotor");
-        shooterMotor = RobotProvider.instance.getMotor("AlgaeShooter.RollerMotor");
+        intakeMotor = RobotProvider.instance.getMotor("AlgaeIntake.IntakeRollerMotor");
+        armMotor = RobotProvider.instance.getMotor("AlgaeIntake.ArmRollerMotor");
+        shooterMotor = RobotProvider.instance.getMotor("AlgaeIntake.ShooterRollerMotor");
 
         level = Level.Stow;
     }
