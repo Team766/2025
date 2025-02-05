@@ -7,8 +7,6 @@ import com.team766.TestCase3;
 import com.team766.framework3.StatusBus.Entry;
 import com.team766.framework3.test.FakeMechanism;
 import com.team766.framework3.test.FakeMechanism.FakeStatus;
-import com.team766.hal.RobotProvider;
-import com.team766.robot.reva.procedures.PickupNote.status;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
 import java.util.Set;
@@ -61,11 +59,11 @@ public class MechanismTest extends TestCase3 {
 
     @Test
     public void testStatusSquelching() {
-        var mech = new FakeMechanism() {
-            @Override
-            protected void onMechanismIdle() {
-            }
-        };
+        var mech =
+                new FakeMechanism() {
+                    @Override
+                    protected void onMechanismIdle() {}
+                };
 
         testClock.setTime(1000.0);
         step();
@@ -74,43 +72,45 @@ public class MechanismTest extends TestCase3 {
                 new FakeStatus(-1), StatusBus.getInstance().getStatusOrThrow(FakeStatus.class));
 
         var cmd =
-             new ContextImpl(
-                new FunctionalProcedure(
-                        Set.of(mech),
-                        context -> {
-                            mech.mutateMechanism(0);
-                        }));
+                new ContextImpl(
+                        new FunctionalProcedure(
+                                Set.of(mech),
+                                context -> {
+                                    mech.mutateMechanism(0);
+                                }));
         cmd.schedule();
 
         testClock.tick(0.1);
         step();
         step();
         assertEquals(1000.1, testClock.getTime());
-        Optional<Entry<FakeStatus>> statusEntry = StatusBus.getInstance().getStatusEntry(FakeStatus.class);
-        assertEquals(
-            new FakeStatus(0), statusEntry.get().status());
-        assertEquals(
-                1000.1, statusEntry.get().timestamp(), 0.05);
-        
+        Optional<Entry<FakeStatus>> statusEntry =
+                StatusBus.getInstance().getStatusEntry(FakeStatus.class);
+        assertEquals(new FakeStatus(0), statusEntry.get().status());
+        assertEquals(1000.1, statusEntry.get().timestamp(), 0.05);
+
         testClock.tick(0.1);
         step();
-        assertEquals(1000.2, testClock.getTime(),0.05);
+        assertEquals(1000.2, testClock.getTime(), 0.05);
         statusEntry = StatusBus.getInstance().getStatusEntry(FakeStatus.class);
-        assertEquals(1000.1, statusEntry.get().timestamp()); // nothing should get published from 1000.2
+        assertEquals(
+                1000.1, statusEntry.get().timestamp()); // nothing should get published from 1000.2
 
         testClock.tick(0.7);
         step();
         assertEquals(1000.9, testClock.getTime(), 0.05);
         statusEntry = StatusBus.getInstance().getStatusEntry(FakeStatus.class);
-        assertEquals(1000.1, statusEntry.get().timestamp(), 0.05); // nothing should get published from 1000.9
+        assertEquals(
+                1000.1,
+                statusEntry.get().timestamp(),
+                0.05); // nothing should get published from 1000.9
 
         testClock.tick(0.1);
         step();
         assertEquals(1001.0, testClock.getTime(), 0.05);
         statusEntry = StatusBus.getInstance().getStatusEntry(FakeStatus.class);
         assertEquals(1001.0, statusEntry.get().timestamp(), 0.05);
-        assertEquals(
-            new FakeStatus(0), StatusBus.getInstance().getStatusOrThrow(FakeStatus.class));
+        assertEquals(new FakeStatus(0), StatusBus.getInstance().getStatusOrThrow(FakeStatus.class));
     }
 
     /// Test that checkContextReservation throws an exception when called from a Procedure which has
