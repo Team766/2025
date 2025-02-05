@@ -40,6 +40,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         shooterMotor = RobotProvider.instance.getMotor("algaeIntake.ShooterMotor");
 
         level = Level.Stow;
+        state = State.Stop;
         armMotor.setSensorPosition(level.getAngle());
     }
 
