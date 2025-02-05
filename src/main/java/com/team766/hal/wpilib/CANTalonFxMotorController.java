@@ -273,9 +273,11 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
         // supported
         // on FusedCANcoder.
         // TODO: This will require further investiation.
-        LoggerExceptionUtils.logException(
-                new UnsupportedOperationException(
-                        "setSelectedFeedbackSensor() is not currently supported."));
+        if (inverted) {
+            LoggerExceptionUtils.logException(
+                    new UnsupportedOperationException(
+                            "setSelectedFeedbackSensor() is not currently supported."));
+        }
     }
 
     @Override
