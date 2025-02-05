@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public abstract class MechanismWithStatus<S extends Record & Status> extends Mechanism
         implements StatusSource<S> {
-    private final RateLimiter rateLimiter = new RateLimiter(1.0);
+    private final RateLimiter statusRateLimiter = new RateLimiter(1.0);
     private S status = null;
 
     protected final S getStatus() {
@@ -21,7 +21,7 @@ public abstract class MechanismWithStatus<S extends Record & Status> extends Mec
         S newStatus = updateStatus();
         // Only publish the status if it has changed or if enough time has elapsed since the last
         // publish
-        if (rateLimiter.next() || !Objects.equals(status, newStatus)) {
+        if (statusRateLimiter.next() || !Objects.equals(status, newStatus)) {
             StatusBus.getInstance().publishStatus(newStatus);
         }
         status = newStatus;
