@@ -55,15 +55,11 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     /**
      *
-     * @param setPosition in encoder units
+     * @param setPosition in degrees
      */
     public void setPosition(double setPosition) {
-        TalonFX talon = (TalonFX) wristMotor;
-        double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getStatus().currentAngle()));
-        PositionDutyCycle positionRequest =
-                new PositionDutyCycle(EncoderUtils.coralWristRotationsToDegrees(setPosition));
-        positionRequest.FeedForward = ff;
-        talon.setControl(positionRequest);
+        double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(setPosition));
+        wristMotor.set(MotorController.ControlMode.Position, EncoderUtils.coralWristDegreesToRotations(setPosition), ff);
     }
 
     public void setPosition(Position position) {

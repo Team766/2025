@@ -95,11 +95,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
      */
     public void setPosition(double setPosition) {
         if (setPosition >= MIN_ANGLE && setPosition <= MAX_ANGLE) {
-            TalonFX talon = (TalonFX) armMotor;
-            double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getStatus().angleDeg()));
-            PositionDutyCycle positionRequest = new PositionDutyCycle(setPosition);
-            positionRequest.FeedForward = ff;
-            talon.setControl(positionRequest);
+            double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(setPosition));
+            armMotor.set(MotorController.ControlMode.Position, EncoderUtils.algaeArmDegreesToRotations(setPosition), ff);
         }
     }
 
