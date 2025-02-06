@@ -4,6 +4,7 @@ import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.robot.reva_2025.constants.InputConstants;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
     private MotorController intakeMotor;
@@ -11,6 +12,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     private MotorController shooterMotor;
     private State state;
     private Level level;
+    private double targetAngle;
 
     // TODO: Intake and shooter motor should drive when we shoot. Shooter motor should be slgithly
     // slower than the intake motor
@@ -19,9 +21,9 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     public record AlgaeIntakeStatus(State state, Level level) implements Status {}
 
     public AlgaeIntake() {
-        intakeMotor = RobotProvider.instance.getMotor("AlgaeIntake.IntakeRollerMotor");
-        armMotor = RobotProvider.instance.getMotor("AlgaeIntake.ArmRollerMotor");
-        shooterMotor = RobotProvider.instance.getMotor("AlgaeIntake.ShooterRollerMotor");
+        intakeMotor = RobotProvider.instance.getMotor(InputConstants.ALGAEINTAKE_INTAKEROLLERMOTOR);
+        armMotor = RobotProvider.instance.getMotor(InputConstants.ALGAEINTAKE_ARMROLLERMOTOR);
+        shooterMotor = RobotProvider.instance.getMotor(InputConstants.ALGAEINTAKE_SHOOTERROLLERMOTOR);
 
         level = Level.Stow;
     }
@@ -30,76 +32,81 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         In(1),
         Idle(0),
         Out(-1),
-        Stop(0),
         Shoot(1);
-
-        private final double power;
-
-        State(double power) {
-            this.power = power;
+        
+        private final double intakePower;
+        private final double shooterPower;
+        State(double intakePower, double shooterPower) {
+            this.intakePower = intakePower;
+            this.shooterPower = shooterPower;
         }
 
-        private double getPower() {
-            return power;
+        private double getIntakePower() {
+            return intakePower;
+        }
+        private double getShooterPower() {
+            return shooterPower;
         }
     }
 
     public enum Level {
-        GroundIntake(20, -1),
-        L2L3AlgaeIntake(90, -1),
-        L3L4AlgaeIntake(180, 1),
+        GroundIntake(20, 1),
+        L2L3AlgaeIntake(90, 1),
+        L3L4AlgaeIntake(180, -1),
         Stow(0, 0);
 
         private final double angle;
-        private final double power;
+        private final double direction;
 
-        Level(double angle, double power) {
+        Level(double angle, double direction) {
             this.angle = angle;
-            this.power = power;
+            this.direction = direction;
         }
 
         private double getAngle() {
             return angle;
         }
 
-        private double getPower() {
-            return power;
+        private double getDirection() {
+            return direction;
         }
     }
 
     public void setArmAngle(Level level) {
-        armMotor.set(MotorController.ControlMode.Position, level.getAngle());
-        this.level = level;
+       // armMotor.set(MotorController.ControlMode.Position, level.getAngle());
+        setArmAngle(level.getAngle());
+    }
+
+    public void setArmAngle(double angle) {
+       // armMotor.set(MotorController.ControlMode.Position, angle);
+        this.targetAngle = angle;
+    }
+
     }
 
     public void out() {
         state = State.Out;
-        intakeMotor.set(state.getPower());
+        intakeMotor.set(state.getIntakePower());
     }
 
     public void in() {
         state = State.In;
-        intakeMotor.set(state.getPower());
-    }
-
-    public void stop() {
-        state = State.Stop;
-        intakeMotor.set(state.getPower());
+        intakeMotor.set(state.getIntakePower());
     }
 
     public void Idle() {
         state = State.Idle;
-        intakeMotor.set(state.getPower()); 
+        intakeMotor.set(state.getIntakePower()); 
     }
 
     public void shooterOn() {
         state = State.Shoot;
-        shooterMotor.set(state.getPower());
+        shooterMotor.set(state.getIntakePower());
     }
 
     public void shooterOff() {
-        state = State.Stop;
-        shooterMotor.set(state.getPower());
+        state = State.Idle;
+        shooterMotor.set(state.getIntakePower());
     }
 
     protected AlgaeIntakeStatus updateStatus() {
