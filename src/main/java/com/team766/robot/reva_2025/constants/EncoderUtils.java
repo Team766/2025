@@ -67,7 +67,7 @@ public final class EncoderUtils {
      */
     public static double algaeArmDegreesToRotations(double angle) {
         // angle * sprocket ratio * net gear ratio * (rotations / degrees)
-        return angle * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.);
+        return angle * (100. / 1.) * (3. / 1.) * (1. / 360.);
     }
 
     /**
@@ -75,7 +75,7 @@ public final class EncoderUtils {
      */
     public static double algaeArmRotationsToDegrees(double rotations) {
         // rotations * sprocket ratio * net gear ratio * (degrees / rotations)
-        return rotations * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.);
+        return rotations * (1. / 100.) * (1. / 3.) * (360. / 1.);
     }
 
     /**

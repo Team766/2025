@@ -10,14 +10,16 @@ import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
 import com.team766.robot.reva_2025.constants.EncoderUtils;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
     private MotorController intakeMotor;
     private MotorController armMotor;
     private MotorController shooterMotor;
     private State state;
     private Level level;
-    private static final double MIN_ANGLE = 0;
-    private static final double MAX_ANGLE = 150;
+    private static final double MIN_ANGLE = -60;
+    private static final double MAX_ANGLE = 90;
     private static final double NUDGE_AMOUNT = 5;
     private static final double THRESHOLD_CONSTANT = 0; // TODO: Update me after testing!
 
@@ -41,7 +43,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
         level = Level.Stow;
         state = State.Stop;
-        armMotor.setSensorPosition(level.getAngle());
+        armMotor.setSensorPosition(EncoderUtils.algaeArmDegreesToRotations(level.getAngle()));
     }
 
     public enum State {
@@ -70,7 +72,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         Shoot(60, -1),
         L2L3AlgaeIntake(90, -1),
         L3L4AlgaeIntake(180, 1),
-        Stow(0, 0);
+        Stow(-60, 0);
 
         private final double angle;
         private final double power;
@@ -94,6 +96,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
      * @param setPosition in degrees
      */
     public void setPosition(double setPosition) {
+        SmartDashboard.putNumber("Algae Intake Set Point", setPosition);
         if (setPosition >= MIN_ANGLE && setPosition <= MAX_ANGLE) {
             double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(setPosition));
             armMotor.set(MotorController.ControlMode.Position, EncoderUtils.algaeArmDegreesToRotations(setPosition), ff);
