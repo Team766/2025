@@ -46,9 +46,10 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     public enum Level {
         GroundIntake(20, -1),
-        L2L3AlgaeIntake(90, -1),
-        L3L4AlgaeIntake(180, 1),
-        Stow(0, 0);
+        L2AlgaeIntake(90, -1),
+        L3AlgaeIntake(180, 1),
+        // Shoot was Stow previously; set angle & power to the appropriate
+        Shoot(0, 0);
 
         private final double angle;
         private final double power;
@@ -89,7 +90,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     public void Idle() {
         state = State.Idle;
-        intakeMotor.set(state.getPower()); 
+        intakeMotor.set(state.getPower());
     }
 
     public void shooterOn() {

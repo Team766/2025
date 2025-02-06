@@ -1,6 +1,5 @@
 package com.team766.framework3;
 
-import java.lang.reflect.Method;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -33,19 +32,19 @@ public class Conditions {
             return toggleValue;
         }
     }
-    
+
     public static final class LogicalAnd implements BooleanSupplier {
         private final BooleanSupplier firstPredicate;
         private final BooleanSupplier secondPredicate;
-    
+
         public LogicalAnd(BooleanSupplier first, BooleanSupplier second) {
             firstPredicate = first;
             secondPredicate = second;
         }
-        
+
         @Override
         public boolean getAsBoolean() {
-            return first.getAsBoolean() && second.getAsBoolean()
+            return firstPredicate.getAsBoolean() && secondPredicate.getAsBoolean();
         }
     }
 

@@ -14,9 +14,14 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     public enum WristPosition {
 
-        // TODO: update all of these to real things!
-        PICKUP_CORAL(0),
-        PLACE_CORAL(180);
+        // TODO: Change these angles to actual values
+        CORAL_INTAKE(0),
+        CORAL_L2_PREP(90),
+        CORAL_L2_PLACE(60),
+        CORAL_L3_PREP(120),
+        CORAL_L3_PLACE(90),
+        CORAL_L4_PREP(180),
+        CORAL_L4_PLACE(120);
 
         private final double angle;
 

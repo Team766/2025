@@ -10,10 +10,10 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private MotorController elevatorRightMotor;
     private static final double MIN_HEIGHT = 0;
     private static final double MAX_HEIGHT = 150;
-    private static final double L1_HEIGHT = 1; //TEMPORARY VALUE
-    private static final double L2_HEIGHT = 2; //TEMPORARY VALUE
-    private static final double L3_HEIGHT = 3; //TEMPORARY VALUE
-    private static final double L4_HEIGHT = 4; //TEMPORARY VALUE
+    private static final double L1_HEIGHT = 1; // TEMPORARY VALUE
+    private static final double L2_HEIGHT = 2; // TEMPORARY VALUE
+    private static final double L3_HEIGHT = 3; // TEMPORARY VALUE
+    private static final double L4_HEIGHT = 4; // TEMPORARY VALUE
     private static final double NUDGE_AMOUNT = 5;
     private double setPoint;
     private final double thresholdConstant = 0; // TODO: Update me after testing!
