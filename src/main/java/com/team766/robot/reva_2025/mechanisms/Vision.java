@@ -32,9 +32,9 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
         cameraList =
                 new GetOrinRawValue[] {
-                    new GetOrinRawValue("camUC762W"),
+                    // new GetOrinRawValue("camUC762W"),
                     new GetOrinRawValue("cam199"),
-                    // new GetOrinRawValue("green"),
+                    new GetOrinRawValue("left_back"),
                     // new GetOrinRawValue("blue")
                 };
     }

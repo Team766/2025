@@ -377,10 +377,11 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                 if (cameraTags.size() > 0) {
                     for (TimestampedApriltag tag : cameraTags) {
                         tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
+                        SmartDashboard.putNumber("Vision Heading", Rotation2d.fromDegrees(heading).getDegrees());
                         SmartDashboard.putNumber("Vision Pos", tag.toRobotPosition(Rotation2d.fromDegrees(heading)).getX());
                     }
                     kalmanFilter.updateWithVisionMeasurement(
-                            tagPoses, cameraTags.get(0).collectTime());
+                            tagPoses, /*RobotProvider.instance.getClock().getTime());*/ cameraTags.get(0).collectTime());
                 }
             }
         }

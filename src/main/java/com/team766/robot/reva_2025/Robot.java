@@ -52,7 +52,7 @@ public class Robot implements RobotConfigurator3 {
             // define one or more different autonomous modes with it like this:
             //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
             //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
-            new AutonomousMode("AutoAlign", () -> new AutoAlign(new Pose2d(0, 0, new Rotation2d()), drive))
+            new AutonomousMode("AutoAlign", () -> new AutoAlign(new Pose2d(1, 0, new Rotation2d()), drive))
         };
     }
 }
