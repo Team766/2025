@@ -302,7 +302,9 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
     @Override
     public void setSensorInverted(final boolean inverted) {
         sensorInverted = inverted;
-        revErrorToException(ExceptionTarget.LOG, sensorInvertedSetter.apply(inverted));
+        if (inverted) {
+            revErrorToException(ExceptionTarget.LOG, sensorInvertedSetter.apply(inverted));
+        }
     }
 
     @Override

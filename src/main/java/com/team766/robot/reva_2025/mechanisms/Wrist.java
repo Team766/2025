@@ -1,7 +1,5 @@
 package com.team766.robot.reva_2025.mechanisms;
 
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
@@ -59,7 +57,10 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
      */
     public void setPosition(double setPosition) {
         double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(setPosition));
-        wristMotor.set(MotorController.ControlMode.Position, EncoderUtils.coralWristDegreesToRotations(setPosition), ff);
+        wristMotor.set(
+                MotorController.ControlMode.Position,
+                EncoderUtils.coralWristDegreesToRotations(setPosition),
+                ff);
     }
 
     public void setPosition(Position position) {

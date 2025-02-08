@@ -1,7 +1,5 @@
 package com.team766.robot.reva_2025.mechanisms;
 
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
@@ -9,7 +7,6 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
 import com.team766.robot.reva_2025.constants.EncoderUtils;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
@@ -68,10 +65,10 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     }
 
     public enum Level {
-        GroundIntake(20, -1),
-        Shoot(60, -1),
-        L2L3AlgaeIntake(90, -1),
-        L3L4AlgaeIntake(180, 1),
+        GroundIntake(-30, -1),
+        Shoot(-15, -1),
+        L2L3AlgaeIntake(20, -1),
+        L3L4AlgaeIntake(70, 1),
         Stow(-60, 0);
 
         private final double angle;
@@ -99,7 +96,10 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         SmartDashboard.putNumber("Algae Intake Set Point", setPosition);
         if (setPosition >= MIN_ANGLE && setPosition <= MAX_ANGLE) {
             double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(setPosition));
-            armMotor.set(MotorController.ControlMode.Position, EncoderUtils.algaeArmDegreesToRotations(setPosition), ff);
+            armMotor.set(
+                    MotorController.ControlMode.Position,
+                    EncoderUtils.algaeArmDegreesToRotations(setPosition),
+                    ff);
         }
     }
 
@@ -116,6 +116,10 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     public void nudgeDown() {
         double nudgePosition = getStatus().angleDeg() - NUDGE_AMOUNT;
         setPosition(nudgePosition);
+    }
+
+    public void nudgeNoPID(double value) {
+        armMotor.set(value);
     }
 
     public void out() {

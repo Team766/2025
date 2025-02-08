@@ -6,6 +6,7 @@ import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
+import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 import com.team766.robot.reva_2025.mechanisms.Climber;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
@@ -47,6 +48,27 @@ public class DebugOI extends RuleGroup {
                 .whenTriggering(
                         new RuleGroup() {
                             {
+                                addRule("Debug Algae Nudge No PID", macropad.whenButton(7))
+                                        .whenTriggering(
+                                                new RuleGroup() {
+                                                    {
+                                                        addRule(
+                                                                        "Debug Algae Nudge No PID Up",
+                                                                        macropad.whenButton(
+                                                                                InputConstants
+                                                                                        .NUDGE_UP),
+                                                                        algae,
+                                                                        () -> algae.nudgeNoPID(0.2))
+                                                                .withFinishedTriggeringProcedure(
+                                                                        algae, () -> algae.stop());
+                                                        addRule(
+                                                                "Debug Algae Nudge No PID Down",
+                                                                macropad.whenButton(
+                                                                        InputConstants.NUDGE_DOWN),
+                                                                algae,
+                                                                () -> algae.nudgeNoPID(-0.2));
+                                                    }
+                                                });
                                 addRule(
                                         "Debug Algae Nudge Up",
                                         macropad.whenButton(InputConstants.NUDGE_UP),
@@ -65,6 +87,33 @@ public class DebugOI extends RuleGroup {
         // allows for running intake at default intake/outtake speeds.
         addRule("Debug Algae Intake In", macropad.whenButton(5), algae, () -> algae.in());
         addRule("Debug Algae Intake Out", macropad.whenButton(6), algae, () -> algae.out());
+        addRule("Debug Algae Shoot", macropad.whenButton(7), algae, () -> algae.shooterOn());
+
+        addRule(
+                "Debug Algae Stow",
+                macropad.whenButton(9),
+                algae,
+                () -> algae.setArmAngle(Level.Stow));
+        addRule(
+                "Debug Algae Ground Intake",
+                macropad.whenButton(13),
+                algae,
+                () -> algae.setArmAngle(Level.GroundIntake));
+        addRule(
+                "Debug Algae Shoot Position",
+                macropad.whenButton(14),
+                algae,
+                () -> algae.setArmAngle(Level.Shoot));
+        addRule(
+                "Debug Algae L2L3",
+                macropad.whenButton(15),
+                algae,
+                () -> algae.setArmAngle(Level.L2L3AlgaeIntake));
+        addRule(
+                "Debug Algae L3L4",
+                macropad.whenButton(16),
+                algae,
+                () -> algae.setArmAngle(Level.L3L4AlgaeIntake));
 
         // fine-grained control of the climber
         // used for testing and tuning
@@ -81,7 +130,7 @@ public class DebugOI extends RuleGroup {
                                 addRule(
                                         "Debug Elevator Nudge Down",
                                         macropad.whenButton(InputConstants.NUDGE_DOWN),
-                                        climber,
+                                        elevator,
                                         () -> elevator.nudgeDown());
                             }
                         });
