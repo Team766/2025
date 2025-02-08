@@ -13,12 +13,16 @@ import com.team766.robot.reva_2025.mechanisms.Wrist;
 
 public class BoxOpOI extends RuleGroup {
     public BoxOpOI(
-            JoystickReader boxopGamepad, AlgaeIntake algaeIntake, Elevator elevator, Wrist wrist) {
+            JoystickReader boxopGamepad,
+            AlgaeIntake algaeIntake,
+            Elevator elevator,
+            Wrist wrist,
+            Climber climber) {
 
         // ALGAE INTAKE & SHOOTER
 
         addRule(
-                "In for Intake",
+                "Algae Intake to Shooter",
                 boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_TO_SHOOTER),
                 ONCE_AND_HOLD,
                 algaeIntake,
@@ -27,7 +31,7 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                "Out for Intake",
+                "Algae Outtake (shooter?)",
                 boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_SHOOTER),
                 ONCE_AND_HOLD,
                 algaeIntake,
@@ -36,7 +40,7 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                " Shoot for Level",
+                "Algae to Shooting Level",
                 boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_SHOOTER),
                 ONCE,
                 algaeIntake,
@@ -45,7 +49,7 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                " Ground for Level",
+                "Algae Intake to Ground Level",
                 boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_GROUND),
                 ONCE,
                 algaeIntake,
@@ -54,7 +58,7 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                " Level 2 for Level",
+                "Algae Intake to Level 2",
                 boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_L2),
                 ONCE,
                 algaeIntake,
@@ -63,7 +67,7 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                " Level 3 for Level",
+                "Algae Intake to Level 3",
                 boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_L3),
                 ONCE,
                 algaeIntake,
@@ -85,7 +89,7 @@ public class BoxOpOI extends RuleGroup {
         // ELEVATOR
 
         addRule(
-                "Move Elevator L1",
+                "Move Elevator L1 (Intake?)",
                 new LogicalAnd(
                         boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L1),
                         boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER)),
@@ -93,10 +97,11 @@ public class BoxOpOI extends RuleGroup {
                 elevator,
                 () -> {
                     elevator.setPosition(Elevator.Position.ELEVATOR_L1);
+                    wrist.setAngle(Wrist.WristPosition.CORAL_INTAKE);
                 });
 
         addRule(
-                "Move Elevator L2",
+                "Move Elevator & Wrist L2",
                 new LogicalAnd(
                         boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L2),
                         boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER)),
@@ -107,7 +112,7 @@ public class BoxOpOI extends RuleGroup {
                     wrist.setAngle(Wrist.WristPosition.CORAL_L2_PREP);
                 });
         addRule(
-                "Move Elevator L3",
+                "Move Elevator & Wrist L3",
                 new LogicalAnd(
                         boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L3),
                         boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER)),
@@ -118,7 +123,7 @@ public class BoxOpOI extends RuleGroup {
                     wrist.setAngle(Wrist.WristPosition.CORAL_L3_PREP);
                 });
         addRule(
-                "Move Elevator L4",
+                "Move Elevator & Wrist L4",
                 new LogicalAnd(
                         boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L4),
                         boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER)),
@@ -127,6 +132,64 @@ public class BoxOpOI extends RuleGroup {
                 () -> {
                     elevator.setPosition(Elevator.Position.ELEVATOR_L4);
                     wrist.setAngle(Wrist.WristPosition.CORAL_L4_PREP);
+                });
+        addRule(
+                "Nudge Elevator Up",
+                boxopGamepad.whenAxisMoved(InputConstants.AXIS_ELEVATOR_FINETUNE),
+                ONCE_AND_HOLD,
+                elevator,
+                () -> {
+                    elevator.nudgeUp(boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_FINETUNE));
+                });
+        addRule(
+                "Nudge Elevator Down",
+                boxopGamepad.whenAxisMoved(InputConstants.AXIS_ELEVATOR_FINETUNE),
+                ONCE_AND_HOLD,
+                elevator,
+                () -> {
+                    elevator.nudgeDown(boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_FINETUNE));
+                });
+
+        // WRIST
+
+        addRule(
+                "Nudge Wrist Up",
+                boxopGamepad.whenAxisMoved(InputConstants.AXIS_WRIST_FINETUNE),
+                ONCE_AND_HOLD,
+                wrist,
+                () -> {
+                    wrist.nudgeUp(boxopGamepad.getAxis(InputConstants.AXIS_WRIST_FINETUNE));
+                });
+        addRule(
+                "Nudge Wrist Down",
+                boxopGamepad.whenAxisMoved(InputConstants.AXIS_WRIST_FINETUNE),
+                ONCE_AND_HOLD,
+                wrist,
+                () -> {
+                    wrist.nudgeDown(boxopGamepad.getAxis(InputConstants.AXIS_WRIST_FINETUNE));
+                });
+
+        // CLIMBER
+
+        addRule(
+                "Climber Up",
+                new LogicalAnd(
+                        boxopGamepad.whenButton(InputConstants.BUTTON_CLIMB),
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON)),
+                ONCE,
+                climber,
+                () -> {
+                    climber.climbUp();
+                });
+        addRule(
+                "Climber Down",
+                new LogicalAnd(
+                        boxopGamepad.whenButton(InputConstants.BUTTON_CLIMB),
+                        boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER)),
+                ONCE,
+                climber,
+                () -> {
+                    climber.climbDown();
                 });
     }
 }

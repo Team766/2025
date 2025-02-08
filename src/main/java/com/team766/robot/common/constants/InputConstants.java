@@ -16,6 +16,7 @@ public class InputConstants {
     public static final int BUTTON_CROSS_WHEELS = 3;
     public static final int BUTTON_RESET_GYRO = 9;
     public static final int BUTTON_RESET_POS = 15;
+    public static final int JOYSTICK_LEFT_BUTTON = 3;
 
     // gamepad buttons
     public static final int GAMEPAD_LEFT_STICK_XAXIS = 0;
