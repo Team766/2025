@@ -14,9 +14,8 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     private ValueProvider<Double> ffGain;
 
-    private static final double NUDGE_AMOUNT = EncoderUtils.coralWristDegreesToRotations(5);
-    private static final double THRESHOLD_CONSTANT =
-            EncoderUtils.coralWristDegreesToRotations(0); // TODO: Update me after testing!
+    private static final double NUDGE_AMOUNT = 5;
+    private static final double THRESHOLD_CONSTANT = 0; // TODO: Update me after testing!
 
     // values are untested and are set to
 
@@ -63,17 +62,21 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
                 ff);
     }
 
+    public void nudgeNoPID(double value) {
+        wristMotor.set(value);
+    }
+
     public void setPosition(Position position) {
         setPosition(position.getMotorRotations());
     }
 
     public void nudgeUp() {
-        double nudgePosition = wristMotor.getSensorPosition() + NUDGE_AMOUNT;
+        double nudgePosition = getStatus().currentAngle() + NUDGE_AMOUNT;
         setPosition(nudgePosition);
     }
 
     public void nudgeDown() {
-        double nudgePosition = wristMotor.getSensorPosition() - NUDGE_AMOUNT;
+        double nudgePosition = getStatus().currentAngle() - NUDGE_AMOUNT;
         setPosition(nudgePosition);
     }
 

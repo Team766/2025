@@ -41,13 +41,17 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         level = Level.Stow;
         state = State.Stop;
         armMotor.setSensorPosition(EncoderUtils.algaeArmDegreesToRotations(level.getAngle()));
+
+        intakeMotor.setCurrentLimit(80);
+        shooterMotor.setCurrentLimit(80);
     }
 
     public enum State {
-        In(0, 0.25),
+        In(0, 0.75),
         Out(0, -0.25),
         Stop(0, 0),
-        Shoot(0.75, 1);
+        ShooterOn(1.0, 0),
+        Feed(1.0,1);
         private final double innerPower, outerPower;
 
         State(double innerPower, double outerPower) {
@@ -65,10 +69,10 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     }
 
     public enum Level {
-        GroundIntake(-30, -1),
-        Shoot(-15, -1),
-        L2L3AlgaeIntake(20, -1),
-        L3L4AlgaeIntake(70, 1),
+        GroundIntake(-30, 1),
+        Shoot(-15, 1),
+        L2L3AlgaeIntake(20, 1),
+        L3L4AlgaeIntake(70, -1),
         Stow(-60, 0);
 
         private final double angle;
@@ -137,8 +141,14 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         intakeMotor.set(state.getOuterPower());
     }
 
+    public void feed() {
+        state = State.Feed;
+        shooterMotor.set(state.getInnerPower());
+        intakeMotor.set(state.getOuterPower());
+    }
+
     public void shooterOn() {
-        state = State.Shoot;
+        state = State.ShooterOn;
         shooterMotor.set(state.getInnerPower());
         intakeMotor.set(state.getOuterPower());
     }

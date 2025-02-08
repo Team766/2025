@@ -6,16 +6,16 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
 public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
-    private static final double POWER = 1.0;
+    private static final double POWER = 0.25;
     private MotorController leftClimberMotor;
-    private MotorController rightClimberMotor;
+    // private MotorController rightClimberMotor;
 
     public record ClimberStatus(double angle) implements Status {}
 
     public Climber() {
         leftClimberMotor = RobotProvider.instance.getMotor("climber.leftMotor");
-        rightClimberMotor = RobotProvider.instance.getMotor("climber.rightMotor");
-        rightClimberMotor.follow(leftClimberMotor);
+        // rightClimberMotor = RobotProvider.instance.getMotor("climber.rightMotor");
+        // rightClimberMotor.follow(leftClimberMotor);
         leftClimberMotor.setSensorPosition(0);
     }
 

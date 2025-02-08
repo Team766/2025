@@ -35,7 +35,7 @@ public final class EncoderUtils {
      */
     public static double elevatorHeightToRotations(double height) {
         // height * net gear ratio * (rotations / height)
-        return height * (120. / 1.) * (1. / (1.641 * Math.PI));
+        return height * (120. / 1.) * (1. / (1.02 * Math.PI));
     }
 
     /**
@@ -43,7 +43,7 @@ public final class EncoderUtils {
      */
     public static double elevatorRotationsToHeight(double rotations) {
         // rotations * net gear ratio * (height / rotations)
-        return rotations * (1. / 120.) * ((1.641 * Math.PI) / 1.);
+        return rotations * (1. / 120.) * ((1.02 * Math.PI) / 1.);
     }
 
     /**
@@ -51,7 +51,7 @@ public final class EncoderUtils {
      */
     public static double coralWristDegreesToRotations(double angle) {
         // angle * sprocket ratio * net gear ratio * (rotations / degrees)
-        return angle * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.);
+        return angle * (9. / 1.) * (9. / 1.) * (1. / 360.);
     }
 
     /**
@@ -59,7 +59,7 @@ public final class EncoderUtils {
      */
     public static double coralWristRotationsToDegrees(double rotations) {
         // rotations * sprocket ratio * net gear ratio * (degrees / rotations)
-        return rotations * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.) * (1. / 1.);
+        return rotations * (1. / 9.) * (1. / 9.) * (360. / 1.);
     }
 
     /**

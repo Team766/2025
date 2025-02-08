@@ -60,13 +60,15 @@ public class DebugOI extends RuleGroup {
                                                                         algae,
                                                                         () -> algae.nudgeNoPID(0.2))
                                                                 .withFinishedTriggeringProcedure(
-                                                                        algae, () -> algae.stop());
+                                                                        algae, () -> algae.nudgeNoPID(0));
                                                         addRule(
                                                                 "Debug Algae Nudge No PID Down",
                                                                 macropad.whenButton(
                                                                         InputConstants.NUDGE_DOWN),
                                                                 algae,
-                                                                () -> algae.nudgeNoPID(-0.2));
+                                                                () -> algae.nudgeNoPID(-0.2))
+                                                                .withFinishedTriggeringProcedure(
+                                                                        algae, () -> algae.nudgeNoPID(0));
                                                     }
                                                 });
                                 addRule(
@@ -87,7 +89,8 @@ public class DebugOI extends RuleGroup {
         // allows for running intake at default intake/outtake speeds.
         addRule("Debug Algae Intake In", macropad.whenButton(5), algae, () -> algae.in());
         addRule("Debug Algae Intake Out", macropad.whenButton(6), algae, () -> algae.out());
-        addRule("Debug Algae Shoot", macropad.whenButton(7), algae, () -> algae.shooterOn());
+        addRule("Debug Algae Shooter Feed", macropad.whenButton(11), algae, () -> algae.feed());
+        addRule("Debug Algae Shooter On", macropad.whenButton(10), algae, () -> algae.shooterOn());
 
         addRule(
                 "Debug Algae Stow",
@@ -122,6 +125,29 @@ public class DebugOI extends RuleGroup {
                 .whenTriggering(
                         new RuleGroup() {
                             {
+                                addRule("Debug Elevator Nudge No PID", macropad.whenButton(7))
+                                        .whenTriggering(
+                                                new RuleGroup() {
+                                                    {
+                                                        addRule(
+                                                                        "Debug Elevator Nudge No PID Up",
+                                                                        macropad.whenButton(
+                                                                                InputConstants
+                                                                                        .NUDGE_UP),
+                                                                        elevator,
+                                                                        () -> elevator.nudgeNoPID(0.6))
+                                                                .withFinishedTriggeringProcedure(
+                                                                        elevator, () -> elevator.nudgeNoPID(0));
+                                                        addRule(
+                                                                "Debug Elevator Nudge No PID Down",
+                                                                macropad.whenButton(
+                                                                        InputConstants.NUDGE_DOWN),
+                                                                elevator,
+                                                                () -> elevator.nudgeNoPID(-0.6))
+                                                                .withFinishedTriggeringProcedure(
+                                                                        elevator, () -> elevator.nudgeNoPID(0));
+                                                    }
+                                                });
                                 addRule(
                                         "Debug Elevator Nudge Up",
                                         macropad.whenButton(InputConstants.NUDGE_UP),
@@ -142,6 +168,29 @@ public class DebugOI extends RuleGroup {
                 .whenTriggering(
                         new RuleGroup() {
                             {
+                                addRule("Debug Wrist Nudge No PID", macropad.whenButton(7))
+                                        .whenTriggering(
+                                                new RuleGroup() {
+                                                    {
+                                                        addRule(
+                                                                        "Debug Wrist Nudge No PID Up",
+                                                                        macropad.whenButton(
+                                                                                InputConstants
+                                                                                        .NUDGE_UP),
+                                                                        wrist,
+                                                                        () -> wrist.nudgeNoPID(0.2))
+                                                                .withFinishedTriggeringProcedure(
+                                                                        wrist, () -> wrist.nudgeNoPID(0));
+                                                        addRule(
+                                                                "Debug Wrist Nudge No PID Down",
+                                                                macropad.whenButton(
+                                                                        InputConstants.NUDGE_DOWN),
+                                                                wrist,
+                                                                () -> wrist.nudgeNoPID(-0.2))
+                                                                .withFinishedTriggeringProcedure(
+                                                                        wrist, () -> wrist.nudgeNoPID(0));
+                                                    }
+                                                });
                                 addRule(
                                         "Debug Wrist Nudge Up",
                                         macropad.whenButton(InputConstants.NUDGE_UP),

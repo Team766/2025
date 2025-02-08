@@ -10,10 +10,9 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private MotorController elevatorLeftMotor;
     private MotorController elevatorRightMotor;
     private static final double MIN_HEIGHT = 0;
-    private static final double MAX_HEIGHT = 150; // inches
-    private static final double NUDGE_AMOUNT = EncoderUtils.elevatorHeightToRotations(5);
-    private static final double THRESHOLD_CONSTANT =
-            EncoderUtils.elevatorHeightToRotations(0); // TODO: Update me after testing!
+    private static final double MAX_HEIGHT = 22; // inches
+    private static final double NUDGE_AMOUNT = 5;
+    private static final double THRESHOLD_CONSTANT = 0.5; // TODO: Update me after testing!
 
     // values are untested and are set to
 
@@ -51,12 +50,16 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
     /**
      *
-     * @param setPosition in encoder units
+     * @param setPosition in inches
      */
     public void setPosition(double setPosition) {
         if (setPosition >= MIN_HEIGHT && setPosition <= MAX_HEIGHT) {
-            elevatorLeftMotor.set(MotorController.ControlMode.Position, setPosition);
+            elevatorLeftMotor.set(MotorController.ControlMode.Position, EncoderUtils.elevatorHeightToRotations(setPosition));
         }
+    }
+
+    public void nudgeNoPID(double value) {
+        elevatorLeftMotor.set(value);
     }
 
     public void setPosition(Position position) {
@@ -64,12 +67,12 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public void nudgeUp() {
-        double nudgePosition = elevatorLeftMotor.getSensorPosition() + NUDGE_AMOUNT;
+        double nudgePosition = getStatus().currentHeight() + NUDGE_AMOUNT;
         setPosition(nudgePosition);
     }
 
     public void nudgeDown() {
-        double nudgePosition = elevatorLeftMotor.getSensorPosition() - NUDGE_AMOUNT;
+        double nudgePosition = getStatus().currentHeight() - NUDGE_AMOUNT;
         setPosition(nudgePosition);
     }
 
