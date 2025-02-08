@@ -11,23 +11,19 @@ public final class EncoderUtils {
      */
     private EncoderUtils() {}
 
-    /**
-     * Converts a target rotation (in degrees) to encoder units for the wrist motor.
-     *
-     * public static double wristDegreesToRotations(double angle) {
-     * // angle * net gear ratio * (rotations / degrees)
-     * return angle * (72. / 10.) * (72. / 20.) * (48. / 24.) * (1. / 360.);
-     * }
-     */
+    // Converts a target rotation (in degrees) to encoder units for the wrist motor.
 
-    /**
-     * Converts the wrist motor's rotations to degrees.
-     *
-     * public static double wristRotationsToDegrees(double rotations) {
-     * // rotations * net gear ratio * (degrees / rotations)
-     * return rotations * (10. / 72.) * (20. / 72.) * (24. / 48.) * (360. / 1.);
-     * }
-     */
+    public static double wristDegreesToRotations(double angle) {
+        // angle * net gear ratio * (rotations / degrees)
+        return angle * (72. / 10.) * (72. / 20.) * (48. / 24.) * (1. / 360.);
+    }
+
+    // Converts the wrist motor's rotations to degrees.
+
+    public static double wristRotationsToDegrees(double rotations) {
+        // rotations * net gear ratio * (degrees / rotations)
+        return rotations * (10. / 72.) * (20. / 72.) * (24. / 48.) * (360. / 1.);
+    }
 
     /**
      * Converts a desired height (in inches) to rotations for the elevator motors.

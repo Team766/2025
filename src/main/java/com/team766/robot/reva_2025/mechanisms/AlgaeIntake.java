@@ -1,4 +1,4 @@
-    package com.team766.robot.reva_2025.mechanisms;
+package com.team766.robot.reva_2025.mechanisms;
 
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
@@ -23,7 +23,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     public AlgaeIntake() {
         intakeMotor = RobotProvider.instance.getMotor(InputConstants.ALGAEINTAKE_INTAKEROLLERMOTOR);
         armMotor = RobotProvider.instance.getMotor(InputConstants.ALGAEINTAKE_ARMROLLERMOTOR);
-        shooterMotor = RobotProvider.instance.getMotor(InputConstants.ALGAEINTAKE_SHOOTERROLLERMOTOR);
+        shooterMotor =
+                RobotProvider.instance.getMotor(InputConstants.ALGAEINTAKE_SHOOTERROLLERMOTOR);
 
         level = Level.Stow;
     }
@@ -33,9 +34,10 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         Idle(0),
         Out(-1),
         Shoot(1);
-        
+
         private final double intakePower;
         private final double shooterPower;
+
         State(double intakePower, double shooterPower) {
             this.intakePower = intakePower;
             this.shooterPower = shooterPower;
@@ -44,6 +46,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         private double getIntakePower() {
             return intakePower;
         }
+
         private double getShooterPower() {
             return shooterPower;
         }
@@ -73,30 +76,25 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     }
 
     public void setArmAngle(Level level) {
-       // armMotor.set(MotorController.ControlMode.Position, level.getAngle());
+        // armMotor.set(MotorController.ControlMode.Position, level.getAngle());
         setArmAngle(level.getAngle());
     }
 
     public void setArmAngle(double angle) {
-       // armMotor.set(MotorController.ControlMode.Position, angle);
+        // armMotor.set(MotorController.ControlMode.Position, angle);
         this.targetAngle = angle;
-    }
-
     }
 
     public void out() {
         state = State.Out;
-        intakeMotor.set(state.getIntakePower());
     }
 
     public void in() {
         state = State.In;
-        intakeMotor.set(state.getIntakePower());
     }
 
     public void Idle() {
         state = State.Idle;
-        intakeMotor.set(state.getIntakePower()); 
     }
 
     public void shooterOn() {
@@ -107,6 +105,16 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     public void shooterOff() {
         state = State.Idle;
         shooterMotor.set(state.getIntakePower());
+    }
+
+    @Override
+    protected void run() {
+        // double ff = ffGain.value0r(default_value:0.0) *
+        // Math.cos(Math.toRadians(getStatus().angle()));
+        intakeMotor.set(
+                MotorController.ControlMode.Position,
+                EncoderUtils.wristDegreesToRotations(targetAngle),
+                ff);
     }
 
     protected AlgaeIntakeStatus updateStatus() {
