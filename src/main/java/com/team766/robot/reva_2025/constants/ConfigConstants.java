@@ -9,4 +9,5 @@ public final class ConfigConstants {
     public static final String ALGAEINTAKE_INTAKEROLLERMOTOR = "AlgaeIntake.IntakeRollerMotor";
     public static final String ALGAEINTAKE_ARMROLLERMOTOR = "AlgaeIntake.ArmRollerMotor";
     public static final String ALGAEINTAKE_SHOOTERROLLERMOTOR = "AlgaeIntake.ShooterRollerMotor";
+    public static final String ALGAEINTAKE_ARMFFGAIN = "AlgaeIntake.ArmffGain";
 }
