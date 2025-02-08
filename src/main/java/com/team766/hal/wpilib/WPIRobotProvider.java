@@ -128,7 +128,7 @@ public class WPIRobotProvider extends RobotProvider {
         switch (type) {
             case SparkMax:
                 try {
-                    motor = new CANSparkMaxMotorController(index);
+                    motor = new CANSparkMaxMotorController(configPrefix, index);
                 } catch (Exception ex) {
                     LoggerExceptionUtils.logException(ex);
                     motor =
@@ -138,7 +138,7 @@ public class WPIRobotProvider extends RobotProvider {
                 }
                 break;
             case TalonSRX:
-                motor = new CANTalonMotorController(index);
+                motor = new CANTalonMotorController(configPrefix, index);
                 break;
             case VictorSPX:
                 motor = new CANVictorMotorController(index);
@@ -146,7 +146,9 @@ public class WPIRobotProvider extends RobotProvider {
             case TalonFX:
                 final ValueProvider<String> canBus =
                         ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
-                motor = new CANTalonFxMotorController(index, getStringOrEmpty(canBus));
+                motor =
+                        new CANTalonFxMotorController(
+                                configPrefix, index, getStringOrEmpty(canBus));
                 break;
             case VictorSP:
                 motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);
