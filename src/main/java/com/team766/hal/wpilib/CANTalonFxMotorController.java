@@ -291,7 +291,7 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
     }
 
     @Override
-    public double getCurrentUsage() {
+    public double getSupplyCurrent() {
         StatusSignal<Current> current = getSupplyCurrent();
         if (current.getStatus().isOK()) {
             return current.getValueAsDouble();

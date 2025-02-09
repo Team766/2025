@@ -118,7 +118,7 @@ public interface MotorController extends BasicMotorController {
 
     void setOutputRange(double minOutput, double maxOutput);
 
-    double getCurrentUsage();
+    double getSupplyCurrent();
 
     void setCurrentLimit(double ampsLimit);
 

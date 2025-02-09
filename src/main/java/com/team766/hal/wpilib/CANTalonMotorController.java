@@ -167,7 +167,7 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
     }
 
     @Override
-    public double getCurrentUsage() {
+    public double getSupplyCurrent() {
         return m_device.getSupplyCurrent();
     }
 
