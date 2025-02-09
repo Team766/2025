@@ -28,6 +28,7 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 
 public class CANTalonFxMotorController extends CoreTalonFX implements MotorController {
 
@@ -287,6 +288,15 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
 
         motorOutput.withPeakReverseDutyCycle(minOutput).withPeakForwardDutyCycle(maxOutput);
         statusCodeToException(ExceptionTarget.LOG, super.getConfigurator().apply(motorOutput));
+    }
+
+    @Override
+    public double getCurrentUsage() {
+        StatusSignal<Current> current = getSupplyCurrent();
+        if (current.getStatus().isOK()) {
+            return current.getValueAsDouble();
+        }
+        return -1.0;
     }
 
     @Override

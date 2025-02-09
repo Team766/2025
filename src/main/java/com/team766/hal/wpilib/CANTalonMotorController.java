@@ -167,6 +167,11 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
     }
 
     @Override
+    public double getCurrentUsage() {
+        return m_device.getSupplyCurrent();
+    }
+
+    @Override
     public void setCurrentLimit(final double ampsLimit) {
         errorCodeToException(ExceptionTarget.LOG, m_device.configPeakCurrentLimit(0));
         errorCodeToException(ExceptionTarget.LOG, m_device.configPeakCurrentDuration(10));

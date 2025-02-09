@@ -171,6 +171,14 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
     }
 
     @Override
+    public double getCurrentUsage() {
+        LoggerExceptionUtils.logException(
+                new UnsupportedOperationException(
+                        "VictorSPX does not support getting current usage."));
+        return -1.0;
+    }
+
+    @Override
     public void setCurrentLimit(final double ampsLimit) {
         LoggerExceptionUtils.logException(
                 new UnsupportedOperationException("VictorSPX does not support current limiting"));

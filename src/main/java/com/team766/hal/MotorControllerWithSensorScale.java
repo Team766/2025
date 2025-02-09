@@ -113,6 +113,11 @@ public class MotorControllerWithSensorScale implements MotorController {
     }
 
     @Override
+    public double getCurrentUsage() {
+        return delegate.getCurrentUsage();
+    }
+
+    @Override
     public void setCurrentLimit(final double ampsLimit) {
         delegate.setCurrentLimit(ampsLimit);
     }

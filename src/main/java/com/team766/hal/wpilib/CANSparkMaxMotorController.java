@@ -312,6 +312,12 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
         configureAndCheckRevError(config);
     }
 
+    @Override
+    public double getCurrentUsage() {
+        return getOutputCurrent();
+    }
+
+    @Override
     public void setCurrentLimit(final double ampsLimit) {
         SparkMaxConfig config = new SparkMaxConfig();
         config.smartCurrentLimit((int) (ampsLimit));

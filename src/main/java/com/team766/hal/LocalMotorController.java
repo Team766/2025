@@ -269,6 +269,14 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
+    public double getCurrentUsage() {
+        LoggerExceptionUtils.logException(
+                new UnsupportedOperationException(
+                        "getCurrentUsage() is currently unsupported by LocalMotorController"));
+        return -1.0;
+    }
+
+    @Override
     public void setCurrentLimit(final double ampsLimit) {
         LoggerExceptionUtils.logException(
                 new UnsupportedOperationException(
