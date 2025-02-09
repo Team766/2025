@@ -5,6 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.revrobotics.spark.SparkMax;
 import com.team766.hal.MotorController;
 import com.team766.logging.Category;
@@ -18,10 +19,13 @@ import edu.wpi.first.units.measure.Current;
 public final class MotorUtil {
     private MotorUtil() {}
 
-    private static double getTalonFXCurrentUsage(TalonFX motor) {
-        StatusSignal<Current> current = ((TalonFX) motor).getSupplyCurrent();
+    private static double getTalonFXCurrentUsage(CoreTalonFX motor) {
+        StatusSignal<Current> current = ((CoreTalonFX) motor).getSupplyCurrent();
         if (current.getStatus().isOK()) {
+            Logger.get(Category.MECHANISMS).logRaw(Severity.ERROR, "working, " + current.getStatus().toString());
             return current.getValueAsDouble();
+        } else {
+            Logger.get(Category.MECHANISMS).logRaw(Severity.ERROR, current.getStatus().toString());
         }
         return -1;
     }
@@ -31,8 +35,8 @@ public final class MotorUtil {
     }
 
     public static double getCurrentUsage(MotorController motor) {
-        if (motor instanceof TalonFX) {
-            return getTalonFXCurrentUsage((TalonFX) motor);
+        if (motor instanceof CoreTalonFX) {
+            return getTalonFXCurrentUsage((CoreTalonFX) motor);
         } else if (motor instanceof SparkMax) {
             return getSparkMaxCurrentUsage((SparkMax) motor);
         } else {

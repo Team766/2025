@@ -6,6 +6,7 @@ import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
+import com.team766.robot.reva.mechanisms.MotorUtil;
 import com.team766.robot.reva_2025.constants.EncoderUtils;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -26,7 +27,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     // slower than the intake motor
     // to add backspin on the ball.
 
-    public record AlgaeIntakeStatus(State state, Level level, double angleDeg) implements Status {
+    public record AlgaeIntakeStatus(State state, Level level, double angleDeg, double innerRPM, double outerRPM) implements Status {
         public boolean isAtPosition(double target) {
             return (Math.abs(target - angleDeg()) < THRESHOLD_CONSTANT);
         }
@@ -42,7 +43,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         state = State.Stop;
         armMotor.setSensorPosition(EncoderUtils.algaeArmDegreesToRotations(level.getAngle()));
 
-        intakeMotor.setCurrentLimit(80);
+        intakeMotor.setCurrentLimit(115);
         shooterMotor.setCurrentLimit(80);
     }
 
@@ -159,6 +160,13 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         intakeMotor.set(state.getOuterPower() * level.getPower());
     }
 
+    protected void run() {
+        SmartDashboard.putNumber("Inner Current", MotorUtil.getCurrentUsage(shooterMotor));
+        SmartDashboard.putNumber("Outer Current", MotorUtil.getCurrentUsage(intakeMotor));
+        SmartDashboard.putNumber("Inner Get", shooterMotor.get());
+        SmartDashboard.putNumber("Outer Get", intakeMotor.get());
+    }
+
     @Override
     protected void onMechanismIdle() {
         stop();
@@ -169,6 +177,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         return new AlgaeIntakeStatus(
                 state,
                 level,
-                EncoderUtils.algaeArmRotationsToDegrees(armMotor.getSensorPosition()));
+                EncoderUtils.algaeArmRotationsToDegrees(armMotor.getSensorPosition()),
+                shooterMotor.getSensorVelocity() * 60,
+                intakeMotor.getSensorVelocity() * 60);
     }
 }
