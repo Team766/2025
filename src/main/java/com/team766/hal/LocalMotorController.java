@@ -269,7 +269,7 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public double getSupplyCurrent() {
+    public double getOutputCurrent() {
         LoggerExceptionUtils.logException(
                 new UnsupportedOperationException(
                         "getCurrentUsage() is currently unsupported by LocalMotorController"));

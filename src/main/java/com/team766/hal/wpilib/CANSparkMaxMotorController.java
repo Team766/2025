@@ -313,7 +313,7 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
     }
 
     @Override
-    public double getSupplyCurrent() {
+    public double getOutputCurrent() {
         return getOutputCurrent();
     }
 

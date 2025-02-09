@@ -113,8 +113,8 @@ public class MotorControllerWithSensorScale implements MotorController {
     }
 
     @Override
-    public double getSupplyCurrent() {
-        return delegate.getSupplyCurrent();
+    public double getOutputCurrent() {
+        return delegate.getOutputCurrent();
     }
 
     @Override
