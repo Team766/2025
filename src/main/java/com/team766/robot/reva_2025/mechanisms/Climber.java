@@ -6,48 +6,43 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
 public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
-    private MotorController climberMotor;
-    private Position position;
+    private MotorController leftClimberMotor;
+    private MotorController rightClimberMotor;
+    private double HIGH_LIMIT = 90;
 
     public static record ClimberStatus(double currentPower) implements Status {}
 
-    public enum Position {
-        CLIMBER_TOP(1),
-        CLIMBER_BOTTOM(-1),
-        CLIMBER_IDLE(0);
-        private double power;
-
-        Position(double power) {
-            this.power = power;
-        }
-
-        public double getPower() {
-            return power;
-        }
-    }
-
     public Climber() {
-        climberMotor = RobotProvider.instance.getMotor("climber.Motor");
-        position = Position.CLIMBER_IDLE;
+        leftClimberMotor = RobotProvider.instance.getMotor(CLIMBER_LEFT_MOTOR);
+        rightClimberMotor = RobotProvider.instance.getMotor(CLIMBER_RIGHT_MOTOR);
+        rightClimberMotor.follow(leftClimberMotor);
+        leftClimberMotor.setNeutralMode(NeutralMode.Brake);
+        rightClimberMotor.setNeutralMode(NeutralMode.Brake);
+        leftClimberMotor.setSoftLimits(HIGH_LIMIT, 0);
+        rightClimberMotor.setSoftLimits(HIGH_LIMIT, 0);
+        leftClimberMotor.enableSoftLimits(true);
+        rightClimberMotor.enableSoftLimits(true);
     }
 
     public void climbUp() {
-        position = Position.CLIMBER_TOP;
-        climberMotor.set(position.getPower());
+        leftClimberMotor.set(1);
     }
 
     public void climbDown() {
-        position = Position.CLIMBER_BOTTOM;
-        climberMotor.set(position.getPower());
+        leftClimberMotor.set(-1);
     }
 
     public void climbOff() {
-        position = Position.CLIMBER_IDLE;
-        climberMotor.set(position.getPower());
+        leftClimberMotor.set(0);
+    }
+
+    @Override
+    protected void onMechanismIdle() {
+        climbOff();
     }
 
     @Override
     protected ClimberStatus updateStatus() {
-        return new ClimberStatus(climberMotor.getSensorPosition());
+        return new ClimberStatus(leftClimberMotor.getSensorPosition());
     }
 }
