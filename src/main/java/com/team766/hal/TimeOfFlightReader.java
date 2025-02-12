@@ -19,7 +19,7 @@ public interface TimeOfFlightReader {
     void setRange(Range range);
 
     /**
-     * Return the distance to the target in mm.
+     * Return the distance to the target in m.
      */
     double getDistance();
 

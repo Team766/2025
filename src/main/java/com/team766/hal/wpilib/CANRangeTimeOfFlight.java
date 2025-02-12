@@ -62,7 +62,7 @@ public class CANRangeTimeOfFlight implements TimeOfFlightReader {
     public double getDistance() {
         StatusSignal<Distance> distance = sensor.getDistance();
         if (distance.getStatus().isOK()) {
-            return distance.getValue().magnitude() * 1000.;
+            return distance.getValue().magnitude();
         }
         statusCodeToException(ExceptionTarget.LOG, distance.getStatus());
         return 0.0;
