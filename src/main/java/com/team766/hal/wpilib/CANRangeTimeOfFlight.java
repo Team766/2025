@@ -6,14 +6,13 @@ import com.ctre.phoenix6.configs.ToFParamsConfigs;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.signals.MeasurementHealthValue;
 import com.ctre.phoenix6.signals.UpdateModeValue;
+import com.team766.hal.MotorControllerCommandFailedException;
 import com.team766.hal.TimeOfFlightReader;
-import com.team766.logging.Category;
-import com.team766.logging.Logger;
-import com.team766.logging.Severity;
+import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.units.measure.Distance;
 
 public class CANRangeTimeOfFlight implements TimeOfFlightReader {
-    private CANrange sensor;
+    private final CANrange sensor;
 
     public CANRangeTimeOfFlight(int canID) {
         sensor = new CANrange(canID);
@@ -23,10 +22,31 @@ public class CANRangeTimeOfFlight implements TimeOfFlightReader {
         sensor = new CANrange(canID, canBus);
     }
 
+    private enum ExceptionTarget {
+        THROW,
+        LOG,
+    }
+
+    private static void statusCodeToException(
+            final ExceptionTarget throwEx, final StatusCode code) {
+        if (code.isOK()) {
+            return;
+        }
+        var ex = new MotorControllerCommandFailedException(code.toString());
+        switch (throwEx) {
+            case THROW:
+                throw ex;
+            default:
+            case LOG:
+                LoggerExceptionUtils.logException(ex);
+                break;
+        }
+    }
+
     @Override
     public void setRange(TimeOfFlightReader.Range range) {
         ToFParamsConfigs config = new ToFParamsConfigs();
-        config.UpdateFrequency = 100; // TODO: use a different value?
+        config.UpdateFrequency = 100.; // TODO: use a different value?
         switch (range) {
             case Short:
                 config.UpdateMode = UpdateModeValue.ShortRangeUserFreq;
@@ -35,11 +55,7 @@ public class CANRangeTimeOfFlight implements TimeOfFlightReader {
                 config.UpdateMode = UpdateModeValue.LongRangeUserFreq;
                 break;
         }
-        StatusCode status = sensor.getConfigurator().apply(config);
-        if (!status.isOK()) {
-            Logger.get(Category.HAL)
-                    .logData(Severity.ERROR, "Unable to set range: %s", status.toString());
-        }
+        statusCodeToException(ExceptionTarget.LOG, sensor.getConfigurator().apply(config));
     }
 
     @Override
@@ -48,8 +64,7 @@ public class CANRangeTimeOfFlight implements TimeOfFlightReader {
         if (distance.getStatus().isOK()) {
             return distance.getValue().magnitude() * 1000.;
         }
-        Logger.get(Category.HAL)
-                .logData(Severity.ERROR, "Unable to get distance: %s", distance.toString());
+        statusCodeToException(ExceptionTarget.LOG, distance.getStatus());
         return 0.0;
     }
 
@@ -59,11 +74,7 @@ public class CANRangeTimeOfFlight implements TimeOfFlightReader {
         if (health.getStatus().isOK()) {
             return health.getValue() == MeasurementHealthValue.Good;
         } else {
-            Logger.get(Category.HAL)
-                    .logData(
-                            Severity.ERROR,
-                            "Unable to get measurement health: %s",
-                            health.toString());
+            statusCodeToException(ExceptionTarget.LOG, health.getStatus());
             return false;
         }
     }
