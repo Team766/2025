@@ -17,11 +17,13 @@ import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
+import com.team766.hal.TimeOfFlightReader;
 import com.team766.hal.mock.MockBeaconSensor;
 import com.team766.hal.mock.MockEncoder;
 import com.team766.hal.mock.MockGyro;
 import com.team766.hal.mock.MockMotorController;
 import com.team766.hal.mock.MockPositionSensor;
+import com.team766.hal.mock.MockTimeOfFlight;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -245,6 +247,29 @@ public class WPIRobotProvider extends RobotProvider {
         } else {
             return new AnalogGyro(index);
         }
+    }
+
+    @Override
+    public TimeOfFlightReader getTimeOfFlight(final int index, String configPrefix) {
+
+        final ValueProvider<TimeOfFlightReader.Type> type =
+                ConfigFileReader.getInstance()
+                        .getEnum(TimeOfFlightReader.Type.class, configPrefix + ".type");
+
+        if (type.hasValue()) {
+            if (type.get() == TimeOfFlightReader.Type.CANRange) {
+                ValueProvider<String> canBus =
+                        ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
+                return new CANRangeTimeOfFlight(index, getStringOrEmpty(canBus));
+            }
+        }
+
+        Logger.get(Category.CONFIGURATION)
+                .logData(
+                        Severity.ERROR,
+                        "Unknown TimeOfFlight %s, using mock TimeOfFlight instead",
+                        configPrefix);
+        return new MockTimeOfFlight();
     }
 
     @Override

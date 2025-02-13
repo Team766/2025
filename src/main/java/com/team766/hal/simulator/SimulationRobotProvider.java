@@ -16,6 +16,11 @@ import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
+import com.team766.hal.TimeOfFlightReader;
+import com.team766.hal.mock.MockTimeOfFlight;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 import com.team766.simulator.ProgramInterface;
 
 public class SimulationRobotProvider extends RobotProvider {
@@ -59,6 +64,15 @@ public class SimulationRobotProvider extends RobotProvider {
     @Override
     public GyroReader getGyro(final int index, String configPrefix) {
         return new Gyro();
+    }
+
+    @Override
+    public TimeOfFlightReader getTimeOfFlight(final int index, String configPrefix) {
+        Logger.get(Category.HAL)
+                .logRaw(
+                        Severity.WARNING,
+                        "TimeOfFlight not supported in Simulator.  Returning MockTimeOfFlight.");
+        return new MockTimeOfFlight();
     }
 
     @Override
