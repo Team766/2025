@@ -6,7 +6,6 @@ import com.ctre.phoenix6.configs.ToFParamsConfigs;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.signals.MeasurementHealthValue;
 import com.ctre.phoenix6.signals.UpdateModeValue;
-import com.team766.hal.MotorControllerCommandFailedException;
 import com.team766.hal.TimeOfFlightReader;
 import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.units.measure.Distance;
@@ -32,7 +31,7 @@ public class CANRangeTimeOfFlight implements TimeOfFlightReader {
         if (code.isOK()) {
             return;
         }
-        var ex = new MotorControllerCommandFailedException(code.toString());
+        var ex = new TimeOfFlightCommandFailedException(code.toString());
         switch (throwEx) {
             case THROW:
                 throw ex;
