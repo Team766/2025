@@ -199,7 +199,7 @@ public class BoxOpOI extends RuleGroup {
                 new LogicalAnd(
                         boxopGamepad.whenButton(InputConstants.BUTTON_CLIMB),
                         boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS)),
-                ONCE,
+                ONCE_AND_HOLD,
                 climber,
                 () -> {
                     climber.climb(boxopGamepad.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));

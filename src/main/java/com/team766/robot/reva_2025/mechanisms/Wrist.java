@@ -12,7 +12,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     private WristPosition wristState;
     private static final double NUDGE_AMOUNT = 1.0;
 
-    public record WristStatus(double angle) implements Status {}
+    public record WristStatus(double angle, WristPosition wristState) implements Status {}
 
     public enum WristPosition {
 
@@ -53,17 +53,18 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     public void nudge(double multiplier) {
-        double nudgePosition = wristMotor.getSensorPosition() + (NUDGE_AMOUNT * multiplier);
+        double nudgePosition = getStatus().angle() + (NUDGE_AMOUNT * multiplier);
         setAngle(nudgePosition);
-    }
-
-    public WristPosition getWristState() {
-        return wristState;
     }
 
     @Override
     protected WristStatus updateStatus() {
-        return new WristStatus(wristMotor.get());
+        return new WristStatus(wristMotor.get(), wristState);
+    }
+
+    public WristPosition
+            getWristState() { // added because WristStatus is inaccessible from DriverOI
+        return wristState;
     }
 
     public boolean isAtPosition() {
