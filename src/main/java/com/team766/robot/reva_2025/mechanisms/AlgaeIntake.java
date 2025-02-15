@@ -6,13 +6,18 @@ import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.TimeOfFlightReader;
+import com.team766.hal.TimeOfFlightReader.Range;
 import com.team766.library.ValueProvider;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
+    private static final double ALGAE_DROPPING_THRESHOLD = 0.25;
+
     private MotorController intakeMotor;
     private MotorController armMotor;
     private MotorController shooterMotor;
+    private TimeOfFlightReader intakeSensor;
     private State state;
     private Level level;
     private double targetAngle;
@@ -24,7 +29,11 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     // to add backspin on the ball.
 
     public record AlgaeIntakeStatus(
-            State state, double direction, double targetAngle, double currentAngle)
+            State state,
+            double direction,
+            double targetAngle,
+            double currentAngle,
+            double intakeProximity)
             implements Status {
         public boolean isAtAngle() {
             return Math.abs(targetAngle() - currentAngle()) < POSITION_LOCATION_THRESHOLD;
@@ -37,7 +46,9 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         armMotor = RobotProvider.instance.getMotor(ConfigConstants.ALGAEINTAKE_ARMROLLERMOTOR);
         shooterMotor =
                 RobotProvider.instance.getMotor(ConfigConstants.ALGAEINTAKE_SHOOTERROLLERMOTOR);
-
+        intakeSensor =
+                RobotProvider.instance.getTimeOfFlight(ConfigConstants.ALGAEINTAKE_INTAKESENSOR);
+        intakeSensor.setRange(Range.Short);
         level = Level.Stow;
         ffGain = ConfigFileReader.getInstance().getDouble(ConfigConstants.ALGAEINTAKE_ARMFFGAIN);
     }
@@ -48,7 +59,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         Idle(0, 0),
         Out(-30000, 0),
         Shoot(0, 30000),
-        Feed(50000, 30000);
+        Feed(50000, 30000),
+        HoldAlgae(5000, 0);
 
         private final double intakeVelocity;
         private final double shooterVelocity;
@@ -73,7 +85,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         GroundIntake(-30, 1),
         L2L3AlgaeIntake(20, -1),
         L3L4AlgaeIntake(70, -1),
-        Stow(-80, 1);
+        Stow(-80, 1),
+        Shoot(-10, 1);
 
         private final double angle;
         private final double direction;
@@ -121,7 +134,17 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 MotorController.ControlMode.Position,
                 EncoderUtils.algaeArmDegreesToRotations(targetAngle),
                 ff);
-        intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
+        if (state == State.HoldAlgae) { 
+            if (intakeSensor.getDistance() < ALGAE_DROPPING_THRESHOLD){
+                intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
+            } else {
+                intakeMotor.set(ControlMode.Velocity, 0);
+            }
+        
+        }
+        else{
+            intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
+        }
         shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
     }
 
@@ -131,7 +154,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 state,
                 level.getDirection(),
                 targetAngle,
-                EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()));
+                EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()),
+                intakeSensor.getDistance());
     }
 
     public void nudgeArmUp() {
