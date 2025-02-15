@@ -94,7 +94,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 com.team766.math.Math.clamp(
                         angle, Level.Stow.getAngle(), Level.L3L4AlgaeIntake.getAngle());
         armMotor.set(
-                MotorController.ControlMode.Position, EncoderUtils.algaeArmDegreesToRotations(angle));
+                MotorController.ControlMode.Position,
+                EncoderUtils.algaeArmDegreesToRotations(angle));
     }
 
     public void setState(State state) {
@@ -119,7 +120,9 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     protected AlgaeIntakeStatus updateStatus() {
         return new AlgaeIntakeStatus(
-                state, level, EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()));
+                state,
+                level,
+                EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()));
     }
 
     public void nudgeArmUp() {
