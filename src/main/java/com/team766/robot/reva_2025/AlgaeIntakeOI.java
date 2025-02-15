@@ -7,6 +7,7 @@ import com.team766.hal.JoystickReader;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
+import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.State;
 
 public class AlgaeIntakeOI extends RuleGroup {
     public AlgaeIntakeOI(JoystickReader boxopGamepad, AlgaeIntake algaeIntake) {
@@ -16,12 +17,12 @@ public class AlgaeIntakeOI extends RuleGroup {
                         ONCE_AND_HOLD,
                         algaeIntake,
                         () -> {
-                            algaeIntake.in();
+                            algaeIntake.setState(State.In);
                         })
                 .withFinishedTriggeringProcedure(
                         algaeIntake,
                         () -> {
-                            algaeIntake.stop();
+                            algaeIntake.setState(State.Idle);
                         });
 
         addRule(
@@ -30,12 +31,12 @@ public class AlgaeIntakeOI extends RuleGroup {
                         ONCE_AND_HOLD,
                         algaeIntake,
                         () -> {
-                            algaeIntake.out();
+                            algaeIntake.setState(State.Out);
                         })
                 .withFinishedTriggeringProcedure(
                         algaeIntake,
                         () -> {
-                            algaeIntake.stop();
+                            algaeIntake.setState(State.Idle);
                         });
 
         addRule(
@@ -80,12 +81,12 @@ public class AlgaeIntakeOI extends RuleGroup {
                         ONCE_AND_HOLD,
                         algaeIntake,
                         () -> {
-                            algaeIntake.shooterOn();
+                            algaeIntake.setState(State.Shoot);
                         })
                 .withFinishedTriggeringProcedure(
                         algaeIntake,
                         () -> {
-                            algaeIntake.shooterOff();
+                            algaeIntake.setState(State.Idle);
                         });
     }
 }
