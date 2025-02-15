@@ -19,6 +19,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     private final ValueProvider<Double> ffGain;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
 
+
     // TODO: Intake and shooter motor should drive when we shoot. Shooter motor should be slgithly
     // slower than the intake motor
     // to add backspin on the ball.
@@ -27,6 +28,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         public boolean isAtAngle() {
             return Math.abs(targetAngle() - currentAngle()) < POSITION_LOCATION_THRESHOLD;
     }
+}
 
     public AlgaeIntake() {
         intakeMotor =
