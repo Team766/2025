@@ -19,16 +19,17 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     private final ValueProvider<Double> ffGain;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
 
-
     // TODO: Intake and shooter motor should drive when we shoot. Shooter motor should be slgithly
     // slower than the intake motor
     // to add backspin on the ball.
 
-    public record AlgaeIntakeStatus(State state, double direction, double targetAngle, double currentAngle) implements Status {
+    public record AlgaeIntakeStatus(
+            State state, double direction, double targetAngle, double currentAngle)
+            implements Status {
         public boolean isAtAngle() {
             return Math.abs(targetAngle() - currentAngle()) < POSITION_LOCATION_THRESHOLD;
+        }
     }
-}
 
     public AlgaeIntake() {
         intakeMotor =
@@ -128,7 +129,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     protected AlgaeIntakeStatus updateStatus() {
         return new AlgaeIntakeStatus(
                 state,
-                level.getDirection(), 
+                level.getDirection(),
                 targetAngle,
                 EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()));
     }
