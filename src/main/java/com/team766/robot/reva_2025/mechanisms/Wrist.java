@@ -2,9 +2,12 @@ package com.team766.robot.reva_2025.mechanisms;
 
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
+import com.team766.framework3.MechanismWithStatus;
+import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
+public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     private final double thresholdConstant = 0; // TODO: Update me after testing!

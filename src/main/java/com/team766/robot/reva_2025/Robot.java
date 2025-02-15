@@ -14,17 +14,20 @@ public class Robot implements RobotConfigurator3 {
     private Vision vision;
     private Wrist wrist;
     private Elevator elevator;
-    private CoralIntake coralIntake;
+    private CoralIntake coral;
+    private Climber climber;
 
     @Override
     public void initializeMechanisms() {
         SwerveConfig swerveConfig = new SwerveConfig();
+        algaeIntake = new AlgaeIntake();
         algaeIntake = new AlgaeIntake();
         drive = new SwerveDrive(swerveConfig);
         vision = new Vision();
         wrist = new Wrist();
         elevator = new Elevator();
         coralIntake = new CoralIntake();
+        climber = new Climber();
     }
 
     @Override

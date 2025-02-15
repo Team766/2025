@@ -24,6 +24,8 @@ public class KalmanFilter {
     private TreeMap<Double, Translation2d> inputLog; // TODO: make circular buffer?
     private double velocityInputDeletionTime; // in seconds
 
+    private static final double COVARIANCE_MULTIPLIER = 8;
+
     private static final Matrix<N2, N1> CUR_STATE_DEFAULT =
             MatBuilder.fill(Nat.N2(), Nat.N1(), 0, 0);
 
@@ -255,7 +257,9 @@ public class KalmanFilter {
     public void updateWithVisionMeasurement(List<Translation2d> measurements, double time) {
         Map<Translation2d, Matrix<N2, N2>> measurementTreeMap = new HashMap<>();
         for (Translation2d measurement : measurements) {
-            measurementTreeMap.put(measurement, visionCovariance);
+            measurementTreeMap.put(
+                    measurement,
+                    visionCovariance.times(measurement.getNorm() * COVARIANCE_MULTIPLIER));
         }
         updateWithPositionMeasurement(measurementTreeMap, time);
     }

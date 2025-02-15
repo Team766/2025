@@ -16,6 +16,7 @@ import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
+import com.team766.hal.TimeOfFlightReader;
 
 public class TestRobotProvider extends RobotProvider {
 
@@ -62,6 +63,11 @@ public class TestRobotProvider extends RobotProvider {
     @Override
     public GyroReader getGyro(final int index, String configPrefix) {
         return new MockGyro();
+    }
+
+    @Override
+    public TimeOfFlightReader getTimeOfFlight(final int index, String configPrefix) {
+        return new MockTimeOfFlight();
     }
 
     @Override

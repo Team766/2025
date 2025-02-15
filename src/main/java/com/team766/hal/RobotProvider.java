@@ -9,6 +9,7 @@ import com.team766.hal.mock.MockEncoder;
 import com.team766.hal.mock.MockGyro;
 import com.team766.hal.mock.MockMotorController;
 import com.team766.hal.mock.MockRelay;
+import com.team766.hal.mock.MockTimeOfFlight;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -49,6 +50,8 @@ public abstract class RobotProvider {
     public abstract SolenoidController getSolenoid(int index);
 
     public abstract GyroReader getGyro(int index, String configPrefix);
+
+    public abstract TimeOfFlightReader getTimeOfFlight(int index, String configPrefix);
 
     public abstract CameraReader getCamera(String id, String value);
 
@@ -337,6 +340,20 @@ public abstract class RobotProvider {
                             configName);
             return new MockGyro();
         }
+    }
+
+    public TimeOfFlightReader getTimeOfFlight(final String configName) {
+        ValueProvider<Integer> deviceId =
+                ConfigFileReader.getInstance().getInt(configName + ".deviceId");
+        if (deviceId.hasValue()) {
+            return getTimeOfFlight(deviceId.get(), configName);
+        }
+        Logger.get(Category.CONFIGURATION)
+                .logData(
+                        Severity.ERROR,
+                        "TimeOfFlight %s not found in config file, using mock TimeOfFlight instead",
+                        configName);
+        return new MockTimeOfFlight();
     }
 
     // Operator Devices
