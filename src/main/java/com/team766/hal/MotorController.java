@@ -127,7 +127,7 @@ public interface MotorController extends BasicMotorController {
 
     void setClosedLoopRamp(double secondsFromNeutralToFull);
 
-    private static SoftwareLimitSwitchConfigs getLimitSwitchConfigs() {
+    private SoftwareLimitSwitchConfigs getLimitSwitchConfigs() {
         SoftwareLimitSwitchConfigs limitSwitchConfigs = new SoftwareLimitSwitchConfigs();
         StatusCode status = getConfigurator().refresh(limitSwitchConfigs);
         if (!status.isOK()) {
@@ -140,7 +140,7 @@ public interface MotorController extends BasicMotorController {
         return limitSwitchConfigs;
     }
 
-    private static void applyLimitSwitchConfigs(SoftwareLimitSwitchConfigs limitSwitchConfigs) {
+    private void applyLimitSwitchConfigs(SoftwareLimitSwitchConfigs limitSwitchConfigs) {
         StatusCode status = getConfigurator().apply(limitSwitchConfigs);
         if (!status.isOK()) {
             Logger.get(Category.MECHANISMS)
@@ -150,7 +150,7 @@ public interface MotorController extends BasicMotorController {
         }
     }
 
-    public static void setSoftLimits(double forwardLimit, double reverseLimit) {
+    public void setSoftLimits(double forwardLimit, double reverseLimit) {
         if (!(this instanceof TalonFX)) {
             return;
         }
@@ -164,7 +164,7 @@ public interface MotorController extends BasicMotorController {
         applyLimitSwitchConfigs(limitSwitchConfigs);
     }
 
-    public static void enableSoftLimits(boolean enable) {
+    public void enableSoftLimits(boolean enable) {
         if (!(this instanceof TalonFX)) {
             return;
         }
