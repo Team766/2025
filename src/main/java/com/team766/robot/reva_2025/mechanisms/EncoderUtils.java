@@ -13,28 +13,28 @@ public final class EncoderUtils {
 
     // Converts a target rotation (in degrees) to encoder units for the wrist motor.
 
-    public static double wristDegreesToRotations(double angle) {
+    public static double coralWristDegreesToRotations(double angle) {
         // angle * net gear ratio * (rotations / degrees)
-        return angle * (72. / 10.) * (72. / 20.) * (48. / 24.) * (1. / 360.);
+        return angle * (9. / 1.) * (9. / 1.) * (1. / 360.);
     }
 
     // Converts the wrist motor's rotations to degrees.
 
-    public static double wristRotationsToDegrees(double rotations) {
+    public static double coralWristRotationsToDegrees(double rotations) {
         // rotations * net gear ratio * (degrees / rotations)
-        return rotations * (10. / 72.) * (20. / 72.) * (24. / 48.) * (360. / 1.);
+        return rotations * (1. / 9.) * (1. / 9.) * (360. / 1.);
     }
 
-    public static double armDegreesToRotations(double angle) {
+    public static double algaeArmDegreesToRotations(double angle) {
         // angle * net gear ratio * (rotations / degrees)
-        return angle * (72. / 10.) * (72. / 20.) * (48. / 24.) * (1. / 360.);
+        return angle * (100. / 1.) * (3. / 1.) * (1. / 360.);
     }
 
     // Converts the wrist motor's rotations to degrees.
 
-    public static double armRotationsToDegrees(double rotations) {
+    public static double algaeArmRotationsToDegrees(double rotations) {
         // rotations * net gear ratio * (degrees / rotations)
-        return rotations * (10. / 72.) * (20. / 72.) * (24. / 48.) * (360. / 1.);
+        return rotations * (1. / 100.) * (1. / 3.) * (360. / 1.);
     }
 
     /**
@@ -43,7 +43,7 @@ public final class EncoderUtils {
      */
     public static double elevatorHeightToRotations(double height) {
         // height * net gear ratio * (rotations / height)
-        return height * (120. / 1.) * (1. / (1.641 * Math.PI));
+        return height * (120. / 1.) * (1. / (1.02 * Math.PI));
     }
 
     /**
@@ -51,7 +51,7 @@ public final class EncoderUtils {
      */
     public static double elevatorRotationsToHeight(double rotations) {
         // rotations * net gear ratio * (height / rotations)
-        return rotations * (1. / 120.) * ((1.641 * Math.PI) / 1.);
+        return rotations * (1. / 120.) * ((1.02 * Math.PI) / 1.);
     }
 
     /**
