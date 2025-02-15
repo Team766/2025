@@ -11,7 +11,7 @@ public class ClimberOI extends RuleGroup {
     public ClimberOI(JoystickReader gamePad, Climber climber) {
         addRule(
                         "Climber up",
-                        gamePad.whenButton(InputConstants.GAMEPAD_BUTTON_CLIMB),
+                        gamePad.whenButton(InputConstants.BACK_BUTTON),
                         ONCE_AND_HOLD,
                         climber,
                         () -> {
