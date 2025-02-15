@@ -11,7 +11,6 @@ public class WristOI extends RuleGroup {
     public WristOI(JoystickReader gamePad, Wrist wrist) {
         addRule(
                 "Pickup Coral",
-
                 gamePad.whenButton(InputConstants.GAMEPAD_BUTTON_A),
                 ONCE,
                 wrist,
