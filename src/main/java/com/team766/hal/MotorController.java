@@ -2,7 +2,6 @@ package com.team766.hal;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 
 /**
  * Interface for motor controlling devices.
@@ -126,53 +125,4 @@ public interface MotorController extends BasicMotorController {
     void setOpenLoopRamp(double secondsFromNeutralToFull);
 
     void setClosedLoopRamp(double secondsFromNeutralToFull);
-
-    private SoftwareLimitSwitchConfigs getLimitSwitchConfigs() {
-        SoftwareLimitSwitchConfigs limitSwitchConfigs = new SoftwareLimitSwitchConfigs();
-        StatusCode status = getConfigurator().refresh(limitSwitchConfigs);
-        if (!status.isOK()) {
-            Logger.get(Category.MECHANISMS)
-                    .logRaw(
-                            Severity.WARNING,
-                            "Unable to get limit switch configs: " + status.toString());
-            ;
-        }
-        return limitSwitchConfigs;
-    }
-
-    private void applyLimitSwitchConfigs(SoftwareLimitSwitchConfigs limitSwitchConfigs) {
-        StatusCode status = getConfigurator().apply(limitSwitchConfigs);
-        if (!status.isOK()) {
-            Logger.get(Category.MECHANISMS)
-                    .logRaw(
-                            Severity.WARNING,
-                            "Unable to set limit switch configs: " + status.toString());
-        }
-    }
-
-    public void setSoftLimits(double forwardLimit, double reverseLimit) {
-        if (!(this instanceof TalonFX)) {
-            return;
-        }
-        TalonFX talonFX = (TalonFX) this;
-
-        SoftwareLimitSwitchConfigs limitSwitchConfigs = getLimitSwitchConfigs(talonFX);
-        limitSwitchConfigs.ForwardSoftLimitThreshold = forwardLimit;
-        limitSwitchConfigs.ReverseSoftLimitThreshold = reverseLimit;
-        limitSwitchConfigs.ForwardSoftLimitEnable = true;
-        limitSwitchConfigs.ReverseSoftLimitEnable = true;
-        applyLimitSwitchConfigs(limitSwitchConfigs);
-    }
-
-    public void enableSoftLimits(boolean enable) {
-        if (!(this instanceof TalonFX)) {
-            return;
-        }
-        TalonFX talonFX = (TalonFX) this;
-
-        SoftwareLimitSwitchConfigs limitSwitchConfigs = getLimitSwitchConfigs(talonFX);
-        limitSwitchConfigs.ForwardSoftLimitEnable = enable;
-        limitSwitchConfigs.ReverseSoftLimitEnable = enable;
-        applyLimitSwitchConfigs(limitSwitchConfigs);
-    }
 }
