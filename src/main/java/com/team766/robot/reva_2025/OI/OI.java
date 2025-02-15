@@ -15,7 +15,8 @@ public class OI extends RuleEngine {
             AlgaeIntake algaeIntake,
             Wrist wrist,
             Climber climber,
-            Elevator elevator) {
+            Elevator elevator,
+            CoralIntake coral) {
         final JoystickReader leftJoystick =
                 RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         final JoystickReader rightJoystick =
@@ -26,7 +27,7 @@ public class OI extends RuleEngine {
 
         // Add driver control rules here.
 
-        addRules(new DebugOI(macropad, climber, elevator, wrist, algaeIntake));
+        addRules(new DebugOI(macropad, climber, elevator, wrist, algaeIntake, coral));
         addRules(new DriverOI(leftJoystick, rightJoystick, drive));
         // addRules(new AlgaeIntakeOI(boxopGamepad, algaeIntake));
         // addRules(new WristOI(boxopGamepad, wrist));

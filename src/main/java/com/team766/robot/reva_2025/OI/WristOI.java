@@ -15,7 +15,7 @@ public class WristOI extends RuleGroup {
                 ONCE,
                 wrist,
                 () -> {
-                    wrist.setPosition(Wrist.Position.WRIST_BOTTOM);
+                    wrist.setPosition(Wrist.WristPosition.WRIST_BOTTOM);
                 });
 
         addRule(
@@ -24,7 +24,7 @@ public class WristOI extends RuleGroup {
                 ONCE,
                 wrist,
                 () -> {
-                    wrist.setPosition(Wrist.Position.WRIST_TOP);
+                    wrist.setPosition(Wrist.WristPosition.WRIST_TOP);
                 });
     }
 }
