@@ -31,6 +31,8 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         ELEVATOR_L3(EncoderUtils.elevatorRotationsToHeight(L3_HEIGHT)),
         ELEVATOR_L4(EncoderUtils.elevatorRotationsToHeight(L4_HEIGHT));
 
+        double height = 0;
+
         Position(double height) {
             this.height = height;
         }
@@ -58,12 +60,10 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
             elevatorLeftMotor.set(MotorController.ControlMode.Position, setPosition);
         }
     }
-    
 
     public void setPosition(Position position) {
         setPosition(position.getElevatorRotations());
     }
-
 
     public void nudge(double multiplier) {
         double nudgePosition = elevatorLeftMotor.getSensorPosition() - (NUDGE_AMOUNT * multiplier);

@@ -14,8 +14,7 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     private MotorController leftClimberMotor;
     private MotorController rightClimberMotor;
     private double HIGH_LIMIT = 90;
-    private double UP_POWER = 0.5;
-    private double DOWN_POWER = -0.5;
+    private double CLIMBER_POWER = 0.5;
 
     public static record ClimberStatus(double currentPower) implements Status {}
 
@@ -32,12 +31,8 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
         leftClimberMotor.setSensorPosition(0);
     }
 
-    public void climbUp() {
-        leftClimberMotor.set(UP_POWER);
-    }
-
-    public void climbDown() {
-        leftClimberMotor.set(DOWN_POWER);
+    public void climb(double multiplier) {
+        leftClimberMotor.set(CLIMBER_POWER * multiplier);
     }
 
     public void climbOff() {

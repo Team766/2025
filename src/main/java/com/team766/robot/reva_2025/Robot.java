@@ -26,13 +26,13 @@ public class Robot implements RobotConfigurator3 {
         vision = new Vision();
         wrist = new Wrist();
         elevator = new Elevator();
-        coralIntake = new CoralIntake();
+        coral = new CoralIntake();
         climber = new Climber();
     }
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, algaeIntake, wrist, elevator, coralIntake);
+        return new OI(drive, algaeIntake, wrist, elevator, coral, climber);
     }
 
     @Override

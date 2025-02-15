@@ -8,13 +8,15 @@ import com.team766.hal.JoystickReader;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
+import com.team766.robot.reva_2025.mechanisms.Climber;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 
 public class BoxOpOI extends RuleGroup {
-        private final Elevator.Position targetElevatorPosition;
-        private final Wrist.WristPosition targetWristPosition;
-        private final AlgaeIntake.Level targetAlgaeLevel;
+    private Elevator.Position targetElevatorPosition;
+    private Wrist.WristPosition targetWristPosition;
+    private AlgaeIntake.Level targetAlgaeLevel;
+
     public BoxOpOI(
             JoystickReader boxopGamepad,
             AlgaeIntake algaeIntake,
@@ -22,6 +24,9 @@ public class BoxOpOI extends RuleGroup {
             Wrist wrist,
             Climber climber) {
 
+        targetElevatorPosition = Elevator.Position.ELEVATOR_BOTTOM;
+        targetWristPosition = Wrist.WristPosition.CORAL_INTAKE;
+        targetAlgaeLevel = AlgaeIntake.Level.GroundIntake;
         // ALGAE INTAKE POSITIONS
 
         addRule(
@@ -39,7 +44,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 algaeIntake,
                 () -> {
-                        targetAlgaeLevel = Level.GroundIntake;
+                    targetAlgaeLevel = Level.GroundIntake;
                 });
 
         addRule(
@@ -48,7 +53,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 algaeIntake,
                 () -> {
-                        targetAlgaeLevel = Level.L2_L3AlgaeIntake;
+                    targetAlgaeLevel = Level.L2L3AlgaeIntake;
                 });
 
         addRule(
@@ -57,7 +62,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 algaeIntake,
                 () -> {
-                        targetAlgaeLevel = Level.L3_L4AlgaeIntake;
+                    targetAlgaeLevel = Level.L3L4AlgaeIntake;
                 });
 
         addRule(
@@ -66,18 +71,18 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 algaeIntake,
                 () -> {
-                        algaeIntake.setArmAngle(targetAlgaeLevel);
+                    algaeIntake.setArmAngle(targetAlgaeLevel);
                 });
-        
+
         // ALGAE INTAKE MOTOR CONTROLS / SHOOTING
-        
+
         addRule(
                 "Algae Motors to Intake Power",
                 boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
                 ONCE_AND_HOLD,
                 algaeIntake,
                 () -> {
-                    algaeIntake.in();
+                    algaeIntake.setState(AlgaeIntake.State.In);
                 });
 
         addRule(
@@ -88,9 +93,8 @@ public class BoxOpOI extends RuleGroup {
                 ONCE_AND_HOLD,
                 algaeIntake,
                 () -> {
-                    algaeIntake.out();
+                    algaeIntake.setState(AlgaeIntake.State.Out);
                 });
-
 
         addRule(
                 "Spin Up Algae Shooter Motors",
@@ -98,8 +102,8 @@ public class BoxOpOI extends RuleGroup {
                 ONCE_AND_HOLD,
                 algaeIntake,
                 () -> {
-                        algaeIntake.shooterOn();
-                        algaeIntake.setArmAngle(Level.Shoot);
+                    algaeIntake.setState(AlgaeIntake.State.Shoot);
+                    algaeIntake.setArmAngle(Level.Shoot);
                 });
 
         // ELEVATOR
@@ -110,8 +114,8 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 elevator,
                 () -> {
-                        targetElevatorPosition = Elevator.Position.ELEVATOR_L1;
-                        targetWristPosition = Wrist.WristPosition.CORAL_INTAKE;
+                    targetElevatorPosition = Elevator.Position.ELEVATOR_L1;
+                    targetWristPosition = Wrist.WristPosition.CORAL_INTAKE;
                 });
         addRule(
                 "Set Elevator/Wrist L2",
@@ -119,8 +123,8 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 elevator,
                 () -> {
-                        targetElevatorPosition = Elevator.Position.ELEVATOR_L2;
-                        targetWristPosition = Wrist.WristPosition.CORAL_L2_PREP;
+                    targetElevatorPosition = Elevator.Position.ELEVATOR_L2;
+                    targetWristPosition = Wrist.WristPosition.CORAL_L2_PREP;
                 });
 
         addRule(
@@ -129,8 +133,8 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 elevator,
                 () -> {
-                        targetElevatorPosition = Elevator.Position.ELEVATOR_L3;
-                        targetWristPosition = Wrist.WristPosition.CORAL_L3_PREP;
+                    targetElevatorPosition = Elevator.Position.ELEVATOR_L3;
+                    targetWristPosition = Wrist.WristPosition.CORAL_L3_PREP;
                 });
 
         addRule(
@@ -139,8 +143,8 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 elevator,
                 () -> {
-                        targetElevatorPosition = Elevator.Position.ELEVATOR_L4;
-                        targetWristPosition = Wrist.WristPosition.CORAL_L4_PREP;
+                    targetElevatorPosition = Elevator.Position.ELEVATOR_L4;
+                    targetWristPosition = Wrist.WristPosition.CORAL_L4_PREP;
                 });
 
         addRule(
@@ -152,9 +156,9 @@ public class BoxOpOI extends RuleGroup {
                     elevator.setPosition(targetElevatorPosition);
                     wrist.setAngle(targetWristPosition);
                 });
-        
+
         // FINE TUNING
-        
+
         addRule(
                 "Nudge Elevator",
                 new LogicalAnd(
@@ -168,7 +172,7 @@ public class BoxOpOI extends RuleGroup {
 
         addRule(
                 "Nudge Wrist",
-                new LogicalAnd (
+                new LogicalAnd(
                         boxopGamepad.whenAxisMoved(InputConstants.AXIS_WRIST_FINETUNE),
                         boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON)),
                 ONCE_AND_HOLD,
@@ -179,7 +183,7 @@ public class BoxOpOI extends RuleGroup {
 
         addRule(
                 "Nudge Algae",
-                new LogicalAnd (
+                new LogicalAnd(
                         boxopGamepad.whenAxisMoved(InputConstants.AXIS_ALGAE_FINETUNE),
                         boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON)),
                 ONCE_AND_HOLD,

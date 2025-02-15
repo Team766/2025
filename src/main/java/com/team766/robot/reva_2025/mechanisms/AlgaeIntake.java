@@ -18,6 +18,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     private double targetAngle;
     private final ValueProvider<Double> ffGain;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
+    private static final double NUDGE_AMOUNT = 1;
 
     // TODO: Intake and shooter motor should drive when we shoot. Shooter motor should be slgithly
     // slower than the intake motor
@@ -73,7 +74,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         GroundIntake(-30, 1),
         L2L3AlgaeIntake(20, -1),
         L3L4AlgaeIntake(70, -1),
-        Stow(-80, 1);
+        Stow(-80, 1),
+        Shoot(0, 1); // placeholder number
 
         private final double angle;
         private final double direction;
@@ -134,15 +136,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()));
     }
 
-    public void nudgeArmUp() {
-        double angle = getStatus().currentAngle();
-        angle = angle + 5;
-        setArmAngle(angle);
-    }
-
-    public void nudgeArmDown() {
-        double angle = getStatus().currentAngle();
-        angle = angle - 5;
-        setArmAngle(angle);
+    public void nudge(double multiplier) {
+        double nudgePosition = getStatus().currentAngle() + (NUDGE_AMOUNT * multiplier);
+        setArmAngle(nudgePosition);
     }
 }
