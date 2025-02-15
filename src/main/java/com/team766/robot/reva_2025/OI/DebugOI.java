@@ -135,7 +135,7 @@ public class DebugOI extends RuleGroup {
                                                                                 InputConstants
                                                                                         .NUDGE_UP),
                                                                         elevator,
-                                                                        () -> elevator.nudgeNoPID(0.6))
+                                                                        () -> elevator.nudgeNoPID(1.0))
                                                                 .withFinishedTriggeringProcedure(
                                                                         elevator, () -> elevator.nudgeNoPID(0));
                                                         addRule(
@@ -143,7 +143,7 @@ public class DebugOI extends RuleGroup {
                                                                 macropad.whenButton(
                                                                         InputConstants.NUDGE_DOWN),
                                                                 elevator,
-                                                                () -> elevator.nudgeNoPID(-0.6))
+                                                                () -> elevator.nudgeNoPID(-1.0))
                                                                 .withFinishedTriggeringProcedure(
                                                                         elevator, () -> elevator.nudgeNoPID(0));
                                                     }
@@ -178,7 +178,7 @@ public class DebugOI extends RuleGroup {
                                                                                 InputConstants
                                                                                         .NUDGE_UP),
                                                                         wrist,
-                                                                        () -> wrist.nudgeNoPID(0.2))
+                                                                        () -> wrist.nudgeNoPID(0.5))
                                                                 .withFinishedTriggeringProcedure(
                                                                         wrist, () -> wrist.nudgeNoPID(0));
                                                         addRule(
@@ -186,7 +186,7 @@ public class DebugOI extends RuleGroup {
                                                                 macropad.whenButton(
                                                                         InputConstants.NUDGE_DOWN),
                                                                 wrist,
-                                                                () -> wrist.nudgeNoPID(-0.2))
+                                                                () -> wrist.nudgeNoPID(-0.5))
                                                                 .withFinishedTriggeringProcedure(
                                                                         wrist, () -> wrist.nudgeNoPID(0));
                                                     }

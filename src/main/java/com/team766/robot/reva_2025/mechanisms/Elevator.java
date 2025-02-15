@@ -45,6 +45,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         elevatorLeftMotor = RobotProvider.instance.getMotor("elevator.leftMotor");
         elevatorRightMotor = RobotProvider.instance.getMotor("elevator.rightMotor");
         elevatorRightMotor.follow(elevatorLeftMotor);
+        elevatorLeftMotor.setCurrentLimit(35);
         elevatorLeftMotor.setSensorPosition(0);
     }
 

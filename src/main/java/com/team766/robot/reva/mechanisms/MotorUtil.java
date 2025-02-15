@@ -22,7 +22,6 @@ public final class MotorUtil {
     private static double getTalonFXCurrentUsage(CoreTalonFX motor) {
         StatusSignal<Current> current = ((CoreTalonFX) motor).getSupplyCurrent();
         if (current.getStatus().isOK()) {
-            Logger.get(Category.MECHANISMS).logRaw(Severity.ERROR, "working, " + current.getStatus().toString());
             return current.getValueAsDouble();
         } else {
             Logger.get(Category.MECHANISMS).logRaw(Severity.ERROR, current.getStatus().toString());

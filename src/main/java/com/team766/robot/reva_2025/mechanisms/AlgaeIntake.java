@@ -51,8 +51,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         In(0, 0.75),
         Out(0, -0.25),
         Stop(0, 0),
-        ShooterOn(1.0, 0),
-        Feed(1.0,1);
+        ShooterOn(0.55, 0),
+        Feed(0.55,1);
         private final double innerPower, outerPower;
 
         State(double innerPower, double outerPower) {
@@ -74,7 +74,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         Shoot(-15, 1),
         L2L3AlgaeIntake(20, 1),
         L3L4AlgaeIntake(70, -1),
-        Stow(-60, 0);
+        Stow(-60, 1);
 
         private final double angle;
         private final double power;
@@ -150,7 +150,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     public void shooterOn() {
         state = State.ShooterOn;
-        shooterMotor.set(state.getInnerPower());
+        shooterMotor.set(MotorController.ControlMode.Velocity, 3000/60);
         intakeMotor.set(state.getOuterPower());
     }
 
