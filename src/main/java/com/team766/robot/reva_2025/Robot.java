@@ -9,7 +9,7 @@ import com.team766.robot.reva_2025.mechanisms.*;
 
 public class Robot implements RobotConfigurator3 {
 
-    private SwerveDrive drive;
+    public SwerveDrive drive;
     private AlgaeIntake algaeIntake;
     private Vision vision;
     private Wrist wrist;
