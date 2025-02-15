@@ -10,15 +10,18 @@ public final class InputConstants extends com.team766.robot.common.constants.Inp
     public static final int BUTTON_ELEVATOR_WRIST_L2 = GAMEPAD_B_BUTTON;
     public static final int BUTTON_ELEVATOR_WRIST_L3 = GAMEPAD_Y_BUTTON;
     public static final int BUTTON_ELEVATOR_WRIST_L4 = GAMEPAD_X_BUTTON;
-    public static final int BUTTON_ALGAE_INTAKE_GROUND = GAMEPAD_DPAD_DOWN;
-    public static final int BUTTON_ALGAE_INTAKE_L2 = GAMEPAD_DPAD_RIGHT;
-    public static final int BUTTON_ALGAE_INTAKE_L3 = GAMEPAD_DPAD_UP;
-    public static final int BUTTON_ALGAE_INTAKE_L4 = GAMEPAD_DPAD_LEFT;
-    public static final int BUTTON_ALGAE_INTAKE_SHOOTER = GAMEPAD_LEFT_TRIGGER;
-    public static final int BUTTON_ALGAE_INTAKE_TO_SHOOTER = GAMEPAD_LEFT_BUMPER_BUTTON;
+    public static final int BUTTON_ELEVATOR_WRIST_MOVE_TARGETPOSITION = GAMEPAD_RIGHT_BUMPER_BUTTON;
+    public static final int BUTTON_ALGAE_INTAKE_STOW = GAMEPAD_DPAD_DOWN;
+    public static final int BUTTON_ALGAE_INTAKE_GROUND = GAMEPAD_DPAD_RIGHT;
+    public static final int BUTTON_ALGAE_INTAKE_L2_L3 = GAMEPAD_DPAD_UP;
+    public static final int BUTTON_ALGAE_INTAKE_L3_L4 = GAMEPAD_DPAD_LEFT;
+    public static final int BUTTON_ALGAE_INTAKE_MOVE_TARGETPOSITION = GAMEPAD_LEFT_BUMPER_BUTTON;
+    public static final int BUTTON_ALGAE_MOTOR_INTAKE_POWER = GAMEPAD_LEFT_TRIGGER;
+    public static final int BUTTON_ALGAE_SHOOTER_ON = GAMEPAD_RIGHT_TRIGGER;
     public static final int BUTTON_CLIMB = GAMEPAD_BACK_BUTTON;
     public static final int AXIS_ELEVATOR_FINETUNE = GAMEPAD_LEFT_STICK_YAXIS;
     public static final int AXIS_WRIST_FINETUNE = GAMEPAD_RIGHT_STICK_YAXIS;
+    public static final int AXIS_ALGAE_FINETUNE = GAMEPAD_LEFT_STICK_YAXIS;
 
     // Controls on joysticks
     public static final int BUTTON_CORAL_PLACE = JOYSTICK_LEFT_BUTTON;

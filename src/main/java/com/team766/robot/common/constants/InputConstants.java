@@ -36,4 +36,5 @@ public class InputConstants {
     public static final int GAMEPAD_DPAD_LEFT = 270;
     public static final int GAMEPAD_DPAD_UP = 0;
     public static final int GAMEPAD_BACK_BUTTON = 7;
+    public static final int GAMEPAD_START_BUTTON = 8;
 }

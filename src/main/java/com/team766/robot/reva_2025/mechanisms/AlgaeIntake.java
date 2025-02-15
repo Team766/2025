@@ -11,6 +11,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     private MotorController shooterMotor;
     private State state;
     private Level level;
+    private final static double NUDGE_AMOUNT = 1.0;
 
     // TODO: Intake and shooter motor should drive when we shoot. Shooter motor should be slgithly
     // slower than the intake motor
@@ -45,9 +46,10 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     }
 
     public enum Level {
+        Stow(0,0),
         GroundIntake(20, -1),
-        L2AlgaeIntake(90, -1),
-        L3AlgaeIntake(180, 1),
+        L2_L3AlgaeIntake(90, -1),
+        L3_L4AlgaeIntake(180, 1),
         // Shoot was Stow previously; set angle & power to the appropriate
         Shoot(0, 0);
 
@@ -101,6 +103,11 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     public void shooterOff() {
         state = State.Stop;
         shooterMotor.set(state.getPower());
+    }
+
+    public void nudge(double multiplier) {
+        double nudgePosition = armMotor.getSensorPosition() + (NUDGE_AMOUNT * multiplier);
+        armMotor.set(MotorController.ControlMode.Position, nudgePosition);
     }
 
     protected AlgaeIntakeStatus updateStatus() {

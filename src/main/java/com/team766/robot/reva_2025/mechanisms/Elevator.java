@@ -58,17 +58,14 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
             elevatorLeftMotor.set(MotorController.ControlMode.Position, setPosition);
         }
     }
+    
 
     public void setPosition(Position position) {
         setPosition(position.getElevatorRotations());
     }
 
-    public void nudgeUp(double multiplier) {
-        double nudgePosition = elevatorLeftMotor.getSensorPosition() + (NUDGE_AMOUNT * multipler);
-        setPosition(nudgePosition);
-    }
 
-    public void nudgeDown(double multiplier) {
+    public void nudge(double multiplier) {
         double nudgePosition = elevatorLeftMotor.getSensorPosition() - (NUDGE_AMOUNT * multiplier);
         setPosition(nudgePosition);
     }

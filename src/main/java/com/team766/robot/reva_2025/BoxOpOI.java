@@ -12,6 +12,9 @@ import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 
 public class BoxOpOI extends RuleGroup {
+        private final Elevator.Position targetElevatorPosition;
+        private final Wrist.WristPosition targetWristPosition;
+        private final AlgaeIntake.Level targetAlgaeLevel;
     public BoxOpOI(
             JoystickReader boxopGamepad,
             AlgaeIntake algaeIntake,
@@ -19,33 +22,15 @@ public class BoxOpOI extends RuleGroup {
             Wrist wrist,
             Climber climber) {
 
-        // ALGAE INTAKE & SHOOTER
+        // ALGAE INTAKE POSITIONS
 
         addRule(
-                "Algae Intake to Shooter",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_TO_SHOOTER),
-                ONCE_AND_HOLD,
-                algaeIntake,
-                () -> {
-                    algaeIntake.in();
-                });
-
-        addRule(
-                "Algae Outtake (shooter?)",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_SHOOTER),
-                ONCE_AND_HOLD,
-                algaeIntake,
-                () -> {
-                    algaeIntake.out();
-                });
-
-        addRule(
-                "Algae to Shooting Level",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_SHOOTER),
+                "Algae Intake to Stow",
+                boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_STOW),
                 ONCE,
                 algaeIntake,
                 () -> {
-                    algaeIntake.setArmAngle(Level.Shoot);
+                    targetAlgaeLevel = Level.Stow;
                 });
 
         addRule(
@@ -54,142 +39,166 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 algaeIntake,
                 () -> {
-                    algaeIntake.setArmAngle(Level.GroundIntake);
+                        targetAlgaeLevel = Level.GroundIntake;
                 });
 
         addRule(
-                "Algae Intake to Level 2",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_L2),
+                "Algae Intake to L2/L3",
+                boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_L2_L3),
                 ONCE,
                 algaeIntake,
                 () -> {
-                    algaeIntake.setArmAngle(Level.L2AlgaeIntake);
+                        targetAlgaeLevel = Level.L2_L3AlgaeIntake;
                 });
 
         addRule(
-                "Algae Intake to Level 3",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_L3),
+                "Algae Intake to L3/L4",
+                boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_L3_L4),
                 ONCE,
                 algaeIntake,
                 () -> {
-                    algaeIntake.setArmAngle(Level.L3AlgaeIntake);
+                        targetAlgaeLevel = Level.L3_L4AlgaeIntake;
                 });
 
-        /*
         addRule(
-                        " Shooter On for Shooter",
-                        boxopGamepad.whenButton(InputConstants.BUTTON_ON_SHOOTER),
-                        ONCE_AND_HOLD,
-                        algaeIntake,
-                        () -> {
-                            algaeIntake.shooterOn();
-                        });
-        */
+                "Move Algae Intake to TargetLevel",
+                boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON),
+                ONCE,
+                algaeIntake,
+                () -> {
+                        algaeIntake.setArmAngle(targetAlgaeLevel);
+                });
+        
+        // ALGAE INTAKE MOTOR CONTROLS / SHOOTING
+        
+        addRule(
+                "Algae Motors to Intake Power",
+                boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                ONCE_AND_HOLD,
+                algaeIntake,
+                () -> {
+                    algaeIntake.in();
+                });
+
+        addRule(
+                "Algae Motors to Outtake Power",
+                new LogicalAnd(
+                        boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_START_BUTTON)),
+                ONCE_AND_HOLD,
+                algaeIntake,
+                () -> {
+                    algaeIntake.out();
+                });
+
+
+        addRule(
+                "Spin Up Algae Shooter Motors",
+                boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_SHOOTER_ON),
+                ONCE_AND_HOLD,
+                algaeIntake,
+                () -> {
+                        algaeIntake.shooterOn();
+                        algaeIntake.setArmAngle(Level.Shoot);
+                });
 
         // ELEVATOR
 
         addRule(
-                "Move Elevator L1 (Intake?)",
-                new LogicalAnd(
-                        boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L1),
-                        boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER)),
+                "Set Elevator/Wrist L1 (Intake?)",
+                boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L1),
                 ONCE,
                 elevator,
                 () -> {
-                    elevator.setPosition(Elevator.Position.ELEVATOR_L1);
-                    wrist.setAngle(Wrist.WristPosition.CORAL_INTAKE);
+                        targetElevatorPosition = Elevator.Position.ELEVATOR_L1;
+                        targetWristPosition = Wrist.WristPosition.CORAL_INTAKE;
+                });
+        addRule(
+                "Set Elevator/Wrist L2",
+                boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L2),
+                ONCE,
+                elevator,
+                () -> {
+                        targetElevatorPosition = Elevator.Position.ELEVATOR_L2;
+                        targetWristPosition = Wrist.WristPosition.CORAL_L2_PREP;
                 });
 
         addRule(
-                "Move Elevator & Wrist L2",
-                new LogicalAnd(
-                        boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L2),
-                        boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER)),
+                "Set Elevator/Wrist L3",
+                boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L3),
                 ONCE,
                 elevator,
                 () -> {
-                    elevator.setPosition(Elevator.Position.ELEVATOR_L2);
-                    wrist.setAngle(Wrist.WristPosition.CORAL_L2_PREP);
+                        targetElevatorPosition = Elevator.Position.ELEVATOR_L3;
+                        targetWristPosition = Wrist.WristPosition.CORAL_L3_PREP;
                 });
+
         addRule(
-                "Move Elevator & Wrist L3",
-                new LogicalAnd(
-                        boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L3),
-                        boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER)),
+                "Set Elevator/Wrist L4",
+                boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L4),
                 ONCE,
                 elevator,
                 () -> {
-                    elevator.setPosition(Elevator.Position.ELEVATOR_L3);
-                    wrist.setAngle(Wrist.WristPosition.CORAL_L3_PREP);
+                        targetElevatorPosition = Elevator.Position.ELEVATOR_L4;
+                        targetWristPosition = Wrist.WristPosition.CORAL_L4_PREP;
                 });
+
         addRule(
-                "Move Elevator & Wrist L4",
-                new LogicalAnd(
-                        boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L4),
-                        boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER)),
+                "Move Elevator & Wrist to TargetPosition",
+                boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
                 ONCE,
                 elevator,
                 () -> {
-                    elevator.setPosition(Elevator.Position.ELEVATOR_L4);
-                    wrist.setAngle(Wrist.WristPosition.CORAL_L4_PREP);
+                    elevator.setPosition(targetElevatorPosition);
+                    wrist.setAngle(targetWristPosition);
                 });
+        
+        // FINE TUNING
+        
         addRule(
-                "Nudge Elevator Up",
-                boxopGamepad.whenAxisMoved(InputConstants.AXIS_ELEVATOR_FINETUNE),
+                "Nudge Elevator",
+                new LogicalAnd(
+                        boxopGamepad.whenAxisMoved(InputConstants.AXIS_ELEVATOR_FINETUNE),
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON)),
                 ONCE_AND_HOLD,
                 elevator,
                 () -> {
-                    elevator.nudgeUp(boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_FINETUNE));
-                });
-        addRule(
-                "Nudge Elevator Down",
-                boxopGamepad.whenAxisMoved(InputConstants.AXIS_ELEVATOR_FINETUNE),
-                ONCE_AND_HOLD,
-                elevator,
-                () -> {
-                    elevator.nudgeDown(boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_FINETUNE));
+                    elevator.nudge(boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_FINETUNE));
                 });
 
-        // WRIST
-
         addRule(
-                "Nudge Wrist Up",
-                boxopGamepad.whenAxisMoved(InputConstants.AXIS_WRIST_FINETUNE),
+                "Nudge Wrist",
+                new LogicalAnd (
+                        boxopGamepad.whenAxisMoved(InputConstants.AXIS_WRIST_FINETUNE),
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON)),
                 ONCE_AND_HOLD,
                 wrist,
                 () -> {
-                    wrist.nudgeUp(boxopGamepad.getAxis(InputConstants.AXIS_WRIST_FINETUNE));
+                    wrist.nudge(boxopGamepad.getAxis(InputConstants.AXIS_WRIST_FINETUNE));
                 });
+
         addRule(
-                "Nudge Wrist Down",
-                boxopGamepad.whenAxisMoved(InputConstants.AXIS_WRIST_FINETUNE),
+                "Nudge Algae",
+                new LogicalAnd (
+                        boxopGamepad.whenAxisMoved(InputConstants.AXIS_ALGAE_FINETUNE),
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON)),
                 ONCE_AND_HOLD,
-                wrist,
+                algaeIntake,
                 () -> {
-                    wrist.nudgeDown(boxopGamepad.getAxis(InputConstants.AXIS_WRIST_FINETUNE));
+                    algaeIntake.nudge(boxopGamepad.getAxis(InputConstants.AXIS_ALGAE_FINETUNE));
                 });
 
         // CLIMBER
 
         addRule(
-                "Climber Up",
+                "Climber Up/Down",
                 new LogicalAnd(
                         boxopGamepad.whenButton(InputConstants.BUTTON_CLIMB),
-                        boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON)),
+                        boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS)),
                 ONCE,
                 climber,
                 () -> {
-                    climber.climbUp();
-                });
-        addRule(
-                "Climber Down",
-                new LogicalAnd(
-                        boxopGamepad.whenButton(InputConstants.BUTTON_CLIMB),
-                        boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER)),
-                ONCE,
-                climber,
-                () -> {
-                    climber.climbDown();
+                    climber.climb(boxopGamepad.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
                 });
     }
 }

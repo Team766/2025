@@ -10,6 +10,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     private final double thresholdConstant = 0; // TODO: Update me after testing!
     private double setPoint;
     private WristPosition wristState;
+    private final static double NUDGE_AMOUNT = 1.0;
 
     public record WristStatus(double angle) implements Status {}
 
@@ -51,14 +52,9 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         wristMotor.set(MotorController.ControlMode.Position, angle);
     }
 
-    public void nudgeUp(double multiplier) {
-        double nudgePosition = wristMotor.getSensorPosition() + (NUDGE_AMOUNT * multipler);
-        setPosition(nudgePosition);
-    }
-
-    public void nudgeDown(double multiplier) {
-        double nudgePosition = wristMotor.getSensorPosition() + (-1 * NUDGE_AMOUNT * multipler);
-        setPosition(nudgePosition);
+    public void nudge(double multiplier) {
+        double nudgePosition = wristMotor.getSensorPosition() + (NUDGE_AMOUNT * multiplier);
+        setAngle(nudgePosition);
     }
 
     public WristPosition getWristState() {
