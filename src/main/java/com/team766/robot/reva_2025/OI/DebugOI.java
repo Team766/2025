@@ -7,7 +7,10 @@ import com.team766.hal.JoystickReader;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
+import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
+import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import com.team766.robot.reva_2025.mechanisms.Climber;
+import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 
@@ -40,7 +43,8 @@ public class DebugOI extends RuleGroup {
             Climber climber,
             Elevator elevator,
             Wrist wrist,
-            AlgaeIntake algae) {
+            AlgaeIntake algae,
+            CoralIntake coral) {
         // fine-grained control of the shoulder
         // used for testing and tuning
         // press down the shoulder control button and nudge the angle up and down
@@ -81,42 +85,42 @@ public class DebugOI extends RuleGroup {
                                         macropad.whenButton(InputConstants.NUDGE_DOWN),
                                         algae,
                                         () -> algae.nudgeDown());
-                            }
+                                addRule("Debug Algae Intake In", macropad.whenButton(5), algae, () -> algae.in());
+                                addRule("Debug Algae Intake Out", macropad.whenButton(6), algae, () -> algae.out());
+                                addRule(
+                                        "Debug Algae Stow",
+                                        macropad.whenButton(9),
+                                        algae,
+                                        () -> algae.setArmAngle(Level.Stow));
+                                addRule(
+                                        "Debug Algae Ground Intake",
+                                        macropad.whenButton(13),
+                                        algae,
+                                        () -> algae.setArmAngle(Level.GroundIntake));
+                                addRule(
+                                        "Debug Algae Shoot Position",
+                                        macropad.whenButton(14),
+                                        algae,
+                                        () -> algae.setArmAngle(Level.Shoot));
+                                addRule(
+                                        "Debug Algae L2L3",
+                                        macropad.whenButton(15),
+                                        algae,
+                                        () -> algae.setArmAngle(Level.L2L3AlgaeIntake));
+                                addRule(
+                                        "Debug Algae L3L4",
+                                        macropad.whenButton(16),
+                                        algae,
+                                        () -> algae.setArmAngle(Level.L3L4AlgaeIntake));
+                                }
                         });
 
         // simple one-button controls for intake
         // used for testing and tuning
         // allows for running intake at default intake/outtake speeds.
-        addRule("Debug Algae Intake In", macropad.whenButton(5), algae, () -> algae.in());
-        addRule("Debug Algae Intake Out", macropad.whenButton(6), algae, () -> algae.out());
         addRule("Debug Algae Shooter Feed", macropad.whenButton(11), algae, () -> algae.feed());
         addRule("Debug Algae Shooter On", macropad.whenButton(10), algae, () -> algae.shooterOn());
 
-        addRule(
-                "Debug Algae Stow",
-                macropad.whenButton(9),
-                algae,
-                () -> algae.setArmAngle(Level.Stow));
-        addRule(
-                "Debug Algae Ground Intake",
-                macropad.whenButton(13),
-                algae,
-                () -> algae.setArmAngle(Level.GroundIntake));
-        addRule(
-                "Debug Algae Shoot Position",
-                macropad.whenButton(14),
-                algae,
-                () -> algae.setArmAngle(Level.Shoot));
-        addRule(
-                "Debug Algae L2L3",
-                macropad.whenButton(15),
-                algae,
-                () -> algae.setArmAngle(Level.L2L3AlgaeIntake));
-        addRule(
-                "Debug Algae L3L4",
-                macropad.whenButton(16),
-                algae,
-                () -> algae.setArmAngle(Level.L3L4AlgaeIntake));
 
         // fine-grained control of the climber
         // used for testing and tuning
@@ -158,6 +162,26 @@ public class DebugOI extends RuleGroup {
                                         macropad.whenButton(InputConstants.NUDGE_DOWN),
                                         elevator,
                                         () -> elevator.nudgeDown());
+                                addRule(
+                                        "Debug Elevator Stow",
+                                        macropad.whenButton(9),
+                                        elevator,
+                                        () -> elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM));
+                                addRule(
+                                        "Debug Elevator Intake",
+                                        macropad.whenButton(13),
+                                        elevator,
+                                        () -> elevator.setPosition(ElevatorPosition.ELEVATOR_INTAKE));
+                                addRule(
+                                        "Debug Elevator Low",
+                                        macropad.whenButton(15),
+                                        elevator,
+                                        () -> elevator.setPosition(ElevatorPosition.ELEVATOR_LOW));
+                                addRule(
+                                        "Debug Elevator High",
+                                        macropad.whenButton(16),
+                                        elevator,
+                                        () -> elevator.setPosition(ElevatorPosition.ELEVATOR_HIGH));
                             }
                         });
 
@@ -201,8 +225,36 @@ public class DebugOI extends RuleGroup {
                                         macropad.whenButton(InputConstants.NUDGE_DOWN),
                                         wrist,
                                         () -> wrist.nudgeDown());
-                            }
-                        });
+                                addRule("Debug Coral Graber In", macropad.whenButton(5), coral, () -> coral.in());
+                                addRule("Debug Coral Grabber Out", macropad.whenButton(6), coral, () -> coral.out());
+                                addRule(
+                                        "Debug Wrist Stow",
+                                        macropad.whenButton(9),
+                                        wrist,
+                                        () -> wrist.setPosition(WristPosition.WRIST_BOTTOM));
+                                addRule(
+                                        "Debug Wrist Intake",
+                                        macropad.whenButton(13),
+                                        wrist,
+                                        () -> wrist.setPosition(WristPosition.WRIST_INTAKE));
+                                addRule(
+                                        "Debug Wrist Low",
+                                        macropad.whenButton(14),
+                                        wrist,
+                                        () -> wrist.setPosition(WristPosition.WRIST_LOW));
+                                addRule(
+                                        "Debug Wrist Mid",
+                                        macropad.whenButton(15),
+                                        wrist,
+                                        () -> wrist.setPosition(WristPosition.WRIST_MID));
+                                addRule(
+                                        "Debug Wrist High",
+                                        macropad.whenButton(16),
+                                        wrist,
+                                        () -> wrist.setPosition(WristPosition.WRIST_HIGH));
+                        }
+                }
+        );
 
         addRule("Debug Control Climber", macropad.whenButton(4))
                 .whenTriggering(

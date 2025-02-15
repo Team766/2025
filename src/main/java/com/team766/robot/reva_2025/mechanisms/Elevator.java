@@ -22,13 +22,16 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         }
     }
 
-    public enum Position {
+    public enum ElevatorPosition {
         ELEVATOR_TOP(MAX_HEIGHT),
+        ELEVATOR_HIGH(20),
+        ELEVATOR_LOW(6),
+        ELEVATOR_INTAKE(5),
         ELEVATOR_BOTTOM(MIN_HEIGHT);
 
         private double height;
 
-        Position(double height) {
+        ElevatorPosition(double height) {
             this.height = height;
         }
 
@@ -63,7 +66,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         elevatorLeftMotor.set(value);
     }
 
-    public void setPosition(Position position) {
+    public void setPosition(ElevatorPosition position) {
         setPosition(position.getElevatorRotations());
     }
 

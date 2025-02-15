@@ -25,13 +25,17 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         }
     }
 
-    public enum Position {
-        WRIST_BOTTOM(0),
-        WRIST_TOP(180);
+    public enum WristPosition {
+        WRIST_BOTTOM(5),
+        WRIST_INTAKE(10),
+        WRIST_HIGH(240),
+        WRIST_MID(250),
+        WRIST_LOW(290),
+        WRIST_TOP(300);
 
         private double angle;
 
-        Position(double angle) {
+        WristPosition(double angle) {
             this.angle = angle;
         }
 
@@ -47,7 +51,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     public Wrist() {
         wristMotor = RobotProvider.instance.getMotor("wrist.motor");
         ffGain = ConfigFileReader.getInstance().getDouble("wrist.motor.ffGain");
-        wristMotor.setSensorPosition(0);
+        wristMotor.setSensorPosition(WristPosition.WRIST_BOTTOM.getMotorRotations());
     }
 
     /**
@@ -66,8 +70,8 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         wristMotor.set(value);
     }
 
-    public void setPosition(Position position) {
-        setPosition(position.getMotorRotations());
+    public void setPosition(WristPosition position) {
+        setPosition(position.getAngle());
     }
 
     public void nudgeUp() {
