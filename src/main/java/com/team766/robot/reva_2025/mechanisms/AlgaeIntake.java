@@ -4,8 +4,8 @@ import com.team766.config.ConfigFileReader;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
-import com.team766.hal.RobotProvider;
 import com.team766.hal.MotorController.ControlMode;
+import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
@@ -41,7 +41,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         Idle(0, 0),
         Out(-3000, 0),
         Shoot(0, 3000),
-        Feed(5000,2000);
+        Feed(5000, 2000);
 
         private final double intakeVelocity;
         private final double shooterVelocity;
@@ -53,12 +53,12 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
         private double getIntakeVelocity() {
             // converting revolutions per minute to revolutions per 100 milliseconds
-            return intakeVelocity/60/10;
+            return intakeVelocity / 60 / 10;
         }
 
         private double getShooterVelocity() {
             // converting revolutions per minute to revolutions per 100 milliseconds
-            return shooterVelocity/60/10;
+            return shooterVelocity / 60 / 10;
         }
     }
 
