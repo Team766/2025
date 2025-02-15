@@ -23,5 +23,5 @@ public final class InputConstants {
     public static final int DPAD_RIGHT = 90;
     public static final int DPAD_LEFT = 270;
     public static final int DPAD_UP = 0;
-    public static final int BackButton = 7;
+    public static final int BACK_BUTTON = 7;
 }

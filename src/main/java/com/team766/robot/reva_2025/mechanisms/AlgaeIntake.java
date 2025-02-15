@@ -17,12 +17,16 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     private Level level;
     private double targetAngle;
     private final ValueProvider<Double> ffGain;
+    private static final double POSITION_LOCATION_THRESHOLD = 1;
 
     // TODO: Intake and shooter motor should drive when we shoot. Shooter motor should be slgithly
     // slower than the intake motor
     // to add backspin on the ball.
 
-    public record AlgaeIntakeStatus(State state, Level level, double armAngle) implements Status {}
+    public record AlgaeIntakeStatus(State state, double direction, double targetAngle, double currentAngle) implements Status {
+        public boolean isAtAngle() {
+            return Math.abs(targetAngle() - currentAngle()) < POSITION_LOCATION_THRESHOLD;
+    }
 
     public AlgaeIntake() {
         intakeMotor =
@@ -109,7 +113,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     @Override
     protected void run() {
-        double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getStatus().armAngle()));
+        double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getStatus().currentAngle()));
         armMotor.set(
                 MotorController.ControlMode.Position,
                 EncoderUtils.algaeArmDegreesToRotations(targetAngle),
@@ -118,21 +122,23 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
     }
 
+    @Override
     protected AlgaeIntakeStatus updateStatus() {
         return new AlgaeIntakeStatus(
                 state,
-                level,
+                level.getDirection(), 
+                targetAngle,
                 EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()));
     }
 
     public void nudgeArmUp() {
-        double angle = getStatus().armAngle();
+        double angle = getStatus().currentAngle();
         angle = angle + 5;
         setArmAngle(angle);
     }
 
     public void nudgeArmDown() {
-        double angle = getStatus().armAngle();
+        double angle = getStatus().currentAngle();
         angle = angle - 5;
         setArmAngle(angle);
     }
