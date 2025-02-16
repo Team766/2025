@@ -71,11 +71,11 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     }
 
     public enum Level {
-        GroundIntake(-30, 1),
+        GroundIntake(-40, 1),
         L2L3AlgaeIntake(20, -1),
         L3L4AlgaeIntake(70, -1),
         Stow(-80, 1),
-        Shoot(0, 1); // placeholder number
+        Shoot(-25, 1); // placeholder number
 
         private final double angle;
         private final double direction;
