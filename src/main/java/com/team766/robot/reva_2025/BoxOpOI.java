@@ -9,6 +9,8 @@ import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
+import com.team766.robot.reva_2025.mechanisms.Elevator.Position;
+import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import com.team766.robot.reva_2025.mechanisms.Climber;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
@@ -29,8 +31,6 @@ public class BoxOpOI extends RuleGroup {
             Wrist wrist,
             Climber climber,
             CoralIntake coralIntake) {
-
-        boxopGamepad.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
 
         boxopGamepad.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
 
