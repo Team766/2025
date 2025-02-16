@@ -29,6 +29,11 @@ public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStat
     }
 
     @Override
+    protected void onMechanismIdle() {
+        stop();
+    }
+
+    @Override
     protected CoralIntakeStatus updateStatus() {
         return new CoralIntakeStatus(motor.get());
     }
