@@ -64,7 +64,7 @@ public class DriverOI extends RuleGroup {
                             rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)
                                     ? ControlConstants.FINE_DRIVING_COEFFICIENT
                                     : 1;
-                    drive.controlFieldOriented(
+                    drive.controlAllianceOriented(
                             drivingCoefficient
                                     * curvedJoystickPower(
                                             leftJoystickX,
