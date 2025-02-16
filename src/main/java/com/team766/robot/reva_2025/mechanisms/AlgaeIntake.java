@@ -136,8 +136,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()));
     }
 
-    public void nudge(double multiplier) {
-        double nudgePosition = getStatus().currentAngle() + (NUDGE_AMOUNT * multiplier);
+    public void nudge(double sign) {
+        double nudgePosition = getStatus().currentAngle() + (NUDGE_AMOUNT * Math.signum(sign));
         setArmAngle(nudgePosition);
     }
 }

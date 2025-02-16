@@ -24,5 +24,5 @@ public final class InputConstants extends com.team766.robot.common.constants.Inp
     public static final int AXIS_ALGAE_FINETUNE = GAMEPAD_LEFT_STICK_YAXIS;
 
     // Controls on joysticks
-    public static final int BUTTON_CORAL_PLACE = JOYSTICK_LEFT_BUTTON;
+    public static final int BUTTON_CORAL_PLACE = JOYSTICK_RIGHT_BUTTON;
 }

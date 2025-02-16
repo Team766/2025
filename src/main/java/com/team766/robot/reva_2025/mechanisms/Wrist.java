@@ -52,8 +52,8 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         wristMotor.set(MotorController.ControlMode.Position, angle);
     }
 
-    public void nudge(double multiplier) {
-        double nudgePosition = getStatus().angle() + (NUDGE_AMOUNT * multiplier);
+    public void nudge(double sign) {
+        double nudgePosition = getStatus().angle() + (NUDGE_AMOUNT * Math.signum(sign));
         setAngle(nudgePosition);
     }
 

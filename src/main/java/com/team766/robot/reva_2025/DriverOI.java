@@ -17,7 +17,7 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
         super(leftJoystick, rightJoystick, drive);
         addRule(
                 "Wrist to Final Position",
-                boxopGamepad.whenButton(InputConstants.BUTTON_CORAL_PLACE),
+                leftJoystick.whenButton(InputConstants.BUTTON_CORAL_PLACE),
                 ONCE,
                 wrist,
                 () -> {
