@@ -124,7 +124,7 @@ public class BoxOpOI extends RuleGroup {
                 elevator,
                 () -> {
                     targetElevatorPosition = Elevator.Position.ELEVATOR_L2;
-                    targetWristPosition = Wrist.WristPosition.CORAL_L2_PREP;
+                    targetWristPosition = Wrist.WristPosition.CORAL_L2_PLACE;
                 });
 
         addRule(
@@ -134,7 +134,7 @@ public class BoxOpOI extends RuleGroup {
                 elevator,
                 () -> {
                     targetElevatorPosition = Elevator.Position.ELEVATOR_L3;
-                    targetWristPosition = Wrist.WristPosition.CORAL_L3_PREP;
+                    targetWristPosition = Wrist.WristPosition.CORAL_L3_PLACE;
                 });
 
         addRule(
@@ -144,7 +144,7 @@ public class BoxOpOI extends RuleGroup {
                 elevator,
                 () -> {
                     targetElevatorPosition = Elevator.Position.ELEVATOR_L4;
-                    targetWristPosition = Wrist.WristPosition.CORAL_L4_PREP;
+                    targetWristPosition = Wrist.WristPosition.CORAL_L4_PLACE;
                 });
 
         addRule(

@@ -102,9 +102,6 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         this.targetAngle =
                 com.team766.math.Math.clamp(
                         angle, Level.Stow.getAngle(), Level.L3L4AlgaeIntake.getAngle());
-        armMotor.set(
-                MotorController.ControlMode.Position,
-                EncoderUtils.algaeArmDegreesToRotations(angle));
     }
 
     public void setState(State state) {
