@@ -2,11 +2,13 @@ package com.team766.robot.reva_2025;
 
 import static com.team766.framework3.RulePersistence.*;
 import java.util.Set;
+import java.util.Set;
 import com.team766.framework3.Conditions.LogicalAnd;
 import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
-import com.team766.robot.common.constants.ControlConstants;
+import com.team766.robot.reva_2025.constants.CoralConstants;
 import com.team766.robot.reva_2025.constants.InputConstants;
+import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 import com.team766.robot.reva_2025.mechanisms.Elevator.Position;
@@ -17,8 +19,7 @@ import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 
 public class BoxOpOI extends RuleGroup {
-    private Elevator.Position targetElevatorPosition;
-    private Wrist.WristPosition targetWristPosition;
+    private CoralConstants.ScoreHeight targetCoralPosition;
     private AlgaeIntake.Level targetAlgaeLevel;
 
     public BoxOpOI(
@@ -31,8 +32,7 @@ public class BoxOpOI extends RuleGroup {
 
         boxopGamepad.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
 
-        targetElevatorPosition = Elevator.Position.ELEVATOR_BOTTOM;
-        targetWristPosition = Wrist.WristPosition.CORAL_INTAKE;
+        targetCoralPosition = ScoreHeight.L1;
         targetAlgaeLevel = AlgaeIntake.Level.GroundIntake;
         // ALGAE INTAKE POSITIONS
 
@@ -126,17 +126,15 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                    targetElevatorPosition = Elevator.Position.ELEVATOR_INTAKE;
-                    targetWristPosition = Wrist.WristPosition.CORAL_INTAKE;
+                        targetCoralPosition = ScoreHeight.Intake;
                 });
         addRule(
-                "Set Elevator/Wrist L2",
+                "Set Elevator/Wrist L1",
                 boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L2),
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                    targetElevatorPosition = Elevator.Position.ELEVATOR_L3;
-                    targetWristPosition = Wrist.WristPosition.CORAL_L3_PLACE;
+                        targetCoralPosition = ScoreHeight.L3;
                 });
 
         addRule(
@@ -145,8 +143,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                    targetElevatorPosition = Elevator.Position.ELEVATOR_L4;
-                    targetWristPosition = Wrist.WristPosition.CORAL_L4_PLACE;
+                        targetCoralPosition = ScoreHeight.L4;
                 });
 
         addRule(
@@ -155,8 +152,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                    targetElevatorPosition = Elevator.Position.ELEVATOR_L1;
-                    targetWristPosition = Wrist.WristPosition.CORAL_L1_PLACE;
+                        targetCoralPosition = ScoreHeight.L1;
                 });
 
         addRule(
@@ -165,8 +161,8 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                    elevator.setPosition(targetElevatorPosition);
-                    wrist.setAngle(targetWristPosition);
+                    elevator.setPosition(targetCoralPosition.getElevatorPosition());
+                    wrist.setAngle(targetCoralPosition.getWristPosition());
                 }).whenTriggering(new RuleGroup() {
                         {
                                 addRule(

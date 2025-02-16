@@ -5,15 +5,21 @@ import static com.team766.framework3.RulePersistence.*;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.constants.InputConstants;
+import com.team766.robot.reva_2025.constants.CoralConstants.RelativeReefPos;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.procedures.ShootWhenReady;
+import com.team766.robot.reva_2025.mechanisms.Elevator;
+import com.team766.robot.reva_2025.mechanisms.Wrist;
+import com.team766.robot.reva_2025.procedures.ScoreCoral;
 
 public class DriverOI extends com.team766.robot.common.DriverOI {
     public DriverOI(
             JoystickReader leftJoystick,
             JoystickReader rightJoystick,
             SwerveDrive drive,
+            Elevator elevator,
+            Wrist wrist,
             CoralIntake coralIntake,
             AlgaeIntake algaeIntake) {
         super(leftJoystick, rightJoystick, drive);
@@ -30,5 +36,7 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
                 leftJoystick.whenButton(InputConstants.BUTTON_ALGAE_SHOOT),
                 ONCE_AND_HOLD,
                 () -> new ShootWhenReady(algaeIntake));
+        addRule("Auto Score Coral Left", rightJoystick.whenButton(InputConstants.BUTTON_CORAL_AUTO_PLACE_LEFT), ONCE_AND_HOLD, 
+        () -> new ScoreCoral(RelativeReefPos.Left, , drive, elevator, wrist, coralIntake));
     }
 }

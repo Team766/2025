@@ -26,4 +26,6 @@ public final class InputConstants extends com.team766.robot.common.constants.Inp
     // Controls on joysticks
     public static final int BUTTON_CORAL_PLACE = JOYSTICK_RIGHT_BUTTON;
     public static final int BUTTON_ALGAE_SHOOT = JOYSTICK_LEFT_BUTTON;
+    public static final int BUTTON_CORAL_AUTO_PLACE_LEFT = JOYSTICK_LEFT_BUTTON;
+    public static final int BUTTON_CORAL_AUTO_PLACE_RIGHT = JOYSTICK_RIGHT_BUTTON;
 }
