@@ -12,9 +12,6 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private static final double NUDGE_AMOUNT = 5;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
     private double setPoint;
-    private final double thresholdConstant = 0; // TODO: Update me after testing!
-
-    // values are untested and are set to
 
     public static record ElevatorStatus(double currentHeight, double targetHeight)
             implements Status {
@@ -25,9 +22,14 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
     public enum Position {
         ELEVATOR_TOP(22),
-        ELEVATOR_BOTTOM(0);
+        ELEVATOR_BOTTOM(0),
+        ELEVATOR_INTAKE(10),
+        ELEVATOR_L1(10),
+        ELEVATOR_L2(14),
+        ELEVATOR_L3(18),
+        ELEVATOR_L4(ELEVATOR_TOP.getHeight());
 
-        private double height;
+        double height = 0;
 
         Position(double height) {
             this.height = height;
@@ -35,10 +37,6 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
         public double getHeight() {
             return height;
-        }
-
-        public double getElevatorRotations() {
-            return EncoderUtils.elevatorHeightToRotations(height);
         }
     }
 
@@ -59,16 +57,12 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public void setPosition(Position position) {
-        setPosition(position.getElevatorRotations());
+        setPosition(position.getHeight());
     }
 
-    public void nudgeUp() {
-        double nudgePosition = elevatorLeftMotor.getSensorPosition() + NUDGE_AMOUNT;
-        setPosition(nudgePosition);
-    }
-
-    public void nudgeDown() {
-        double nudgePosition = elevatorLeftMotor.getSensorPosition() - NUDGE_AMOUNT;
+    public void nudge(double sign) {
+        double nudgePosition =
+                elevatorLeftMotor.getSensorPosition() + (NUDGE_AMOUNT * Math.signum(sign));
         setPosition(nudgePosition);
     }
 

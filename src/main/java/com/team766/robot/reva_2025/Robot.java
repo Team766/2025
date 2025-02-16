@@ -9,7 +9,7 @@ import com.team766.robot.reva_2025.mechanisms.*;
 
 public class Robot implements RobotConfigurator3 {
 
-    public SwerveDrive drive;
+    private SwerveDrive drive;
     private AlgaeIntake algaeIntake;
     private Vision vision;
     private Wrist wrist;
@@ -31,7 +31,7 @@ public class Robot implements RobotConfigurator3 {
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, climber, algaeIntake);
+        return new OI(drive, algaeIntake, wrist, elevator, coral, climber);
     }
 
     @Override

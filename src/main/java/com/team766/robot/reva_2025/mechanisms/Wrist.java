@@ -10,8 +10,8 @@ import com.team766.robot.reva_2025.constants.ConfigConstants;
 
 public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
-    private final double thresholdConstant = 0; // TODO: Update me after testing!
     private double setPoint;
+    private static final double NUDGE_AMOUNT = 1.0;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
     private final ValueProvider<Double> ffGain;
 
@@ -23,9 +23,16 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     public enum WristPosition {
 
-        // TODO: update all of these to real things!
-        PICKUP_CORAL(0),
-        PLACE_CORAL(180);
+        // TODO: Change these angles to actual values
+        CORAL_BOTTOM(10),
+        CORAL_INTAKE(40),
+        // CORAL_L2_PREP(260),
+        CORAL_L2_PLACE(210),
+        // CORAL_L3_PREP(220),
+        CORAL_L3_PLACE(240),
+        // CORAL_L4_PREP(210),
+        CORAL_L4_PLACE(205),
+        CORAL_TOP(300);
 
         private final double angle;
 
@@ -60,6 +67,11 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
                 MotorController.ControlMode.Position,
                 EncoderUtils.coralWristDegreesToRotations(setPoint),
                 ff);
+    }
+
+    public void nudge(double sign) {
+        double nudgePosition = getStatus().currentAngle() + (NUDGE_AMOUNT * Math.signum(sign));
+        setAngle(nudgePosition);
     }
 
     @Override
