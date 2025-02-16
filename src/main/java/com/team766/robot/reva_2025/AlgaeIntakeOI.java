@@ -22,7 +22,7 @@ public class AlgaeIntakeOI extends RuleGroup {
                 .withFinishedTriggeringProcedure(
                         algaeIntake,
                         () -> {
-                            algaeIntake.setState(State.Idle);
+                            algaeIntake.setState(State.Stop);
                         });
 
         addRule(
@@ -36,7 +36,7 @@ public class AlgaeIntakeOI extends RuleGroup {
                 .withFinishedTriggeringProcedure(
                         algaeIntake,
                         () -> {
-                            algaeIntake.setState(State.Idle);
+                            algaeIntake.setState(State.Stop);
                         });
 
         addRule(
@@ -86,7 +86,7 @@ public class AlgaeIntakeOI extends RuleGroup {
                 .withFinishedTriggeringProcedure(
                         algaeIntake,
                         () -> {
-                            algaeIntake.setState(State.Idle);
+                            algaeIntake.setState(State.Stop);
                         });
     }
 }

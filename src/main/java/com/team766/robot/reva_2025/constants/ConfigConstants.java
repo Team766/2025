@@ -11,6 +11,7 @@ public final class ConfigConstants {
     public static final String ALGAEINTAKE_SHOOTERROLLERMOTOR = "AlgaeIntake.ShooterRollerMotor";
     public static final String ALGAEINTAKE_INTAKESENSOR = "AlgaeIntake.IntakeSensor";
     public static final String ALGAEINTAKE_ARMFFGAIN = "AlgaeIntake.ArmffGain";
+    public static final String ALGAE_INTAKE_HOLD_ALGAE_PID = "AlgaeIntake.HoldAlgaePID";
     public static final String CLIMBER_LEFT_MOTOR = "climber.leftMotor";
     public static final String CLIMBER_RIGHT_MOTOR = "climber.rightMotor";
 }

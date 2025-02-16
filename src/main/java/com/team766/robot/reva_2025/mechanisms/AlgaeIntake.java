@@ -1,6 +1,9 @@
 package com.team766.robot.reva_2025.mechanisms;
 
+import com.ctre.phoenix6.signals.ControlModeValue;
 import com.team766.config.ConfigFileReader;
+import com.team766.controllers.PIDController;
+import com.team766.framework.Context;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
@@ -10,9 +13,10 @@ import com.team766.hal.TimeOfFlightReader;
 import com.team766.hal.TimeOfFlightReader.Range;
 import com.team766.library.ValueProvider;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
-    private static final double ALGAE_DROPPING_THRESHOLD = 0.25;
+    private static final double ALGAE_HOLD_DISTANCE = 0.25;
 
     private MotorController intakeMotor;
     private MotorController armMotor;
@@ -23,6 +27,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     private double targetAngle;
     private final ValueProvider<Double> ffGain;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
+    private final PIDController holdAlgaeController;
 
     // TODO: Intake and shooter motor should drive when we shoot. Shooter motor should be slgithly
     // slower than the intake motor
@@ -51,16 +56,18 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         intakeSensor.setRange(Range.Short);
         level = Level.Stow;
         ffGain = ConfigFileReader.getInstance().getDouble(ConfigConstants.ALGAEINTAKE_ARMFFGAIN);
+        holdAlgaeController = PIDController.loadFromConfig(ConfigConstants.ALGAE_INTAKE_HOLD_ALGAE_PID);
     }
 
     public enum State {
         // velocity is in revolutions per minute
         In(30000, 0),
-        Idle(0, 0),
+        Stop(0, 0),
         Out(-30000, 0),
         Shoot(0, 30000),
         Feed(50000, 30000),
-        HoldAlgae(5000, 0);
+        HoldAlgae(5000, 0),
+        Idle(0,);
 
         private final double intakeVelocity;
         private final double shooterVelocity;
@@ -124,7 +131,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     @Override
     protected void onMechanismIdle() {
-        setState(State.Idle);
+        setState(State.Stop);
     }
 
     @Override
@@ -135,11 +142,17 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 EncoderUtils.algaeArmDegreesToRotations(targetAngle),
                 ff);
         if (state == State.HoldAlgae) { 
-            if (intakeSensor.getDistance() < ALGAE_DROPPING_THRESHOLD){
-                intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
-            } else {
-                intakeMotor.set(ControlMode.Velocity, 0);
-            }
+            holdAlgaeController.setSetpoint(ALGAE_HOLD_DISTANCE); 
+            holdAlgaeController.calculate(intakeSensor.getDistance());
+            var output = holdAlgaeController.getOutput();
+            SmartDashboard.putNumber("Hold algae velocity", output);
+            intakeMotor.set(ControlMode.Velocity, output);
+            
+            // if (intakeSensor.getDistance() < ALGAE_DROPPING_THRESHOLD){
+            //     intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
+            // } else {
+            //     intakeMotor.set(ControlMode.Velocity, 0);
+            // }
         
         }
         else{
