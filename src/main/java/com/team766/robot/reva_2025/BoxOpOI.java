@@ -1,7 +1,7 @@
 package com.team766.robot.reva_2025;
 
 import static com.team766.framework3.RulePersistence.*;
-
+import java.util.Set;
 import com.team766.framework3.Conditions.LogicalAnd;
 import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
@@ -32,6 +32,10 @@ public class BoxOpOI extends RuleGroup {
 
         boxopGamepad.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
 
+        boxopGamepad.setAxisDeadzone(InputConstants.GAMEPAD_LEFT_STICK_YAXIS, ControlConstants.JOYSTICK_DEADZONE);
+        boxopGamepad.setAxisDeadzone(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS, ControlConstants.JOYSTICK_DEADZONE);
+        boxopGamepad.setAxisDeadzone(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER, ControlConstants.JOYSTICK_DEADZONE);
+        boxopGamepad.setAxisDeadzone(InputConstants.BUTTON_ALGAE_SHOOTER_ON, ControlConstants.JOYSTICK_DEADZONE);
         targetElevatorPosition = Elevator.Position.ELEVATOR_BOTTOM;
         targetWristPosition = Wrist.WristPosition.CORAL_INTAKE;
         targetAlgaeLevel = AlgaeIntake.Level.GroundIntake;
