@@ -1,16 +1,12 @@
 package com.team766.robot.reva_2025.mechanisms;
 
-import static com.team766.robot.reva.constants.ConfigConstants.CLIMBER_LEFT_MOTOR;
-import static com.team766.robot.reva.constants.ConfigConstants.CLIMBER_RIGHT_MOTOR;
-
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import static com.team766.robot.reva.constants.ConfigConstants.CLIMBER_LEFT_MOTOR;
-import static com.team766.robot.reva.constants.ConfigConstants.CLIMBER_RIGHT_MOTOR;
 import com.team766.robot.reva.mechanisms.MotorUtil;
+import com.team766.robot.reva_2025.constants.ConfigConstants;
 
 public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     private MotorController leftClimberMotor;
@@ -22,8 +18,8 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     public static record ClimberStatus(double currentPower) implements Status {}
 
     public Climber() {
-        leftClimberMotor = RobotProvider.instance.getMotor(CLIMBER_LEFT_MOTOR);
-        rightClimberMotor = RobotProvider.instance.getMotor(CLIMBER_RIGHT_MOTOR);
+        leftClimberMotor = RobotProvider.instance.getMotor(ConfigConstants.CLIMBER_LEFT_MOTOR);
+        rightClimberMotor = RobotProvider.instance.getMotor(ConfigConstants.CLIMBER_RIGHT_MOTOR);
         leftClimberMotor.setNeutralMode(NeutralMode.Brake);
         rightClimberMotor.setNeutralMode(NeutralMode.Brake);
         MotorUtil.setSoftLimits(leftClimberMotor, HIGH_LIMIT, 0);

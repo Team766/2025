@@ -12,4 +12,8 @@ public final class ConfigConstants {
     public static final String ALGAEINTAKE_ARMFFGAIN = "AlgaeIntake.ArmffGain";
     public static final String CLIMBER_LEFT_MOTOR = "climber.leftMotor";
     public static final String CLIMBER_RIGHT_MOTOR = "climber.rightMotor";
+    public static final String WRIST_MOTOR = "Wrist.Motor";
+    public static final String LEFT_ELEVATOR_MOTOR = "elevator.leftMotor";
+    public static final String RIGHT_ELEVATOR_MOTOR = "elevator.rightMotor";
+    public static final String WRIST_FFGAIN = "Wrist.ffGain";
 }
