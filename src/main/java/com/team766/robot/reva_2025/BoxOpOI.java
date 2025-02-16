@@ -25,10 +25,8 @@ public class BoxOpOI extends RuleGroup {
             Wrist wrist,
             Climber climber) {
 
-        boxopGamepad.setAxisDeadzone(InputConstants.GAMEPAD_LEFT_STICK_YAXIS, ControlConstants.JOYSTICK_DEADZONE);
-        boxopGamepad.setAxisDeadzone(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS, ControlConstants.JOYSTICK_DEADZONE);
-        boxopGamepad.setAxisDeadzone(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER, ControlConstants.JOYSTICK_DEADZONE);
-        boxopGamepad.setAxisDeadzone(InputConstants.BUTTON_ALGAE_SHOOTER_ON, ControlConstants.JOYSTICK_DEADZONE);
+        boxopGamepad.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
+
         targetElevatorPosition = Elevator.Position.ELEVATOR_BOTTOM;
         targetWristPosition = Wrist.WristPosition.CORAL_INTAKE;
         targetAlgaeLevel = AlgaeIntake.Level.GroundIntake;
