@@ -24,7 +24,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public enum Position {
-        ELEVATOR_TOP(150),
+        ELEVATOR_TOP(22),
         ELEVATOR_BOTTOM(0);
 
         private double height;
