@@ -26,14 +26,19 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     // to add backspin on the ball.
 
     public static record AlgaeIntakeStatus(
-            State state, double direction, double targetAngle, double currentAngle, double currentShooterSpeed)
+            State state,
+            double direction,
+            double targetAngle,
+            double currentAngle,
+            double currentShooterSpeed)
             implements Status {
         public boolean isAtAngle() {
             return Math.abs(targetAngle() - currentAngle()) < POSITION_LOCATION_THRESHOLD;
         }
 
         public boolean isAtTargetSpeed() {
-            return Math.abs(state().getShooterVelocity() - currentShooterSpeed) < SHOOTER_SPEED_TOLERANCE;
+            return Math.abs(state().getShooterVelocity() - currentShooterSpeed)
+                    < SHOOTER_SPEED_TOLERANCE;
         }
     }
 
@@ -46,6 +51,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
         state = State.Idle;
         level = Level.Stow;
+        targetAngle = level.getAngle();
+        armMotor.setSensorPosition(EncoderUtils.algaeArmDegreesToRotations(targetAngle));
         ffGain = ConfigFileReader.getInstance().getDouble(ConfigConstants.ALGAEINTAKE_ARMFFGAIN);
     }
 
@@ -124,8 +131,13 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 MotorController.ControlMode.Position,
                 EncoderUtils.algaeArmDegreesToRotations(targetAngle),
                 ff);
-        intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
-        shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
+        if (state == State.Idle) {
+            intakeMotor.set(0.0);
+            shooterMotor.set(0.0);
+        } else {
+            intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
+            shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
+        }
     }
 
     @Override
@@ -135,7 +147,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 level.getDirection(),
                 targetAngle,
                 EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()),
-                shooterMotor.getSensorVelocity() * 60 //rps to rpm
+                shooterMotor.getSensorVelocity() * 60 // rps to rpm
                 );
     }
 

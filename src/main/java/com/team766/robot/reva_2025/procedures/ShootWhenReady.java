@@ -13,7 +13,8 @@ public class ShootWhenReady extends Procedure {
     }
 
     public void run(Context context) {
-        waitForStatusMatchingOrTimeout(context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAtTargetSpeed(), 1);
+        waitForStatusMatchingOrTimeout(
+                context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAtTargetSpeed(), 1);
         algaeIntake.setState(State.Feed);
     }
 }

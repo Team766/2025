@@ -26,7 +26,7 @@ public class Robot implements RobotConfigurator3 {
         wrist = new Wrist();
         elevator = new Elevator();
         coral = new CoralIntake();
-        // climber = new Climber();
+        climber = new Climber();
     }
 
     @Override

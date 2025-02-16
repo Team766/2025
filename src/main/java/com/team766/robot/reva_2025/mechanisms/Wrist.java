@@ -51,7 +51,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         wristMotor = RobotProvider.instance.getMotor(ConfigConstants.WRIST_MOTOR);
         ffGain = ConfigFileReader.getInstance().getDouble(ConfigConstants.WRIST_FFGAIN);
         setPoint = WristPosition.CORAL_BOTTOM.getAngle();
-        wristMotor.setSensorPosition(setPoint);
+        wristMotor.setSensorPosition(EncoderUtils.coralWristDegreesToRotations(setPoint));
     }
 
     public void setAngle(WristPosition position) {

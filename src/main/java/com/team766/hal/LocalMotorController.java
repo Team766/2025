@@ -151,9 +151,9 @@ public class LocalMotorController implements MotorController {
         if (this.sensor == null) {
             if (reportMissingSensor) {
                 Logger.get(Category.CONFIGURATION)
-                    .logRaw(
-                            Severity.ERROR,
-                            toString() + " does not have an attached sensor configured");
+                        .logRaw(
+                                Severity.ERROR,
+                                toString() + " does not have an attached sensor configured");
                 reportMissingSensor = false;
             }
             return;
@@ -169,9 +169,9 @@ public class LocalMotorController implements MotorController {
         if (this.sensor == null) {
             if (reportMissingSensor) {
                 Logger.get(Category.HAL)
-                    .logRaw(
-                            Severity.ERROR,
-                            toString() + " does not have an attached sensor configured");
+                        .logRaw(
+                                Severity.ERROR,
+                                toString() + " does not have an attached sensor configured");
                 reportMissingSensor = false;
             }
             return 0.0;
@@ -188,9 +188,9 @@ public class LocalMotorController implements MotorController {
         if (this.sensor == null) {
             if (reportMissingSensor) {
                 Logger.get(Category.CONFIGURATION)
-                    .logRaw(
-                            Severity.ERROR,
-                            toString() + " does not have an attached sensor configured");
+                        .logRaw(
+                                Severity.ERROR,
+                                toString() + " does not have an attached sensor configured");
                 reportMissingSensor = false;
             }
             return 0.0;

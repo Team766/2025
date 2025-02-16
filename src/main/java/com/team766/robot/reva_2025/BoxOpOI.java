@@ -9,7 +9,10 @@ import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
+import com.team766.robot.reva_2025.mechanisms.Elevator.Position;
+import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import com.team766.robot.reva_2025.mechanisms.Climber;
+import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 
@@ -23,7 +26,8 @@ public class BoxOpOI extends RuleGroup {
             AlgaeIntake algaeIntake,
             Elevator elevator,
             Wrist wrist,
-            Climber climber) {
+            Climber climber,
+            CoralIntake coralIntake) {
 
         boxopGamepad.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
 
@@ -34,7 +38,7 @@ public class BoxOpOI extends RuleGroup {
 
         addRule(
                 "Algae Intake to Stow",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_STOW),
+                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_STOW,
                 ONCE,
                 algaeIntake,
                 () -> {
@@ -43,7 +47,7 @@ public class BoxOpOI extends RuleGroup {
 
         addRule(
                 "Algae Intake to Ground Level",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_GROUND),
+                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_GROUND,
                 ONCE,
                 algaeIntake,
                 () -> {
@@ -52,7 +56,7 @@ public class BoxOpOI extends RuleGroup {
 
         addRule(
                 "Algae Intake to L2/L3",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_L2_L3),
+                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L2_L3,
                 ONCE,
                 algaeIntake,
                 () -> {
@@ -61,7 +65,7 @@ public class BoxOpOI extends RuleGroup {
 
         addRule(
                 "Algae Intake to L3/L4",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_L3_L4),
+                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L3_L4,
                 ONCE,
                 algaeIntake,
                 () -> {
@@ -75,11 +79,9 @@ public class BoxOpOI extends RuleGroup {
                 algaeIntake,
                 () -> {
                     algaeIntake.setArmAngle(targetAlgaeLevel);
-                });
-
-        // ALGAE INTAKE MOTOR CONTROLS / SHOOTING
-
-        addRule(
+                }).whenTriggering(new RuleGroup() {
+                        {
+                                addRule(
                 "Algae Motors to Intake Power",
                 boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
                 ONCE_AND_HOLD,
@@ -98,6 +100,13 @@ public class BoxOpOI extends RuleGroup {
                 () -> {
                     algaeIntake.setState(AlgaeIntake.State.Out);
                 });
+                        }
+                })
+                .withFinishedTriggeringProcedure(algaeIntake, () -> {
+                        algaeIntake.setArmAngle(Level.Stow);
+                });
+
+        // ALGAE INTAKE MOTOR CONTROLS / SHOOTING
 
         addRule(
                 "Spin Up Algae Shooter Motors",
@@ -158,6 +167,32 @@ public class BoxOpOI extends RuleGroup {
                 () -> {
                     elevator.setPosition(targetElevatorPosition);
                     wrist.setAngle(targetWristPosition);
+                }).whenTriggering(new RuleGroup() {
+                        {
+                                addRule(
+                "Grabber Motor to Intake Power",
+                boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                ONCE_AND_HOLD,
+                coralIntake,
+                () -> {
+                    coralIntake.in();;
+                });
+
+        addRule(
+                "Grabber Motor to Outtake Power",
+                new LogicalAnd(
+                        boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_START_BUTTON)),
+                ONCE_AND_HOLD,
+                coralIntake,
+                () -> {
+                    coralIntake.out();
+                });
+                        }
+                })
+                .withFinishedTriggeringProcedure(Set.of(elevator, wrist), () -> {
+                        elevator.setPosition(Position.ELEVATOR_BOTTOM);
+                        wrist.setAngle(WristPosition.CORAL_BOTTOM);
                 });
 
         // FINE TUNING
