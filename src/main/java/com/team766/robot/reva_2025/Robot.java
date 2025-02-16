@@ -21,7 +21,6 @@ public class Robot implements RobotConfigurator3 {
     public void initializeMechanisms() {
         SwerveConfig swerveConfig = new SwerveConfig();
         algaeIntake = new AlgaeIntake();
-        algaeIntake = new AlgaeIntake();
         drive = new SwerveDrive(swerveConfig);
         vision = new Vision();
         wrist = new Wrist();
