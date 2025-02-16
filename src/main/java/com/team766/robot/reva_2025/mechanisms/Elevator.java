@@ -24,9 +24,9 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         ELEVATOR_TOP(22),
         ELEVATOR_BOTTOM(0),
         ELEVATOR_INTAKE(10),
-        ELEVATOR_L1(10),
-        ELEVATOR_L2(14),
-        ELEVATOR_L3(18),
+        ELEVATOR_L1(0),
+        ELEVATOR_L2(0),
+        ELEVATOR_L3(0),
         ELEVATOR_L4(ELEVATOR_TOP.getHeight());
 
         double height = 0;

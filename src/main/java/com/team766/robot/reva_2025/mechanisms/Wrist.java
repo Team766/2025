@@ -25,13 +25,15 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
         // TODO: Change these angles to actual values
         CORAL_BOTTOM(10),
+        CORAL_START(35),
         CORAL_INTAKE(40),
         // CORAL_L2_PREP(260),
+        CORAL_L1_PLACE(40),
         CORAL_L2_PLACE(210),
         // CORAL_L3_PREP(220),
-        CORAL_L3_PLACE(240),
+        CORAL_L3_PLACE(210),
         // CORAL_L4_PREP(210),
-        CORAL_L4_PLACE(205),
+        CORAL_L4_PLACE(190),
         CORAL_TOP(300);
 
         private final double angle;
@@ -50,7 +52,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     public Wrist() {
         wristMotor = RobotProvider.instance.getMotor(ConfigConstants.WRIST_MOTOR);
         ffGain = ConfigFileReader.getInstance().getDouble(ConfigConstants.WRIST_FFGAIN);
-        setPoint = WristPosition.CORAL_BOTTOM.getAngle();
+        setPoint = WristPosition.CORAL_START.getAngle();
         wristMotor.setSensorPosition(EncoderUtils.coralWristDegreesToRotations(setPoint));
     }
 

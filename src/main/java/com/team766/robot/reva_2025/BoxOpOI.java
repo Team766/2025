@@ -126,7 +126,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                    targetElevatorPosition = Elevator.Position.ELEVATOR_L1;
+                    targetElevatorPosition = Elevator.Position.ELEVATOR_INTAKE;
                     targetWristPosition = Wrist.WristPosition.CORAL_INTAKE;
                 });
         addRule(
