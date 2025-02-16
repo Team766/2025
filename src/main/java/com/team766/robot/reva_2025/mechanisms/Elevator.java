@@ -85,9 +85,4 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
                 EncoderUtils.elevatorRotationsToHeight(elevatorLeftMotor.getSensorPosition()),
                 setPoint);
     }
-
-    @Override
-    protected void onMechanismIdle() {
-        setPoint = EncoderUtils.elevatorRotationsToHeight(elevatorLeftMotor.getSensorPosition());
-    }
 }
