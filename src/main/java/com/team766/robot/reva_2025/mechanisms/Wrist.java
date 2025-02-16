@@ -26,11 +26,11 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     public enum WristPosition {
-        WRIST_BOTTOM(5),
-        WRIST_INTAKE(10),
-        WRIST_HIGH(240),
-        WRIST_MID(250),
-        WRIST_LOW(290),
+        WRIST_BOTTOM(10),
+        WRIST_INTAKE(40),
+        WRIST_HIGH(205),
+        WRIST_MID(240),
+        WRIST_LOW(210),
         WRIST_TOP(300);
 
         private double angle;
@@ -52,6 +52,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         wristMotor = RobotProvider.instance.getMotor("wrist.motor");
         ffGain = ConfigFileReader.getInstance().getDouble("wrist.motor.ffGain");
         wristMotor.setSensorPosition(WristPosition.WRIST_BOTTOM.getMotorRotations());
+        wristMotor.setCurrentLimit(40);
     }
 
     /**
@@ -59,7 +60,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
      * @param setPosition in degrees
      */
     public void setPosition(double setPosition) {
-        double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(setPosition));
+        double ff = ffGain.valueOr(0.0) * Math.sin(Math.toRadians(setPosition));
         wristMotor.set(
                 MotorController.ControlMode.Position,
                 EncoderUtils.coralWristDegreesToRotations(setPosition),

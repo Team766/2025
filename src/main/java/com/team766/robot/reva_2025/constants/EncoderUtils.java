@@ -51,7 +51,7 @@ public final class EncoderUtils {
      */
     public static double coralWristDegreesToRotations(double angle) {
         // angle * sprocket ratio * net gear ratio * (rotations / degrees)
-        return angle * (9. / 1.) * (9. / 1.) * (1. / 360.);
+        return angle * (9. / 1.) * (9. / 1.) * (64. / 24.) * (1. / 360.);
     }
 
     /**
@@ -59,7 +59,7 @@ public final class EncoderUtils {
      */
     public static double coralWristRotationsToDegrees(double rotations) {
         // rotations * sprocket ratio * net gear ratio * (degrees / rotations)
-        return rotations * (1. / 9.) * (1. / 9.) * (360. / 1.);
+        return rotations * (1. / 9.) * (1. / 9.) * (24. / 64.) * (360. / 1.);
     }
 
     /**

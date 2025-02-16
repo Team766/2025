@@ -70,11 +70,11 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     }
 
     public enum Level {
-        GroundIntake(-30, 1),
-        Shoot(-15, 1),
+        GroundIntake(-40, 1),
+        Shoot(-25, 1),
         L2L3AlgaeIntake(20, 1),
         L3L4AlgaeIntake(70, -1),
-        Stow(-60, 1);
+        Stow(-80, 1);
 
         private final double angle;
         private final double power;
@@ -99,7 +99,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
      */
     public void setPosition(double setPosition) {
         SmartDashboard.putNumber("Algae Intake Set Point", setPosition);
-        if (setPosition >= MIN_ANGLE && setPosition <= MAX_ANGLE) {
+        if (setPosition >= Level.Stow.getAngle() && setPosition <= MAX_ANGLE) {
             double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(setPosition));
             armMotor.set(
                     MotorController.ControlMode.Position,
@@ -150,7 +150,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     public void shooterOn() {
         state = State.ShooterOn;
-        shooterMotor.set(MotorController.ControlMode.Velocity, 3000/60);
+        shooterMotor.set(MotorController.ControlMode.Velocity, 2000/60);
         intakeMotor.set(state.getOuterPower());
     }
 
