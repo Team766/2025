@@ -46,11 +46,11 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     public enum State {
         // velocity is in revolutions per minute
-        In(30000, 0),
+        In(3000, 0),
         Idle(0, 0),
-        Out(-30000, 0),
-        Shoot(0, 30000),
-        Feed(50000, 30000);
+        Out(-3000, 0),
+        Shoot(0, 3000),
+        Feed(5000, 3000);
 
         private final double intakeVelocity;
         private final double shooterVelocity;
@@ -61,13 +61,11 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         }
 
         private double getIntakeVelocity() {
-            // converting revolutions per minute to revolutions per 100 milliseconds
-            return intakeVelocity / 60 / 10;
+            return intakeVelocity / 60;
         }
 
         private double getShooterVelocity() {
-            // converting revolutions per minute to revolutions per 100 milliseconds
-            return shooterVelocity / 60 / 10;
+            return shooterVelocity / 60;
         }
     }
 

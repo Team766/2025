@@ -15,14 +15,14 @@ public final class EncoderUtils {
 
     public static double coralWristDegreesToRotations(double angle) {
         // angle * net gear ratio * (rotations / degrees)
-        return angle * (9. / 1.) * (9. / 1.) * (1. / 360.);
+        return angle * (4. / 1.) * (9. / 1.) * (1. / 360.);
     }
 
     // Converts the wrist motor's rotations to degrees.
 
     public static double coralWristRotationsToDegrees(double rotations) {
         // rotations * net gear ratio * (degrees / rotations)
-        return rotations * (1. / 9.) * (1. / 9.) * (360. / 1.);
+        return rotations * (1. / 4.) * (1. / 9.) * (360. / 1.);
     }
 
     public static double algaeArmDegreesToRotations(double angle) {
