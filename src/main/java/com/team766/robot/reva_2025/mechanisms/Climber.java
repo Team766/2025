@@ -8,6 +8,8 @@ import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import static com.team766.robot.reva.constants.ConfigConstants.CLIMBER_LEFT_MOTOR;
+import static com.team766.robot.reva.constants.ConfigConstants.CLIMBER_RIGHT_MOTOR;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 
 public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
