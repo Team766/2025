@@ -19,8 +19,8 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     public Climber() {
         leftClimberMotor = RobotProvider.instance.getMotor(ConfigConstants.CLIMBER_LEFT_MOTOR);
         rightClimberMotor = RobotProvider.instance.getMotor(ConfigConstants.CLIMBER_RIGHT_MOTOR);
-        leftClimberMotor.setNeutralMode(NeutralMode.Brake);
-        rightClimberMotor.setNeutralMode(NeutralMode.Brake);
+        // leftClimberMotor.setNeutralMode(NeutralMode.Brake);
+        // rightClimberMotor.setNeutralMode(NeutralMode.Brake);
         MotorUtil.setSoftLimits(leftClimberMotor, HIGH_LIMIT, 0);
         MotorUtil.setSoftLimits(rightClimberMotor, HIGH_LIMIT, 0);
         MotorUtil.enableSoftLimits(leftClimberMotor, true);

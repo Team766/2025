@@ -22,7 +22,7 @@ public class Robot implements RobotConfigurator3 {
         SwerveConfig swerveConfig = new SwerveConfig();
         algaeIntake = new AlgaeIntake();
         drive = new SwerveDrive(swerveConfig);
-        vision = new Vision();
+        // vision = new Vision();
         wrist = new Wrist();
         elevator = new Elevator();
         coral = new CoralIntake();

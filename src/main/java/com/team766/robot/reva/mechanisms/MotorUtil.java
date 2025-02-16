@@ -4,7 +4,7 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.revrobotics.spark.SparkMax;
 import com.team766.hal.MotorController;
 import com.team766.logging.Category;
@@ -18,8 +18,8 @@ import edu.wpi.first.units.measure.Current;
 public final class MotorUtil {
     private MotorUtil() {}
 
-    private static double getTalonFXCurrentUsage(TalonFX motor) {
-        StatusSignal<Current> current = ((TalonFX) motor).getSupplyCurrent();
+    private static double getTalonFXCurrentUsage(CoreTalonFX motor) {
+        StatusSignal<Current> current = ((CoreTalonFX) motor).getSupplyCurrent();
         if (current.getStatus().isOK()) {
             return current.getValueAsDouble();
         }
@@ -31,8 +31,8 @@ public final class MotorUtil {
     }
 
     public static double getCurrentUsage(MotorController motor) {
-        if (motor instanceof TalonFX) {
-            return getTalonFXCurrentUsage((TalonFX) motor);
+        if (motor instanceof CoreTalonFX) {
+            return getTalonFXCurrentUsage((CoreTalonFX) motor);
         } else if (motor instanceof SparkMax) {
             return getSparkMaxCurrentUsage((SparkMax) motor);
         } else {
@@ -41,8 +41,8 @@ public final class MotorUtil {
     }
 
     public static double getStatorCurrentUsage(MotorController motor) {
-        if (motor instanceof TalonFX) {
-            StatusSignal<Current> current = ((TalonFX) motor).getStatorCurrent();
+        if (motor instanceof CoreTalonFX) {
+            StatusSignal<Current> current = ((CoreTalonFX) motor).getStatorCurrent();
             if (current.getStatus().isOK()) {
                 return current.getValueAsDouble();
             }
@@ -51,8 +51,8 @@ public final class MotorUtil {
     }
 
     public static void setTalonFXStatorCurrentLimit(MotorController motor, double ampsLimit) {
-        if (motor instanceof TalonFX) {
-            TalonFX talonFX = (TalonFX) motor;
+        if (motor instanceof CoreTalonFX) {
+            CoreTalonFX talonFX = (CoreTalonFX) motor;
             CurrentLimitsConfigs config = new CurrentLimitsConfigs();
             StatusCode status = talonFX.getConfigurator().refresh(config);
             if (!status.isOK()) {
@@ -74,7 +74,7 @@ public final class MotorUtil {
         }
     }
 
-    private static SoftwareLimitSwitchConfigs getLimitSwitchConfigs(TalonFX talonFX) {
+    private static SoftwareLimitSwitchConfigs getLimitSwitchConfigs(CoreTalonFX talonFX) {
         SoftwareLimitSwitchConfigs limitSwitchConfigs = new SoftwareLimitSwitchConfigs();
         StatusCode status = talonFX.getConfigurator().refresh(limitSwitchConfigs);
         if (!status.isOK()) {
@@ -88,7 +88,7 @@ public final class MotorUtil {
     }
 
     private static void applyLimitSwitchConfigs(
-            TalonFX talonFX, SoftwareLimitSwitchConfigs limitSwitchConfigs) {
+            CoreTalonFX talonFX, SoftwareLimitSwitchConfigs limitSwitchConfigs) {
         StatusCode status = talonFX.getConfigurator().apply(limitSwitchConfigs);
         if (!status.isOK()) {
             Logger.get(Category.MECHANISMS)
@@ -101,10 +101,10 @@ public final class MotorUtil {
     // TODO: add the appropriate support for SparkMax as well.
     public static void setSoftLimits(
             MotorController motor, double forwardLimit, double reverseLimit) {
-        if (!(motor instanceof TalonFX)) {
+        if (!(motor instanceof CoreTalonFX)) {
             return;
         }
-        TalonFX talonFX = (TalonFX) motor;
+        CoreTalonFX talonFX = (CoreTalonFX) motor;
 
         SoftwareLimitSwitchConfigs limitSwitchConfigs = getLimitSwitchConfigs(talonFX);
         limitSwitchConfigs.ForwardSoftLimitThreshold = forwardLimit;
@@ -115,10 +115,10 @@ public final class MotorUtil {
     }
 
     public static void enableSoftLimits(MotorController motor, boolean enable) {
-        if (!(motor instanceof TalonFX)) {
+        if (!(motor instanceof CoreTalonFX)) {
             return;
         }
-        TalonFX talonFX = (TalonFX) motor;
+        CoreTalonFX talonFX = (CoreTalonFX) motor;
 
         SoftwareLimitSwitchConfigs limitSwitchConfigs = getLimitSwitchConfigs(talonFX);
         limitSwitchConfigs.ForwardSoftLimitEnable = enable;
