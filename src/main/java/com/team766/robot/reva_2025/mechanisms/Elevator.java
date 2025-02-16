@@ -16,12 +16,12 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
     // values are untested and are set to
 
-    public static record ElevatorStatus(double currentHeight, double targetHeight) implements Status {
+    public static record ElevatorStatus(double currentHeight, double targetHeight)
+            implements Status {
         public boolean isAtHeight() {
-            return Math.abs(targetHeight() - currentHeight()) < POSITION_LOCATION_THRESHOLD; 
+            return Math.abs(targetHeight() - currentHeight()) < POSITION_LOCATION_THRESHOLD;
         }
     }
-
 
     public enum Position {
         ELEVATOR_TOP(150),
@@ -51,7 +51,11 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public void setPosition(double setPosition) {
-        setPoint = com.team766.math.Math.clamp(setPosition, Position.ELEVATOR_BOTTOM.getHeight(), Position.ELEVATOR_TOP.getHeight());
+        setPoint =
+                com.team766.math.Math.clamp(
+                        setPosition,
+                        Position.ELEVATOR_BOTTOM.getHeight(),
+                        Position.ELEVATOR_TOP.getHeight());
     }
 
     public void setPosition(Position position) {
@@ -69,15 +73,17 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     @Override
-    protected void run(){
+    protected void run() {
         elevatorLeftMotor.set(
-            MotorController.ControlMode.Position, EncoderUtils.elevatorHeightToRotations(setPoint));
+                MotorController.ControlMode.Position,
+                EncoderUtils.elevatorHeightToRotations(setPoint));
     }
 
     @Override
     protected ElevatorStatus updateStatus() {
         return new ElevatorStatus(
-                EncoderUtils.elevatorRotationsToHeight(elevatorLeftMotor.getSensorPosition()), setPoint);
+                EncoderUtils.elevatorRotationsToHeight(elevatorLeftMotor.getSensorPosition()),
+                setPoint);
     }
 
     @Override

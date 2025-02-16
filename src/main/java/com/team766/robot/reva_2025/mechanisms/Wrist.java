@@ -15,7 +15,6 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     private static final double POSITION_LOCATION_THRESHOLD = 1;
     private final ValueProvider<Double> ffGain;
 
-
     public record WristStatus(double currentAngle, double targetAngle) implements Status {
         public boolean isAtAngle() {
             return Math.abs(targetAngle() - currentAngle()) < POSITION_LOCATION_THRESHOLD;
@@ -44,7 +43,6 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     public Wrist() {
         wristMotor = RobotProvider.instance.getMotor(ConfigConstants.WRIST_MOTOR);
         ffGain = ConfigFileReader.getInstance().getDouble(ConfigConstants.WRIST_FFGAIN);
-
     }
 
     public void setAngle(WristPosition position) {
@@ -56,18 +54,19 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     @Override
-    protected void run(){
+    protected void run() {
         double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getStatus().currentAngle()));
-        wristMotor.set(MotorController.ControlMode.Position, 
-            EncoderUtils.coralWristDegreesToRotations(setPoint),
-            ff);
+        wristMotor.set(
+                MotorController.ControlMode.Position,
+                EncoderUtils.coralWristDegreesToRotations(setPoint),
+                ff);
     }
 
     @Override
     protected WristStatus updateStatus() {
-        return new WristStatus(EncoderUtils.coralWristRotationsToDegrees(wristMotor.get()), setPoint);
+        return new WristStatus(
+                EncoderUtils.coralWristRotationsToDegrees(wristMotor.get()), setPoint);
     }
-
 
     @Override
     public void onMechanismIdle() {
