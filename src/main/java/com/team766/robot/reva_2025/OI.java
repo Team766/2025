@@ -25,7 +25,7 @@ public class OI extends RuleEngine {
 
         // Add driver control rules here.
 
-        addRules(new DriverOI(leftJoystick, rightJoystick, drive, coralIntake, algaeIntake));
+        addRules(new DriverOI(leftJoystick, rightJoystick, drive, elevator, wrist, coralIntake, algaeIntake));
         addRules(new BoxOpOI(boxopGamepad, algaeIntake, elevator, wrist, climber, coralIntake));
     }
 

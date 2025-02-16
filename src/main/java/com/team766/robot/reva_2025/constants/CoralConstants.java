@@ -1,53 +1,84 @@
 package com.team766.robot.reva_2025.constants;
 
+import com.pathplanner.lib.util.FlippingUtil;
+import com.team766.robot.reva_2025.mechanisms.Elevator.Position;
+import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 public class CoralConstants {
-    public enum CoralConstant {
-        A_R(0, 0, 0),
-        B_R(0, 0, 0),
-        C_R(0, 0, 0),
-        D_R(0, 0, 0),
-        E_R(0, 0, 0),
-        F_R(0, 0, 0),
-        G_R(0, 0, 0),
-        H_R(0, 0, 0),
-        I_R(0, 0, 0),
-        J_R(0, 0, 0),
-        K_R(0, 0, 0),
-        L_R(0, 0, 0),
+    private static final double FAR_POSITION_DISTANCE = 0.1;
 
-        A_B(0, 0, 0),
-        B_B(0, 0, 0),
-        C_B(0, 0, 0),
-        D_B(0, 0, 0),
-        E_B(0, 0, 0),
-        F_B(0, 0, 0),
-        G_B(0, 0, 0),
-        H_B(0, 0, 0),
-        I_B(0, 0, 0),
-        J_B(0, 0, 0),
-        K_B(0, 0, 0),
-        L_B(0, 0, 0);
+    public enum ReefPos {
+        Pole1(6.15, 3.86, -180, RelativeReefPos.Left),
+        Pole2(6.15, 4.19, -180, RelativeReefPos.Right),
+        Pole3(5.465, 5.385, -120, RelativeReefPos.Left),
+        Pole4(5.18, 5.55, -120, RelativeReefPos.Right),
+        Pole5(3.8, 5.55, -60, RelativeReefPos.Left),
+        Pole6(3.51, 5.385, -60, RelativeReefPos.Right),
+        Pole7(2.82, 4.19, 0, RelativeReefPos.Left),
+        Pole8(2.82, 3.86, 0, RelativeReefPos.Right),
+        Pole9(3.51, 2.665, 60, RelativeReefPos.Left),
+        Pole10(3.8, 2.5, 60, RelativeReefPos.Right),
+        Pole11(5.18, 2.5, 120, RelativeReefPos.Left),
+        Pole12(5.465, 2.665, 120, RelativeReefPos.Right);
 
-        public final double X;
-        public final double Z;
-        public final double angle;
+        private final Pose2d position;
+        private final RelativeReefPos relativeReefPos;
 
-        private CoralConstant(double X, double Z, double angle) {
-            this.X = X;
-            this.Z = Z;
-            this.angle = angle;
+        private ReefPos(double x, double y, double angleDeg, RelativeReefPos relativeReefPos) {
+            this.position = new Pose2d(x, y, Rotation2d.fromDegrees(angleDeg));
+            this.relativeReefPos = relativeReefPos;
         }
 
-        public double getX() {
-            return X;
+        public Pose2d getClosePosition(Alliance alliance) {
+            return alliance.equals(Alliance.Blue) ? position : FlippingUtil.flipFieldPose(position);
         }
 
-        public double getZ() {
-            return Z;
+        public Pose2d getFarPosition(Alliance alliance) {
+            Pose2d farPose =
+                    new Pose2d(
+                            position.getTranslation()
+                                    .minus(
+                                            new Translation2d(
+                                                    FAR_POSITION_DISTANCE, position.getRotation())),
+                            position.getRotation());
+            return alliance.equals(Alliance.Blue) ? farPose : FlippingUtil.flipFieldPose(farPose);
         }
 
-        public double getAngle() {
-            return angle;
+        public RelativeReefPos getRelativeReefPos() {
+            return relativeReefPos;
+        }
+    }
+
+    public enum RelativeReefPos {
+        Left,
+        Right;
+    }
+
+    public enum ScoreHeight {
+        Intake(Position.ELEVATOR_INTAKE, WristPosition.CORAL_INTAKE),
+        L1(Position.ELEVATOR_L1, WristPosition.CORAL_L1_PLACE),
+        L2(Position.ELEVATOR_L2, WristPosition.CORAL_L2_PLACE),
+        L3(Position.ELEVATOR_L3, WristPosition.CORAL_L3_PLACE),
+        L4(Position.ELEVATOR_L4, WristPosition.CORAL_L4_PLACE);
+
+        private final Position elevatorPosition;
+        private final WristPosition wristPosition;
+
+        private ScoreHeight(Position elevatorPosition, WristPosition wristPosition) {
+            this.elevatorPosition = elevatorPosition;
+            this.wristPosition = wristPosition;
+        }
+
+        public Position getElevatorPosition() {
+            return elevatorPosition;
+        }
+
+        public WristPosition getWristPosition() {
+            return wristPosition;
         }
     }
 }
