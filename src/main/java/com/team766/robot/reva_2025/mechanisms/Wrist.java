@@ -74,13 +74,12 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     public void nudge(double sign) {
-        double nudgePosition = getStatus().currentAngle() + (NUDGE_AMOUNT * Math.signum(sign));
-        setAngle(nudgePosition);
+        setPoint = getStatus().currentAngle() + (NUDGE_AMOUNT * Math.signum(sign));
     }
 
     @Override
     protected WristStatus updateStatus() {
         return new WristStatus(
-                EncoderUtils.coralWristRotationsToDegrees(wristMotor.get()), setPoint);
+                EncoderUtils.coralWristRotationsToDegrees(wristMotor.getSensorPosition()), setPoint);
     }
 }

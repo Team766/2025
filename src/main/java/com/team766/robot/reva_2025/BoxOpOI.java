@@ -121,7 +121,7 @@ public class BoxOpOI extends RuleGroup {
         // ELEVATOR
 
         addRule(
-                "Set Elevator/Wrist L1 (Intake?)",
+                "Set Elevator/Wrist Intake",
                 boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L1),
                 ONCE,
                 Set.of(elevator, wrist),
@@ -135,8 +135,8 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                    targetElevatorPosition = Elevator.Position.ELEVATOR_L2;
-                    targetWristPosition = Wrist.WristPosition.CORAL_L2_PLACE;
+                    targetElevatorPosition = Elevator.Position.ELEVATOR_L3;
+                    targetWristPosition = Wrist.WristPosition.CORAL_L3_PLACE;
                 });
 
         addRule(
@@ -145,8 +145,8 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                    targetElevatorPosition = Elevator.Position.ELEVATOR_L3;
-                    targetWristPosition = Wrist.WristPosition.CORAL_L3_PLACE;
+                    targetElevatorPosition = Elevator.Position.ELEVATOR_L4;
+                    targetWristPosition = Wrist.WristPosition.CORAL_L4_PLACE;
                 });
 
         addRule(
@@ -155,8 +155,8 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                    targetElevatorPosition = Elevator.Position.ELEVATOR_L4;
-                    targetWristPosition = Wrist.WristPosition.CORAL_L4_PLACE;
+                    targetElevatorPosition = Elevator.Position.ELEVATOR_L1;
+                    targetWristPosition = Wrist.WristPosition.CORAL_L1_PLACE;
                 });
 
         addRule(
@@ -175,7 +175,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE_AND_HOLD,
                 coralIntake,
                 () -> {
-                    coralIntake.in();;
+                    coralIntake.in();
                 });
 
         addRule(
@@ -192,7 +192,7 @@ public class BoxOpOI extends RuleGroup {
                 })
                 .withFinishedTriggeringProcedure(Set.of(elevator, wrist), () -> {
                         elevator.setPosition(Position.ELEVATOR_BOTTOM);
-                        wrist.setAngle(WristPosition.CORAL_BOTTOM);
+                        wrist.setAngle(WristPosition.CORAL_INTAKE);
                 });
 
         // FINE TUNING
