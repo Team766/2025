@@ -67,9 +67,4 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         return new WristStatus(
                 EncoderUtils.coralWristRotationsToDegrees(wristMotor.get()), setPoint);
     }
-
-    @Override
-    public void onMechanismIdle() {
-        setPoint = EncoderUtils.coralWristRotationsToDegrees(wristMotor.getSensorPosition());
-    }
 }
