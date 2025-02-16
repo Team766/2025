@@ -2,11 +2,13 @@ package com.team766.robot.reva_2025.procedures;
 
 import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
+import com.team766.framework3.StatusBus;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.constants.CoralConstants.CoralConstant;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -51,7 +53,12 @@ public class ScoreCoral extends Procedure {
                                 new Rotation2d(position.getAngle())),
                         drive));
 
-        context.waitFor(() -> elevator.isAtPosition() && wrist.isAtPosition());
+        var elevatorStatus = StatusBus.getInstance().getStatus(Elevator.ElevatorStatus.class);
+        var wristStatus = StatusBus.getInstance().getStatus(Wrist.WristStatus.class);
+        if (elevatorStatus.isPresent() && wristStatus.isPresent()) {
+            context.waitFor(
+                    () -> elevatorStatus.get().isAtHeight() && wristStatus.get().isAtAngle());
+        }
 
         context.runSync(new RunCoralOut(coral, 0.5));
     }
