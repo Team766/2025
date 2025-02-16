@@ -28,7 +28,7 @@ public class ControlConstants {
     /**
      * Rotational velocity of robot that max joystick power controls in rad/s
      */
-    public static final double MAX_ROTATIONAL_VELOCITY = 4.0;
+    public static final double MAX_ROTATIONAL_VELOCITY = 5.0;
 
     public static final double DEFAULT_ROTATION_THRESHOLD = 0.40;
 

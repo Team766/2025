@@ -6,6 +6,9 @@ import com.team766.hal.RobotConfigurator3;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.mechanisms.*;
+import com.team766.robot.reva_2025.procedures.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Robot implements RobotConfigurator3 {
 
@@ -49,6 +52,8 @@ public class Robot implements RobotConfigurator3 {
             // define one or more different autonomous modes with it like this:
             //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
             //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
+            new AutonomousMode(
+                    "AutoAlign", () -> new AutoAlign(new Pose2d(1, 0, new Rotation2d()), drive))
         };
     }
 }

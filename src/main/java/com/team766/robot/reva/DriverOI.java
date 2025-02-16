@@ -84,7 +84,7 @@ public class DriverOI extends RuleGroup {
                             -rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)
                                     * ControlConstants.MAX_ROTATIONAL_VELOCITY;
 
-                    drive.controlFieldOriented(
+                    drive.controlAllianceOriented(
                             drivingCoefficient
                                     * curvedJoystickPower(
                                             leftJoystickX,
