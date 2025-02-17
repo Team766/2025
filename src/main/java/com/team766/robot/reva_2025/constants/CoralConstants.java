@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class CoralConstants {
-    private static final double FAR_POSITION_DISTANCE = 0.1;
 
     public enum ReefPos {
         Pole1(6.15, 3.86, -180, RelativeReefPos.Left),
@@ -33,17 +32,13 @@ public class CoralConstants {
             this.relativeReefPos = relativeReefPos;
         }
 
-        public Pose2d getClosePosition(Alliance alliance) {
-            return alliance.equals(Alliance.Blue) ? position : FlippingUtil.flipFieldPose(position);
-        }
-
-        public Pose2d getFarPosition(Alliance alliance) {
+        public Pose2d getPosition(Alliance alliance, double distance) {
             Pose2d farPose =
                     new Pose2d(
                             position.getTranslation()
                                     .minus(
                                             new Translation2d(
-                                                    FAR_POSITION_DISTANCE, position.getRotation())),
+                                                    distance, position.getRotation())),
                             position.getRotation());
             return alliance.equals(Alliance.Blue) ? farPose : FlippingUtil.flipFieldPose(farPose);
         }
