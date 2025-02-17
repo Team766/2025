@@ -1,8 +1,5 @@
 package com.team766.robot.reva_2025.procedures;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
 import com.team766.framework3.StatusBus;
@@ -14,12 +11,14 @@ import com.team766.robot.reva_2025.constants.CoralConstants.RelativeReefPos;
 import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
-import com.team766.robot.reva_2025.mechanisms.Elevator.Position;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class ScoreCoral extends Procedure {
 
@@ -48,7 +47,8 @@ public class ScoreCoral extends Procedure {
     }
 
     private Pose2d nearestPose(boolean farPosition, boolean rotated) {
-        final Optional<DriveStatus> driveStatus = StatusBus.getInstance().getStatus(SwerveDrive.DriveStatus.class);
+        final Optional<DriveStatus> driveStatus =
+                StatusBus.getInstance().getStatus(SwerveDrive.DriveStatus.class);
         final Optional<Alliance> alliance = DriverStation.getAlliance();
         if (driveStatus.isEmpty()) {
             log(Severity.ERROR, "Cannot find drive status");
@@ -56,13 +56,19 @@ public class ScoreCoral extends Procedure {
         } else if (alliance.isEmpty()) {
             log(Severity.ERROR, "Cannot find alliance");
             return driveStatus.get().currentPosition();
-        } 
+        }
         List<Pose2d> points = new ArrayList<>();
-        for (ReefPos reefPos: ReefPos.values()) {
+        for (ReefPos reefPos : ReefPos.values()) {
             if (reefPos.getRelativeReefPos().equals(side)) {
-                Pose2d pose = farPosition ? reefPos.getFarPosition(alliance.get()) : reefPos.getClosePosition(alliance.get());
+                Pose2d pose =
+                        farPosition
+                                ? reefPos.getFarPosition(alliance.get())
+                                : reefPos.getClosePosition(alliance.get());
                 if (rotated) {
-                    pose = new Pose2d(pose.getTranslation(), pose.getRotation().plus(Rotation2d.k180deg));
+                    pose =
+                            new Pose2d(
+                                    pose.getTranslation(),
+                                    pose.getRotation().plus(Rotation2d.k180deg));
                 }
                 points.add(pose);
             }
@@ -70,7 +76,6 @@ public class ScoreCoral extends Procedure {
         return driveStatus.get().currentPosition().nearest(points);
     }
 
-    
     public void run(Context context) {
         elevator.setPosition(scoreLevel.getElevatorPosition());
         wrist.setAngle(scoreLevel.getWristPosition());
@@ -96,7 +101,8 @@ public class ScoreCoral extends Procedure {
         }
 
         context.runSync(new AutoAlign(nearestPose, drive));
-        waitForStatusMatchingOrTimeout(context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1);
+        waitForStatusMatchingOrTimeout(
+                context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1);
         waitForStatusMatchingOrTimeout(context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
         coral.out();
 

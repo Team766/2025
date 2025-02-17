@@ -4,14 +4,15 @@ import static com.team766.framework3.RulePersistence.*;
 
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.mechanisms.SwerveDrive;
-import com.team766.robot.reva_2025.constants.InputConstants;
+import com.team766.robot.reva_2025.OI.QueuedControl;
 import com.team766.robot.reva_2025.constants.CoralConstants.RelativeReefPos;
+import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
-import com.team766.robot.reva_2025.procedures.ShootWhenReady;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 import com.team766.robot.reva_2025.procedures.ScoreCoral;
+import com.team766.robot.reva_2025.procedures.ShootWhenReady;
 
 public class DriverOI extends com.team766.robot.common.DriverOI {
     public DriverOI(
@@ -21,7 +22,8 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
             Elevator elevator,
             Wrist wrist,
             CoralIntake coralIntake,
-            AlgaeIntake algaeIntake) {
+            AlgaeIntake algaeIntake,
+            QueuedControl queuedControl) {
         super(leftJoystick, rightJoystick, drive);
         addRule(
                 "Outtake Coral",
@@ -36,7 +38,29 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
                 leftJoystick.whenButton(InputConstants.BUTTON_ALGAE_SHOOT),
                 ONCE_AND_HOLD,
                 () -> new ShootWhenReady(algaeIntake));
-        addRule("Auto Score Coral Left", rightJoystick.whenButton(InputConstants.BUTTON_CORAL_AUTO_PLACE_LEFT), ONCE_AND_HOLD, 
-        () -> new ScoreCoral(RelativeReefPos.Left, , drive, elevator, wrist, coralIntake));
+        addRule(
+                "Auto Score Coral Left",
+                rightJoystick.whenButton(InputConstants.BUTTON_CORAL_AUTO_PLACE_LEFT),
+                ONCE_AND_HOLD,
+                () ->
+                        new ScoreCoral(
+                                RelativeReefPos.Left,
+                                queuedControl.scoreHeight,
+                                drive,
+                                elevator,
+                                wrist,
+                                coralIntake));
+        addRule(
+                "Auto Score Coral Right",
+                rightJoystick.whenButton(InputConstants.BUTTON_CORAL_AUTO_PLACE_LEFT),
+                ONCE_AND_HOLD,
+                () ->
+                        new ScoreCoral(
+                                RelativeReefPos.Right,
+                                queuedControl.scoreHeight,
+                                drive,
+                                elevator,
+                                wrist,
+                                coralIntake));
     }
 }

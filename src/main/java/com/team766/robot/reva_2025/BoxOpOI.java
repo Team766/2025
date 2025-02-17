@@ -1,18 +1,16 @@
 package com.team766.robot.reva_2025;
 
 import static com.team766.framework3.RulePersistence.*;
-import java.util.Set;
-import java.util.Set;
+
 import com.team766.framework3.Conditions.LogicalAnd;
 import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
-import com.team766.robot.reva_2025.constants.CoralConstants;
-import com.team766.robot.reva_2025.constants.InputConstants;
+import com.team766.robot.common.constants.ControlConstants;
+import com.team766.robot.reva_2025.OI.QueuedControl;
 import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
+import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
-import com.team766.robot.reva_2025.mechanisms.Elevator.Position;
-import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import com.team766.robot.reva_2025.mechanisms.Climber;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
@@ -22,8 +20,6 @@ import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import java.util.Set;
 
 public class BoxOpOI extends RuleGroup {
-    private CoralConstants.ScoreHeight targetCoralPosition;
-    private AlgaeIntake.Level targetAlgaeLevel;
 
     public BoxOpOI(
             JoystickReader boxopGamepad,
@@ -31,12 +27,11 @@ public class BoxOpOI extends RuleGroup {
             Elevator elevator,
             Wrist wrist,
             Climber climber,
-            CoralIntake coralIntake) {
+            CoralIntake coralIntake,
+            QueuedControl queuedControl) {
 
         boxopGamepad.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
 
-        targetCoralPosition = ScoreHeight.L1;
-        targetAlgaeLevel = AlgaeIntake.Level.GroundIntake;
         // ALGAE INTAKE POSITIONS
 
         addRule(
@@ -45,7 +40,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 algaeIntake,
                 () -> {
-                    targetAlgaeLevel = Level.Stow;
+                    queuedControl.algaeLevel = Level.Stow;
                 });
 
         addRule(
@@ -54,7 +49,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 algaeIntake,
                 () -> {
-                    targetAlgaeLevel = Level.GroundIntake;
+                    queuedControl.algaeLevel = Level.GroundIntake;
                 });
 
         addRule(
@@ -63,7 +58,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 algaeIntake,
                 () -> {
-                    targetAlgaeLevel = Level.L2L3AlgaeIntake;
+                    queuedControl.algaeLevel = Level.L2L3AlgaeIntake;
                 });
 
         addRule(
@@ -72,7 +67,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 algaeIntake,
                 () -> {
-                    targetAlgaeLevel = Level.L3L4AlgaeIntake;
+                    queuedControl.algaeLevel = Level.L3L4AlgaeIntake;
                 });
 
         addRule(
@@ -81,7 +76,7 @@ public class BoxOpOI extends RuleGroup {
                         ONCE,
                         algaeIntake,
                         () -> {
-                            algaeIntake.setArmAngle(targetAlgaeLevel);
+                            algaeIntake.setArmAngle(queuedControl.algaeLevel);
                         })
                 .whenTriggering(
                         new RuleGroup() {
@@ -137,7 +132,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                        targetCoralPosition = ScoreHeight.Intake;
+                    queuedControl.scoreHeight = ScoreHeight.Intake;
                 });
         addRule(
                 "Set Elevator/Wrist L1",
@@ -145,7 +140,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                        targetCoralPosition = ScoreHeight.L3;
+                    queuedControl.scoreHeight = ScoreHeight.L3;
                 });
 
         addRule(
@@ -154,7 +149,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                        targetCoralPosition = ScoreHeight.L4;
+                    queuedControl.scoreHeight = ScoreHeight.L4;
                 });
 
         addRule(
@@ -163,19 +158,21 @@ public class BoxOpOI extends RuleGroup {
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                        targetCoralPosition = ScoreHeight.L1;
+                    queuedControl.scoreHeight = ScoreHeight.L1;
                 });
 
         addRule(
-                "Move Elevator & Wrist to TargetPosition",
-                boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
-                ONCE,
-                Set.of(elevator, wrist),
-                () -> {
-                    elevator.setPosition(targetCoralPosition.getElevatorPosition());
-                    wrist.setAngle(targetCoralPosition.getWristPosition());
-                }).whenTriggering(new RuleGroup() {
-                        {
+                        "Move Elevator & Wrist to TargetPosition",
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
+                        ONCE,
+                        Set.of(elevator, wrist),
+                        () -> {
+                            elevator.setPosition(queuedControl.scoreHeight.getElevatorPosition());
+                            wrist.setAngle(queuedControl.scoreHeight.getWristPosition());
+                        })
+                .whenTriggering(
+                        new RuleGroup() {
+                            {
                                 addRule(
                                         "Grabber Motor to Intake Power",
                                         boxopGamepad.whenAxisMoved(
