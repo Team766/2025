@@ -37,6 +37,11 @@ public class LEDString extends Mechanism {
         handleError(candle.setLEDs(r, g, b));
     }
 
+    public void setColorIndividual(Color color, int index) {
+        var color8 = new Color8Bit(color);
+        handleError(candle.setLEDs(color8.red, color8.green, color8.blue, 0, index, 1));
+    }
+
     public void setColor(Color color) {
         var color8 = new Color8Bit(color);
         setColor(color8.red, color8.green, color8.blue);
