@@ -46,7 +46,7 @@ public class ScoreCoral extends Procedure {
         this.scoreLevel = scoreLevel;
     }
 
-    private Pose2d nearestPose(boolean farPosition, boolean rotated) {
+    private Pose2d nearestPose(double dist, boolean rotated) {
         final Optional<DriveStatus> driveStatus =
                 StatusBus.getInstance().getStatus(SwerveDrive.DriveStatus.class);
         final Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -61,9 +61,7 @@ public class ScoreCoral extends Procedure {
         for (ReefPos reefPos : ReefPos.values()) {
             if (reefPos.getRelativeReefPos().equals(side)) {
                 Pose2d pose =
-                        farPosition
-                                ? reefPos.getFarPosition(alliance.get())
-                                : reefPos.getClosePosition(alliance.get());
+                        reefPos.getPosition(alliance.get(), dist);
                 if (rotated) {
                     pose =
                             new Pose2d(
@@ -84,16 +82,16 @@ public class ScoreCoral extends Procedure {
 
         switch (scoreLevel) {
             case L1:
-                nearestPose = nearestPose(false, true);
+                nearestPose = nearestPose(0, true);
                 break;
             case L2:
-                nearestPose = nearestPose(false, false);
+                nearestPose = nearestPose(0, false);
                 break;
             case L3:
-                nearestPose = nearestPose(false, false);
+                nearestPose = nearestPose(0.1778, false);
                 break;
             case L4:
-                nearestPose = nearestPose(true, false);
+                nearestPose = nearestPose(0.0762, false);
                 break;
             default:
                 log(Severity.ERROR, "Invalid scoreLevel");
@@ -108,7 +106,7 @@ public class ScoreCoral extends Procedure {
 
         if (scoreLevel.equals(ScoreHeight.L4)) {
             context.waitForSeconds(0.1);
-            context.runParallel(new AutoAlign(nearestPose(false, false), drive));
+            context.runParallel(new AutoAlign(nearestPose(0, false), drive));
             context.waitForSeconds(0.15);
         } else {
             context.waitForSeconds(0.25);
