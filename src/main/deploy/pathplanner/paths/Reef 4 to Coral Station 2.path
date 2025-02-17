@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.8287828947368414,
-        "y": 4.063486842105263
+        "x": 2.82,
+        "y": 4.19
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.049424342105263,
-        "y": 4.101973684210526
+        "x": 2.0406414473684213,
+        "y": 4.228486842105263
       },
       "isLocked": false,
       "linkedName": "Reef 4"
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
