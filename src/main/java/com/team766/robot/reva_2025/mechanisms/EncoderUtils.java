@@ -43,7 +43,7 @@ public final class EncoderUtils {
      */
     public static double elevatorHeightToRotations(double height) {
         // height * net gear ratio * (rotations / height)
-        return height * (120. / 1.) * (1. / (1.02 * Math.PI));
+        return height * (20. / 1.) * (1. / (1.02 * Math.PI));
     }
 
     /**
@@ -51,7 +51,7 @@ public final class EncoderUtils {
      */
     public static double elevatorRotationsToHeight(double rotations) {
         // rotations * net gear ratio * (height / rotations)
-        return rotations * (1. / 120.) * ((1.02 * Math.PI) / 1.);
+        return rotations * (1. / 20.) * ((1.02 * Math.PI) / 1.);
     }
 
     /**

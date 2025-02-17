@@ -28,11 +28,11 @@ public class DriverOI extends RuleGroup {
                 () -> drive.resetCurrentPosition());
 
         // Sets the wheels to the cross position if the cross button is pressed
-        addRule(
-                "Cross Wheels",
-                new Conditions.Toggle(rightJoystick.whenButton(InputConstants.BUTTON_CROSS_WHEELS)),
-                drive,
-                () -> drive.stopDrive());
+        // addRule(
+        //         "Cross Wheels",
+        //         new Conditions.Toggle(rightJoystick.whenButton(InputConstants.BUTTON_CROSS_WHEELS)),
+        //         drive,
+        //         () -> drive.stopDrive());
 
         // Moves the robot if there are joystick inputs
         addRule(

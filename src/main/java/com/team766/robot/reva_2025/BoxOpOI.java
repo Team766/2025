@@ -162,7 +162,7 @@ public class BoxOpOI extends RuleGroup {
         addRule(
                 "Move Elevator & Wrist to TargetPosition",
                 boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
-                ONCE,
+                ONCE_AND_HOLD,
                 Set.of(elevator, wrist),
                 () -> {
                     elevator.setPosition(targetElevatorPosition);
