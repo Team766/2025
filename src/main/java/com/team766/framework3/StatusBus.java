@@ -1,9 +1,6 @@
 package com.team766.framework3;
 
 import com.team766.hal.RobotProvider;
-import com.team766.logging.Category;
-import com.team766.logging.Logger;
-import com.team766.logging.Severity;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
