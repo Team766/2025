@@ -20,13 +20,13 @@ public class IntakeAlgaeFromReef extends Procedure {
     public void run(Context context) {
         // move the intake arm to target level
         intake.setArmAngle(targetLevel);
-        // start the intake
         intake.setState(State.In);
-        waitForStatusMatching(context, AlgaeIntake.AlgaeIntakeStatus, s -> s.intakeProximity()<0.8);
-        context.waitForSeconds(2);
-        intake.setState(State.holdAlgae);
-        // TODO keep intaking until prox sensor detects the algae at the desired position
-        // move the arm down to either stow or shooter position
+        waitForStatusMatching(context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAtAngle());
+        intake.setState(State.InUntilStable);
+        waitForStatusMatching(context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAlgaeStable());
+        // context.waitForSeconds(2);
         intake.setArmAngle(Level.Shoot);
+        waitForStatusMatching(context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAtAngle());
+        intake.setState(State.HoldAlgae);
     }
 }

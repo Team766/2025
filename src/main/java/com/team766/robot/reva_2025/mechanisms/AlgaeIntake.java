@@ -1,5 +1,7 @@
 package com.team766.robot.reva_2025.mechanisms;
 
+import java.util.Map;
+import java.util.HashMap;
 import com.ctre.phoenix6.signals.ControlModeValue;
 import com.team766.config.ConfigFileReader;
 import com.team766.controllers.PIDController;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
     private static final double ALGAE_HOLD_DISTANCE = 0.25;
+    private static final double STABLE_POSITION_THRESHOLD = 0.05 ;
 
     private MotorController intakeMotor;
     private MotorController armMotor;
@@ -35,15 +38,21 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     public record AlgaeIntakeStatus(
             State state,
+            Level level,
             double direction,
             double targetAngle,
             double currentAngle,
             double intakeProximity)
             implements Status {
         public boolean isAtAngle() {
-            return Math.abs(targetAngle() - currentAngle()) < POSITION_LOCATION_THRESHOLD;
+            return java.lang.Math.abs(targetAngle() - currentAngle()) < POSITION_LOCATION_THRESHOLD;
+        }
+
+        public boolean isAlgaeStable() {
+            return java.lang.Math.abs(intakeProximity() - level.stablePosition()) < STABLE_POSITION_THRESHOLD;
         }
     }
+    
 
     public AlgaeIntake() {
         intakeMotor =
@@ -61,13 +70,14 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     public enum State {
         // velocity is in revolutions per minute
-        In(30000, 0),
+        In(3000, 0),
+        InUntilStable(3000, 0),
         Stop(0, 0),
-        Out(-30000, 0),
-        Shoot(0, 30000),
-        Feed(50000, 30000),
+        Out(-3000, 0),
+        Shoot(0, 3000),
+        Feed(5000, 3000),
         HoldAlgae(5000, 0),
-        Idle(0,);
+        Idle(500,500);
 
         private final double intakeVelocity;
         private final double shooterVelocity;
@@ -89,26 +99,38 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     }
 
     public enum Level {
-        GroundIntake(-30, 1),
-        L2L3AlgaeIntake(20, -1),
-        L3L4AlgaeIntake(70, -1),
-        Stow(-80, 1),
-        Shoot(-10, 1);
+        GroundIntake(-30, 1, 0.09, 0.31),
+        L2L3AlgaeIntake(20, -1, 0.15 ,0.37 ),
+        L3L4AlgaeIntake(70, -1, 0.45, 0.67 ),
+        Stow(-80, 1, 0.6, 0.28),
+        Shoot(-10, 1, 0.15, 0.37);
 
         private final double angle;
         private final double direction;
+        private final double stablePosition;
+        private final double topPosition;
 
-        Level(double angle, double direction) {
+        private Level(double angle, double direction, double stablePosition, double topPosition) {
             this.angle = angle;
             this.direction = direction;
+            this.stablePosition = stablePosition;
+            this.topPosition = topPosition;
         }
 
-        private double getAngle() {
+        public double getAngle() {
             return angle;
         }
 
-        private double getDirection() {
+        public double getDirection() {
             return direction;
+        }
+
+        public double stablePosition() {
+            return stablePosition;
+        }
+
+        public double topPosition() {
+            return topPosition;
         }
     }
 
@@ -134,6 +156,18 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         setState(State.Stop);
     }
 
+    private void setRpmForPosition(double position) {
+        double top = level.topPosition();
+        double bottom = level.stablePosition();
+        if (position < bottom) {
+            intakeMotor.set(ControlMode.Velocity, level.getDirection()*INTAKE_IDLE_RPM);
+            shooterMotor.set(ControlMode.Velocity, SHOOTER_IDLE_RPM);
+        }
+        if (position>top) {
+            return MAX_RPM;
+        }
+    }
+
     @Override
     protected void run() {
         double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getStatus().currentAngle()));
@@ -141,22 +175,32 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 MotorController.ControlMode.Position,
                 EncoderUtils.algaeArmDegreesToRotations(targetAngle),
                 ff);
-        if (state == State.HoldAlgae) { 
-            holdAlgaeController.setSetpoint(ALGAE_HOLD_DISTANCE); 
-            holdAlgaeController.calculate(intakeSensor.getDistance());
-            var output = holdAlgaeController.getOutput();
-            SmartDashboard.putNumber("Hold algae velocity", output);
-            intakeMotor.set(ControlMode.Velocity, output);
-            
-            // if (intakeSensor.getDistance() < ALGAE_DROPPING_THRESHOLD){
-            //     intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
-            // } else {
-            //     intakeMotor.set(ControlMode.Velocity, 0);
-            // }
+        switch (state) {
+            case InUntilStable:
+                if (POSITIONS_BY_LEVEL.containsKey(level)){
+                    IntakePosition[] positions = POSITIONS_BY_LEVEL.get(level);
+                    var intakeRpm = Math.interpolate(positions, intakeSensor.getDistance(), IntakePosition::sensorDistance, IntakePosition::intakeRpm);
+                    intakeMotor.set(ControlMode.Velocity, intakeRpm);
+                }
+                
+                break;
+            case HoldAlgae:
+                holdAlgaeController.setSetpoint(ALGAE_HOLD_DISTANCE); 
+                holdAlgaeController.calculate(intakeSensor.getDistance());
+                var output = holdAlgaeController.getOutput();
+                SmartDashboard.putNumber("Hold algae velocity", output);
+                intakeMotor.set(ControlMode.Velocity, output);
+
+                break;
+            case Stop:
+                intakeMotor.stopMotor();
+                shooterMotor.stopMotor();
+                break;
         
-        }
-        else{
-            intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
+            default:
+                intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
+
+                break;
         }
         shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
     }
