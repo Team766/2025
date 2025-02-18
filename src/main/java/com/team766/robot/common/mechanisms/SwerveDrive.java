@@ -345,7 +345,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     }
 
     public void resetCurrentPosition() {
-        kalmanFilter.setPos(new Translation2d());
+        kalmanFilter.resetPos();
     }
 
     private static Translation2d getPositionForWheel(
