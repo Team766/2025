@@ -58,13 +58,6 @@ public class StatusBus {
         statuses.put(status.getClass(), entry);
         org.littletonrobotics.junction.Logger.recordOutput(
                 "Statuses/" + status.getClass().getName(), status);
-        Logger.get(Category.FRAMEWORK)
-                .logRaw(
-                        Severity.INFO,
-                        "StatusBus received Status ("
-                                + status.getClass().getName()
-                                + "): "
-                                + status);
         return entry;
     }
 
