@@ -177,12 +177,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 ff);
         switch (state) {
             case InUntilStable:
-                if (POSITIONS_BY_LEVEL.containsKey(level)){
-                    IntakePosition[] positions = POSITIONS_BY_LEVEL.get(level);
-                    var intakeRpm = Math.interpolate(positions, intakeSensor.getDistance(), IntakePosition::sensorDistance, IntakePosition::intakeRpm);
-                    intakeMotor.set(ControlMode.Velocity, intakeRpm);
-                }
-                
+                setRpmForPosition(intakeSensor.getDistance());                
                 break;
             case HoldAlgae:
                 holdAlgaeController.setSetpoint(ALGAE_HOLD_DISTANCE); 
