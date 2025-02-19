@@ -1,6 +1,9 @@
 package com.team766.robot.reva_2025.constants;
 
 import com.pathplanner.lib.util.FlippingUtil;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 import com.team766.robot.reva_2025.mechanisms.Elevator.Position;
 import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,25 +14,25 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public class CoralConstants {
 
     public enum ReefPos {
-        Pole1(6.15, 3.86, -180, RelativeReefPos.Left),
-        Pole2(6.15, 4.19, -180, RelativeReefPos.Right),
-        Pole3(5.465, 5.385, -120, RelativeReefPos.Left),
-        Pole4(5.18, 5.55, -120, RelativeReefPos.Right),
-        Pole5(3.8, 5.55, -60, RelativeReefPos.Left),
-        Pole6(3.51, 5.385, -60, RelativeReefPos.Right),
-        Pole7(2.82, 4.19, 0, RelativeReefPos.Left),
-        Pole8(2.82, 3.86, 0, RelativeReefPos.Right),
-        Pole9(3.51, 2.665, 60, RelativeReefPos.Left),
-        Pole10(3.8, 2.5, 60, RelativeReefPos.Right),
-        Pole11(5.18, 2.5, 120, RelativeReefPos.Left),
-        Pole12(5.465, 2.665, 120, RelativeReefPos.Right);
+        ReefA(3.16, 4.190, 0, RelativeReefPos.Left),
+        ReefB(3.16, 3.860, 0, RelativeReefPos.Right),
+        ReefC(3.679, 2.954, 60, RelativeReefPos.Left),
+        ReefD(3.965, 2.792, 60, RelativeReefPos.Right),
+        ReefE(5.010, 2.792, 120, RelativeReefPos.Right),
+        ReefF(5.297, 2.954, 120, RelativeReefPos.Left),
+        ReefG(5.815, 3.860, 180, RelativeReefPos.Right),
+        ReefH(5.815, 4.190, 180, RelativeReefPos.Left),
+        ReefI(5.297, 5.094, -120, RelativeReefPos.Right),
+        ReefJ(5.010, 5.258, -120, RelativeReefPos.Left),
+        ReefK(3.965, 5.258, -60, RelativeReefPos.Left),
+        ReefL(3.679, 5.094, -60, RelativeReefPos.Right);
 
         private final Pose2d position;
-        private final RelativeReefPos relativeReefPos;
+        private final RelativeReefPos relativeReefPosBlue;
 
         private ReefPos(double x, double y, double angleDeg, RelativeReefPos relativeReefPos) {
             this.position = new Pose2d(x, y, Rotation2d.fromDegrees(angleDeg));
-            this.relativeReefPos = relativeReefPos;
+            this.relativeReefPosBlue = relativeReefPos;
         }
 
         public Pose2d getPosition(Alliance alliance, double distance) {
@@ -43,8 +46,17 @@ public class CoralConstants {
             return alliance.equals(Alliance.Blue) ? farPose : FlippingUtil.flipFieldPose(farPose);
         }
 
-        public RelativeReefPos getRelativeReefPos() {
-            return relativeReefPos;
+        public RelativeReefPos getRelativeReefPos(Alliance alliance) {
+            // TODO: is there a better way to do this?
+            switch (relativeReefPosBlue) {
+                case Left:
+                    return alliance.equals(Alliance.Blue) ? RelativeReefPos.Left : RelativeReefPos.Right;
+                case Right:
+                    return alliance.equals(Alliance.Blue) ? RelativeReefPos.Right : RelativeReefPos.Left;
+                default:
+                    Logger.get(Category.AUTONOMOUS).logRaw(Severity.ERROR, "invalid relativeReefPos");
+                    return null;
+            }
         }
     }
 

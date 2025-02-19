@@ -52,7 +52,7 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
                                 coralIntake));
         addRule(
                 "Auto Score Coral Right",
-                rightJoystick.whenButton(InputConstants.BUTTON_CORAL_AUTO_PLACE_LEFT),
+                rightJoystick.whenButton(InputConstants.BUTTON_CORAL_AUTO_PLACE_RIGHT),
                 ONCE_AND_HOLD,
                 () ->
                         new ScoreCoral(
