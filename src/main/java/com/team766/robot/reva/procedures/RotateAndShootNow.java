@@ -48,7 +48,7 @@ public class RotateAndShootNow extends Procedure {
         }
 
         shoulder.rotate(armAngle);
-        drive.controlFieldOrientedWithRotationTarget(0, 0, heading);
+        drive.controlAllianceOrientedWithRotationTarget(0, 0, heading);
         // shooter.shoot(power);
 
         waitForStatusMatchingOrTimeout(

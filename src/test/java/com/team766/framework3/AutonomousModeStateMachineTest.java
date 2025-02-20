@@ -190,7 +190,8 @@ public class AutonomousModeStateMachineTest extends TestCase3 {
     }
 
     /// If the user selects a different autonomous mode while the robot is in disabled mode,
-    /// an instance of the new mode's Command should be instantiated and then used when the robot
+    /// an instance of the new mode's Command should be instantiated and then used when the
+    // robot
     /// enters autnonomous.
     @Test
     public void testNewSelectionWhenDisabled() {
@@ -217,7 +218,8 @@ public class AutonomousModeStateMachineTest extends TestCase3 {
     }
 
     /// If the user selects a different autonomous mode between two autonomous runs,
-    /// an instance of the new mode's Command should be instantiated and then used when the robot
+    /// an instance of the new mode's Command should be instantiated and then used when the
+    // robot
     /// enters autnonomous the second time.
     @Test
     public void testRunTwiceWithNewSelection() {
