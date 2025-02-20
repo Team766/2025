@@ -3,6 +3,7 @@ package com.team766.framework3;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.google.common.collect.Sets;
 import com.team766.TestCase3;
 import com.team766.framework3.test.FakeMechanism;
 import java.util.Set;
@@ -23,7 +24,9 @@ public class Context3Test extends TestCase3 {
         var proc = new FakeProcedure(2, Set.of(mech1, mech2));
         var context = new ContextImpl(proc);
 
-        assertEquals(Set.of(mech1, mech2), context.getRequirements());
+        assertEquals(
+                Sets.union(mech1.getReservableSubsystems(), mech2.getReservableSubsystems()),
+                context.getRequirements());
 
         // Schedule the Context for execution by the scheduler.
         context.schedule();
@@ -277,7 +280,7 @@ public class Context3Test extends TestCase3 {
 
         assertThat(thrownException.get())
                 .matches(
-                        ".*Context3Test\\$\\$Lambda.* tried to run .*FakeProcedure.* but is missing the reservation on FakeMechanism");
+                        ".*Context3Test\\$\\$Lambda.* tried to run .*FakeProcedure.* but is missing the reservation on .*FakeMechanism");
     }
 
     static Stream<BiConsumer<Context, Procedure>> paramsRunWithMissingReservation() {

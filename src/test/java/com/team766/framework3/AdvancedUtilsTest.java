@@ -90,6 +90,6 @@ public class AdvancedUtilsTest extends TestCase3 {
 
         assertThat(thrownException.get())
                 .matches(
-                        ".*AdvancedUtilsTest\\$\\$Lambda.* tried to launch .*FakeProcedure.* asynchronously, but both have a reservation on FakeMechanism");
+                        ".*AdvancedUtilsTest\\$\\$Lambda.* tried to launch .*FakeProcedure.* asynchronously, but both have a reservation on .*FakeMechanism");
     }
 }

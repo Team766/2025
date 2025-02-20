@@ -158,7 +158,9 @@ import java.util.function.BooleanSupplier;
         m_controlOwner = ControlOwner.MAIN_THREAD;
         m_state = State.NEW;
         setName(getContextName());
-        getRequirements().addAll(procedure.reservations());
+        for (var r : procedure.reservations()) {
+            getRequirements().addAll(r.getReservableSubsystems());
+        }
     }
 
     /**
@@ -358,14 +360,16 @@ import java.util.function.BooleanSupplier;
 
     private void checkProcedureReservationsSubset(Procedure procedure) {
         final var thisReservations = getRequirements();
-        for (var req : procedure.reservations()) {
-            if (!thisReservations.contains(req)) {
-                throw new IllegalArgumentException(
-                        getName()
-                                + " tried to run "
-                                + procedure.getName()
-                                + " but is missing the reservation on "
-                                + req.getName());
+        for (var res : procedure.reservations()) {
+            for (var req : res.getReservableSubsystems()) {
+                if (!thisReservations.contains(req)) {
+                    throw new IllegalArgumentException(
+                            getName()
+                                    + " tried to run "
+                                    + procedure.getName()
+                                    + " but is missing the reservation on "
+                                    + req.getName());
+                }
             }
         }
     }
