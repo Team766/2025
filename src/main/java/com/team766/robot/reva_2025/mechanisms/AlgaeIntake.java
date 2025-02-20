@@ -19,7 +19,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     private final ValueProvider<Double> ffGain;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
     private static final double SHOOTER_SPEED_TOLERANCE = 100;
-    private static final double NUDGE_AMOUNT = 1;
+    private static final double NUDGE_AMOUNT = 5;
 
     // TODO: Intake and shooter motor should drive when we shoot. Shooter motor should be slgithly
     // slower than the intake motor

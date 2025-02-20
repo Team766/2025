@@ -7,7 +7,9 @@ import com.team766.logging.Category;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.constants.CoralConstants;
 import com.team766.robot.reva_2025.constants.InputConstants;
+import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 import com.team766.robot.reva_2025.mechanisms.*;
+import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 
 public class OI extends RuleEngine {
 
@@ -30,6 +32,8 @@ public class OI extends RuleEngine {
         final JoystickReader boxopGamepad =
                 RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
         QueuedControl queuedControl = new QueuedControl();
+        queuedControl.algaeLevel = Level.Stow;
+        queuedControl.scoreHeight = ScoreHeight.Intake;
 
         // Add driver control rules here.
 

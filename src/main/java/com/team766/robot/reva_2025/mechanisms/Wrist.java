@@ -11,7 +11,7 @@ import com.team766.robot.reva_2025.constants.ConfigConstants;
 public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     private double setPoint;
-    private static final double NUDGE_AMOUNT = 1.0;
+    private static final double NUDGE_AMOUNT = 5.0;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
     private final ValueProvider<Double> ffGain;
 
