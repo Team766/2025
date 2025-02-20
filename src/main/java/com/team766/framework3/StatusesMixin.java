@@ -1,6 +1,7 @@
 package com.team766.framework3;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -77,6 +78,16 @@ public interface StatusesMixin {
         return getStatusEntry(statusClass)
                 .map(e -> e.age() < maxAgeSeconds && predicate.test(e.status()))
                 .orElse(false);
+    }
+
+    default <S extends Status> BooleanSupplier whenStatusMatching(
+            Class<S> statusClass, Predicate<S> predicate) {
+        return () -> checkForStatusMatching(statusClass, predicate);
+    }
+
+    default <S extends Status> BooleanSupplier whenRecentStatusMatching(
+            Class<S> statusClass, double maxAgeSeconds, Predicate<S> predicate) {
+        return () -> checkForRecentStatusMatching(statusClass, maxAgeSeconds, predicate);
     }
 
     /**

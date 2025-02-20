@@ -17,11 +17,13 @@ import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
+import com.team766.hal.TimeOfFlightReader;
 import com.team766.hal.mock.MockBeaconSensor;
 import com.team766.hal.mock.MockEncoder;
 import com.team766.hal.mock.MockGyro;
 import com.team766.hal.mock.MockMotorController;
 import com.team766.hal.mock.MockPositionSensor;
+import com.team766.hal.mock.MockTimeOfFlight;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -128,7 +130,7 @@ public class WPIRobotProvider extends RobotProvider {
         switch (type) {
             case SparkMax:
                 try {
-                    motor = new CANSparkMaxMotorController(index);
+                    motor = new CANSparkMaxMotorController(configPrefix, index);
                 } catch (Exception ex) {
                     LoggerExceptionUtils.logException(ex);
                     motor =
@@ -138,7 +140,7 @@ public class WPIRobotProvider extends RobotProvider {
                 }
                 break;
             case TalonSRX:
-                motor = new CANTalonMotorController(index);
+                motor = new CANTalonMotorController(configPrefix, index);
                 break;
             case VictorSPX:
                 motor = new CANVictorMotorController(index);
@@ -146,7 +148,9 @@ public class WPIRobotProvider extends RobotProvider {
             case TalonFX:
                 final ValueProvider<String> canBus =
                         ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
-                motor = new CANTalonFxMotorController(index, getStringOrEmpty(canBus));
+                motor =
+                        new CANTalonFxMotorController(
+                                configPrefix, index, getStringOrEmpty(canBus));
                 break;
             case VictorSP:
                 motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);
@@ -243,6 +247,29 @@ public class WPIRobotProvider extends RobotProvider {
         } else {
             return new AnalogGyro(index);
         }
+    }
+
+    @Override
+    public TimeOfFlightReader getTimeOfFlight(final int index, String configPrefix) {
+
+        final ValueProvider<TimeOfFlightReader.Type> type =
+                ConfigFileReader.getInstance()
+                        .getEnum(TimeOfFlightReader.Type.class, configPrefix + ".type");
+
+        if (type.hasValue()) {
+            if (type.get() == TimeOfFlightReader.Type.CANRange) {
+                ValueProvider<String> canBus =
+                        ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
+                return new CANRangeTimeOfFlight(index, getStringOrEmpty(canBus));
+            }
+        }
+
+        Logger.get(Category.CONFIGURATION)
+                .logData(
+                        Severity.ERROR,
+                        "Unknown TimeOfFlight %s, using mock TimeOfFlight instead",
+                        configPrefix);
+        return new MockTimeOfFlight();
     }
 
     @Override
