@@ -17,6 +17,9 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
 
     public CANVictorMotorController(final int deviceNumber) {
         m_device = new WPI_VictorSPX(deviceNumber);
+
+        m_device.configVoltageCompSaturation(12.6);
+        m_device.enableVoltageCompensation(true);
     }
 
     @Override

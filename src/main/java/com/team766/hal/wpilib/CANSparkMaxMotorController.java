@@ -35,7 +35,11 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
         this.deviceName = deviceName;
 
         SparkMaxConfig config = new SparkMaxConfig();
+
         config.smartCurrentLimit(10, 80, 200);
+
+        config.voltageCompensation(12.6);
+
         configureAndCheckRevError(config);
         shouldReportDefaultCurrentLimit = true;
 

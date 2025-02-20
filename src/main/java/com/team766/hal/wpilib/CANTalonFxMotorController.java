@@ -11,9 +11,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.StrictFollower;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.core.CoreTalonFX;
@@ -138,12 +138,12 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
                 super.setControl(percent);
                 break;
             case Position:
-                PositionDutyCycle position = new PositionDutyCycle(value);
+                PositionVoltage position = new PositionVoltage(value);
                 position.FeedForward = arbitraryFeedForward;
                 super.setControl(position);
                 break;
             case Velocity:
-                VelocityDutyCycle velocity = new VelocityDutyCycle(value);
+                VelocityVoltage velocity = new VelocityVoltage(value);
                 velocity.FeedForward = arbitraryFeedForward;
                 super.setControl(velocity);
                 break;

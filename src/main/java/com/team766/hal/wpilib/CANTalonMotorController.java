@@ -21,6 +21,9 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
         m_device = new WPI_TalonSRX(deviceNumber);
         this.deviceName = deviceName;
 
+        m_device.configVoltageCompSaturation(12.6);
+        m_device.enableVoltageCompensation(true);
+
         setCurrentLimit(15);
         shouldReportDefaultCurrentLimit = true;
     }
