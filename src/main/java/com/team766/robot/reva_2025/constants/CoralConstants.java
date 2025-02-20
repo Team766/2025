@@ -4,7 +4,7 @@ import com.pathplanner.lib.util.FlippingUtil;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
-import com.team766.robot.reva_2025.mechanisms.Elevator.Position;
+import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -66,21 +66,21 @@ public class CoralConstants {
     }
 
     public enum ScoreHeight {
-        Intake(Position.ELEVATOR_INTAKE, WristPosition.CORAL_INTAKE),
-        L1(Position.ELEVATOR_L1, WristPosition.CORAL_L1_PLACE),
-        L2(Position.ELEVATOR_L2, WristPosition.CORAL_L2_PLACE),
-        L3(Position.ELEVATOR_L3, WristPosition.CORAL_L3_PLACE),
-        L4(Position.ELEVATOR_L4, WristPosition.CORAL_L4_PLACE);
+        Intake(ElevatorPosition.ELEVATOR_INTAKE, WristPosition.CORAL_INTAKE),
+        L1(ElevatorPosition.ELEVATOR_L1, WristPosition.CORAL_L1_PLACE),
+        L2(ElevatorPosition.ELEVATOR_L2, WristPosition.CORAL_L2_PLACE),
+        L3(ElevatorPosition.ELEVATOR_L3, WristPosition.CORAL_L3_PLACE),
+        L4(ElevatorPosition.ELEVATOR_L4, WristPosition.CORAL_L4_PLACE);
 
-        private final Position elevatorPosition;
+        private final ElevatorPosition elevatorPosition;
         private final WristPosition wristPosition;
 
-        private ScoreHeight(Position elevatorPosition, WristPosition wristPosition) {
+        private ScoreHeight(ElevatorPosition elevatorPosition, WristPosition wristPosition) {
             this.elevatorPosition = elevatorPosition;
             this.wristPosition = wristPosition;
         }
 
-        public Position getElevatorPosition() {
+        public ElevatorPosition getElevatorPosition() {
             return elevatorPosition;
         }
 

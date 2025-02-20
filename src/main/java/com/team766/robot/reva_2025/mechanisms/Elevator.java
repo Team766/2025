@@ -12,6 +12,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private static final double NUDGE_AMOUNT = 5;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
     private double setPoint;
+    private boolean noPIDMode;
 
     public static record ElevatorStatus(double currentHeight, double targetHeight)
             implements Status {
@@ -20,7 +21,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         }
     }
 
-    public enum Position {
+    public enum ElevatorPosition {
         ELEVATOR_TOP(15.5),
         ELEVATOR_BOTTOM(0),
         ELEVATOR_INTAKE(7),
@@ -31,7 +32,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
         double height = 0;
 
-        Position(double height) {
+        ElevatorPosition(double height) {
             this.height = height;
         }
 
@@ -49,14 +50,15 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public void setPosition(double setPosition) {
+        noPIDMode = false;
         setPoint =
                 com.team766.math.Math.clamp(
                         setPosition,
-                        Position.ELEVATOR_BOTTOM.getHeight(),
-                        Position.ELEVATOR_TOP.getHeight());
+                        ElevatorPosition.ELEVATOR_BOTTOM.getHeight(),
+                        ElevatorPosition.ELEVATOR_TOP.getHeight());
     }
 
-    public void setPosition(Position position) {
+    public void setPosition(ElevatorPosition position) {
         setPosition(position.getHeight());
     }
 
@@ -66,11 +68,18 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         setPosition(nudgePosition);
     }
 
+    public void nudgeNoPID(double power) {
+        noPIDMode = true;
+        elevatorLeftMotor.set(power);
+    }
+
     @Override
     protected void run() {
-        elevatorLeftMotor.set(
+        if (!noPIDMode) {
+            elevatorLeftMotor.set(
                 MotorController.ControlMode.Position,
                 EncoderUtils.elevatorHeightToRotations(setPoint));
+        }
     }
 
     @Override

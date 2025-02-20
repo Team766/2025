@@ -14,7 +14,7 @@ import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 import com.team766.robot.reva_2025.mechanisms.Climber;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
-import com.team766.robot.reva_2025.mechanisms.Elevator.Position;
+import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import java.util.Set;
@@ -201,7 +201,7 @@ public class BoxOpOI extends RuleGroup {
                 .withFinishedTriggeringProcedure(
                         Set.of(elevator, wrist),
                         () -> {
-                            elevator.setPosition(Position.ELEVATOR_BOTTOM);
+                            elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
                             wrist.setAngle(WristPosition.CORAL_INTAKE);
                         });
 
