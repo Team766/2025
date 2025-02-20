@@ -36,6 +36,8 @@ public abstract class MultiFacetedMechanism implements Reservable, LoggingBase {
     private final ArrayList<MechanismFacet> facets = new ArrayList<>();
     private final HashSet<MechanismSubsystem> facetSubsystems = new HashSet<>();
 
+    private boolean isRunningPeriodic = false;
+
     protected final <M extends MechanismFacet> M addFacet(M facet) {
         Objects.requireNonNull(facet);
         facet.setContainer(this);
@@ -44,7 +46,11 @@ public abstract class MultiFacetedMechanism implements Reservable, LoggingBase {
         return facet;
     }
 
+    @Override
     public final void checkContextReservation() {
+        if (isRunningPeriodic) {
+            return;
+        }
         if (facetSubsystems.isEmpty()) {
             throw new IllegalStateException("MultiFacetedMechanism does not have any Facets");
         }
@@ -81,10 +87,13 @@ public abstract class MultiFacetedMechanism implements Reservable, LoggingBase {
         try {
             publishStatus();
 
+            isRunningPeriodic = true;
             run();
         } catch (Exception ex) {
             ex.printStackTrace();
             LoggerExceptionUtils.logException(ex);
+        } finally {
+            isRunningPeriodic = false;
         }
     }
 

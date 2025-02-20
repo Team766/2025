@@ -104,6 +104,7 @@ public abstract class Mechanism implements Reservable, LoggingBase {
      */
     protected void onMechanismIdle() {}
 
+    @Override
     public void checkContextReservation() {
         if (isRunningPeriodic) {
             return;
