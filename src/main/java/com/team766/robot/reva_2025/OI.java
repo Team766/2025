@@ -31,6 +31,8 @@ public class OI extends RuleEngine {
                 RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
         final JoystickReader boxopGamepad =
                 RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
+        final JoystickReader macropad = 
+                RobotProvider.instance.getJoystick(3);
         QueuedControl queuedControl = new QueuedControl();
         queuedControl.algaeLevel = Level.Stow;
         queuedControl.scoreHeight = ScoreHeight.Intake;
@@ -56,6 +58,7 @@ public class OI extends RuleEngine {
                         climber,
                         coralIntake,
                         queuedControl));
+        addRules(new DebugOI(macropad, climber, elevator, wrist, algaeIntake, coralIntake));
     }
 
     @Override

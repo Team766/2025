@@ -7,7 +7,9 @@ import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
+import com.team766.robot.reva.mechanisms.MotorUtil;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
     private MotorController intakeMotor;
@@ -56,6 +58,9 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         targetAngle = level.getAngle();
         armMotor.setSensorPosition(EncoderUtils.algaeArmDegreesToRotations(targetAngle));
         ffGain = ConfigFileReader.getInstance().getDouble(ConfigConstants.ALGAEINTAKE_ARMFFGAIN);
+
+        shooterMotor.setCurrentLimit(80);
+        shooterMotor.setCurrentLimit(115);
     }
 
     public enum State {
@@ -154,6 +159,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
             intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
             shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
         }
+        SmartDashboard.putNumber("Algae Shooter Current Limit", MotorUtil.getCurrentUsage(shooterMotor));
+        SmartDashboard.putNumber("Algae Intake Current Limit", MotorUtil.getCurrentUsage(intakeMotor));
     }
 
     @Override
