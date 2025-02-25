@@ -60,8 +60,7 @@ public class ScoreCoral extends Procedure {
         List<Pose2d> points = new ArrayList<>();
         for (ReefPos reefPos : ReefPos.values()) {
             if (reefPos.getRelativeReefPos(alliance.get()).equals(side)) {
-                Pose2d pose =
-                        reefPos.getPosition(alliance.get(), dist);
+                Pose2d pose = reefPos.getPosition(alliance.get(), dist);
                 if (rotated) {
                     pose =
                             new Pose2d(
@@ -75,10 +74,10 @@ public class ScoreCoral extends Procedure {
         if (points.size() == 0) {
             log(Severity.ERROR, "Cannot find nearest point");
             return curPose;
-        } 
+        }
         log("Target scoring position: " + curPose.toString());
         return curPose.nearest(points);
-        }
+    }
 
     public void run(Context context) {
         elevator.setPosition(scoreLevel.getElevatorPosition());
@@ -88,7 +87,7 @@ public class ScoreCoral extends Procedure {
 
         switch (scoreLevel) {
             case L1:
-                nearestPose = nearestPose(0, true);
+                nearestPose = nearestPose(1, true);
                 break;
             case L2:
                 nearestPose = nearestPose(0, false);

@@ -6,8 +6,8 @@ import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.constants.CoralConstants;
-import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
+import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.*;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 
@@ -31,8 +31,7 @@ public class OI extends RuleEngine {
                 RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
         final JoystickReader boxopGamepad =
                 RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
-        final JoystickReader macropad = 
-                RobotProvider.instance.getJoystick(3);
+        final JoystickReader macropad = RobotProvider.instance.getJoystick(3);
         QueuedControl queuedControl = new QueuedControl();
         queuedControl.algaeLevel = Level.Stow;
         queuedControl.scoreHeight = ScoreHeight.Intake;

@@ -77,8 +77,8 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     protected void run() {
         if (!noPIDMode) {
             elevatorLeftMotor.set(
-                MotorController.ControlMode.Position,
-                EncoderUtils.elevatorHeightToRotations(setPoint));
+                    MotorController.ControlMode.Position,
+                    EncoderUtils.elevatorHeightToRotations(setPoint));
         }
     }
 

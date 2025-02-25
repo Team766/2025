@@ -26,7 +26,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
         // TODO: Change these angles to actual values
         CORAL_BOTTOM(10),
-        CORAL_START(35),
+        CORAL_START(15),
         CORAL_INTAKE(40),
         // CORAL_L2_PREP(260),
         CORAL_L1_PLACE(40),

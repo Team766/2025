@@ -39,9 +39,7 @@ public class CoralConstants {
             Pose2d farPose =
                     new Pose2d(
                             position.getTranslation()
-                                    .minus(
-                                            new Translation2d(
-                                                    distance, position.getRotation())),
+                                    .minus(new Translation2d(distance, position.getRotation())),
                             position.getRotation());
             return alliance.equals(Alliance.Blue) ? farPose : FlippingUtil.flipFieldPose(farPose);
         }
@@ -50,11 +48,16 @@ public class CoralConstants {
             // TODO: is there a better way to do this?
             switch (relativeReefPosBlue) {
                 case Left:
-                    return alliance.equals(Alliance.Blue) ? RelativeReefPos.Left : RelativeReefPos.Right;
+                    return alliance.equals(Alliance.Blue)
+                            ? RelativeReefPos.Left
+                            : RelativeReefPos.Right;
                 case Right:
-                    return alliance.equals(Alliance.Blue) ? RelativeReefPos.Right : RelativeReefPos.Left;
+                    return alliance.equals(Alliance.Blue)
+                            ? RelativeReefPos.Right
+                            : RelativeReefPos.Left;
                 default:
-                    Logger.get(Category.AUTONOMOUS).logRaw(Severity.ERROR, "invalid relativeReefPos");
+                    Logger.get(Category.AUTONOMOUS)
+                            .logRaw(Severity.ERROR, "invalid relativeReefPos");
                     return null;
             }
         }

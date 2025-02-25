@@ -74,7 +74,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         private final double intakeVelocity;
         private final double shooterVelocity;
 
-        State(double intakeVelocity, double shooterVelocity) {
+        State
+        (double intakeVelocity, double shooterVelocity) {
             this.intakeVelocity = intakeVelocity;
             this.shooterVelocity = shooterVelocity;
         }
@@ -89,9 +90,9 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     }
 
     public enum Level {
-        GroundIntake(-40, 1),
+        GroundIntake(-45, 1),
         L2L3AlgaeIntake(20, -1),
-        L3L4AlgaeIntake(70, -1),
+        L3L4AlgaeIntake(60, -1),
         Stow(-80, 1),
         Shoot(-25, 1); // placeholder number
 
@@ -159,8 +160,10 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
             intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
             shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
         }
-        SmartDashboard.putNumber("Algae Shooter Current Limit", MotorUtil.getCurrentUsage(shooterMotor));
-        SmartDashboard.putNumber("Algae Intake Current Limit", MotorUtil.getCurrentUsage(intakeMotor));
+        SmartDashboard.putNumber(
+                "Algae Shooter Current Limit", MotorUtil.getCurrentUsage(shooterMotor));
+        SmartDashboard.putNumber(
+                "Algae Intake Current Limit", MotorUtil.getCurrentUsage(intakeMotor));
     }
 
     @Override
