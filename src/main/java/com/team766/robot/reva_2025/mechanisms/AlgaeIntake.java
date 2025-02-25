@@ -19,7 +19,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
     private static final double ALGAE_HOLD_DISTANCE = 0.25;
-    private static final double STABLE_POSITION_THRESHOLD = 0.05 ;
+    private static final double STABLE_POSITION_THRESHOLD = 0.05;
+    private static final double INTAKE_IDLE_RPM = 500;
+    private static final double INTAKE_IN_MAX_RPM = 3000;
+    private static final double SHOOTER_IDLE_RPM = 0;
+    private static final double SHOOTER_IN_MAX_RPM = 3000;
 
     private MotorController intakeMotor;
     private MotorController armMotor;
@@ -164,8 +168,18 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
             shooterMotor.set(ControlMode.Velocity, SHOOTER_IDLE_RPM);
         }
         if (position>top) {
-            return MAX_RPM;
+            intakeMotor.set(ControlMode.Velocity, level.getDirection()*INTAKE_IN_MAX_RPM);
+            shooterMotor.set(ControlMode.Velocity, SHOOTER_IN_MAX_RPM);
         }
+
+        double intakeSlope = ((INTAKE_IN_MAX_RPM - INTAKE_IDLE_RPM)/(top - bottom));
+        double intakeRpm = (top-position)*intakeSlope + INTAKE_IDLE_RPM;
+
+        double shooterSlope = ((SHOOTER_IN_MAX_RPM - SHOOTER_IDLE_RPM)/(top - bottom));
+        double shooterRpm = (top-position)*shooterSlope + SHOOTER_IDLE_RPM;
+
+        intakeMotor.set(ControlMode.Velocity, level.getDirection()*intakeRpm);
+            shooterMotor.set(ControlMode.Velocity, shooterRpm;
     }
 
     @Override
