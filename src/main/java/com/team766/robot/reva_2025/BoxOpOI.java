@@ -1,7 +1,7 @@
 package com.team766.robot.reva_2025;
 
 import static com.team766.framework3.RulePersistence.*;
-import java.util.Set;
+
 import com.team766.framework3.Conditions.LogicalAnd;
 import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
@@ -9,12 +9,13 @@ import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
-import com.team766.robot.reva_2025.mechanisms.Elevator.Position;
-import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import com.team766.robot.reva_2025.mechanisms.Climber;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
+import com.team766.robot.reva_2025.mechanisms.Elevator.Position;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
+import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
+import java.util.Set;
 
 public class BoxOpOI extends RuleGroup {
     private Elevator.Position targetElevatorPosition;
@@ -73,38 +74,46 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                "Move Algae Intake to TargetLevel",
-                boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON),
-                ONCE,
-                algaeIntake,
-                () -> {
-                    algaeIntake.setArmAngle(targetAlgaeLevel);
-                }).whenTriggering(new RuleGroup() {
-                        {
+                        "Move Algae Intake to TargetLevel",
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON),
+                        ONCE,
+                        algaeIntake,
+                        () -> {
+                            algaeIntake.setArmAngle(targetAlgaeLevel);
+                        })
+                .whenTriggering(
+                        new RuleGroup() {
+                            {
                                 addRule(
-                "Algae Motors to Intake Power",
-                boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
-                ONCE_AND_HOLD,
-                algaeIntake,
-                () -> {
-                    algaeIntake.setState(AlgaeIntake.State.In);
-                });
+                                        "Algae Motors to Intake Power",
+                                        boxopGamepad.whenAxisMoved(
+                                                InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                                        ONCE_AND_HOLD,
+                                        algaeIntake,
+                                        () -> {
+                                            algaeIntake.setState(AlgaeIntake.State.In);
+                                        });
 
-        addRule(
-                "Algae Motors to Outtake Power",
-                new LogicalAnd(
-                        boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
-                        boxopGamepad.whenButton(InputConstants.GAMEPAD_START_BUTTON)),
-                ONCE_AND_HOLD,
-                algaeIntake,
-                () -> {
-                    algaeIntake.setState(AlgaeIntake.State.Out);
-                });
-                        }
-                })
-                .withFinishedTriggeringProcedure(algaeIntake, () -> {
-                        algaeIntake.setArmAngle(Level.Stow);
-                });
+                                addRule(
+                                        "Algae Motors to Outtake Power",
+                                        new LogicalAnd(
+                                                boxopGamepad.whenAxisMoved(
+                                                        InputConstants
+                                                                .BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                                                boxopGamepad.whenButton(
+                                                        InputConstants.GAMEPAD_START_BUTTON)),
+                                        ONCE_AND_HOLD,
+                                        algaeIntake,
+                                        () -> {
+                                            algaeIntake.setState(AlgaeIntake.State.Out);
+                                        });
+                            }
+                        })
+                .withFinishedTriggeringProcedure(
+                        algaeIntake,
+                        () -> {
+                            algaeIntake.setArmAngle(Level.Stow);
+                        });
 
         // ALGAE INTAKE MOTOR CONTROLS / SHOOTING
 
@@ -160,40 +169,48 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                "Move Elevator & Wrist to TargetPosition",
-                boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
-                ONCE_AND_HOLD,
-                Set.of(elevator, wrist),
-                () -> {
-                    elevator.setPosition(targetElevatorPosition);
-                    wrist.setAngle(targetWristPosition);
-                }).whenTriggering(new RuleGroup() {
-                        {
+                        "Move Elevator & Wrist to TargetPosition",
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
+                        ONCE_AND_HOLD,
+                        Set.of(elevator, wrist),
+                        () -> {
+                            elevator.setPosition(targetElevatorPosition);
+                            wrist.setAngle(targetWristPosition);
+                        })
+                .whenTriggering(
+                        new RuleGroup() {
+                            {
                                 addRule(
-                "Grabber Motor to Intake Power",
-                boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
-                ONCE_AND_HOLD,
-                coralIntake,
-                () -> {
-                    coralIntake.in();
-                });
+                                        "Grabber Motor to Intake Power",
+                                        boxopGamepad.whenAxisMoved(
+                                                InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                                        ONCE_AND_HOLD,
+                                        coralIntake,
+                                        () -> {
+                                            coralIntake.in();
+                                        });
 
-        addRule(
-                "Grabber Motor to Outtake Power",
-                new LogicalAnd(
-                        boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
-                        boxopGamepad.whenButton(InputConstants.GAMEPAD_START_BUTTON)),
-                ONCE_AND_HOLD,
-                coralIntake,
-                () -> {
-                    coralIntake.out();
-                });
-                        }
-                })
-                .withFinishedTriggeringProcedure(Set.of(elevator, wrist), () -> {
-                        elevator.setPosition(Position.ELEVATOR_BOTTOM);
-                        wrist.setAngle(WristPosition.CORAL_INTAKE);
-                });
+                                addRule(
+                                        "Grabber Motor to Outtake Power",
+                                        new LogicalAnd(
+                                                boxopGamepad.whenAxisMoved(
+                                                        InputConstants
+                                                                .BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                                                boxopGamepad.whenButton(
+                                                        InputConstants.GAMEPAD_START_BUTTON)),
+                                        ONCE_AND_HOLD,
+                                        coralIntake,
+                                        () -> {
+                                            coralIntake.out();
+                                        });
+                            }
+                        })
+                .withFinishedTriggeringProcedure(
+                        Set.of(elevator, wrist),
+                        () -> {
+                            elevator.setPosition(Position.ELEVATOR_BOTTOM);
+                            wrist.setAngle(WristPosition.CORAL_INTAKE);
+                        });
 
         // FINE TUNING
 
