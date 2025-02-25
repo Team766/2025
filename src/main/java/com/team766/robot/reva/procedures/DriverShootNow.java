@@ -144,7 +144,7 @@ public class DriverShootNow extends VisionPIDProcedure {
             return Optional.empty();
         }
 
-        Pose3d pose = tag.orElseThrow().pose();
+        Pose3d pose = tag.orElseThrow().pose3d();
 
         Transform3d poseNew =
                 new Transform3d(pose.getX(), pose.getY(), pose.getZ(), new Rotation3d());
