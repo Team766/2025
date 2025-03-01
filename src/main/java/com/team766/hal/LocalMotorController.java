@@ -22,6 +22,7 @@ public class LocalMotorController implements MotorController {
     private double setpoint = 0.0;
     private double arbitraryFeedForward = 0.0;
     private MotorController leader = null;
+    private boolean reportMissingSensor = true;
 
     public LocalMotorController(
             String configPrefix,
@@ -148,10 +149,13 @@ public class LocalMotorController implements MotorController {
     @Override
     public void setSensorPosition(double position) {
         if (this.sensor == null) {
-            Logger.get(Category.CONFIGURATION)
-                    .logRaw(
-                            Severity.ERROR,
-                            toString() + " does not have an attached sensor configured");
+            if (reportMissingSensor) {
+                Logger.get(Category.CONFIGURATION)
+                        .logRaw(
+                                Severity.ERROR,
+                                toString() + " does not have an attached sensor configured");
+                reportMissingSensor = false;
+            }
             return;
         }
         if (this.sensorInverted != this.inverted) {
@@ -163,10 +167,13 @@ public class LocalMotorController implements MotorController {
     @Override
     public double getSensorPosition() {
         if (this.sensor == null) {
-            Logger.get(Category.CONFIGURATION)
-                    .logRaw(
-                            Severity.ERROR,
-                            toString() + " does not have an attached sensor configured");
+            if (reportMissingSensor) {
+                Logger.get(Category.HAL)
+                        .logRaw(
+                                Severity.ERROR,
+                                toString() + " does not have an attached sensor configured");
+                reportMissingSensor = false;
+            }
             return 0.0;
         }
         double position = sensor.getPosition() + sensorOffset;
@@ -179,10 +186,13 @@ public class LocalMotorController implements MotorController {
     @Override
     public double getSensorVelocity() {
         if (this.sensor == null) {
-            Logger.get(Category.CONFIGURATION)
-                    .logRaw(
-                            Severity.ERROR,
-                            toString() + " does not have an attached sensor configured");
+            if (reportMissingSensor) {
+                Logger.get(Category.CONFIGURATION)
+                        .logRaw(
+                                Severity.ERROR,
+                                toString() + " does not have an attached sensor configured");
+                reportMissingSensor = false;
+            }
             return 0.0;
         }
         double velocity = sensor.getRate();

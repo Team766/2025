@@ -7,7 +7,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 
 public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStatus> {
-    private static final double POWER_IN = 1.0;
+    private static final double POWER_IN = 0.25;
     private static final double POWER_OUT = -1.0;
     private MotorController motor;
 

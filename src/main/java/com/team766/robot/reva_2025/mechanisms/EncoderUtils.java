@@ -15,14 +15,14 @@ public final class EncoderUtils {
 
     public static double coralWristDegreesToRotations(double angle) {
         // angle * net gear ratio * (rotations / degrees)
-        return angle * (9. / 1.) * (9. / 1.) * (1. / 360.);
+        return angle * (4. / 1.) * (9. / 1.) * (64. / 24.) * (1. / 360.);
     }
 
     // Converts the wrist motor's rotations to degrees.
 
     public static double coralWristRotationsToDegrees(double rotations) {
         // rotations * net gear ratio * (degrees / rotations)
-        return rotations * (1. / 9.) * (1. / 9.) * (360. / 1.);
+        return rotations * (1. / 4.) * (1. / 9.) * (24. / 64.) * (360. / 1.);
     }
 
     public static double algaeArmDegreesToRotations(double angle) {
@@ -43,7 +43,7 @@ public final class EncoderUtils {
      */
     public static double elevatorHeightToRotations(double height) {
         // height * net gear ratio * (rotations / height)
-        return height * (120. / 1.) * (1. / (1.02 * Math.PI));
+        return height * (20. / 1.) * (1. / (1.02 * Math.PI));
     }
 
     /**
@@ -51,7 +51,7 @@ public final class EncoderUtils {
      */
     public static double elevatorRotationsToHeight(double rotations) {
         // rotations * net gear ratio * (height / rotations)
-        return rotations * (1. / 120.) * ((1.02 * Math.PI) / 1.);
+        return rotations * (1. / 20.) * ((1.02 * Math.PI) / 1.);
     }
 
     /**
