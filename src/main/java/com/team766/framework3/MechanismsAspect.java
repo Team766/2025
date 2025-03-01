@@ -23,15 +23,15 @@ import org.aspectj.lang.annotation.Before;
  */
 @Aspect
 public class MechanismsAspect {
-    // Insert this code at the beginning of all public methods of subclasses of Mechanism that are
+    // Insert this code at the beginning of all public methods of subclasses of Reservable that are
     // not also methods of the Mechanism base class, or any other base class contained in the
     // framework3 package. Also ignore any methods that are annotated with NoReservationRequired.
     @Before(
-            "execution(public * com.team766.framework3.Mechanism+.*(..))"
+            "execution(public * com.team766.framework3.Reservable+.*(..))"
                     + " && !within(com.team766.framework3.*)"
                     + " && !@annotation(com.team766.framework3.NoReservationRequired)")
     public void mechanismCheckedPublicMethods(JoinPoint joinPoint) {
-        final Mechanism mechanism = (Mechanism) joinPoint.getTarget();
+        final Reservable mechanism = (Reservable) joinPoint.getTarget();
 
         mechanism.checkContextReservation();
 
@@ -45,6 +45,6 @@ public class MechanismsAspect {
             argsJoiner.add(String.valueOf(arg));
         }
         // TODO: should this log to mechanism's logger category?
-        Logger.get(Category.FRAMEWORK).logRaw(Severity.DEBUG, argsJoiner.toString());
+        Logger.get(Category.MECHANISMS).logRaw(Severity.DEBUG, argsJoiner.toString());
     }
 }

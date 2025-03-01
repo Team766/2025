@@ -96,6 +96,13 @@ public interface JoystickReader {
         };
     }
 
+    /** Returns a condition that can be used when defining a Rule.  Ther condition will trigger
+     * whenever the joystick's POV has the given value.
+     */
+    default BooleanSupplier whenPOV(int pov) {
+        return () -> getPOV() == pov;
+    }
+
     /**
      * Returns a condition that can be used when defining a Rule. The condition will trigger
      * whenever all of the given buttons are being pressed. {@see #getButton(int)}

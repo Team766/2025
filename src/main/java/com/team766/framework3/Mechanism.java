@@ -4,8 +4,36 @@ import com.team766.logging.Category;
 import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Objects;
+import java.util.Set;
 
-public abstract class Mechanism extends SubsystemBase implements LoggingBase {
+public abstract class Mechanism implements Reservable, LoggingBase {
+    private final class ProxySubsystem extends SubsystemBase implements MechanismSubsystem {
+        @Override
+        public Reservable getMechanism() {
+            return Mechanism.this;
+        }
+
+        @Override
+        public String getName() {
+            return Mechanism.this.getName();
+        }
+
+        @Override
+        public final void periodic() {
+            if (container != null) {
+                // This Mechanism's periodic() will be run by the enclosing MultiFacetedMechanism.
+                return;
+            }
+
+            periodicInternal();
+        }
+    }
+
+    private final MechanismSubsystem subsystem = new ProxySubsystem();
+
+    private MultiFacetedMechanism container = null;
+
     private boolean isRunningPeriodic = false;
 
     /**
@@ -14,7 +42,7 @@ public abstract class Mechanism extends SubsystemBase implements LoggingBase {
      */
     private final class IdleCommand extends Command {
         public IdleCommand() {
-            addRequirements(Mechanism.this);
+            addRequirements(subsystem);
         }
 
         @Override
@@ -39,12 +67,30 @@ public abstract class Mechanism extends SubsystemBase implements LoggingBase {
     }
 
     public Mechanism() {
-        setDefaultCommand(new IdleCommand());
+        subsystem.setDefaultCommand(new IdleCommand());
+    }
+
+    // This explicit override is needed because Reservable and LoggingBase both have a method called
+    // getName().
+    @Override
+    public String getName() {
+        return LoggingBase.super.getName();
     }
 
     @Override
     public Category getLoggerCategory() {
         return Category.MECHANISMS;
+    }
+
+    /**
+     * Indicate that this Mechanism is part of a MultiFacetedMechanism.
+     */
+    /* package */ final void setContainer(MultiFacetedMechanism container) {
+        Objects.requireNonNull(container);
+        if (this.container != null) {
+            throw new IllegalStateException("Mechanism is already part of a MultiFacetedMechanism");
+        }
+        this.container = container;
     }
 
     /**
@@ -58,17 +104,20 @@ public abstract class Mechanism extends SubsystemBase implements LoggingBase {
      */
     protected void onMechanismIdle() {}
 
-    protected void checkContextReservation() {
+    @Override
+    public final void checkContextReservation() {
         if (isRunningPeriodic) {
             return;
         }
-        ReservingCommand.checkCurrentCommandHasReservation(this);
+        ReservingCommand.checkCurrentCommandHasReservation(subsystem);
     }
 
     @Override
-    public final void periodic() {
-        super.periodic();
+    public final Set<? extends MechanismSubsystem> getReservableSubsystems() {
+        return Set.of(subsystem);
+    }
 
+    /* package */ final void periodicInternal() {
         try {
             publishStatus();
 
@@ -86,4 +135,9 @@ public abstract class Mechanism extends SubsystemBase implements LoggingBase {
 
     // Overridden in MechanismWithStatus
     /* package */ void publishStatus() {}
+
+    @Override
+    public final String toString() {
+        return getName();
+    }
 }

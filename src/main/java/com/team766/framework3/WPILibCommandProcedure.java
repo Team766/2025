@@ -2,6 +2,7 @@ package com.team766.framework3;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -20,15 +21,17 @@ public final class WPILibCommandProcedure extends Procedure {
         this.command = command;
     }
 
-    @SuppressWarnings("unchecked")
-    private static Set<Mechanism> checkSubsystemsAreMechanisms(Set<Subsystem> requirements) {
+    private static Set<Reservable> checkSubsystemsAreMechanisms(Set<Subsystem> requirements) {
+        HashSet<Reservable> mechanisms = new HashSet<>();
         for (var s : requirements) {
-            if (!(s instanceof Mechanism)) {
+            if (s instanceof MechanismSubsystem ms) {
+                mechanisms.add(ms.getMechanism());
+            } else {
                 throw new IllegalArgumentException(
                         "Maroon Framework requires the use of Mechanism instead of Subsystem");
             }
         }
-        return (Set<Mechanism>) (Set<?>) requirements;
+        return mechanisms;
     }
 
     @Override

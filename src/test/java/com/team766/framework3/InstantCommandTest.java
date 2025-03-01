@@ -2,6 +2,7 @@ package com.team766.framework3;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.google.common.collect.Sets;
 import com.team766.framework3.test.FakeMechanism;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ public class InstantCommandTest {
         var command =
                 new InstantCommand(new FunctionalInstantProcedure(Set.of(mech1, mech2), () -> {}));
 
-        assertEquals(Set.of(mech1, mech2), command.getRequirements());
+        assertEquals(
+                Sets.union(mech1.getReservableSubsystems(), mech2.getReservableSubsystems()),
+                command.getRequirements());
     }
 }
