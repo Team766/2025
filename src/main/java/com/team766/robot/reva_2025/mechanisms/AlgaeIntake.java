@@ -222,6 +222,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     protected AlgaeIntakeStatus updateStatus() {
         return new AlgaeIntakeStatus(
                 state,
+                level,
                 level.getDirection(),
                 targetAngle,
                 EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()),
