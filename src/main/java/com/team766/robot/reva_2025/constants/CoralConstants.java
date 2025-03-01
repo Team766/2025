@@ -28,11 +28,11 @@ public class CoralConstants {
         ReefL(3.679, 5.094, -60, RelativeReefPos.Right);
 
         private final Pose2d position;
-        private final RelativeReefPos relativeReefPosBlue;
+        private final RelativeReefPos relativeReefPos;
 
         private ReefPos(double x, double y, double angleDeg, RelativeReefPos relativeReefPos) {
             this.position = new Pose2d(x, y, Rotation2d.fromDegrees(angleDeg));
-            this.relativeReefPosBlue = relativeReefPos;
+            this.relativeReefPos = relativeReefPos;
         }
 
         public Pose2d getPosition(Alliance alliance, double distance) {
@@ -46,20 +46,7 @@ public class CoralConstants {
 
         public RelativeReefPos getRelativeReefPos(Alliance alliance) {
             // TODO: is there a better way to do this?
-            switch (relativeReefPosBlue) {
-                case Left:
-                    return alliance.equals(Alliance.Blue)
-                            ? RelativeReefPos.Left
-                            : RelativeReefPos.Right;
-                case Right:
-                    return alliance.equals(Alliance.Blue)
-                            ? RelativeReefPos.Right
-                            : RelativeReefPos.Left;
-                default:
-                    Logger.get(Category.AUTONOMOUS)
-                            .logRaw(Severity.ERROR, "invalid relativeReefPos");
-                    return null;
-            }
+            return relativeReefPos;
         }
     }
 
