@@ -35,7 +35,7 @@ public class Robot implements RobotConfigurator3 {
     @Override
     public RuleEngine createOI() {
         return new OI(drive, algaeIntake, wrist, elevator, coral, climber);
-    }
+    }   
 
     @Override
     public RuleEngine createLights() {

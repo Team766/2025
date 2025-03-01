@@ -75,8 +75,9 @@ public class ScoreCoral extends Procedure {
             log(Severity.ERROR, "Cannot find nearest point");
             return curPose;
         }
-        log("Target scoring position: " + curPose.toString());
-        return curPose.nearest(points);
+        Pose2d target = curPose.nearest(points);
+        log("Target scoring position: " + target);
+        return target;
     }
 
     public void run(Context context) {
@@ -87,7 +88,7 @@ public class ScoreCoral extends Procedure {
 
         switch (scoreLevel) {
             case L1:
-                nearestPose = nearestPose(1, true);
+                nearestPose = nearestPose(0, true);
                 break;
             case L2:
                 nearestPose = nearestPose(0, false);
