@@ -1,6 +1,7 @@
 package com.team766.robot.common;
 
-import static com.team766.framework3.RulePersistence.*;
+import static com.team766.framework3.RulePersistence.ONCE;
+import static com.team766.framework3.RulePersistence.REPEATEDLY;
 
 import com.team766.framework3.Conditions;
 import com.team766.framework3.RuleGroup;
@@ -9,8 +10,8 @@ import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 
-public class DriverOI_OneGamePad extends RuleGroup {
-    public DriverOI_OneGamePad(JoystickReader gamePad, SwerveDrive drive) {
+public class DriverOI_GamePad extends RuleGroup {
+    public DriverOI_GamePad(JoystickReader gamePad, SwerveDrive drive) {
         gamePad.setAllAxisDeadzone(ControlConstants.GAMEPAD_DEADZONE);
 
         addRule(

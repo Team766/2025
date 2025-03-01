@@ -5,8 +5,13 @@ import com.team766.framework3.RuleEngine;
 import com.team766.hal.RobotConfigurator3;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
-import com.team766.robot.reva_2025.mechanisms.*;
-import com.team766.robot.reva_2025.procedures.*;
+import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
+import com.team766.robot.reva_2025.mechanisms.Climber;
+import com.team766.robot.reva_2025.mechanisms.CoralIntake;
+import com.team766.robot.reva_2025.mechanisms.Elevator;
+import com.team766.robot.reva_2025.mechanisms.Vision;
+import com.team766.robot.reva_2025.mechanisms.Wrist;
+import com.team766.robot.reva_2025.procedures.AutoAlign;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 

@@ -4,6 +4,7 @@ public final class InputConstants extends com.team766.robot.common.constants.Inp
     public static final int LEFT_JOYSTICK = 0;
     public static final int RIGHT_JOYSTICK = 1;
     public static final int BOXOP_GAMEPAD = 2;
+    public static final int DRIVER_GAMEPAD = 3;
 
     // All controls on gamepad
     public static final int BUTTON_ELEVATOR_WRIST_L1 = GAMEPAD_A_BUTTON;
