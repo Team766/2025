@@ -39,4 +39,8 @@ public class InputConstants {
     public static final int GAMEPAD_DPAD_UP = 0;
     public static final int GAMEPAD_BACK_BUTTON = 7;
     public static final int GAMEPAD_START_BUTTON = 8;
+    public static final int GAMEPAD_BUTTON_RESET_GYRO = GAMEPAD_RIGHT_BUMPER_BUTTON;
+    public static final int GAMEPAD_BUTTON_RESET_POS = GAMEPAD_LEFT_BUMPER_BUTTON;
+    public static final int GAMEPAD_BUTTON_CROSS_WHEELS = GAMEPAD_LEFT_TRIGGER;
+    public static final int GAMEPAD_BUTTON_FINE_DRIVING = GAMEPAD_RIGHT_TRIGGER;
 }
