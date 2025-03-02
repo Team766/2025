@@ -19,7 +19,7 @@ import com.team766.robot.reva_2025.constants.ConfigConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
-    private static final double ALGAE_HOLD_DISTANCE = 0.2;
+    private static final double ALGAE_HOLD_DISTANCE = 0.15;
     private static final double STABLE_POSITION_THRESHOLD = 0.05;
     private static final double INTAKE_IDLE_RPM = 500;
     private static final double INTAKE_IN_MAX_RPM = 3000;
@@ -120,7 +120,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     public enum Level {
         GroundIntake(-30, 1, 0.09, 0.31),
-        L2L3AlgaeIntake(20, -1, 0.15 ,0.37 ),
+        L2L3AlgaeIntake(30, -1, 0.15 ,0.37 ),
         L3L4AlgaeIntake(70, -1, 0.45, 0.67 ),
         Stow(-70, 1, 0.6, 0.28),
         Shoot(-10, 1, 0.15, 0.37);
@@ -155,6 +155,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     }
 
     public void setArmAngle(Level level) {
+        this.level = level;
         setArmAngle(level.getAngle());
     }
 
@@ -225,6 +226,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 break;
         }
         shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
+        SmartDashboard.putNumber("targetRPM", state.getIntakeVelocity());
+        SmartDashboard.putNumber("actual RPM", intakeMotor.getSensorVelocity());
     }
 
     @Override
