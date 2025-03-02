@@ -5,6 +5,7 @@ import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.team766.controllers.PIDController;
 import com.team766.framework3.MechanismWithStatus;
+import com.team766.framework3.NoReservationRequired;
 import com.team766.framework3.Status;
 import com.team766.framework3.StatusBus;
 import com.team766.hal.EncoderReader;
@@ -305,6 +306,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         this.y = y;
     }
 
+    @NoReservationRequired
     public SwerveConfig getSwerveConfig() {
         return config;
     }
@@ -384,8 +386,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                                 tag.toRobotPosition(Rotation2d.fromDegrees(heading)).getX());
                     }
                     kalmanFilter.updateWithVisionMeasurement(
-                            tagPoses, RobotProvider.instance.getClock().getTime());
-                            // cameraTags.get(0).collectTime());
+                            tagPoses, //RobotProvider.instance.getClock().getTime());
+                            cameraTags.get(0).collectTime());
                 }
             }
         }
