@@ -85,16 +85,6 @@ public class BoxOpOI extends RuleGroup {
                         new RuleGroup() {
                             {
                                 addRule(
-                                        "Algae Motors to Intake Power",
-                                        boxopGamepad.whenAxisMoved(
-                                                InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
-                                        ONCE_AND_HOLD,
-                                        algaeIntake,
-                                        () -> {
-                                            algaeIntake.setState(AlgaeIntake.State.In);
-                                        });
-
-                                addRule(
                                         "Algae Motors to Outtake Power",
                                         new LogicalAnd(
                                                 boxopGamepad.whenAxisMoved(
@@ -105,7 +95,16 @@ public class BoxOpOI extends RuleGroup {
                                         ONCE_AND_HOLD,
                                         algaeIntake,
                                         () -> {
-                                            algaeIntake.setState(AlgaeIntake.State.Out);
+                                            algaeIntake.setState(AlgaeIntake.State.HoldAlgae);
+                                        });
+                                addRule(
+                                        "Algae Motors to Intake Power",
+                                        boxopGamepad.whenAxisMoved(
+                                                InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                                        ONCE_AND_HOLD,
+                                        algaeIntake,
+                                        () -> {
+                                            algaeIntake.setState(AlgaeIntake.State.In);
                                         });
                             }
                         })

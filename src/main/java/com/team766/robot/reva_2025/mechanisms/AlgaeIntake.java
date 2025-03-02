@@ -13,12 +13,13 @@ import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.TimeOfFlightReader;
 import com.team766.hal.TimeOfFlightReader.Range;
+import com.team766.hal.wpilib.CANRangeTimeOfFlight;
 import com.team766.library.ValueProvider;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
-    private static final double ALGAE_HOLD_DISTANCE = 0.25;
+    private static final double ALGAE_HOLD_DISTANCE = 0.2;
     private static final double STABLE_POSITION_THRESHOLD = 0.05;
     private static final double INTAKE_IDLE_RPM = 500;
     private static final double INTAKE_IN_MAX_RPM = 3000;
@@ -28,7 +29,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     private MotorController intakeMotor;
     private MotorController armMotor;
     private MotorController shooterMotor;
-    private TimeOfFlightReader intakeSensor;
+    private CANRangeTimeOfFlight intakeSensor;
     private State state;
     private Level level;
     private double targetAngle;
@@ -58,6 +59,11 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
             return Math.abs(targetAngle() - currentAngle()) < POSITION_LOCATION_THRESHOLD;
         }
 
+        public boolean isAtTargetSpeed() {
+            return Math.abs(state().getShooterVelocity() - currentShooterSpeed)
+                    < SHOOTER_SPEED_TOLERANCE;
+        }
+
         public boolean isAlgaeStable() {
             return java.lang.Math.abs(intakeProximity() - level.stablePosition()) < STABLE_POSITION_THRESHOLD;
         }
@@ -70,9 +76,12 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         shooterMotor =
                 RobotProvider.instance.getMotor(ConfigConstants.ALGAEINTAKE_SHOOTERROLLERMOTOR);
         intakeSensor =
-                RobotProvider.instance.getTimeOfFlight(ConfigConstants.ALGAEINTAKE_INTAKESENSOR);
+                (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight(ConfigConstants.ALGAEINTAKE_INTAKESENSOR);
         intakeSensor.setRange(Range.Short);
 
+        intakeMotor.setCurrentLimit(115);
+        shooterMotor.setCurrentLimit(80);
+        
         state = State.Stop;
         level = Level.Stow;
         targetAngle = level.getAngle();
@@ -113,7 +122,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         GroundIntake(-30, 1, 0.09, 0.31),
         L2L3AlgaeIntake(20, -1, 0.15 ,0.37 ),
         L3L4AlgaeIntake(70, -1, 0.45, 0.67 ),
-        Stow(-80, 1, 0.6, 0.28),
+        Stow(-70, 1, 0.6, 0.28),
         Shoot(-10, 1, 0.15, 0.37);
 
         private final double angle;
@@ -195,14 +204,14 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 ff);
         switch (state) {
             case InUntilStable:
-                setRpmForPosition(intakeSensor.getDistance());                
+                setRpmForPosition(getStatus().intakeProximity());                
                 break;
             case HoldAlgae:
                 holdAlgaeController.setSetpoint(ALGAE_HOLD_DISTANCE); 
-                holdAlgaeController.calculate(intakeSensor.getDistance());
+                holdAlgaeController.calculate(getStatus().intakeProximity());
                 var output = holdAlgaeController.getOutput();
                 SmartDashboard.putNumber("Hold algae velocity", output);
-                intakeMotor.set(ControlMode.Velocity, output);
+                intakeMotor.set(output);
 
                 break;
             case Stop:
@@ -226,7 +235,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 level.getDirection(),
                 targetAngle,
                 EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()),
-                intakeSensor.getDistance(),
+                intakeSensor.getAmbientSignal() > 50 ? 0 : intakeSensor.getDistance(),
                 shooterMotor.getSensorVelocity() * 60 // rps to rpm
                 );
     }
