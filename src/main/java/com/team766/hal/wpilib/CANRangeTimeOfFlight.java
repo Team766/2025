@@ -77,4 +77,14 @@ public class CANRangeTimeOfFlight implements TimeOfFlightReader {
             return false;
         }
     }
+
+    @Override
+    public double getAmbientSignal() {
+        StatusSignal<Double> ambient = sensor.getAmbientSignal();
+        if (ambient.getStatus().isOK()) {
+            return ambient.getValue();
+        }
+        statusCodeToException(ExceptionTarget.LOG, ambient.getStatus());
+        return 0.0; // should this be 65535?
+    }
 }

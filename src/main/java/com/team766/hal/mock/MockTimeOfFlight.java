@@ -5,6 +5,7 @@ import com.team766.hal.TimeOfFlightReader;
 public class MockTimeOfFlight implements TimeOfFlightReader {
     private double distance = 0.0;
     private boolean valid = false;
+    private double ambientSignal = 0.0;
 
     public MockTimeOfFlight() {}
 
@@ -19,6 +20,11 @@ public class MockTimeOfFlight implements TimeOfFlightReader {
     }
 
     @Override
+    public double getAmbientSignal() {
+        return ambientSignal;
+    }
+
+    @Override
     public void setRange(TimeOfFlightReader.Range range) {}
 
     public void setDistance(final double distance_) {
@@ -27,5 +33,9 @@ public class MockTimeOfFlight implements TimeOfFlightReader {
 
     public void setLastMeasurementValid(final boolean valid_) {
         this.valid = valid_;
+    }
+
+    public void setAmbientSignal(final double ambientSignal) {
+        this.ambientSignal = ambientSignal;
     }
 }

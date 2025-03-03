@@ -27,4 +27,9 @@ public interface TimeOfFlightReader {
      * Return whether or not the last measurement was valid.
      */
     boolean wasLastMeasurementValid();
+
+    /**
+     * Return the level of ambient (infrared) light detected by the sensor.
+     */
+    double getAmbientSignal();
 }
