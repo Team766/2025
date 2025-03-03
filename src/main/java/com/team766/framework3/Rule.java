@@ -60,7 +60,7 @@ public class Rule {
     }
 
     private RuleGroupBase container;
-    private final String name;
+    private String name;
     private BooleanSupplier predicate;
     private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
@@ -72,6 +72,14 @@ public class Rule {
     private boolean sealed = false;
 
     /* package */ Rule(RuleGroupBase container, String name, BooleanSupplier predicate) {
+        if (name == null) {
+            throw new IllegalArgumentException("Rule name has not been set.");
+        }
+
+        if (name.contains("/")) {
+            throw new IllegalArgumentException("Rule name cannot contain a '/' character.");
+        }
+
         if (predicate == null) {
             throw new IllegalArgumentException("Rule predicate has not been set.");
         }
@@ -205,6 +213,7 @@ public class Rule {
         }
         this.container = container;
         if (parent != null) {
+            this.name = parent.getName() + '/' + this.name;
             final var previousPredicate = this.predicate;
             this.predicate =
                     triggerValue
@@ -307,6 +316,8 @@ public class Rule {
         StringBuilder builder = new StringBuilder();
         builder.append("[ name: ");
         builder.append(name);
+        builder.append(", cancelledOnFinish: ");
+        builder.append(cancellationOnFinish);
         builder.append(", predicate: ");
         builder.append(predicate);
         builder.append(", currentTriggerType: ");

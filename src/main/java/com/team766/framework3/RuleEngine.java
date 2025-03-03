@@ -8,12 +8,15 @@ import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * {@link RuleEngine}s manage and process a set of {@link Rule}s.  Subclasses should add rules via
@@ -87,6 +90,10 @@ public class RuleEngine extends RuleGroupBase {
         }
 
         Set<Subsystem> subsystemsToUse = new HashSet<>();
+        List<String> newlyRules = new ArrayList<>();
+        List<String> continuingRules = new ArrayList<>();
+        List<String> finishedRules = new ArrayList<>();
+        List<String> canceledRules = new ArrayList<>();
 
         // TODO(MF3): when creating a Procedure, check that the reservations are the same as
         // what the Rule pre-computed.
@@ -153,6 +160,7 @@ public class RuleEngine extends RuleGroupBase {
                                                     + subsystem.getName()
                                                     + " will now be reserved by higher priority rule "
                                                     + rule.getName());
+                                    canceledRules.add(existingRule.getName());
                                     existingRule.reset();
                                 }
                             }
@@ -160,6 +168,19 @@ public class RuleEngine extends RuleGroupBase {
                     }
 
                     // we're good to proceed
+                    switch (triggerType) {
+                        case NEWLY:
+                            newlyRules.add(rule.getName());
+                            break;
+                        case CONTINUING:
+                            continuingRules.add(rule.getName());
+                            break;
+                        case FINISHED:
+                            finishedRules.add(rule.getName());
+                            break;
+                        default:
+                            break;
+                    }
 
                     if (triggerType == Rule.TriggerType.FINISHED
                             && rule.getCancellationOnFinish()
@@ -195,5 +216,10 @@ public class RuleEngine extends RuleGroupBase {
                                 + LoggerExceptionUtils.exceptionToString(ex));
             }
         }
+        String[] stringArray = new String[0];
+        Logger.recordOutput("Rules/newlyTriggering", newlyRules.toArray(stringArray));
+        Logger.recordOutput("Rules/continuing", newlyRules.toArray(stringArray));
+        Logger.recordOutput("Rules/finishedTriggering", newlyRules.toArray(stringArray));
+        Logger.recordOutput("Rules/canceled", newlyRules.toArray(stringArray));
     }
 }
