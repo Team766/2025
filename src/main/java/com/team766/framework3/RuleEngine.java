@@ -37,6 +37,10 @@ public class RuleEngine extends RuleGroupBase {
     private final Map<Rule, Integer> rulePriorities = new HashMap<>();
     private BiMap<Command, RuleAction> ruleMap = HashBiMap.create();
     private boolean sealed = false;
+    private final String newlyLogKey = "Rules/" + getClass().getName() + "/newlyTriggering";
+    private final String continuingLogKey = "Rules/" + getClass().getName() + "/continuing";
+    private final String finishedLogKey = "Rules/" + getClass().getName() + "/finishedTriggering";
+    private final String canceledLogKey = "Rules/" + getClass().getName() + "/canceled";
 
     protected RuleEngine() {}
 
@@ -217,9 +221,9 @@ public class RuleEngine extends RuleGroupBase {
             }
         }
         String[] stringArray = new String[0];
-        Logger.recordOutput("Rules/newlyTriggering", newlyRules.toArray(stringArray));
-        Logger.recordOutput("Rules/continuing", continuingRules.toArray(stringArray));
-        Logger.recordOutput("Rules/finishedTriggering", finishedRules.toArray(stringArray));
-        Logger.recordOutput("Rules/canceled", canceledRules.toArray(stringArray));
+        Logger.recordOutput(newlyLogKey, newlyRules.toArray(stringArray));
+        Logger.recordOutput(continuingLogKey, continuingRules.toArray(stringArray));
+        Logger.recordOutput(finishedLogKey, finishedRules.toArray(stringArray));
+        Logger.recordOutput(canceledLogKey, canceledRules.toArray(stringArray));
     }
 }
