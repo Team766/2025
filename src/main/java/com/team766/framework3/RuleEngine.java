@@ -218,8 +218,8 @@ public class RuleEngine extends RuleGroupBase {
         }
         String[] stringArray = new String[0];
         Logger.recordOutput("Rules/newlyTriggering", newlyRules.toArray(stringArray));
-        Logger.recordOutput("Rules/continuing", newlyRules.toArray(stringArray));
-        Logger.recordOutput("Rules/finishedTriggering", newlyRules.toArray(stringArray));
-        Logger.recordOutput("Rules/canceled", newlyRules.toArray(stringArray));
+        Logger.recordOutput("Rules/continuing", continuingRules.toArray(stringArray));
+        Logger.recordOutput("Rules/finishedTriggering", finishedRules.toArray(stringArray));
+        Logger.recordOutput("Rules/canceled", canceledRules.toArray(stringArray));
     }
 }
