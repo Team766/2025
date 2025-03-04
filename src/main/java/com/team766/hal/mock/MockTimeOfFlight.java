@@ -1,6 +1,7 @@
 package com.team766.hal.mock;
 
 import com.team766.hal.TimeOfFlightReader;
+import java.util.Optional;
 
 public class MockTimeOfFlight implements TimeOfFlightReader {
     private double distance = 0.0;
@@ -10,8 +11,8 @@ public class MockTimeOfFlight implements TimeOfFlightReader {
     public MockTimeOfFlight() {}
 
     @Override
-    public double getDistance() {
-        return distance;
+    public Optional<Double> getDistance() {
+        return Optional.of(distance);
     }
 
     @Override
@@ -20,8 +21,8 @@ public class MockTimeOfFlight implements TimeOfFlightReader {
     }
 
     @Override
-    public double getAmbientSignal() {
-        return ambientSignal;
+    public Optional<Double> getAmbientSignal() {
+        return Optional.of(ambientSignal);
     }
 
     @Override
