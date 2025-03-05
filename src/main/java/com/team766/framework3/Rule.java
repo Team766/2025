@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Rule to be evaluated in the {@link RuleEngine}.  Rules contain a
@@ -309,6 +310,14 @@ public class Rule {
             }
         }
         return null;
+    }
+
+    /* package */ void log(String value) {
+        Logger.recordOutput("Rules/" + container.getName() + "/" + name, value);
+    }
+
+    /* package */ void log() {
+        log(currentTriggerType.toString());
     }
 
     @Override

@@ -3,20 +3,18 @@ package com.team766.framework3;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.team766.framework3.Rule.TriggerType;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * {@link RuleEngine}s manage and process a set of {@link Rule}s.  Subclasses should add rules via
@@ -94,10 +92,6 @@ public class RuleEngine extends RuleGroupBase {
         }
 
         Set<Subsystem> subsystemsToUse = new HashSet<>();
-        List<String> newlyRules = new ArrayList<>();
-        List<String> continuingRules = new ArrayList<>();
-        List<String> finishedRules = new ArrayList<>();
-        List<String> canceledRules = new ArrayList<>();
 
         // TODO(MF3): when creating a Procedure, check that the reservations are the same as
         // what the Rule pre-computed.
@@ -110,7 +104,10 @@ public class RuleEngine extends RuleGroupBase {
 
                 // see if the rule is triggering
                 final Rule.TriggerType triggerType = rule.getCurrentTriggerType();
-                if (triggerType != Rule.TriggerType.NONE) {
+                if (triggerType == TriggerType.NONE) {
+                    rule.log();
+                    continue ruleLoop;
+                } else {
                     log(Severity.INFO, "Rule " + rule.getName() + " triggering: " + triggerType);
 
                     int priority = getPriorityForRule(rule);
@@ -130,6 +127,7 @@ public class RuleEngine extends RuleGroupBase {
                                             + subsystem.getName()
                                             + " already reserved by higher priority rule.");
                             rule.reset();
+                            rule.log("conflict");
                             continue ruleLoop;
                         }
                         // see if a previously triggered rule is still using the mechanism
@@ -152,6 +150,7 @@ public class RuleEngine extends RuleGroupBase {
                                                     + subsystem.getName()
                                                     + " already being used in CommandScheduler by higher priority rule.");
                                     rule.reset();
+                                    rule.log("conflict");
                                     continue ruleLoop;
                                 } else if (rule != existingRule) {
                                     // new rule takes priority
@@ -164,8 +163,9 @@ public class RuleEngine extends RuleGroupBase {
                                                     + subsystem.getName()
                                                     + " will now be reserved by higher priority rule "
                                                     + rule.getName());
-                                    canceledRules.add(existingRule.getName());
                                     existingRule.reset();
+                                    // could log existing rule, tho it will be covered in a
+                                    // subsequent iteration
                                 }
                             }
                         }
@@ -174,13 +174,10 @@ public class RuleEngine extends RuleGroupBase {
                     // we're good to proceed
                     switch (triggerType) {
                         case NEWLY:
-                            newlyRules.add(rule.getName());
                             break;
                         case CONTINUING:
-                            continuingRules.add(rule.getName());
                             break;
                         case FINISHED:
-                            finishedRules.add(rule.getName());
                             break;
                         default:
                             break;
@@ -198,7 +195,7 @@ public class RuleEngine extends RuleGroupBase {
 
                     Procedure procedure = rule.getProcedureToRun();
                     if (procedure == null) {
-                        continue;
+                        continue ruleLoop;
                     }
                     log(
                             Severity.INFO,
@@ -206,6 +203,7 @@ public class RuleEngine extends RuleGroupBase {
                                     + procedure.getName()
                                     + " with reservations "
                                     + reservations);
+                    rule.log();
 
                     // TODO(MF3): check that the reservations have not changed
                     Command command = procedure.createCommandToRunProcedure();
@@ -220,10 +218,5 @@ public class RuleEngine extends RuleGroupBase {
                                 + LoggerExceptionUtils.exceptionToString(ex));
             }
         }
-        String[] stringArray = new String[0];
-        Logger.recordOutput(newlyLogKey, newlyRules.toArray(stringArray));
-        Logger.recordOutput(continuingLogKey, continuingRules.toArray(stringArray));
-        Logger.recordOutput(finishedLogKey, finishedRules.toArray(stringArray));
-        Logger.recordOutput(canceledLogKey, canceledRules.toArray(stringArray));
     }
 }
