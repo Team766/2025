@@ -18,17 +18,27 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     private double targetAngle;
     private final ValueProvider<Double> ffGain;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
+    private static final double SHOOTER_SPEED_TOLERANCE = 100;
     private static final double NUDGE_AMOUNT = 1;
 
     // TODO: Intake and shooter motor should drive when we shoot. Shooter motor should be slgithly
     // slower than the intake motor
     // to add backspin on the ball.
 
-    public record AlgaeIntakeStatus(
-            State state, double direction, double targetAngle, double currentAngle)
+    public static record AlgaeIntakeStatus(
+            State state,
+            double direction,
+            double targetAngle,
+            double currentAngle,
+            double currentShooterSpeed)
             implements Status {
         public boolean isAtAngle() {
             return Math.abs(targetAngle() - currentAngle()) < POSITION_LOCATION_THRESHOLD;
+        }
+
+        public boolean isAtTargetSpeed() {
+            return Math.abs(state().getShooterVelocity() - currentShooterSpeed)
+                    < SHOOTER_SPEED_TOLERANCE;
         }
     }
 
@@ -39,17 +49,20 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         shooterMotor =
                 RobotProvider.instance.getMotor(ConfigConstants.ALGAEINTAKE_SHOOTERROLLERMOTOR);
 
+        state = State.Idle;
         level = Level.Stow;
+        targetAngle = level.getAngle();
+        armMotor.setSensorPosition(EncoderUtils.algaeArmDegreesToRotations(targetAngle));
         ffGain = ConfigFileReader.getInstance().getDouble(ConfigConstants.ALGAEINTAKE_ARMFFGAIN);
     }
 
     public enum State {
         // velocity is in revolutions per minute
-        In(30000, 0),
+        In(3000, 0),
         Idle(0, 0),
-        Out(-30000, 0),
-        Shoot(0, 30000),
-        Feed(50000, 30000);
+        Out(-3000, 0),
+        Shoot(0, 3000),
+        Feed(5000, 3000);
 
         private final double intakeVelocity;
         private final double shooterVelocity;
@@ -60,13 +73,11 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         }
 
         private double getIntakeVelocity() {
-            // converting revolutions per minute to revolutions per 100 milliseconds
-            return intakeVelocity / 60 / 10;
+            return intakeVelocity / 60;
         }
 
         private double getShooterVelocity() {
-            // converting revolutions per minute to revolutions per 100 milliseconds
-            return shooterVelocity / 60 / 10;
+            return shooterVelocity / 60;
         }
     }
 
@@ -120,8 +131,13 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 MotorController.ControlMode.Position,
                 EncoderUtils.algaeArmDegreesToRotations(targetAngle),
                 ff);
-        intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
-        shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
+        if (state == State.Idle) {
+            intakeMotor.set(0.0);
+            shooterMotor.set(0.0);
+        } else {
+            intakeMotor.set(ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
+            shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
+        }
     }
 
     @Override
@@ -130,7 +146,9 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 state,
                 level.getDirection(),
                 targetAngle,
-                EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()));
+                EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()),
+                shooterMotor.getSensorVelocity() * 60 // rps to rpm
+                );
     }
 
     public void nudge(double sign) {

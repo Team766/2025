@@ -45,6 +45,6 @@ public class MechanismsAspect {
             argsJoiner.add(String.valueOf(arg));
         }
         // TODO: should this log to mechanism's logger category?
-        Logger.get(Category.FRAMEWORK).logRaw(Severity.DEBUG, argsJoiner.toString());
+        Logger.get(Category.MECHANISMS).logRaw(Severity.DEBUG, argsJoiner.toString());
     }
 }
