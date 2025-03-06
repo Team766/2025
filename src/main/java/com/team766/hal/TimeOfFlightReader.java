@@ -1,5 +1,7 @@
 package com.team766.hal;
 
+import java.util.Optional;
+
 public interface TimeOfFlightReader {
     enum Type {
         CANRange
@@ -20,11 +22,18 @@ public interface TimeOfFlightReader {
 
     /**
      * Return the distance to the target in m.
+     * If the sensor is unable to measure the distance, returns an empty Optional.
      */
-    double getDistance();
+    Optional<Double> getDistance();
 
     /**
      * Return whether or not the last measurement was valid.
      */
     boolean wasLastMeasurementValid();
+
+    /**
+     * Return the level of ambient (infrared) light detected by the sensor.
+     *
+     */
+    Optional<Double> getAmbientSignal();
 }

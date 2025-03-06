@@ -9,6 +9,7 @@ import com.ctre.phoenix6.signals.UpdateModeValue;
 import com.team766.hal.TimeOfFlightReader;
 import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.units.measure.Distance;
+import java.util.Optional;
 
 public class CANRangeTimeOfFlight implements TimeOfFlightReader {
     private final CANrange sensor;
@@ -58,13 +59,13 @@ public class CANRangeTimeOfFlight implements TimeOfFlightReader {
     }
 
     @Override
-    public double getDistance() {
+    public Optional<Double> getDistance() {
         StatusSignal<Distance> distance = sensor.getDistance();
         if (distance.getStatus().isOK()) {
-            return distance.getValue().magnitude();
+            return Optional.of(distance.getValue().magnitude());
         }
         statusCodeToException(ExceptionTarget.LOG, distance.getStatus());
-        return 0.0;
+        return Optional.empty();
     }
 
     public double getAmbientSignal() {
@@ -85,5 +86,15 @@ public class CANRangeTimeOfFlight implements TimeOfFlightReader {
             statusCodeToException(ExceptionTarget.LOG, health.getStatus());
             return false;
         }
+    }
+
+    @Override
+    public Optional<Double> getAmbientSignal() {
+        StatusSignal<Double> ambient = sensor.getAmbientSignal();
+        if (ambient.getStatus().isOK()) {
+            return Optional.of(ambient.getValue());
+        }
+        statusCodeToException(ExceptionTarget.LOG, ambient.getStatus());
+        return Optional.empty();
     }
 }
