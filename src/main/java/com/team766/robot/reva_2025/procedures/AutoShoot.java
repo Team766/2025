@@ -22,7 +22,7 @@ public class AutoShoot extends Procedure {
     private final boolean useSetPosition = true;
     protected static ArrayList<AnywhereScoringPosition> shootingPositions =
             new ArrayList<AnywhereScoringPosition>() {
-                {
+                { // TODO: change temporary values
                     add(new AnywhereScoringPosition(1.9506, 4800, 23.516));
                     add(new AnywhereScoringPosition(2.072, 4800, 27.32));
                     add(new AnywhereScoringPosition(2.29161, 4800, 30.109));
