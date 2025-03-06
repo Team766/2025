@@ -10,6 +10,7 @@ import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.State;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -17,8 +18,8 @@ import java.util.Optional;
 public class AutoShoot extends Procedure {
     private AlgaeIntake algaeIntake;
     private SwerveDrive drive;
-    private Pose2d pose2D;
-    private final boolean useSetPosition = false;
+    private Pose2d setPosition2D = new Pose2d(5.0,5.0, new Rotation2d(90.0)); // TODO: update with actual values
+    private final boolean useSetPosition = true;
     protected static ArrayList<AnywhereScoringPosition> shootingPositions =
             new ArrayList<AnywhereScoringPosition>() {
                 {
@@ -30,10 +31,9 @@ public class AutoShoot extends Procedure {
                 }
             };
 
-    public AutoShoot(Pose2d pose2D, AlgaeIntake algaeIntake, SwerveDrive drive) {
+    public AutoShoot(AlgaeIntake algaeIntake, SwerveDrive drive) {
         this.algaeIntake = reserve(algaeIntake);
         this.drive = reserve(drive);
-        this.pose2D = pose2D;
     }
 
     @Override
@@ -47,13 +47,14 @@ public class AutoShoot extends Procedure {
 
     public void shootFromSetPosition(Context context) {
         algaeIntake.setArmAngle(Level.Shoot);
-        context.runSync(new AutoAlign(pose2D, drive));
+        context.runSync(new AutoAlign(setPosition2D, drive));
         waitForStatusMatching(context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAtAngle());
         algaeIntake.setState(State.Shoot);
         context.waitForSeconds(1);
         algaeIntake.setState(State.Idle);
     }
 
+    // TODO: still need to interpolate between two nearest postions
     public void shootFromCurrentPosition(Context context) {
         drive.stopDrive();
         Optional<Transform3d> maybeToUse =
@@ -75,6 +76,7 @@ public class AutoShoot extends Procedure {
         }
     }
 
+    // TODO: confirm this is the right apriltag
     private Optional<Transform3d> getTransform3dOfRobotToTag() {
         return getStatusOrThrow(ForwardApriltagCamera.ApriltagCameraStatus.class)
                 .speakerTagTransform();
