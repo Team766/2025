@@ -68,15 +68,6 @@ public class CANRangeTimeOfFlight implements TimeOfFlightReader {
         return Optional.empty();
     }
 
-    public double getAmbientSignal() {
-        StatusSignal<Double> ambientSignal = sensor.getAmbientSignal();
-        if (ambientSignal.getStatus().isOK()) {
-            return ambientSignal.getValue();
-        }
-        statusCodeToException(ExceptionTarget.LOG, ambientSignal.getStatus());
-        return 0.0;
-    }
-
     @Override
     public boolean wasLastMeasurementValid() {
         StatusSignal<MeasurementHealthValue> health = sensor.getMeasurementHealth();
