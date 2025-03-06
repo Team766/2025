@@ -3,10 +3,17 @@ package com.team766.robot.reva_2025;
 import com.team766.framework3.AutonomousMode;
 import com.team766.framework3.RuleEngine;
 import com.team766.hal.RobotConfigurator3;
+import com.team766.hal.RobotProvider;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
-import com.team766.robot.reva_2025.mechanisms.*;
-import com.team766.robot.reva_2025.procedures.*;
+import com.team766.robot.reva_2025.constants.InputConstants;
+import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
+import com.team766.robot.reva_2025.mechanisms.Climber;
+import com.team766.robot.reva_2025.mechanisms.CoralIntake;
+import com.team766.robot.reva_2025.mechanisms.Elevator;
+import com.team766.robot.reva_2025.mechanisms.Vision;
+import com.team766.robot.reva_2025.mechanisms.Wrist;
+import com.team766.robot.reva_2025.procedures.AutoAlign;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -39,7 +46,7 @@ public class Robot implements RobotConfigurator3 {
 
     @Override
     public RuleEngine createLights() {
-        return new Lights();
+        return new Lights(RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD));
     }
 
     @Override
