@@ -17,7 +17,7 @@ import com.team766.robot.reva_2025.procedures.ScoreCoral;
 
 public class OI extends RuleEngine {
 
-    public class QueuedControl {
+    public static class QueuedControl {
         public AlgaeIntake.Level algaeLevel;
         public CoralConstants.ScoreHeight scoreHeight;
     }

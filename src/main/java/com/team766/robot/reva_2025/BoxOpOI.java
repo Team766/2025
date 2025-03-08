@@ -32,10 +32,45 @@ public class BoxOpOI extends RuleGroup {
 
         boxopGamepad.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
 
+        // FINE TUNING
+
+        addRule(
+                "Nudge Elevator",
+                new LogicalAnd(
+                        boxopGamepad.whenAxisMoved(InputConstants.AXIS_ELEVATOR_FINETUNE),
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON)),
+                ONCE_AND_HOLD,
+                elevator,
+                () -> {
+                    elevator.nudge(boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_FINETUNE));
+                });
+
+        addRule(
+                "Nudge Wrist",
+                new LogicalAnd(
+                        boxopGamepad.whenAxisMoved(InputConstants.AXIS_WRIST_FINETUNE),
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON)),
+                ONCE_AND_HOLD,
+                wrist,
+                () -> {
+                    wrist.nudge(boxopGamepad.getAxis(InputConstants.AXIS_WRIST_FINETUNE));
+                });
+
+        addRule(
+                "Nudge Algae",
+                new LogicalAnd(
+                        boxopGamepad.whenAxisMoved(InputConstants.AXIS_ALGAE_FINETUNE),
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON)),
+                ONCE_AND_HOLD,
+                algaeIntake,
+                () -> {
+                    algaeIntake.nudge(boxopGamepad.getAxis(InputConstants.AXIS_ALGAE_FINETUNE));
+                });
+        
         // ALGAE INTAKE POSITIONS
 
         addRule(
-                "Algae Intake to Stow",
+                "Queue Algae Intake to Stow Position",
                 () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_STOW,
                 ONCE,
                 algaeIntake,
@@ -44,7 +79,7 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                "Algae Intake to Ground Level",
+                "Queue Algae Intake to Ground Intake Position",
                 () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_GROUND,
                 ONCE,
                 algaeIntake,
@@ -53,7 +88,7 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                "Algae Intake to L2/L3",
+                "Queue Algae Intake to L2/L3 Position",
                 () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L2_L3,
                 ONCE,
                 algaeIntake,
@@ -62,7 +97,7 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                "Algae Intake to L3/L4",
+                "Queue Algae Intake to L3/L4 Position",
                 () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L3_L4,
                 ONCE,
                 algaeIntake,
@@ -71,7 +106,7 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                        "Move Algae Intake to TargetLevel",
+                        "Move Algae Intake to Target Position",
                         boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON),
                         ONCE,
                         algaeIntake,
@@ -82,7 +117,7 @@ public class BoxOpOI extends RuleGroup {
                         new RuleGroup() {
                             {
                                 addRule(
-                                        "Algae Motors to Outtake Power",
+                                        "Spin Algae Intake Motor In",
                                         new LogicalAnd(
                                                 boxopGamepad.whenAxisMoved(
                                                         InputConstants
@@ -96,7 +131,7 @@ public class BoxOpOI extends RuleGroup {
                                         });
 
                                 addRule(
-                                        "Algae Motors to Intake Power",
+                                        "Spin Algae Intake Motor Out",
                                         boxopGamepad.whenAxisMoved(
                                                 InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
                                         ONCE_AND_HOLD,
@@ -115,7 +150,7 @@ public class BoxOpOI extends RuleGroup {
         // ALGAE INTAKE MOTOR CONTROLS / SHOOTING
 
         addRule(
-                "Spin Up Algae Shooter Motors",
+                "Spin Up Algae Shooter Motor",
                 boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_SHOOTER_ON),
                 ONCE_AND_HOLD,
                 algaeIntake,
@@ -127,7 +162,7 @@ public class BoxOpOI extends RuleGroup {
         // ELEVATOR
 
         addRule(
-                "Set Elevator/Wrist Intake",
+                "Queue Elevator and Wrist to Intake Position",
                 boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L1),
                 ONCE,
                 Set.of(elevator, wrist),
@@ -135,8 +170,17 @@ public class BoxOpOI extends RuleGroup {
                     queuedControl.scoreHeight = ScoreHeight.Intake;
                 });
         addRule(
-                "Set Elevator/Wrist L1",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L2),
+                "Queue Elevator and Wrist to L1 Position",
+                boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L1),
+                ONCE,
+                Set.of(elevator, wrist),
+                () -> {
+                    queuedControl.scoreHeight = ScoreHeight.L1;
+                });
+
+        addRule(
+                "Queue Elevator and Wrist to L3 Position",
+                boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L3),
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
@@ -144,21 +188,12 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                "Set Elevator/Wrist L3",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L3),
-                ONCE,
-                Set.of(elevator, wrist),
-                () -> {
-                    queuedControl.scoreHeight = ScoreHeight.L4;
-                });
-
-        addRule(
-                "Set Elevator/Wrist L4",
+                "Queue Elevator and Wrist to L4 Position",
                 boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L4),
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
-                    queuedControl.scoreHeight = ScoreHeight.L1;
+                    queuedControl.scoreHeight = ScoreHeight.L4;
                 });
 
         addRule(
@@ -204,41 +239,6 @@ public class BoxOpOI extends RuleGroup {
                             elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
                             wrist.setAngle(WristPosition.CORAL_INTAKE);
                         });
-
-        // FINE TUNING
-
-        addRule(
-                "Nudge Elevator",
-                new LogicalAnd(
-                        boxopGamepad.whenAxisMoved(InputConstants.AXIS_ELEVATOR_FINETUNE),
-                        boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON)),
-                ONCE_AND_HOLD,
-                elevator,
-                () -> {
-                    elevator.nudge(boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_FINETUNE));
-                });
-
-        addRule(
-                "Nudge Wrist",
-                new LogicalAnd(
-                        boxopGamepad.whenAxisMoved(InputConstants.AXIS_WRIST_FINETUNE),
-                        boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON)),
-                ONCE_AND_HOLD,
-                wrist,
-                () -> {
-                    wrist.nudge(boxopGamepad.getAxis(InputConstants.AXIS_WRIST_FINETUNE));
-                });
-
-        addRule(
-                "Nudge Algae",
-                new LogicalAnd(
-                        boxopGamepad.whenAxisMoved(InputConstants.AXIS_ALGAE_FINETUNE),
-                        boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON)),
-                ONCE_AND_HOLD,
-                algaeIntake,
-                () -> {
-                    algaeIntake.nudge(boxopGamepad.getAxis(InputConstants.AXIS_ALGAE_FINETUNE));
-                });
 
         // CLIMBER
 

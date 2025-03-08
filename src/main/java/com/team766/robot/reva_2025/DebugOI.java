@@ -32,11 +32,6 @@ import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
  *      │ 13│ 14│ 15│ 16│      -─>8
  *      └───┴───┴───┴───┘
  *
- * 1 + 8/12 = Control Shoulder + Nudge Up/Down
- * 2 + 8/12 = Control Climber + Nudge Up/Down
- * 4 + 8/12 = Control Shooter + Nudge Up/Down
- *  3        = Intake In
- * 7        = Intake Out
  */
 public class DebugOI extends RuleGroup {
     public DebugOI(
@@ -46,14 +41,12 @@ public class DebugOI extends RuleGroup {
             Wrist wrist,
             AlgaeIntake algae,
             CoralIntake coral) {
-        // fine-grained control of the shoulder
-        // used for testing and tuning
-        // press down the shoulder control button and nudge the angle up and down
-        addRule("Debug Control Algae", macropad.whenButton(1))
+
+        addRule("Debug Control Algae", macropad.whenButton(InputConstants.CONTROL_ALGAE))
                 .whenTriggering(
                         new RuleGroup() {
                             {
-                                addRule("Debug Algae Nudge No PID", macropad.whenButton(7))
+                                addRule("Debug Algae Nudge No PID", macropad.whenButton(InputConstants.NUDGE_NO_PID))
                                         .whenTriggering(
                                                 new RuleGroup() {
                                                     {
@@ -93,37 +86,37 @@ public class DebugOI extends RuleGroup {
                                         () -> algae.nudge(-1));
                                 addRule(
                                         "Debug Algae Intake In",
-                                        macropad.whenButton(5),
+                                        macropad.whenButton(InputConstants.INTAKE_IN),
                                         algae,
                                         () -> algae.setState(State.In));
                                 addRule(
                                         "Debug Algae Intake Out",
-                                        macropad.whenButton(6),
+                                        macropad.whenButton(InputConstants.INTAKE_OUT),
                                         algae,
                                         () -> algae.setState(State.Out));
                                 addRule(
                                         "Debug Algae Stow",
-                                        macropad.whenButton(9),
+                                        macropad.whenButton(InputConstants.STOW_POSITION),
                                         algae,
                                         () -> algae.setArmAngle(Level.Stow));
                                 addRule(
                                         "Debug Algae Ground Intake",
-                                        macropad.whenButton(13),
+                                        macropad.whenButton(InputConstants.GROUND_POSITION),
                                         algae,
                                         () -> algae.setArmAngle(Level.GroundIntake));
                                 addRule(
                                         "Debug Algae Shoot Position",
-                                        macropad.whenButton(14),
+                                        macropad.whenButton(InputConstants.SHOOT_POSITION),
                                         algae,
                                         () -> algae.setArmAngle(Level.Shoot));
                                 addRule(
                                         "Debug Algae L2L3",
-                                        macropad.whenButton(15),
+                                        macropad.whenButton(InputConstants.L2L3_POSITION),
                                         algae,
                                         () -> algae.setArmAngle(Level.L2L3AlgaeIntake));
                                 addRule(
                                         "Debug Algae L3L4",
-                                        macropad.whenButton(16),
+                                        macropad.whenButton(InputConstants.L3L4_POSITION),
                                         algae,
                                         () -> algae.setArmAngle(Level.L3L4AlgaeIntake));
                             }
@@ -134,23 +127,23 @@ public class DebugOI extends RuleGroup {
         // allows for running intake at default intake/outtake speeds.
         addRule(
                 "Debug Algae Shooter Feed",
-                macropad.whenButton(11),
+                macropad.whenButton(InputConstants.ALGAE_SHOOTER_FEED),
                 algae,
                 () -> algae.setState(State.Feed));
         addRule(
                 "Debug Algae Shooter On",
-                macropad.whenButton(10),
+                macropad.whenButton(InputConstants.ALGAE_SHOOTER_ON),
                 algae,
                 () -> algae.setState(State.Shoot));
 
         // fine-grained control of the climber
         // used for testing and tuning
         // press down the climber control button and nudge the climber up and down
-        addRule("Debug Control Elevator", macropad.whenButton(2))
+        addRule("Debug Control Elevator", macropad.whenButton(InputConstants.CONTROL_ELEVATOR))
                 .whenTriggering(
                         new RuleGroup() {
                             {
-                                addRule("Debug Elevator Nudge No PID", macropad.whenButton(7))
+                                addRule("Debug Elevator Nudge No PID", macropad.whenButton(InputConstants.NUDGE_NO_PID))
                                         .whenTriggering(
                                                 new RuleGroup() {
                                                     {
@@ -196,31 +189,31 @@ public class DebugOI extends RuleGroup {
                                         () -> elevator.nudge(-1));
                                 addRule(
                                         "Debug Elevator Stow",
-                                        macropad.whenButton(9),
+                                        macropad.whenButton(InputConstants.STOW_POSITION),
                                         elevator,
                                         () ->
                                                 elevator.setPosition(
                                                         ElevatorPosition.ELEVATOR_BOTTOM));
                                 addRule(
                                         "Debug Elevator Intake",
-                                        macropad.whenButton(13),
+                                        macropad.whenButton(InputConstants.GROUND_POSITION),
                                         elevator,
                                         () ->
                                                 elevator.setPosition(
                                                         ElevatorPosition.ELEVATOR_INTAKE));
                                 addRule(
                                         "Debug Elevator Low",
-                                        macropad.whenButton(14),
+                                        macropad.whenButton(InputConstants.SHOOT_POSITION),
                                         elevator,
                                         () -> elevator.setPosition(ElevatorPosition.ELEVATOR_L1));
                                 addRule(
                                         "Debug Elevator Mid",
-                                        macropad.whenButton(15),
+                                        macropad.whenButton(InputConstants.L2L3_POSITION),
                                         elevator,
                                         () -> elevator.setPosition(ElevatorPosition.ELEVATOR_L3));
                                 addRule(
                                         "Debug Elevator High",
-                                        macropad.whenButton(16),
+                                        macropad.whenButton(InputConstants.L3L4_POSITION),
                                         elevator,
                                         () -> elevator.setPosition(ElevatorPosition.ELEVATOR_L4));
                             }
@@ -229,11 +222,11 @@ public class DebugOI extends RuleGroup {
         // fine-grained controls for shooter
         // used for testing and tuning
         // press down the intake control button and nudge ths shooter speed up and down
-        addRule("Debug Control Wrist", macropad.whenButton(3))
+        addRule("Debug Control Wrist", macropad.whenButton(InputConstants.CONTROL_WRIST))
                 .whenTriggering(
                         new RuleGroup() {
                             {
-                                addRule("Debug Wrist Nudge No PID", macropad.whenButton(7))
+                                addRule("Debug Wrist Nudge No PID", macropad.whenButton(InputConstants.NUDGE_NO_PID))
                                         .whenTriggering(
                                                 new RuleGroup() {
                                                     {
@@ -273,43 +266,43 @@ public class DebugOI extends RuleGroup {
                                         () -> wrist.nudge(-1));
                                 addRule(
                                         "Debug Coral Graber In",
-                                        macropad.whenButton(5),
+                                        macropad.whenButton(InputConstants.INTAKE_IN),
                                         coral,
                                         () -> coral.in());
                                 addRule(
                                         "Debug Coral Grabber Out",
-                                        macropad.whenButton(6),
+                                        macropad.whenButton(InputConstants.INTAKE_OUT),
                                         coral,
                                         () -> coral.out());
                                 addRule(
                                         "Debug Wrist Stow",
-                                        macropad.whenButton(9),
+                                        macropad.whenButton(InputConstants.STOW_POSITION),
                                         wrist,
                                         () -> wrist.setAngle(WristPosition.CORAL_BOTTOM));
                                 addRule(
                                         "Debug Wrist Intake",
-                                        macropad.whenButton(13),
+                                        macropad.whenButton(InputConstants.GROUND_POSITION),
                                         wrist,
                                         () -> wrist.setAngle(WristPosition.CORAL_INTAKE));
                                 addRule(
                                         "Debug Wrist Low",
-                                        macropad.whenButton(14),
+                                        macropad.whenButton(InputConstants.SHOOT_POSITION),
                                         wrist,
                                         () -> wrist.setAngle(WristPosition.CORAL_L1_PLACE));
                                 addRule(
                                         "Debug Wrist Mid",
-                                        macropad.whenButton(15),
+                                        macropad.whenButton(InputConstants.L2L3_POSITION),
                                         wrist,
                                         () -> wrist.setAngle(WristPosition.CORAL_L2_PLACE));
                                 addRule(
                                         "Debug Wrist High",
-                                        macropad.whenButton(16),
+                                        macropad.whenButton(InputConstants.L3L4_POSITION),
                                         wrist,
                                         () -> wrist.setAngle(WristPosition.CORAL_L4_PLACE));
                             }
                         });
 
-        addRule("Debug Control Climber", macropad.whenButton(4))
+        addRule("Debug Control Climber", macropad.whenButton(InputConstants.CONTROL_CLIMBER))
                 .whenTriggering(
                         new RuleGroup() {
                             {

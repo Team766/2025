@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class CoralConstants {
+    private CoralConstants() {} // utility class
 
     public enum ReefPos {
         ReefA(3.16, 4.190, 0, RelativeReefPos.Left),
@@ -42,7 +43,6 @@ public class CoralConstants {
         }
 
         public RelativeReefPos getRelativeReefPos(Alliance alliance) {
-            // TODO: is there a better way to do this?
             return relativeReefPos;
         }
     }

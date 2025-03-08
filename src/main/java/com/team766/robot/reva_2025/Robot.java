@@ -49,7 +49,6 @@ public class Robot implements RobotConfigurator3 {
             // If your autonomous procedure has constructor arguments, you can
             // define one or more different autonomous modes with it like this:
             //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
-            new AutonomousMode("Test Path", () -> new TestAuto(drive)),
             // new AutonomousMode(
             //         "AutoAlign", () -> new AutoAlign(new Pose2d(1, 0, new Rotation2d()), drive))
         };
