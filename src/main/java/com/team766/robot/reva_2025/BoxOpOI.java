@@ -136,7 +136,7 @@ public class BoxOpOI extends RuleGroup {
 
         addRule(
                 "Queue Elevator and Wrist to Intake Position",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L1),
+                boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_INTAKE),
                 ONCE,
                 Set.of(elevator, wrist),
                 () -> {
