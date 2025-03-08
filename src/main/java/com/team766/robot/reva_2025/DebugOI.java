@@ -46,7 +46,9 @@ public class DebugOI extends RuleGroup {
                 .whenTriggering(
                         new RuleGroup() {
                             {
-                                addRule("Debug Algae Nudge No PID", macropad.whenButton(InputConstants.NUDGE_NO_PID))
+                                addRule(
+                                                "Debug Algae Nudge No PID",
+                                                macropad.whenButton(InputConstants.NUDGE_NO_PID))
                                         .whenTriggering(
                                                 new RuleGroup() {
                                                     {
@@ -143,7 +145,9 @@ public class DebugOI extends RuleGroup {
                 .whenTriggering(
                         new RuleGroup() {
                             {
-                                addRule("Debug Elevator Nudge No PID", macropad.whenButton(InputConstants.NUDGE_NO_PID))
+                                addRule(
+                                                "Debug Elevator Nudge No PID",
+                                                macropad.whenButton(InputConstants.NUDGE_NO_PID))
                                         .whenTriggering(
                                                 new RuleGroup() {
                                                     {
@@ -226,7 +230,9 @@ public class DebugOI extends RuleGroup {
                 .whenTriggering(
                         new RuleGroup() {
                             {
-                                addRule("Debug Wrist Nudge No PID", macropad.whenButton(InputConstants.NUDGE_NO_PID))
+                                addRule(
+                                                "Debug Wrist Nudge No PID",
+                                                macropad.whenButton(InputConstants.NUDGE_NO_PID))
                                         .whenTriggering(
                                                 new RuleGroup() {
                                                     {

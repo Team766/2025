@@ -5,7 +5,6 @@ import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.reva.mechanisms.MotorUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStatus> {
     private static final double POWER_IN = 0.40;
@@ -40,7 +39,7 @@ public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStat
     protected void onMechanismIdle() {
         idle();
     }
-    
+
     @Override
     protected CoralIntakeStatus updateStatus() {
         return new CoralIntakeStatus(motor.get(), MotorUtil.getCurrentUsage(motor));
