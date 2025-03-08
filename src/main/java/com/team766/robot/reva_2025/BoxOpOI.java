@@ -31,41 +31,6 @@ public class BoxOpOI extends RuleGroup {
             QueuedControl queuedControl) {
 
         boxopGamepad.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
-
-        // FINE TUNING
-
-        addRule(
-                "Nudge Elevator",
-                new LogicalAnd(
-                        boxopGamepad.whenAxisMoved(InputConstants.AXIS_ELEVATOR_FINETUNE),
-                        boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON)),
-                ONCE_AND_HOLD,
-                elevator,
-                () -> {
-                    elevator.nudge(boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_FINETUNE));
-                });
-
-        addRule(
-                "Nudge Wrist",
-                new LogicalAnd(
-                        boxopGamepad.whenAxisMoved(InputConstants.AXIS_WRIST_FINETUNE),
-                        boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON)),
-                ONCE_AND_HOLD,
-                wrist,
-                () -> {
-                    wrist.nudge(boxopGamepad.getAxis(InputConstants.AXIS_WRIST_FINETUNE));
-                });
-
-        addRule(
-                "Nudge Algae",
-                new LogicalAnd(
-                        boxopGamepad.whenAxisMoved(InputConstants.AXIS_ALGAE_FINETUNE),
-                        boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON)),
-                ONCE_AND_HOLD,
-                algaeIntake,
-                () -> {
-                    algaeIntake.nudge(boxopGamepad.getAxis(InputConstants.AXIS_ALGAE_FINETUNE));
-                });
         
         // ALGAE INTAKE POSITIONS
 
@@ -138,6 +103,14 @@ public class BoxOpOI extends RuleGroup {
                                         algaeIntake,
                                         () -> {
                                             algaeIntake.setState(AlgaeIntake.State.In);
+                                        });
+                                addRule(
+                                        "Nudge Algae",
+                                                boxopGamepad.whenAxisMoved(InputConstants.AXIS_ALGAE_FINETUNE),
+                                        ONCE_AND_HOLD,
+                                        algaeIntake,
+                                        () -> {
+                                                algaeIntake.nudge(boxopGamepad.getAxis(InputConstants.AXIS_ALGAE_FINETUNE));
                                         });
                             }
                         })
@@ -230,6 +203,23 @@ public class BoxOpOI extends RuleGroup {
                                         coralIntake,
                                         () -> {
                                             coralIntake.in();
+                                        });
+                                addRule(
+                                        "Nudge Elevator",
+                                                boxopGamepad.whenAxisMoved(InputConstants.AXIS_ELEVATOR_FINETUNE),
+                                        ONCE_AND_HOLD,
+                                        elevator,
+                                        () -> {
+                                                elevator.nudge(boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_FINETUNE));
+                                        });
+                        
+                                addRule(
+                                        "Nudge Wrist",
+                                                boxopGamepad.whenAxisMoved(InputConstants.AXIS_WRIST_FINETUNE),
+                                        ONCE_AND_HOLD,
+                                        wrist,
+                                        () -> {
+                                                wrist.nudge(boxopGamepad.getAxis(InputConstants.AXIS_WRIST_FINETUNE));
                                         });
                             }
                         })
