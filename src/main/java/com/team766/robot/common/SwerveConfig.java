@@ -28,7 +28,7 @@ public class SwerveConfig {
     // Circumference of the wheels. It was measured to be 30.5cm, then experimentally this value had
     // an error of 2.888%. This was then converted to meters.
     // TODO: compute this from the wheel radius!
-    public static final double DEFAULT_WHEEL_CIRCUMFERENCE = 30.5 * 1.02888 / 100;
+    public static final double DEFAULT_WHEEL_CIRCUMFERENCE = 30.5 * 1.0 / 100;
 
     // Unique to the type of swerve module we have. This is the gear ratio for the drive motors.
     public static final double DEFAULT_DRIVE_GEAR_RATIO = 6.75;

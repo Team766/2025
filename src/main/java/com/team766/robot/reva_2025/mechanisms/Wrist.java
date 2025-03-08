@@ -11,9 +11,10 @@ import com.team766.robot.reva_2025.constants.ConfigConstants;
 public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     private double setPoint;
-    private static final double NUDGE_AMOUNT = 1.0;
+    private static final double NUDGE_AMOUNT = 5.0;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
     private final ValueProvider<Double> ffGain;
+    private boolean noPIDMode;
 
     public record WristStatus(double currentAngle, double targetAngle) implements Status {
         public boolean isAtAngle() {
@@ -25,7 +26,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
         // TODO: Change these angles to actual values
         CORAL_BOTTOM(10),
-        CORAL_START(35),
+        CORAL_START(15),
         CORAL_INTAKE(40),
         // CORAL_L2_PREP(260),
         CORAL_L1_PLACE(40),
@@ -54,6 +55,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         ffGain = ConfigFileReader.getInstance().getDouble(ConfigConstants.WRIST_FFGAIN);
         setPoint = WristPosition.CORAL_START.getAngle();
         wristMotor.setSensorPosition(EncoderUtils.coralWristDegreesToRotations(setPoint));
+        noPIDMode = false;
     }
 
     public void setAngle(WristPosition position) {
@@ -61,20 +63,28 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     public void setAngle(double angle) {
+        noPIDMode = false;
         setPoint = angle;
-    }
-
-    @Override
-    protected void run() {
-        double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getStatus().currentAngle()));
-        wristMotor.set(
-                MotorController.ControlMode.Position,
-                EncoderUtils.coralWristDegreesToRotations(setPoint),
-                ff);
     }
 
     public void nudge(double sign) {
         setPoint = getStatus().currentAngle() + (NUDGE_AMOUNT * Math.signum(sign));
+    }
+
+    public void nudgeNoPID(double power) {
+        noPIDMode = true;
+        wristMotor.set(power);
+    }
+
+    @Override
+    protected void run() {
+        if (!noPIDMode) {
+            double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getStatus().currentAngle()));
+            wristMotor.set(
+                    MotorController.ControlMode.Position,
+                    EncoderUtils.coralWristDegreesToRotations(setPoint),
+                    ff);
+        }
     }
 
     @Override

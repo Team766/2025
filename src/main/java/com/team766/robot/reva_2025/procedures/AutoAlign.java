@@ -25,17 +25,22 @@ public class AutoAlign extends Procedure {
 
     public void run(Context context) {
         Pose2d currentPosition;
-        double currentHeading;
+        double currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading();
 
         pidControllerX.setSetpoint(targetPosition.getX());
         pidControllerY.setSetpoint(targetPosition.getY());
-        pidControllerRotation.setSetpoint(targetPosition.getRotation().getDegrees());
+        double correctedTargetDegrees =
+                targetPosition.getRotation().getDegrees()
+                        + 360
+                                * (Math.round(
+                                        (currentHeading - targetPosition.getRotation().getDegrees())
+                                                / 360));
+        pidControllerRotation.setSetpoint(correctedTargetDegrees);
         while (!pidControllerX.isDone()
                 || !pidControllerY.isDone()
                 || !pidControllerRotation.isDone()) {
             currentPosition = getStatusOrThrow(SwerveDrive.DriveStatus.class).currentPosition();
-            currentHeading =
-                    ((getStatusOrThrow(SwerveDrive.DriveStatus.class).heading() + 180) % 360) - 180;
+            currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading();
 
             pidControllerX.calculate(currentPosition.getX());
             pidControllerY.calculate(currentPosition.getY());

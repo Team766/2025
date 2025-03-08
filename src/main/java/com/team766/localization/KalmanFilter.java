@@ -280,4 +280,8 @@ public class KalmanFilter {
     public void setPos(Translation2d pos) {
         setPos(pos, SET_POS_COVARIANCE_DEFAULT);
     }
+
+    public void resetPos() {
+        setPos(new Translation2d(), INITIAL_COVARIANCE_DEFAULT);
+    }
 }

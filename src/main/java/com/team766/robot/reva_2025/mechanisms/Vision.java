@@ -26,12 +26,17 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
     }
 
     private final GetOrinRawValue[] cameraList;
+    private boolean hasLoggedError = false;
 
     public Vision() {
         // TODO: have this as a config input
 
         cameraList =
                 new GetOrinRawValue[] {
+                    // new GetOrinRawValue("cam100"),
+                    // new GetOrinRawValue("cam1690"),
+                    // new GetOrinRawValue("camUC762W"),
+                    // new GetOrinRawValue("camUC7626")
                     new GetOrinRawValue("left_back"),
                     new GetOrinRawValue("left_front"),
                     new GetOrinRawValue("right_back"),
@@ -49,7 +54,10 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
             } catch (ValueNotFoundOnTableError e) {
                 // maintain camera list order even if one is not connected
                 tags.add(new ArrayList<>());
-                log(Severity.ERROR, LoggerExceptionUtils.exceptionToString(e));
+                if (!hasLoggedError) {
+                    log(Severity.ERROR, LoggerExceptionUtils.exceptionToString(e));
+                    hasLoggedError = true;
+                }
             }
         }
         return new VisionStatus(tags);
