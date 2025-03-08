@@ -54,6 +54,14 @@ public final class EncoderUtils {
         return rotations * (1. / 20.) * ((1.02 * Math.PI) / 1.);
     }
 
+
+    public static double wristAbsoluteEncoderToMotorRotations(double rotations) {
+        return ((1.05 - rotations) % 1.0 - 0.05) * (4. / 1.) * (3. / 1.) * (3. / 1.); //FIX 
+    }
+
+    public static double elevatorAbsoluteEncoderToMotorRotations(double rotations) {
+        return ((1.05 - rotations) % 1.0 - 0.05) * (4. / 1.) * (3. / 1.) * (3. / 1.); //FIX 
+    }
     /**
      * Converts a target rotation (in degrees) to encoder units for the shoulder motor.
      *

@@ -2,15 +2,21 @@ package com.team766.robot.reva_2025.mechanisms;
 
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
+import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
+
+
 
 public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private MotorController elevatorLeftMotor;
     private MotorController elevatorRightMotor;
     private static final double NUDGE_AMOUNT = 5;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
+    private final EncoderReader absoluteEncoder;
+    private boolean encoderInitialized = false;
+    private static final double DEFAULT_POSITION = 77.0; // FIX 
     private double setPoint;
     private boolean noPIDMode;
 
@@ -47,6 +53,8 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         elevatorRightMotor = RobotProvider.instance.getMotor(ConfigConstants.RIGHT_ELEVATOR_MOTOR);
         elevatorRightMotor.follow(elevatorLeftMotor);
         elevatorLeftMotor.setSensorPosition(0);
+        absoluteEncoder = RobotProvider.instance.getEncoder(ConfigConstants.ELEVATOR_ENCODER);
+        elevatorLeftMotor.setSensorPosition(DEFAULT_POSITION);
         setPoint = 0;
     }
 
@@ -85,6 +93,12 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
     @Override
     protected ElevatorStatus updateStatus() {
+         if (!encoderInitialized && absoluteEncoder.isConnected()) {
+            double absPos = absoluteEncoder.getPosition() - 0.071; //FIX 
+            double convertedPos = EncoderUtils.elevatorAbsoluteEncoderToMotorRotations(absPos);
+            elevatorLeftMotor.setSensorPosition(convertedPos);
+            encoderInitialized = true;
+        }
         return new ElevatorStatus(
                 EncoderUtils.elevatorRotationsToHeight(elevatorLeftMotor.getSensorPosition()),
                 setPoint);

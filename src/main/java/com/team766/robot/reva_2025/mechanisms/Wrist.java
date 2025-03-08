@@ -3,10 +3,13 @@ package com.team766.robot.reva_2025.mechanisms;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
+import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
+import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_ENCODER;
+
 
 public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
@@ -15,6 +18,9 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     private static final double POSITION_LOCATION_THRESHOLD = 1;
     private final ValueProvider<Double> ffGain;
     private boolean noPIDMode;
+    private final EncoderReader absoluteEncoder;
+    private static final double DEFAULT_POSITION = 77.0; //FIX 
+    private boolean encoderInitialized = false;
 
     public record WristStatus(double currentAngle, double targetAngle) implements Status {
         public boolean isAtAngle() {
@@ -57,6 +63,8 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         setPoint = WristPosition.CORAL_START.getAngle();
         wristMotor.setSensorPosition(EncoderUtils.coralWristDegreesToRotations(setPoint));
         noPIDMode = false;
+        absoluteEncoder = RobotProvider.instance.getEncoder(WRIST_ENCODER);
+        wristMotor.setSensorPosition(DEFAULT_POSITION);
     }
 
     public void setAngle(WristPosition position) {
@@ -90,6 +98,13 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     @Override
     protected WristStatus updateStatus() {
+         if (!encoderInitialized && absoluteEncoder.isConnected()) {
+            double absPos = absoluteEncoder.getPosition() - 0.071; //FIX 
+            double convertedPos = EncoderUtils.wristAbsoluteEncoderToMotorRotations(absPos);
+            wristMotor.setSensorPosition(convertedPos);
+            encoderInitialized = true;
+        }
+
         return new WristStatus(
                 EncoderUtils.coralWristRotationsToDegrees(wristMotor.getSensorPosition()),
                 setPoint);
