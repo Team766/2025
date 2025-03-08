@@ -40,8 +40,8 @@ public abstract class PathSequenceAuto extends Procedure {
     public PathSequenceAuto(SwerveDrive drive, Pose2d initialPosition) {
         pathItems = new LinkedList<Procedure>();
         this.drive = reserve(drive);
-        this.robotConfig = createRobotConfig(this.drive);
-        this.controller = createDriveController(this.drive);
+        this.robotConfig = createRobotConfig(drive);
+        this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
     }
 
