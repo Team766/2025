@@ -36,5 +36,5 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
                 leftJoystick.whenButton(InputConstants.BUTTON_ALGAE_SHOOT),
                 ONCE_AND_HOLD,
                 () -> new ShootWhenReady(algaeIntake));
-        }
+    }
 }

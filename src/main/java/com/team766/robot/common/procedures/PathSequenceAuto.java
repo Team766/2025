@@ -185,8 +185,8 @@ public abstract class PathSequenceAuto extends Procedure {
                                 : initialPosition.getRotation())
                         .getDegrees());
         for (Procedure pathItem : pathItems) {
-        context.runSync(pathItem);
-        context.yield();
+            context.runSync(pathItem);
+            context.yield();
         }
     }
 }

@@ -1,9 +1,6 @@
 package com.team766.robot.reva_2025.constants;
 
 import com.pathplanner.lib.util.FlippingUtil;
-import com.team766.logging.Category;
-import com.team766.logging.Logger;
-import com.team766.logging.Severity;
 import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import edu.wpi.first.math.geometry.Pose2d;

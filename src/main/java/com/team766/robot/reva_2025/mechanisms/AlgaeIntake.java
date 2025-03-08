@@ -74,8 +74,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         private final double intakeVelocity;
         private final double shooterVelocity;
 
-        State
-        (double intakeVelocity, double shooterVelocity) {
+        State(double intakeVelocity, double shooterVelocity) {
             this.intakeVelocity = intakeVelocity;
             this.shooterVelocity = shooterVelocity;
         }

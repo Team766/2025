@@ -7,8 +7,6 @@ import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.mechanisms.*;
 import com.team766.robot.reva_2025.procedures.*;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Robot implements RobotConfigurator3 {
 
@@ -35,7 +33,7 @@ public class Robot implements RobotConfigurator3 {
     @Override
     public RuleEngine createOI() {
         return new OI(drive, algaeIntake, wrist, elevator, coral, climber);
-    }   
+    }
 
     @Override
     public RuleEngine createLights() {
