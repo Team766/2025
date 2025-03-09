@@ -271,15 +271,17 @@ public class DebugOI extends RuleGroup {
                                         wrist,
                                         () -> wrist.nudge(-1));
                                 addRule(
-                                        "Debug Coral Graber In",
-                                        macropad.whenButton(InputConstants.INTAKE_IN),
-                                        coral,
-                                        () -> coral.in()).withFinishedTriggeringProcedure(coral, () -> coral.stop());
+                                                "Debug Coral Graber In",
+                                                macropad.whenButton(InputConstants.INTAKE_IN),
+                                                coral,
+                                                () -> coral.in())
+                                        .withFinishedTriggeringProcedure(coral, () -> coral.stop());
                                 addRule(
-                                        "Debug Coral Grabber Out",
-                                        macropad.whenButton(InputConstants.INTAKE_OUT),
-                                        coral,
-                                        () -> coral.out()).withFinishedTriggeringProcedure(coral, () -> coral.stop());
+                                                "Debug Coral Grabber Out",
+                                                macropad.whenButton(InputConstants.INTAKE_OUT),
+                                                coral,
+                                                () -> coral.out())
+                                        .withFinishedTriggeringProcedure(coral, () -> coral.stop());
                                 addRule(
                                         "Debug Wrist Stow",
                                         macropad.whenButton(InputConstants.STOW_POSITION),

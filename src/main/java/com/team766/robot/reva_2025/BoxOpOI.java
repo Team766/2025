@@ -36,24 +36,31 @@ public class BoxOpOI extends RuleGroup {
         // CLIMBER
 
         addRule(
-                "Control Climber",
-                boxopGamepad.whenButton(InputConstants.BUTTON_CLIMB),
-                ONCE_AND_HOLD,
-
-                Set.of(algaeIntake, wrist, elevator),
-                () -> {
-                    algaeIntake.setArmAngle(Level.Stow);
-                    elevator.setPosition(ElevatorPosition.ELEVATOR_CLIMB);
-                    wrist.setAngle(WristPosition.CORAL_CLIMB);
-                }).whenTriggering(new RuleGroup(){
-                        {
-                                addRule("Move Climber Up/Down",
-                                boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS),
-                                ONCE_AND_HOLD,
-                                climber,
-                                () -> climber.climb(boxopGamepad.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS)));
-                        }
-                });
+                        "Control Climber",
+                        boxopGamepad.whenButton(InputConstants.BUTTON_CLIMB),
+                        ONCE_AND_HOLD,
+                        Set.of(algaeIntake, wrist, elevator),
+                        () -> {
+                            algaeIntake.setArmAngle(Level.Stow);
+                            elevator.setPosition(ElevatorPosition.ELEVATOR_CLIMB);
+                            wrist.setAngle(WristPosition.CORAL_CLIMB);
+                        })
+                .whenTriggering(
+                        new RuleGroup() {
+                            {
+                                addRule(
+                                        "Move Climber Up/Down",
+                                        boxopGamepad.whenAxisMoved(
+                                                InputConstants.GAMEPAD_RIGHT_STICK_YAXIS),
+                                        ONCE_AND_HOLD,
+                                        climber,
+                                        () ->
+                                                climber.climb(
+                                                        boxopGamepad.getAxis(
+                                                                InputConstants
+                                                                        .GAMEPAD_RIGHT_STICK_YAXIS)));
+                            }
+                        });
 
         // ALGAE INTAKE POSITIONS
 
@@ -91,7 +98,7 @@ public class BoxOpOI extends RuleGroup {
                 Set.of(elevator, wrist, algaeIntake),
                 () -> {
                     if (queuedControl.scoreHeight == ScoreHeight.L2) {
-                            queuedControl.scoreHeight = ScoreHeight.Intake;
+                        queuedControl.scoreHeight = ScoreHeight.Intake;
                     }
                     queuedControl.algaeLevel = Level.L3L4AlgaeIntake;
                 });
@@ -146,13 +153,13 @@ public class BoxOpOI extends RuleGroup {
                 .withFinishedTriggeringProcedure(
                         algaeIntake,
                         () -> {
-                                // make sure we don't squish an algae
-                                var status = getStatus(AlgaeIntake.AlgaeIntakeStatus.class);
-                                if (status.isPresent() && status.get().intakeProximity().isPresent()) {
-                                        algaeIntake.setArmAngle(Level.GroundIntake);
-                                } else {
-                                        algaeIntake.setArmAngle(Level.Stow);
-                                }
+                            // make sure we don't squish an algae
+                            var status = getStatus(AlgaeIntake.AlgaeIntakeStatus.class);
+                            if (status.isPresent() && status.get().intakeProximity().isPresent()) {
+                                algaeIntake.setArmAngle(Level.GroundIntake);
+                            } else {
+                                algaeIntake.setArmAngle(Level.Stow);
+                            }
                         });
 
         // ALGAE INTAKE MOTOR CONTROLS / SHOOTING
@@ -166,17 +173,16 @@ public class BoxOpOI extends RuleGroup {
                     algaeIntake.setState(AlgaeIntake.State.Shoot);
                     algaeIntake.setArmAngle(Level.Shoot);
                 });
-        
+
         // ELEVATOR AND WRIST
 
         addRule(
                 "Grabber Motor Auto Intake",
-                boxopGamepad.whenAxisMoved(
-                        InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
                 ONCE_AND_HOLD,
                 Set.of(wrist, elevator, coralIntake),
                 () -> {
-                        new CoralStationPositionAndIntake(elevator, wrist, coralIntake);
+                    new CoralStationPositionAndIntake(elevator, wrist, coralIntake);
                 });
 
         addRule(
@@ -194,7 +200,7 @@ public class BoxOpOI extends RuleGroup {
                 Set.of(elevator, wrist, algaeIntake),
                 () -> {
                     if (queuedControl.algaeLevel == Level.L3L4AlgaeIntake) {
-                            queuedControl.algaeLevel = Level.Stow;
+                        queuedControl.algaeLevel = Level.Stow;
                     }
                     queuedControl.scoreHeight = ScoreHeight.L2;
                 });
@@ -259,6 +265,5 @@ public class BoxOpOI extends RuleGroup {
                             elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
                             wrist.setAngle(WristPosition.CORAL_INTAKE);
                         });
-
     }
 }
