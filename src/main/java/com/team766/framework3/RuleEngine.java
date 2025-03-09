@@ -3,7 +3,6 @@ package com.team766.framework3;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.team766.framework3.Rule.TriggerType;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,10 +34,6 @@ public class RuleEngine extends RuleGroupBase {
     private final Map<Rule, Integer> rulePriorities = new HashMap<>();
     private BiMap<Command, RuleAction> ruleMap = HashBiMap.create();
     private boolean sealed = false;
-    private final String newlyLogKey = "Rules/" + getClass().getName() + "/newlyTriggering";
-    private final String continuingLogKey = "Rules/" + getClass().getName() + "/continuing";
-    private final String finishedLogKey = "Rules/" + getClass().getName() + "/finishedTriggering";
-    private final String canceledLogKey = "Rules/" + getClass().getName() + "/canceled";
 
     protected RuleEngine() {}
 
@@ -104,10 +99,7 @@ public class RuleEngine extends RuleGroupBase {
 
                 // see if the rule is triggering
                 final Rule.TriggerType triggerType = rule.getCurrentTriggerType();
-                if (triggerType == TriggerType.NONE) {
-                    rule.log();
-                    continue ruleLoop;
-                } else {
+                if (triggerType != Rule.TriggerType.NONE) {
                     log(Severity.INFO, "Rule " + rule.getName() + " triggering: " + triggerType);
 
                     int priority = getPriorityForRule(rule);
@@ -127,7 +119,6 @@ public class RuleEngine extends RuleGroupBase {
                                             + subsystem.getName()
                                             + " already reserved by higher priority rule.");
                             rule.reset();
-                            rule.log("conflict");
                             continue ruleLoop;
                         }
                         // see if a previously triggered rule is still using the mechanism
@@ -150,7 +141,6 @@ public class RuleEngine extends RuleGroupBase {
                                                     + subsystem.getName()
                                                     + " already being used in CommandScheduler by higher priority rule.");
                                     rule.reset();
-                                    rule.log("conflict");
                                     continue ruleLoop;
                                 } else if (rule != existingRule) {
                                     // new rule takes priority
@@ -164,24 +154,12 @@ public class RuleEngine extends RuleGroupBase {
                                                     + " will now be reserved by higher priority rule "
                                                     + rule.getName());
                                     existingRule.reset();
-                                    // could log existing rule, tho it will be covered in a
-                                    // subsequent iteration
                                 }
                             }
                         }
                     }
 
                     // we're good to proceed
-                    switch (triggerType) {
-                        case NEWLY:
-                            break;
-                        case CONTINUING:
-                            break;
-                        case FINISHED:
-                            break;
-                        default:
-                            break;
-                    }
 
                     if (triggerType == Rule.TriggerType.FINISHED
                             && rule.getCancellationOnFinish()
@@ -195,7 +173,7 @@ public class RuleEngine extends RuleGroupBase {
 
                     Procedure procedure = rule.getProcedureToRun();
                     if (procedure == null) {
-                        continue ruleLoop;
+                        continue;
                     }
                     log(
                             Severity.INFO,
@@ -203,7 +181,6 @@ public class RuleEngine extends RuleGroupBase {
                                     + procedure.getName()
                                     + " with reservations "
                                     + reservations);
-                    rule.log();
 
                     // TODO(MF3): check that the reservations have not changed
                     Command command = procedure.createCommandToRunProcedure();
