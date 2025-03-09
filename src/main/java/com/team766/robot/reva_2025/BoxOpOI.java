@@ -100,7 +100,7 @@ public class BoxOpOI extends RuleGroup {
                         new RuleGroup() {
                             {
                                 addRule(
-                                        "Spin Algae Intake Motor In",
+                                        "Spin Algae Intake Motor Out",
                                         new LogicalAnd(
                                                 boxopGamepad.whenAxisMoved(
                                                         InputConstants
@@ -114,7 +114,7 @@ public class BoxOpOI extends RuleGroup {
                                         });
 
                                 addRule(
-                                        "Spin Algae Intake Motor Out",
+                                        "Spin Algae Intake Motor In",
                                         boxopGamepad.whenAxisMoved(
                                                 InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
                                         ONCE_AND_HOLD,
