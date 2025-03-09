@@ -262,11 +262,9 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 shooterMotor.stopMotor();
                 break;
             default:
-                intakeMotor.set(0.5);
-                shooterMotor.set(0.5);
-                // intakeMotor.set(
-                //         ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
-                // shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
+                intakeMotor.set(
+                        ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
+                shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
                 break;
         }
         SmartDashboard.putNumber("targetRPS", state.getIntakeVelocity());
