@@ -9,7 +9,9 @@ public final class ConfigConstants {
     public static final String ALGAEINTAKE_INTAKEROLLERMOTOR = "algaeIntake.IntakeMotor";
     public static final String ALGAEINTAKE_ARMROLLERMOTOR = "algaeIntake.ArmMotor";
     public static final String ALGAEINTAKE_SHOOTERROLLERMOTOR = "algaeIntake.ShooterMotor";
+    public static final String ALGAEINTAKE_INTAKESENSOR = "algaeIntake.IntakeSensor";
     public static final String ALGAEINTAKE_ARMFFGAIN = "algaeIntake.ArmffGain";
+    public static final String ALGAE_INTAKE_HOLD_ALGAE_PID = "algaeIntake.HoldAlgaePID";
     public static final String CLIMBER_LEFT_MOTOR = "climber.leftMotor";
     public static final String CLIMBER_RIGHT_MOTOR = "climber.rightMotor";
     public static final String WRIST_MOTOR = "wrist.motor";
