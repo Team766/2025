@@ -17,6 +17,7 @@ import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
+import com.team766.robot.reva_2025.procedures.CoralStationPositionAndIntake;
 import java.util.Set;
 
 public class BoxOpOI extends RuleGroup {
@@ -55,7 +56,7 @@ public class BoxOpOI extends RuleGroup {
                 ONCE_AND_HOLD,
                 Set.of(algaeIntake, wrist, elevator, coralIntake),
                 () -> {
-                        coralIntake.in();
+                        new CoralStationPositionAndIntake(algaeIntake, elevator, wrist, coralIntake);
                 });
 
         addRule(
@@ -225,6 +226,8 @@ public class BoxOpOI extends RuleGroup {
                 .withFinishedTriggeringProcedure(
                         algaeIntake,
                         () -> {
+                                var status = getStatus(AlgaeIntake.AlgaeIntakeStatus.class);
+                                if (status.isPresent() && status.get().)
                             algaeIntake.setArmAngle(Level.Stow);
                         });
 
