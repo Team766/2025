@@ -28,7 +28,8 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         ELEVATOR_L1(0),
         ELEVATOR_L2(0),
         ELEVATOR_L3(0),
-        ELEVATOR_L4(ELEVATOR_TOP.getHeight());
+        ELEVATOR_L4(ELEVATOR_TOP.getHeight()),
+        ELEVATOR_CLIMB(5);
 
         double height = 0;
 

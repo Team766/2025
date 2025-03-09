@@ -35,7 +35,8 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         CORAL_L3_PLACE(210),
         // CORAL_L4_PREP(210),
         CORAL_L4_PLACE(200),
-        CORAL_TOP(300);
+        CORAL_TOP(300),
+        CORAL_CLIMB(300);
 
         private final double angle;
 
