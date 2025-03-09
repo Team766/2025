@@ -30,7 +30,7 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
                 coralIntake,
                 () -> {
                     coralIntake.out();
-                });
+                }).withFinishedTriggeringProcedure(coralIntake, () -> coralIntake.stop());
         addRule(
                 "Shoot Algae",
                 leftJoystick.whenButton(InputConstants.BUTTON_ALGAE_SHOOT),
