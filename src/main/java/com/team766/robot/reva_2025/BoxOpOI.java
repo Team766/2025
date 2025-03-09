@@ -198,7 +198,6 @@ public class BoxOpOI extends RuleGroup {
                     }
                     queuedControl.scoreHeight = ScoreHeight.L2;
                 });
-
         addRule(
                 "Queue Elevator and Wrist to L3 Position",
                 boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L3),
