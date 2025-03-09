@@ -10,7 +10,6 @@ import com.team766.robot.reva_2025.constants.ConfigConstants;
 
 public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private MotorController elevatorLeftMotor;
-    private MotorController elevatorRightMotor;
     private static final double NUDGE_AMOUNT = 5;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
     private final EncoderReader absoluteEncoder;
@@ -49,8 +48,6 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
     public Elevator() {
         elevatorLeftMotor = RobotProvider.instance.getMotor(ConfigConstants.LEFT_ELEVATOR_MOTOR);
-        elevatorRightMotor = RobotProvider.instance.getMotor(ConfigConstants.RIGHT_ELEVATOR_MOTOR);
-        elevatorRightMotor.follow(elevatorLeftMotor);
         absoluteEncoder = RobotProvider.instance.getEncoder(ConfigConstants.ELEVATOR_ENCODER);
         timeOfFlight =
                 RobotProvider.instance.getTimeOfFlight(ConfigConstants.ELEVATOR_INTAKESENSOR);
