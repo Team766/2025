@@ -105,8 +105,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
             double gyroReading = gyro.getRoll() + 180;
             double convertedPos =
                     gyroReading
-                            + (encoderPos * (14. / 48.) * 360. - gyroReading)
-                                    % EncoderUtils.CORAL_WRIST_ABSOLUTE_ENCODER_RANGE;
+                            + Math.IEEEremainder(encoderPos * (14. / 48.) * 360. - gyroReading, EncoderUtils.CORAL_WRIST_ABSOLUTE_ENCODER_RANGE);
             wristMotor.setSensorPosition(EncoderUtils.coralWristDegreesToRotations(convertedPos));
             encoderInitialized = true;
         }
