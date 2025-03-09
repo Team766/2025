@@ -8,11 +8,11 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.995248287671233,
-        "y": 1.4480950342465753
+        "x": 6.400941780816918,
+        "y": 1.2377354452063605
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Start Red 2"
     },
     {
       "anchor": {
@@ -20,15 +20,20 @@
         "y": 3.882255993150685
       },
       "prevControl": {
-        "x": 2.178724315068493,
-        "y": 2.3195847602739734
+        "x": 1.7126644736842103,
+        "y": 2.3412006578947366
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Reef Position B"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],

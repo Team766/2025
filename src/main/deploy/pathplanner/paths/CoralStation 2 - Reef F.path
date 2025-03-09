@@ -9,23 +9,23 @@
       "prevControl": null,
       "nextControl": {
         "x": 2.318832236842105,
-        "y": 1.0326480263157896
+        "y": 1.3982730263157896
       },
       "isLocked": false,
       "linkedName": "Coral Station 2"
     },
     {
       "anchor": {
-        "x": 3.080265410958904,
-        "y": 3.882255993150685
+        "x": 5.378536184210526,
+        "y": 2.8319078947368417
       },
       "prevControl": {
-        "x": 3.0073776586157175,
-        "y": 3.483943538211968
+        "x": 4.589555921052631,
+        "y": 2.2930921052631583
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef Position B"
+      "linkedName": "Reef Position F"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 119.99999999999999
   },
   "reversed": false,
   "folder": "CoralStation - Reef",
