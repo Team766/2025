@@ -33,6 +33,21 @@ public class Conditions {
         }
     }
 
+    public static final class LogicalAnd implements BooleanSupplier {
+        private final BooleanSupplier firstPredicate;
+        private final BooleanSupplier secondPredicate;
+
+        public LogicalAnd(BooleanSupplier first, BooleanSupplier second) {
+            firstPredicate = first;
+            secondPredicate = second;
+        }
+
+        @Override
+        public boolean getAsBoolean() {
+            return firstPredicate.getAsBoolean() && secondPredicate.getAsBoolean();
+        }
+    }
+
     // utility class
     private Conditions() {}
 }

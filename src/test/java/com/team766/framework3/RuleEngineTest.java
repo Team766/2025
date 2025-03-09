@@ -14,6 +14,7 @@ import com.team766.TestCase3;
 import com.team766.framework3.test.FakeMechanism;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
@@ -58,6 +59,12 @@ public class RuleEngineTest extends TestCase3 {
             ++currentCycle;
             return value;
         }
+    }
+
+    private static Subsystem getSubsystem(Mechanism m) {
+        var subsytems = m.getReservableSubsystems();
+        assertEquals(1, subsytems.size());
+        return subsytems.iterator().next();
     }
 
     private final FakeMechanism fm1 = new FakeMechanism();
@@ -148,8 +155,8 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // make sure the procedures (commands, as seen by the CommandScheduler) are running
-        Command fm1cmd = CommandScheduler.getInstance().requiring(fm1);
-        Command fm2cmd = CommandScheduler.getInstance().requiring(fm2);
+        Command fm1cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
+        Command fm2cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNotNull(fm1cmd);
         assertNotNull(fm2cmd);
 
@@ -158,23 +165,23 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // make sure the same Commands are still running
-        assertEquals(fm1cmd, CommandScheduler.getInstance().requiring(fm1));
-        assertEquals(fm2cmd, CommandScheduler.getInstance().requiring(fm2));
+        assertEquals(fm1cmd, CommandScheduler.getInstance().requiring(getSubsystem(fm1)));
+        assertEquals(fm2cmd, CommandScheduler.getInstance().requiring(getSubsystem(fm2)));
 
         step(); // 1
 
         myRules.run();
 
         // make sure the same Commands are still running
-        assertEquals(fm1cmd, CommandScheduler.getInstance().requiring(fm1));
-        assertEquals(fm2cmd, CommandScheduler.getInstance().requiring(fm2));
+        assertEquals(fm1cmd, CommandScheduler.getInstance().requiring(getSubsystem(fm1)));
+        assertEquals(fm2cmd, CommandScheduler.getInstance().requiring(getSubsystem(fm2)));
 
         step(); // 2
 
         myRules.run();
         // the Commands should no longer be running
-        assertNull(CommandScheduler.getInstance().requiring(fm1));
-        assertNull(CommandScheduler.getInstance().requiring(fm2));
+        assertNull(CommandScheduler.getInstance().requiring(getSubsystem(fm1)));
+        assertNull(CommandScheduler.getInstance().requiring(getSubsystem(fm2)));
         step(); // 3
     }
 
@@ -198,7 +205,7 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // check that the expected Procedure is scheduled
-        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
 
@@ -208,7 +215,7 @@ public class RuleEngineTest extends TestCase3 {
         // procedure for the same rule
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procfin_p0"));
 
@@ -245,12 +252,12 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // fm1proc_p0 should run, not fm1proc_p1, since the former is higher priority
-        Command fm1cmd = CommandScheduler.getInstance().requiring(fm1);
+        Command fm1cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(fm1cmd);
         assertTrue(fm1cmd.getName().endsWith("fm1proc_p0"));
 
         // fm3proc_p2 should also run
-        Command fm3cmd = CommandScheduler.getInstance().requiring(fm3);
+        Command fm3cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm3));
         assertNotNull(fm3cmd);
         assertTrue(fm3cmd.getName().endsWith("fm3proc_p2"));
 
@@ -258,14 +265,14 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        fm1cmd = CommandScheduler.getInstance().requiring(fm1);
+        fm1cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNull(fm1cmd);
 
         step(); // 1
 
         myRules.run();
 
-        fm1cmd = CommandScheduler.getInstance().requiring(fm1);
+        fm1cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(fm1cmd);
         assertTrue(fm1cmd.getName().endsWith("fm1proc_p1"));
 
@@ -299,7 +306,7 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // check that the expected Procedure is scheduled
-        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1proc_p0"));
 
@@ -311,7 +318,7 @@ public class RuleEngineTest extends TestCase3 {
         // Mechanism
         // but is lower priority than the original procedure
         // the original Procedure should still be running
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1proc_p0"));
 
@@ -320,14 +327,14 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // original Procedure still running
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1proc_p0"));
 
         step(); // 2
 
         myRules.run();
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1proc_p2"));
 
@@ -355,7 +362,7 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // check that the expected Procedure is scheduled
-        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1proc_p1"));
 
@@ -363,7 +370,7 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1proc_p0"));
 
@@ -393,7 +400,7 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // check that the expected Procedure is scheduled
-        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
 
@@ -401,7 +408,7 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm2);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNull(cmd);
 
         step();
@@ -430,7 +437,7 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // check that the expected Procedure is scheduled
-        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
 
@@ -440,14 +447,14 @@ public class RuleEngineTest extends TestCase3 {
         // should continue
         // executing, since the first rule is higher priority
         myRules.run();
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
         step(); // 1
 
         // next iteration - the second rule's finished procedure should *not* execute
         myRules.run();
-        cmd = CommandScheduler.getInstance().requiring(fm2);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNull(cmd);
         step(); // 2
     }
@@ -475,7 +482,7 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // check that the expected Procedure is scheduled
-        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procnew_p1"));
 
@@ -483,7 +490,7 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm2);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNull(cmd);
 
         step();
@@ -514,7 +521,7 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // check that the expected Procedure is scheduled
-        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
 
@@ -522,7 +529,7 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procnew_p1"));
 
@@ -530,7 +537,7 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procfin_p1"));
 
@@ -538,14 +545,14 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNull(cmd);
 
         step(); // 3
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procfin_p0"));
 
@@ -577,7 +584,7 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // check that the expected Procedure is scheduled
-        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procnew_p1"));
 
@@ -585,7 +592,7 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
 
@@ -593,7 +600,7 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procfin_p0"));
 
@@ -601,7 +608,7 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procnew_p1"));
 
@@ -609,7 +616,7 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procfin_p1"));
 
@@ -641,7 +648,7 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // check that the expected Procedure is scheduled
-        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procnew_p1"));
 
@@ -649,7 +656,7 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
 
@@ -657,7 +664,7 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd);
         assertTrue(cmd.getName().endsWith("fm1procfin_p0"));
 
@@ -665,7 +672,7 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        cmd = CommandScheduler.getInstance().requiring(fm1);
+        cmd = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNull(cmd);
 
         step(); // 3
@@ -707,10 +714,10 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // check that both action Procedures are scheduled
-        Command cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd1);
         assertTrue(cmd1.getName().endsWith("predicate_ends_first_proc"));
-        Command cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        Command cmd2 = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNotNull(cmd2);
         assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
 
@@ -722,13 +729,13 @@ public class RuleEngineTest extends TestCase3 {
         // ONCE actions should be allowed to run after the rule has stopped triggering.
         assertEquals(2, predicateEndsFirstProc.get().age());
         assertFalse(predicateEndsFirstProc.get().isEnded());
-        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd1);
         assertTrue(cmd1.getName().endsWith("predicate_ends_first_proc"));
 
         // If a ONCE action completes, it should end and mechanism reservations released.
         assertTrue(actionEndsFirstProc.get().isEnded());
-        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        cmd2 = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNull(cmd2);
     }
 
@@ -768,10 +775,10 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // check that both action Procedures are scheduled
-        Command cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd1);
         assertTrue(cmd1.getName().endsWith("predicate_ends_first_proc"));
-        Command cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        Command cmd2 = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNotNull(cmd2);
         assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
 
@@ -782,13 +789,13 @@ public class RuleEngineTest extends TestCase3 {
 
         // ONCE_AND_HOLD actions should be cancelled after the rule has stopped triggering.
         assertTrue(predicateEndsFirstProc.get().isEnded());
-        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNull(cmd1);
 
         // If a ONCE_AND_HOLD action completes, it should end but mechanism reservations are
         // retained.
         assertTrue(actionEndsFirstProc.get().isEnded());
-        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        cmd2 = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNotNull(cmd2);
         assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
     }
@@ -829,10 +836,10 @@ public class RuleEngineTest extends TestCase3 {
         myRules.run();
 
         // check that both action Procedures are scheduled
-        Command cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd1);
         assertTrue(cmd1.getName().endsWith("predicate_ends_first_proc"));
-        Command cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        Command cmd2 = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNotNull(cmd2);
         assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
 
@@ -844,12 +851,12 @@ public class RuleEngineTest extends TestCase3 {
 
         // REPEATEDLY actions should be cancelled after the rule has stopped triggering.
         assertTrue(predicateEndsFirstProc.get().isEnded());
-        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNull(cmd1);
 
         // If a REPEATEDLY action completes, another instance should be started.
         assertFalse(actionEndsFirstProc.get().isEnded());
-        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        cmd2 = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNotNull(cmd2);
         assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
 
@@ -862,7 +869,7 @@ public class RuleEngineTest extends TestCase3 {
 
         assertTrue(previousActionInstance.isEnded());
         assertFalse(actionEndsFirstProc.get().isEnded());
-        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        cmd2 = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNotNull(cmd2);
         assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
     }
@@ -936,54 +943,54 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        Command cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd1);
         assertTrue(cmd1.getName().endsWith("root_proc"));
-        Command cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        Command cmd2 = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNull(cmd2);
-        Command cmd3 = CommandScheduler.getInstance().requiring(fm3);
+        Command cmd3 = CommandScheduler.getInstance().requiring(getSubsystem(fm3));
         assertNull(cmd3);
-        Command cmd4 = CommandScheduler.getInstance().requiring(fm4);
+        Command cmd4 = CommandScheduler.getInstance().requiring(getSubsystem(fm4));
         assertNotNull(cmd4);
         assertTrue(cmd4.getName().endsWith("positive_then_negative_combinator_proc"));
 
         step();
         myRules.run();
 
-        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd1);
         assertTrue(cmd1.getName().endsWith("root_proc"));
-        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        cmd2 = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNotNull(cmd2);
         assertTrue(cmd2.getName().endsWith("positive_combinator_proc"));
-        cmd3 = CommandScheduler.getInstance().requiring(fm3);
+        cmd3 = CommandScheduler.getInstance().requiring(getSubsystem(fm3));
         assertNull(cmd3);
-        cmd4 = CommandScheduler.getInstance().requiring(fm4);
+        cmd4 = CommandScheduler.getInstance().requiring(getSubsystem(fm4));
         assertNull(cmd4);
 
         step();
         myRules.run();
 
-        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNull(cmd1);
-        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        cmd2 = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNull(cmd2);
-        cmd3 = CommandScheduler.getInstance().requiring(fm3);
+        cmd3 = CommandScheduler.getInstance().requiring(getSubsystem(fm3));
         assertNotNull(cmd3);
         assertTrue(cmd3.getName().endsWith("negative_combinator_proc"));
-        cmd4 = CommandScheduler.getInstance().requiring(fm4);
+        cmd4 = CommandScheduler.getInstance().requiring(getSubsystem(fm4));
         assertNull(cmd4);
 
         step();
         myRules.run();
 
-        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNull(cmd1);
-        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        cmd2 = CommandScheduler.getInstance().requiring(getSubsystem(fm2));
         assertNull(cmd2);
-        cmd3 = CommandScheduler.getInstance().requiring(fm3);
+        cmd3 = CommandScheduler.getInstance().requiring(getSubsystem(fm3));
         assertNull(cmd3);
-        cmd4 = CommandScheduler.getInstance().requiring(fm4);
+        cmd4 = CommandScheduler.getInstance().requiring(getSubsystem(fm4));
         assertNull(cmd4);
     }
 
@@ -1042,28 +1049,28 @@ public class RuleEngineTest extends TestCase3 {
 
         myRules.run();
 
-        Command cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        Command cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd1);
         assertTrue(cmd1.getName().endsWith("root_newly_proc"));
 
         step();
         myRules.run();
 
-        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd1);
         assertTrue(cmd1.getName().endsWith("positive_combinator_proc"));
 
         step();
         myRules.run();
 
-        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd1);
         assertTrue(cmd1.getName().endsWith("root_finished_proc"));
 
         step();
         myRules.run();
 
-        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        cmd1 = CommandScheduler.getInstance().requiring(getSubsystem(fm1));
         assertNotNull(cmd1);
         assertTrue(cmd1.getName().endsWith("negative_combinator_proc"));
     }

@@ -5,6 +5,7 @@ import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.team766.controllers.PIDController;
 import com.team766.framework3.MechanismWithStatus;
+import com.team766.framework3.NoReservationRequired;
 import com.team766.framework3.Status;
 import com.team766.framework3.StatusBus;
 import com.team766.hal.EncoderReader;
@@ -215,19 +216,63 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                                         .times(turnVelocity)));
     }
 
-    public SwerveConfig getSwerveConfig() {
-        return config;
+    /**
+     * Overloads controlRobotOriented to work with a chassisSpeeds input
+     * @param chassisSpeeds
+     */
+    public void controlRobotOriented(ChassisSpeeds chassisSpeeds) {
+        movingToTarget = false;
+
+        double vx = chassisSpeeds.vxMetersPerSecond;
+        double vy = chassisSpeeds.vyMetersPerSecond;
+        double vang = chassisSpeeds.omegaRadiansPerSecond;
+
+        controlRobotOriented(vx, vy, vang);
     }
 
     /**
      * Uses controlRobotOriented() to control the robot relative to the field
+     * Sets robot to manual control mode rather than a rotation setpoint
      * @param x the x value for the position joystick, positive being forward, in meters/sec
      * @param y the y value for the position joystick, positive being left, in meters/sec
      * @param turn the turn value from the rotation joystick, positive being CCW, in radians/sec
      */
-    private void controlFieldOrientedBase(double x, double y, double turn) {
-        SmartDashboard.putString("Swerve Commands", "x: " + x + ", y: " + y + ", turn: " + turn);
+    public void controlFieldOriented(double x, double y, double turn) {
+        movingToTarget = false;
 
+        double yawRad = Math.toRadians(getStatus().heading());
+
+        // Applies a rotational translation to controlRobotOriented
+        // Counteracts the forward direction changing when the robot turns
+        controlRobotOriented(
+                Math.cos(-yawRad) * x - Math.sin(-yawRad) * y,
+                Math.sin(-yawRad) * x + Math.cos(-yawRad) * y,
+                turn);
+    }
+
+    /**
+     * Overloads controlFieldOriented to work with a chassisSpeeds input
+     * @param chassisSpeeds
+     */
+    public void controlFieldOriented(ChassisSpeeds chassisSpeeds) {
+        movingToTarget = false;
+
+        double vx = chassisSpeeds.vxMetersPerSecond;
+        double vy = chassisSpeeds.vyMetersPerSecond;
+        double vang = chassisSpeeds.omegaRadiansPerSecond;
+
+        controlFieldOriented(vx, vy, vang);
+    }
+
+    /**
+     * Uses controlRobotOriented() to control the robot relative to the ALLIANCE
+     * Sets robot to manual control mode rather than a rotation setpoint
+     * @param x the x value for the position joystick, positive being forward, in meters/sec
+     * @param y the y value for the position joystick, positive being left, in meters/sec
+     * @param turn the turn value from the rotation joystick, positive being CCW, in radians/sec
+     */
+    public void controlAllianceOriented(double x, double y, double turn) {
+        movingToTarget = false;
         final Optional<Alliance> alliance = DriverStation.getAlliance();
         double yawRad =
                 Math.toRadians(
@@ -245,24 +290,12 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     }
 
     /**
-     * Uses controlRobotOriented() to control the robot relative to the field
-     * Sets robot to manual control mode rather than a rotation setpoint
-     * @param x the x value for the position joystick, positive being forward, in meters/sec
-     * @param y the y value for the position joystick, positive being left, in meters/sec
-     * @param turn the turn value from the rotation joystick, positive being CCW, in radians/sec
-     */
-    public void controlFieldOriented(double x, double y, double turn) {
-        movingToTarget = false;
-        controlFieldOrientedBase(x, y, turn);
-    }
-
-    /**
-     * Allows for field oriented control of the robot's position while moving to a specific angle for rotation
+     * Allows for alliance oriented control of the robot's position while moving to a specific angle for rotation
      * @param x the x value for the position joystick, positive being forward
      * @param y the y value for the position joystick, positive being left
      * @param target rotational target as a Rotation2d, can input a null value
      */
-    public void controlFieldOrientedWithRotationTarget(double x, double y, Rotation2d target) {
+    public void controlAllianceOrientedWithRotationTarget(double x, double y, Rotation2d target) {
         if (target != null) {
             rotationPID.setSetpoint(target.getDegrees());
             // SmartDashboard.putNumber("Rotation Target", target.getDegrees());
@@ -273,32 +306,9 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         this.y = y;
     }
 
-    /**
-     * Overloads controlFieldOriented to work with a chassisSpeeds input
-     * @param chassisSpeeds
-     */
-    public void controlFieldOriented(ChassisSpeeds chassisSpeeds) {
-        movingToTarget = false;
-
-        double vx = chassisSpeeds.vxMetersPerSecond;
-        double vy = chassisSpeeds.vyMetersPerSecond;
-        double vang = chassisSpeeds.omegaRadiansPerSecond;
-
-        controlFieldOrientedBase(vx, vy, vang);
-    }
-
-    /**
-     * Overloads controlFieldOriented to work with a chassisSpeeds input
-     * @param chassisSpeeds
-     */
-    public void controlRobotOriented(ChassisSpeeds chassisSpeeds) {
-        movingToTarget = false;
-
-        double vx = chassisSpeeds.vxMetersPerSecond;
-        double vy = chassisSpeeds.vyMetersPerSecond;
-        double vang = chassisSpeeds.omegaRadiansPerSecond;
-
-        controlRobotOriented(vx, vy, vang);
+    @NoReservationRequired
+    public SwerveConfig getSwerveConfig() {
+        return config;
     }
 
     /*
@@ -337,7 +347,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     }
 
     public void resetCurrentPosition() {
-        kalmanFilter.setPos(new Translation2d());
+        kalmanFilter.resetPos();
     }
 
     private static Translation2d getPositionForWheel(
@@ -369,9 +379,15 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                 if (cameraTags.size() > 0) {
                     for (TimestampedApriltag tag : cameraTags) {
                         tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
+                        SmartDashboard.putNumber(
+                                "Vision Heading", Rotation2d.fromDegrees(heading).getDegrees());
+                        SmartDashboard.putNumber(
+                                "Vision Pos",
+                                tag.toRobotPosition(Rotation2d.fromDegrees(heading)).getX());
                     }
                     kalmanFilter.updateWithVisionMeasurement(
-                            tagPoses, cameraTags.get(0).collectTime());
+                            tagPoses, // RobotProvider.instance.getClock().getTime());
+                            cameraTags.get(0).collectTime());
                 }
             }
         }
@@ -424,7 +440,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     protected void run() {
         if (movingToTarget) {
             rotationPID.calculate(getStatus().heading());
-            controlFieldOrientedBase(
+            controlAllianceOriented(
                     x,
                     y,
                     (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD

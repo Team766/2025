@@ -12,20 +12,32 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorControllerCommandFailedException;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
+import com.team766.logging.Severity;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class CANSparkMaxMotorController extends SparkMax implements MotorController {
 
+    private final String deviceName;
     private Supplier<Double> sensorPositionSupplier;
     private Supplier<Double> sensorVelocitySupplier;
     private Function<Double, REVLibError> sensorPositionSetter;
     private Function<Boolean, REVLibError> sensorInvertedSetter;
     private boolean sensorInverted = false;
+    private boolean shouldReportDefaultCurrentLimit;
 
-    public CANSparkMaxMotorController(final int deviceId) {
+    public CANSparkMaxMotorController(String deviceName, final int deviceId) {
         super(deviceId, MotorType.kBrushless);
+
+        this.deviceName = deviceName;
+
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.smartCurrentLimit(10, 80, 200);
+        configureAndCheckRevError(config);
+        shouldReportDefaultCurrentLimit = true;
 
         // Set default feedback device. This ensures that our implementations of
         // getSensorPosition/getSensorVelocity return values that match what the
@@ -70,8 +82,29 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
         return sensorVelocitySupplier.get();
     }
 
+    private void reportDefaultCurrentLimit() {
+        if (shouldReportDefaultCurrentLimit) {
+            Logger.get(Category.HAL)
+                    .logRaw(
+                            Severity.ERROR,
+                            deviceName
+                                    + " is using the default current limit, which is probably"
+                                    + " lower than you want. Call"
+                                    + " yourMotor.setCurrentLimit(yourCurrentLimitValue); to"
+                                    + " resolve this error.");
+            shouldReportDefaultCurrentLimit = false;
+        }
+    }
+
+    @Override
+    public void set(double speed) {
+        reportDefaultCurrentLimit();
+        super.set(speed);
+    }
+
     @Override
     public void set(final ControlMode mode, final double value, double arbitraryFeedForward) {
+        reportDefaultCurrentLimit();
         switch (mode) {
             case Disabled:
                 disable();
@@ -269,7 +302,9 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
     @Override
     public void setSensorInverted(final boolean inverted) {
         sensorInverted = inverted;
-        revErrorToException(ExceptionTarget.LOG, sensorInvertedSetter.apply(inverted));
+        if (inverted) {
+            revErrorToException(ExceptionTarget.LOG, sensorInvertedSetter.apply(inverted));
+        }
     }
 
     @Override
@@ -283,6 +318,7 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
         SparkMaxConfig config = new SparkMaxConfig();
         config.smartCurrentLimit((int) (ampsLimit));
         configureAndCheckRevError(config);
+        shouldReportDefaultCurrentLimit = false;
     }
 
     @Override

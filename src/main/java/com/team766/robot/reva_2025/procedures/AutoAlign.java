@@ -17,7 +17,7 @@ public class AutoAlign extends Procedure {
     public AutoAlign(Pose2d targetPosition, SwerveDrive drive) {
         this.targetPosition = targetPosition;
         this.drive = reserve(drive);
-        pidControllerY = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_TRANSLATION_PID);
+        pidControllerX = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_TRANSLATION_PID);
         pidControllerY = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_TRANSLATION_PID);
         pidControllerRotation =
                 PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
@@ -25,23 +25,31 @@ public class AutoAlign extends Procedure {
 
     public void run(Context context) {
         Pose2d currentPosition;
-        double currentHeading;
+        double currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading();
 
         pidControllerX.setSetpoint(targetPosition.getX());
         pidControllerY.setSetpoint(targetPosition.getY());
-        pidControllerRotation.setSetpoint(targetPosition.getRotation().getDegrees());
+        double correctedTargetDegrees =
+                targetPosition.getRotation().getDegrees()
+                        + 360
+                                * (Math.round(
+                                        (currentHeading - targetPosition.getRotation().getDegrees())
+                                                / 360));
+        pidControllerRotation.setSetpoint(correctedTargetDegrees);
         while (!pidControllerX.isDone()
                 || !pidControllerY.isDone()
                 || !pidControllerRotation.isDone()) {
             currentPosition = getStatusOrThrow(SwerveDrive.DriveStatus.class).currentPosition();
             currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading();
+
             pidControllerX.calculate(currentPosition.getX());
             pidControllerY.calculate(currentPosition.getY());
             pidControllerRotation.calculate(currentHeading);
+
             drive.controlFieldOriented(
-                    pidControllerX.getOutput(),
-                    pidControllerY.getOutput(),
-                    pidControllerRotation.getOutput());
+                    pidControllerX.isDone() ? 0 : pidControllerX.getOutput(),
+                    pidControllerY.isDone() ? 0 : pidControllerY.getOutput(),
+                    pidControllerRotation.isDone() ? 0 : pidControllerRotation.getOutput());
             context.yield();
         }
         drive.stopDrive();

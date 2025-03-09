@@ -7,9 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.google.common.collect.FluentIterable;
 import com.team766.framework3.Rule.Cancellation;
 import com.team766.framework3.Rule.TriggerType;
 import com.team766.framework3.test.FakeMechanism;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -84,6 +86,12 @@ public class RuleTest {
         assertEquals(TriggerType.NEWLY, duckDuckGooseGoose.getCurrentTriggerType());
     }
 
+    private static Set<? extends Subsystem> getSubsystems(Set<Reservable> mechanisms) {
+        return FluentIterable.from(mechanisms)
+                .transformAndConcat(Reservable::getReservableSubsystems)
+                .toSet();
+    }
+
     @Test
     public void testGetCancellation() {
         Rule ruleWithOnce =
@@ -106,8 +114,8 @@ public class RuleTest {
 
     @Test
     public void testGetMechanismsToReserve() {
-        final Set<Mechanism> newlyMechanisms = Set.of(new FakeMechanism(), new FakeMechanism());
-        final Set<Mechanism> finishedMechanisms = Set.of(new FakeMechanism());
+        final Set<Reservable> newlyMechanisms = Set.of(new FakeMechanism(), new FakeMechanism());
+        final Set<Reservable> finishedMechanisms = Set.of(new FakeMechanism());
 
         Rule duckDuckGooseGoose =
                 new Rule(null, "duck duck goose goose", new DuckDuckGooseGoosePredicate())
@@ -117,28 +125,28 @@ public class RuleTest {
                         .withFinishedTriggeringProcedure(finishedMechanisms, () -> {});
 
         // NONE
-        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getSubsystemsToReserve());
 
         // NEWLY
         duckDuckGooseGoose.evaluate();
-        assertEquals(newlyMechanisms, duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(getSubsystems(newlyMechanisms), duckDuckGooseGoose.getSubsystemsToReserve());
 
         // nothing between NEWLY and FINISHED
         duckDuckGooseGoose.evaluate();
-        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getSubsystemsToReserve());
 
         // FINISHED
         duckDuckGooseGoose.evaluate();
-        System.out.println("X: " + duckDuckGooseGoose.toString());
-        assertEquals(finishedMechanisms, duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(
+                getSubsystems(finishedMechanisms), duckDuckGooseGoose.getSubsystemsToReserve());
 
         // check NONE again
         duckDuckGooseGoose.evaluate();
-        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getSubsystemsToReserve());
 
         // check newly again
         duckDuckGooseGoose.evaluate();
-        assertEquals(newlyMechanisms, duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(getSubsystems(newlyMechanisms), duckDuckGooseGoose.getSubsystemsToReserve());
     }
 
     @Test
