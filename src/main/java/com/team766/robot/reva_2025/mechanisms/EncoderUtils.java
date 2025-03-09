@@ -10,7 +10,7 @@ public final class EncoderUtils {
      * Utility class.
      */
     private EncoderUtils() {}
-    
+
     // Converts a target rotation (in degrees) to encoder units for the wrist motor.
 
     public static double coralWristDegreesToRotations(double angle) {

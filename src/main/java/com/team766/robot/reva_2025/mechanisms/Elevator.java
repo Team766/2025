@@ -8,8 +8,6 @@ import com.team766.hal.RobotProvider;
 import com.team766.hal.TimeOfFlightReader;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
-
-
 public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private MotorController elevatorLeftMotor;
     private MotorController elevatorRightMotor;
@@ -54,7 +52,8 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         elevatorRightMotor = RobotProvider.instance.getMotor(ConfigConstants.RIGHT_ELEVATOR_MOTOR);
         elevatorRightMotor.follow(elevatorLeftMotor);
         absoluteEncoder = RobotProvider.instance.getEncoder(ConfigConstants.ELEVATOR_ENCODER);
-        timeOfFlight = RobotProvider.instance.getTimeOfFlight(ConfigConstants.ELEVATOR_INTAKESENSOR);
+        timeOfFlight =
+                RobotProvider.instance.getTimeOfFlight(ConfigConstants.ELEVATOR_INTAKESENSOR);
         setPoint = 0;
     }
 
@@ -93,11 +92,18 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
     @Override
     protected ElevatorStatus updateStatus() {
-         if (!encoderInitialized && absoluteEncoder.isConnected() && timeOfFlight.wasLastMeasurementValid() && timeOfFlight.getDistance().isPresent()) {
+        if (!encoderInitialized
+                && absoluteEncoder.isConnected()
+                && timeOfFlight.wasLastMeasurementValid()
+                && timeOfFlight.getDistance().isPresent()) {
             double encoderPos = absoluteEncoder.getPosition();
             double timeOfFlightReading = timeOfFlight.getDistance().get();
-            double convertedPos = timeOfFlightReading + (encoderPos - timeOfFlightReading) % EncoderUtils.ELEVATOR_ABSOLUTE_ENCODER_RANGE;
-            elevatorLeftMotor.setSensorPosition(EncoderUtils.elevatorHeightToRotations(convertedPos));
+            double convertedPos =
+                    timeOfFlightReading
+                            + (encoderPos - timeOfFlightReading)
+                                    % EncoderUtils.ELEVATOR_ABSOLUTE_ENCODER_RANGE;
+            elevatorLeftMotor.setSensorPosition(
+                    EncoderUtils.elevatorHeightToRotations(convertedPos));
             encoderInitialized = true;
         }
         return new ElevatorStatus(
