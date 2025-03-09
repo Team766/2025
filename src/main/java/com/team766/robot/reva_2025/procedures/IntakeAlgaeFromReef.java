@@ -25,6 +25,7 @@ public class IntakeAlgaeFromReef extends Procedure {
         waitForStatusMatching(context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAlgaeStable());
         // context.waitForSeconds(2);
         intake.setArmAngle(Level.Shoot);
+        intake.setState(State.MatchVelocity);
         waitForStatusMatching(context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAtAngle());
         intake.setState(State.HoldAlgae);
     }

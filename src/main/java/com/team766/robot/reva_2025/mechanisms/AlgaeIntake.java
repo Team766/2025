@@ -88,12 +88,13 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     public enum State {
         // velocity is in revolutions per minute
         In(3000, 0),
-        InUntilStable(3000, 0),
+        InUntilStable(3000, 0), // velocities will be set automatically
+        MatchVelocity(0, 0), // velocities will be set automatically
         Stop(0, 0),
         Out(-3000, 0),
         Shoot(0, 3000),
         Feed(5000, 3000),
-        HoldAlgae(5000, 0),
+        HoldAlgae(5000, 0), // velocities will be set automatically
         Idle(500, 500);
 
         private final double intakeVelocity;
@@ -191,6 +192,16 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         shooterMotor.set(ControlMode.Velocity, shooterRpm);
     }
 
+    private void matchArmRpm() {
+        // get the arm rpm
+        double armRpm =
+                EncoderUtils.algaeArmRotationsToDegrees(armMotor.getSensorVelocity()) / 360.;
+        // set shooter rpm to match
+        shooterMotor.set(ControlMode.Velocity, armRpm); // 1:1 gear ratio
+        // set the intake rpm to match
+        intakeMotor.set(ControlMode.Velocity, armRpm * 3); // 3:1 gear ratio
+    }
+
     @Override
     protected void run() {
         double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getStatus().currentAngle()));
@@ -202,23 +213,23 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
             case InUntilStable:
                 setRpmForPosition(getStatus().intakeProximity());
                 break;
+            case MatchVelocity:
+                matchArmRpm();
+                break;
             case HoldAlgae:
                 holdAlgaeController.setSetpoint(ALGAE_HOLD_DISTANCE);
                 holdAlgaeController.calculate(getStatus().intakeProximity());
                 var output = holdAlgaeController.getOutput();
                 SmartDashboard.putNumber("Hold algae velocity", output);
                 intakeMotor.set(output);
-
                 break;
             case Stop:
                 intakeMotor.stopMotor();
                 shooterMotor.stopMotor();
                 break;
-
             default:
                 intakeMotor.set(
                         ControlMode.Velocity, level.getDirection() * state.getIntakeVelocity());
-
                 break;
         }
         shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
