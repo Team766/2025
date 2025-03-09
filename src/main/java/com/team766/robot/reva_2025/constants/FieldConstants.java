@@ -9,7 +9,7 @@ public class FieldConstants {
     private FieldConstants() {}
 
     public static final AprilTagFieldLayout APRIL_TAG_REEFSCAPE_LAYOUT =
-            AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+            AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     public static final double TEST_TAG_ID = 254;
     public static final Pose2d TEST_TAG_POSITION = new Pose2d();
