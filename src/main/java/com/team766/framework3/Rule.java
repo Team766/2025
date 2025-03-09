@@ -270,6 +270,7 @@ public class Rule {
 
     /* package */ void reset() {
         currentTriggerType = TriggerType.NONE;
+        log("reset");
     }
 
     /* package */ void evaluate() {
@@ -290,6 +291,7 @@ public class Rule {
                         case FINISHED -> TriggerType.NONE;
                     };
         }
+        log();
     }
 
     /* package */ Set<Subsystem> getSubsystemsToReserve() {
@@ -313,7 +315,8 @@ public class Rule {
     }
 
     /* package */ void log(String value) {
-        Logger.recordOutput("Rules/" + container.getName() + "/" + name, value);
+        String containerName = container == null ? "" : container.getName();
+        Logger.recordOutput("Rules/" + containerName + "/" + name, value);
     }
 
     /* package */ void log() {
