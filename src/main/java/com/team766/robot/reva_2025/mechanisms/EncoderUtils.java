@@ -15,26 +15,26 @@ public final class EncoderUtils {
 
     public static double coralWristDegreesToRotations(double angle) {
         // angle * net gear ratio * (rotations / degrees)
-        return angle * (4. / 1.) * (9. / 1.) * (64. / 24.) * (1. / 360.);
+        return angle * (4. / 1.) * (9. / 1.) * (48. / 14.) * (1. / 360.);
     }
 
     // Converts the wrist motor's rotations to degrees.
 
     public static double coralWristRotationsToDegrees(double rotations) {
         // rotations * net gear ratio * (degrees / rotations)
-        return rotations * (1. / 4.) * (1. / 9.) * (24. / 64.) * (360. / 1.);
+        return rotations * (1. / 4.) * (1. / 9.) * (14. / 48.) * (360. / 1.);
     }
 
     public static double algaeArmDegreesToRotations(double angle) {
         // angle * net gear ratio * (rotations / degrees)
-        return angle * (100. / 1.) * (3. / 1.) * (1. / 360.);
+        return angle * (45. / 1.) * (3. / 1.) * (1. / 360.);
     }
 
     // Converts the wrist motor's rotations to degrees.
 
     public static double algaeArmRotationsToDegrees(double rotations) {
         // rotations * net gear ratio * (degrees / rotations)
-        return rotations * (1. / 100.) * (1. / 3.) * (360. / 1.);
+        return rotations * (1. / 45.) * (1. / 3.) * (360. / 1.);
     }
 
     /**
@@ -43,7 +43,7 @@ public final class EncoderUtils {
      */
     public static double elevatorHeightToRotations(double height) {
         // height * net gear ratio * (rotations / height)
-        return height * (20. / 1.) * (1. / (1.02 * Math.PI));
+        return height * (9. / 1.) * (1. / (1.61 * Math.PI));
     }
 
     /**
@@ -51,25 +51,12 @@ public final class EncoderUtils {
      */
     public static double elevatorRotationsToHeight(double rotations) {
         // rotations * net gear ratio * (height / rotations)
-        return rotations * (1. / 20.) * ((1.02 * Math.PI) / 1.);
+        return rotations * (1. / 9.) * ((1.61 * Math.PI) / 1.);
     }
 
-    /**
-     * Converts a target rotation (in degrees) to encoder units for the shoulder motor.
-     *
-     * public static double shoulderDegreesToRotations(double angle) {
-     * // angle * sprocket ratio * net gear ratio * (rotations / degrees)
-     * return angle * (52.0 / 12.0) * (64.0 / 30.0) * (4. / 1.) * (3. / 1.) * (1. / 360.);
-     * }
-     */
+    public static final double ELEVATOR_ABSOLUTE_ENCODER_RANGE = elevatorRotationsToHeight(1);
 
-    /**
-     * Converts the shoulder motor's rotations to degrees.
-     * public static double shoulderRotationsToDegrees(double rotations) {
-     * // rotations * sprocket ratio * net gear ratio * (degrees / rotations)
-     * return rotations * (12.0 / 52.0) * (30.0 / 64.0) * (1. / 4.) * (1. / 3.) * (360. / 1.);
-     * }
-     */
+    public static final double CORAL_WRIST_ABSOLUTE_ENCODER_RANGE = coralWristRotationsToDegrees(1);
 
     /**
      * Cosine law
