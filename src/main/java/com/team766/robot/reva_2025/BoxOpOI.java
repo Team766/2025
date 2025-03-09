@@ -45,6 +45,14 @@ public class BoxOpOI extends RuleGroup {
                     algaeIntake.setArmAngle(Level.Stow);
                     elevator.setPosition(ElevatorPosition.ELEVATOR_CLIMB);
                     wrist.setAngle(WristPosition.CORAL_CLIMB);
+                }).whenTriggering(new RuleGroup(){
+                        {
+                                addRule("Move Climber Up/Down",
+                                boxopGamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS),
+                                ONCE_AND_HOLD,
+                                climber,
+                                () -> climber.climb(boxopGamepad.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS)));
+                        }
                 });
 
         // ALGAE INTAKE POSITIONS
@@ -138,6 +146,7 @@ public class BoxOpOI extends RuleGroup {
                 .withFinishedTriggeringProcedure(
                         algaeIntake,
                         () -> {
+                                // make sure we don't squish an algae
                                 var status = getStatus(AlgaeIntake.AlgaeIntakeStatus.class);
                                 if (status.isPresent() && status.get().intakeProximity().isPresent()) {
                                         algaeIntake.setArmAngle(Level.GroundIntake);

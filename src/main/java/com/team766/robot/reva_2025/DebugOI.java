@@ -274,7 +274,7 @@ public class DebugOI extends RuleGroup {
                                         "Debug Coral Graber In",
                                         macropad.whenButton(InputConstants.INTAKE_IN),
                                         coral,
-                                        () -> coral.in());
+                                        () -> coral.in()).withFinishedTriggeringProcedure(coral, () -> coral.stop());
                                 addRule(
                                         "Debug Coral Grabber Out",
                                         macropad.whenButton(InputConstants.INTAKE_OUT),
