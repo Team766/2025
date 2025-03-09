@@ -6,10 +6,11 @@ import com.team766.framework3.Status;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.wpilib.PigeonGyro;
 import com.team766.library.ValueProvider;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_ENCODER;
-
+import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_GYRO;
 
 public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
@@ -19,7 +20,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     private final ValueProvider<Double> ffGain;
     private boolean noPIDMode;
     private final EncoderReader absoluteEncoder;
-    private static final double DEFAULT_POSITION = 77.0; //FIX 
+    private final PigeonGyro gyro;
     private boolean encoderInitialized = false;
 
     public record WristStatus(double currentAngle, double targetAngle) implements Status {
@@ -61,10 +62,10 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         wristMotor = RobotProvider.instance.getMotor(ConfigConstants.WRIST_MOTOR);
         ffGain = ConfigFileReader.getInstance().getDouble(ConfigConstants.WRIST_FFGAIN);
         setPoint = WristPosition.CORAL_START.getAngle();
-        wristMotor.setSensorPosition(EncoderUtils.coralWristDegreesToRotations(setPoint));
         noPIDMode = false;
         absoluteEncoder = RobotProvider.instance.getEncoder(WRIST_ENCODER);
-        wristMotor.setSensorPosition(DEFAULT_POSITION);
+        gyro = (PigeonGyro) RobotProvider.instance.getGyro(WRIST_GYRO);
+        gyro.configurePosition(90, 0, -90);
     }
 
     public void setAngle(WristPosition position) {
@@ -98,13 +99,13 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     @Override
     protected WristStatus updateStatus() {
-         if (!encoderInitialized && absoluteEncoder.isConnected()) {
-            double absPos = absoluteEncoder.getPosition() - 0.071; //FIX 
-            double convertedPos = EncoderUtils.wristAbsoluteEncoderToMotorRotations(absPos);
-            wristMotor.setSensorPosition(convertedPos);
+        if (!encoderInitialized && absoluteEncoder.isConnected()) {
+            double encoderPos = absoluteEncoder.getPosition();
+            double gyroReading = gyro.getRoll() + 180;
+            double convertedPos = gyroReading + (encoderPos - gyroReading) % EncoderUtils.CORAL_WRIST_ABSOLUTE_ENCODER_RANGE;
+            wristMotor.setSensorPosition(EncoderUtils.coralWristDegreesToRotations(convertedPos));
             encoderInitialized = true;
         }
-
         return new WristStatus(
                 EncoderUtils.coralWristRotationsToDegrees(wristMotor.getSensorPosition()),
                 setPoint);

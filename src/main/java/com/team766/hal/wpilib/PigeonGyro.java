@@ -1,10 +1,15 @@
 package com.team766.hal.wpilib;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.team766.hal.GyroReader;
+import com.team766.hal.MotorControllerCommandFailedException;
+import com.team766.hal.wpilib.BaseCTREMotorController.ExceptionTarget;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -31,6 +36,14 @@ public class PigeonGyro implements GyroReader {
     @Override
     public void setAngle(double angle) {
         pigeon.setYaw(angle);
+    }
+
+    public void configurePosition(double yaw, double pitch, double roll) {
+        StatusCode status = pigeon.getConfigurator().apply(new MountPoseConfigs().withMountPoseYaw(yaw).withMountPosePitch(pitch).withMountPoseRoll(roll));
+        if (!status.isOK()) {
+            Logger.get(Category.GYRO)
+                .logData(Severity.ERROR, "Unable to configure position", status.toString());
+        }
     }
 
     @Override
@@ -76,4 +89,5 @@ public class PigeonGyro implements GyroReader {
                 .logData(Severity.ERROR, "Unable to get angular velocity: %s", rate.toString());
         return 0;
     }
+
 }
