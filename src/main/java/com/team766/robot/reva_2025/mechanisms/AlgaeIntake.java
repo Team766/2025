@@ -13,7 +13,6 @@ import com.team766.library.ValueProvider;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.lang.StackWalker.Option;
 import java.util.Optional;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
