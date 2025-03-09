@@ -47,6 +47,117 @@ public class BoxOpOI extends RuleGroup {
                     wrist.setAngle(WristPosition.CORAL_CLIMB);
                 });
 
+        // ALGAE INTAKE POSITIONS
+
+        addRule(
+                "Queue Algae Intake to Stow Position",
+                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_STOW,
+                ONCE,
+                algaeIntake,
+                () -> {
+                    queuedControl.algaeLevel = Level.Stow;
+                });
+
+        addRule(
+                "Queue Algae Intake to Ground Intake Position",
+                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_GROUND,
+                ONCE,
+                algaeIntake,
+                () -> {
+                    queuedControl.algaeLevel = Level.GroundIntake;
+                });
+
+        addRule(
+                "Queue Algae Intake to L2/L3 Position",
+                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L2_L3,
+                ONCE,
+                algaeIntake,
+                () -> {
+                    queuedControl.algaeLevel = Level.L2L3AlgaeIntake;
+                });
+
+        addRule(
+                "Queue Algae Intake to L3/L4 Position",
+                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L3_L4,
+                ONCE,
+                Set.of(elevator, wrist, algaeIntake),
+                () -> {
+                    if (queuedControl.scoreHeight == ScoreHeight.L2) {
+                            queuedControl.scoreHeight = ScoreHeight.Intake;
+                    }
+                    queuedControl.algaeLevel = Level.L3L4AlgaeIntake;
+                });
+
+        addRule(
+                        "Move Algae Intake to Target Position",
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON),
+                        ONCE,
+                        algaeIntake,
+                        () -> {
+                            algaeIntake.setArmAngle(queuedControl.algaeLevel);
+                        })
+                .whenTriggering(
+                        new RuleGroup() {
+                            {
+                                addRule(
+                                        "Spin Algae Intake Motor In",
+                                        new LogicalAnd(
+                                                boxopGamepad.whenAxisMoved(
+                                                        InputConstants
+                                                                .BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                                                boxopGamepad.whenButton(
+                                                        InputConstants.GAMEPAD_START_BUTTON)),
+                                        ONCE_AND_HOLD,
+                                        algaeIntake,
+                                        () -> {
+                                            algaeIntake.setState(AlgaeIntake.State.Out);
+                                        });
+
+                                addRule(
+                                        "Spin Algae Intake Motor Out",
+                                        boxopGamepad.whenAxisMoved(
+                                                InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                                        ONCE_AND_HOLD,
+                                        algaeIntake,
+                                        () -> {
+                                            algaeIntake.setState(AlgaeIntake.State.In);
+                                        });
+                                addRule(
+                                        "Nudge Algae",
+                                        boxopGamepad.whenAxisMoved(
+                                                InputConstants.AXIS_ALGAE_FINETUNE),
+                                        ONCE_AND_HOLD,
+                                        algaeIntake,
+                                        () -> {
+                                            algaeIntake.nudge(
+                                                    boxopGamepad.getAxis(
+                                                            InputConstants.AXIS_ALGAE_FINETUNE));
+                                        });
+                            }
+                        })
+                .withFinishedTriggeringProcedure(
+                        algaeIntake,
+                        () -> {
+                                var status = getStatus(AlgaeIntake.AlgaeIntakeStatus.class);
+                                if (status.isPresent() && status.get().intakeProximity().isPresent()) {
+                                        algaeIntake.setArmAngle(Level.GroundIntake);
+                                } else {
+                                        algaeIntake.setArmAngle(Level.Stow);
+                                }
+                        });
+
+        // ALGAE INTAKE MOTOR CONTROLS / SHOOTING
+
+        addRule(
+                "Spin Up Algae Shooter Motor",
+                boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_SHOOTER_ON),
+                ONCE_AND_HOLD,
+                algaeIntake,
+                () -> {
+                    algaeIntake.setState(AlgaeIntake.State.Shoot);
+                    algaeIntake.setArmAngle(Level.Shoot);
+                });
+        
         // ELEVATOR AND WRIST
 
         addRule(
@@ -54,19 +165,11 @@ public class BoxOpOI extends RuleGroup {
                 boxopGamepad.whenAxisMoved(
                         InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
                 ONCE_AND_HOLD,
-                Set.of(algaeIntake, wrist, elevator, coralIntake),
+                Set.of(wrist, elevator, coralIntake),
                 () -> {
-                        new CoralStationPositionAndIntake(algaeIntake, elevator, wrist, coralIntake);
+                        new CoralStationPositionAndIntake(elevator, wrist, coralIntake);
                 });
 
-        addRule(
-                "Queue Elevator and Wrist to Intake Position",
-                boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_INTAKE),
-                ONCE,
-                Set.of(elevator, wrist),
-                () -> {
-                    queuedControl.scoreHeight = ScoreHeight.Intake;
-                });
         addRule(
                 "Queue Elevator and Wrist to L1 Position",
                 boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L1),
@@ -74,6 +177,17 @@ public class BoxOpOI extends RuleGroup {
                 Set.of(elevator, wrist),
                 () -> {
                     queuedControl.scoreHeight = ScoreHeight.L1;
+                });
+        addRule(
+                "Queue Elevator and Wrist to L2 Position",
+                boxopGamepad.whenButton(InputConstants.BUTTON_ELEVATOR_WRIST_L2),
+                ONCE,
+                Set.of(elevator, wrist, algaeIntake),
+                () -> {
+                    if (queuedControl.algaeLevel == Level.L3L4AlgaeIntake) {
+                            queuedControl.algaeLevel = Level.Stow;
+                    }
+                    queuedControl.scoreHeight = ScoreHeight.L2;
                 });
 
         addRule(
@@ -137,111 +251,6 @@ public class BoxOpOI extends RuleGroup {
                             elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
                             wrist.setAngle(WristPosition.CORAL_INTAKE);
                         });
-
-        // ALGAE INTAKE POSITIONS
-
-        addRule(
-                "Queue Algae Intake to Stow Position",
-                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_STOW,
-                ONCE,
-                algaeIntake,
-                () -> {
-                    queuedControl.algaeLevel = Level.Stow;
-                });
-
-        addRule(
-                "Queue Algae Intake to Ground Intake Position",
-                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_GROUND,
-                ONCE,
-                algaeIntake,
-                () -> {
-                    queuedControl.algaeLevel = Level.GroundIntake;
-                });
-
-        addRule(
-                "Queue Algae Intake to L2/L3 Position",
-                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L2_L3,
-                ONCE,
-                algaeIntake,
-                () -> {
-                    queuedControl.algaeLevel = Level.L2L3AlgaeIntake;
-                });
-
-        addRule(
-                "Queue Algae Intake to L3/L4 Position",
-                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L3_L4,
-                ONCE,
-                algaeIntake,
-                () -> {
-                    queuedControl.algaeLevel = Level.L3L4AlgaeIntake;
-                });
-
-        addRule(
-                        "Move Algae Intake to Target Position",
-                        boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON),
-                        ONCE,
-                        algaeIntake,
-                        () -> {
-                            algaeIntake.setArmAngle(queuedControl.algaeLevel);
-                        })
-                .whenTriggering(
-                        new RuleGroup() {
-                            {
-                                addRule(
-                                        "Spin Algae Intake Motor In",
-                                        new LogicalAnd(
-                                                boxopGamepad.whenAxisMoved(
-                                                        InputConstants
-                                                                .BUTTON_ALGAE_MOTOR_INTAKE_POWER),
-                                                boxopGamepad.whenButton(
-                                                        InputConstants.GAMEPAD_START_BUTTON)),
-                                        ONCE_AND_HOLD,
-                                        algaeIntake,
-                                        () -> {
-                                            algaeIntake.setState(AlgaeIntake.State.Out);
-                                        });
-
-                                addRule(
-                                        "Spin Algae Intake Motor Out",
-                                        boxopGamepad.whenAxisMoved(
-                                                InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
-                                        ONCE_AND_HOLD,
-                                        algaeIntake,
-                                        () -> {
-                                            algaeIntake.setState(AlgaeIntake.State.In);
-                                        });
-                                addRule(
-                                        "Nudge Algae",
-                                        boxopGamepad.whenAxisMoved(
-                                                InputConstants.AXIS_ALGAE_FINETUNE),
-                                        ONCE_AND_HOLD,
-                                        algaeIntake,
-                                        () -> {
-                                            algaeIntake.nudge(
-                                                    boxopGamepad.getAxis(
-                                                            InputConstants.AXIS_ALGAE_FINETUNE));
-                                        });
-                            }
-                        })
-                .withFinishedTriggeringProcedure(
-                        algaeIntake,
-                        () -> {
-                                var status = getStatus(AlgaeIntake.AlgaeIntakeStatus.class);
-                                if (status.isPresent() && status.get().)
-                            algaeIntake.setArmAngle(Level.Stow);
-                        });
-
-        // ALGAE INTAKE MOTOR CONTROLS / SHOOTING
-
-        addRule(
-                "Spin Up Algae Shooter Motor",
-                boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_SHOOTER_ON),
-                ONCE_AND_HOLD,
-                algaeIntake,
-                () -> {
-                    algaeIntake.setState(AlgaeIntake.State.Shoot);
-                    algaeIntake.setArmAngle(Level.Shoot);
-                });
 
     }
 }
