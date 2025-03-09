@@ -279,7 +279,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     protected AlgaeIntakeStatus updateStatus() {
         if (!encoderInitialized && absoluteEncoder.isConnected()) {
             double encoderPos = absoluteEncoder.getPosition();
-            armMotor.setSensorPosition(EncoderUtils.algaeArmDegreesToRotations(encoderPos));
+            armMotor.setSensorPosition(encoderPos * 45.);
             encoderInitialized = true;
         }
 

@@ -100,7 +100,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
             double timeOfFlightReading = timeOfFlight.getDistance().get();
             double convertedPos =
                     timeOfFlightReading
-                            + (encoderPos - timeOfFlightReading)
+                            + (encoderPos * 1.61 * Math.PI - timeOfFlightReading)
                                     % EncoderUtils.ELEVATOR_ABSOLUTE_ENCODER_RANGE;
             elevatorLeftMotor.setSensorPosition(
                     EncoderUtils.elevatorHeightToRotations(convertedPos));
