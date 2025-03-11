@@ -102,7 +102,7 @@ public class Lights extends RuleEngine implements StatusesMixin {
         addRule(
                 "Lights for Successful Algae Intake",
                 whenRecentStatusMatching(
-                        AlgaeIntake.AlgaeIntakeStatus.class, 2.0, s -> s.algaeIntakeSuccessful()),
+                        AlgaeIntake.AlgaeIntakeStatus.class, 2.0, s -> s.isAlgaeStable()),
                 leds,
                 () -> {
                     leds.setColor(ColorConstants.GREEN);

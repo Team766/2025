@@ -12,11 +12,12 @@ public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStat
     private static final double POWER_OUT = -1.0;
     private State state = State.Stop;
     private MotorController motor;
+    public static final double INTAKE_CURRENT_THRESHOLD = 8;
 
     public static record CoralIntakeStatus(double intakePower, double current, State state)
             implements Status {
         public boolean coralIntakeSuccessful() {
-            return true; // FIX THIS WITH SENSOR
+            return current > INTAKE_CURRENT_THRESHOLD;
         }
     }
 
@@ -24,7 +25,8 @@ public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStat
         // velocity is in revolutions per minute
         In,
         Out,
-        Stop
+        Stop,
+        Idle
     }
 
     public CoralIntake() {
@@ -39,14 +41,17 @@ public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStat
 
     public void out() {
         motor.set(POWER_OUT);
+        state = State.Out;
     }
 
     public void idle() {
         motor.set(POWER_IDLE);
+        state = State.Idle;
     }
 
     public void stop() {
         motor.set(0.0);
+        state = State.Stop;
     }
 
     @Override
