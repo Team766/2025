@@ -2,8 +2,10 @@ package com.team766.robot.reva_2025.mechanisms;
 
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
+import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.TimeOfFlightReader;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
 public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
@@ -11,7 +13,11 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private MotorController elevatorRightMotor;
     private static final double NUDGE_AMOUNT = 5;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
+    private final EncoderReader absoluteEncoder;
+    private final TimeOfFlightReader timeOfFlight;
+    private boolean encoderInitialized = false;
     private double setPoint;
+    private boolean noPIDMode;
 
     public static record ElevatorStatus(double currentHeight, double targetHeight)
             implements Status {
@@ -20,18 +26,19 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         }
     }
 
-    public enum Position {
-        ELEVATOR_TOP(22),
+    public enum ElevatorPosition {
+        ELEVATOR_TOP(15.5),
         ELEVATOR_BOTTOM(0),
-        ELEVATOR_INTAKE(10),
-        ELEVATOR_L1(10),
-        ELEVATOR_L2(14),
-        ELEVATOR_L3(18),
-        ELEVATOR_L4(ELEVATOR_TOP.getHeight());
+        ELEVATOR_INTAKE(7),
+        ELEVATOR_L1(0),
+        ELEVATOR_L2(0),
+        ELEVATOR_L3(0),
+        ELEVATOR_L4(ELEVATOR_TOP.getHeight()),
+        ELEVATOR_CLIMB(5);
 
         double height = 0;
 
-        Position(double height) {
+        ElevatorPosition(double height) {
             this.height = height;
         }
 
@@ -44,19 +51,22 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         elevatorLeftMotor = RobotProvider.instance.getMotor(ConfigConstants.LEFT_ELEVATOR_MOTOR);
         elevatorRightMotor = RobotProvider.instance.getMotor(ConfigConstants.RIGHT_ELEVATOR_MOTOR);
         elevatorRightMotor.follow(elevatorLeftMotor);
-        elevatorLeftMotor.setSensorPosition(0);
+        absoluteEncoder = RobotProvider.instance.getEncoder(ConfigConstants.ELEVATOR_ENCODER);
+        timeOfFlight =
+                RobotProvider.instance.getTimeOfFlight(ConfigConstants.ELEVATOR_INTAKESENSOR);
         setPoint = 0;
     }
 
     public void setPosition(double setPosition) {
+        noPIDMode = false;
         setPoint =
                 com.team766.math.Math.clamp(
                         setPosition,
-                        Position.ELEVATOR_BOTTOM.getHeight(),
-                        Position.ELEVATOR_TOP.getHeight());
+                        ElevatorPosition.ELEVATOR_BOTTOM.getHeight(),
+                        ElevatorPosition.ELEVATOR_TOP.getHeight());
     }
 
-    public void setPosition(Position position) {
+    public void setPosition(ElevatorPosition position) {
         setPosition(position.getHeight());
     }
 
@@ -66,15 +76,37 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         setPosition(nudgePosition);
     }
 
+    public void nudgeNoPID(double power) {
+        noPIDMode = true;
+        elevatorLeftMotor.set(power);
+    }
+
     @Override
     protected void run() {
-        elevatorLeftMotor.set(
-                MotorController.ControlMode.Position,
-                EncoderUtils.elevatorHeightToRotations(setPoint));
+        if (!noPIDMode) {
+            elevatorLeftMotor.set(
+                    MotorController.ControlMode.Position,
+                    EncoderUtils.elevatorHeightToRotations(setPoint));
+        }
     }
 
     @Override
     protected ElevatorStatus updateStatus() {
+        if (!encoderInitialized
+                && absoluteEncoder.isConnected()
+                && timeOfFlight.wasLastMeasurementValid()
+                && timeOfFlight.getDistance().isPresent()) {
+            double encoderPos = absoluteEncoder.getPosition();
+            double timeOfFlightReading = timeOfFlight.getDistance().get();
+            double convertedPos =
+                    timeOfFlightReading
+                            + Math.IEEEremainder(
+                                    encoderPos * 1.61 * Math.PI - timeOfFlightReading,
+                                    EncoderUtils.ELEVATOR_ABSOLUTE_ENCODER_RANGE);
+            elevatorLeftMotor.setSensorPosition(
+                    EncoderUtils.elevatorHeightToRotations(convertedPos));
+            encoderInitialized = true;
+        }
         return new ElevatorStatus(
                 EncoderUtils.elevatorRotationsToHeight(elevatorLeftMotor.getSensorPosition()),
                 setPoint);

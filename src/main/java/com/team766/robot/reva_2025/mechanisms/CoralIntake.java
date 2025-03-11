@@ -7,7 +7,8 @@ import com.team766.hal.RobotProvider;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 
 public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStatus> {
-    private static final double POWER_IN = 1.0;
+    private static final double POWER_IN = 0.40;
+    private static final double POWER_IDLE = 0.20;
     private static final double POWER_OUT = -1.0;
     private MotorController motor;
 
@@ -15,6 +16,7 @@ public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStat
 
     public CoralIntake() {
         motor = RobotProvider.instance.getMotor("coralIntake.motor");
+        motor.setCurrentLimit(30);
     }
 
     public void in() {
@@ -25,13 +27,12 @@ public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStat
         motor.set(POWER_OUT);
     }
 
-    public void stop() {
-        motor.set(0.0);
+    public void idle() {
+        motor.set(POWER_IDLE);
     }
 
-    @Override
-    protected void onMechanismIdle() {
-        stop();
+    public void stop() {
+        motor.set(0.0);
     }
 
     @Override

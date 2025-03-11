@@ -29,7 +29,7 @@ public class CANcoderEncoder implements EncoderReader {
 
     @Override
     public double getDistance() {
-        StatusSignal<Angle> position = cancoder.getPosition();
+        StatusSignal<Angle> position = cancoder.getAbsolutePosition();
         if (!position.getStatus().isOK()) {
             Logger.get(Category.HAL)
                     .logData(
