@@ -2,8 +2,10 @@ package com.team766.robot.reva_2025.mechanisms;
 
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
+import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.TimeOfFlightReader;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
 public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
@@ -11,6 +13,9 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private MotorController elevatorRightMotor;
     private static final double NUDGE_AMOUNT = 5;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
+    private final EncoderReader absoluteEncoder;
+    private final TimeOfFlightReader timeOfFlight;
+    private boolean encoderInitialized = false;
     private double setPoint;
     private boolean noPIDMode;
 
@@ -28,7 +33,8 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         ELEVATOR_L1(0),
         ELEVATOR_L2(0),
         ELEVATOR_L3(0),
-        ELEVATOR_L4(ELEVATOR_TOP.getHeight());
+        ELEVATOR_L4(ELEVATOR_TOP.getHeight()),
+        ELEVATOR_CLIMB(5);
 
         double height = 0;
 
@@ -45,7 +51,9 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         elevatorLeftMotor = RobotProvider.instance.getMotor(ConfigConstants.LEFT_ELEVATOR_MOTOR);
         elevatorRightMotor = RobotProvider.instance.getMotor(ConfigConstants.RIGHT_ELEVATOR_MOTOR);
         elevatorRightMotor.follow(elevatorLeftMotor);
-        elevatorLeftMotor.setSensorPosition(0);
+        absoluteEncoder = RobotProvider.instance.getEncoder(ConfigConstants.ELEVATOR_ENCODER);
+        timeOfFlight =
+                RobotProvider.instance.getTimeOfFlight(ConfigConstants.ELEVATOR_INTAKESENSOR);
         setPoint = 0;
     }
 
@@ -84,6 +92,21 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
     @Override
     protected ElevatorStatus updateStatus() {
+        if (!encoderInitialized
+                && absoluteEncoder.isConnected()
+                && timeOfFlight.wasLastMeasurementValid()
+                && timeOfFlight.getDistance().isPresent()) {
+            double encoderPos = absoluteEncoder.getPosition();
+            double timeOfFlightReading = timeOfFlight.getDistance().get();
+            double convertedPos =
+                    timeOfFlightReading
+                            + Math.IEEEremainder(
+                                    encoderPos * 1.61 * Math.PI - timeOfFlightReading,
+                                    EncoderUtils.ELEVATOR_ABSOLUTE_ENCODER_RANGE);
+            elevatorLeftMotor.setSensorPosition(
+                    EncoderUtils.elevatorHeightToRotations(convertedPos));
+            encoderInitialized = true;
+        }
         return new ElevatorStatus(
                 EncoderUtils.elevatorRotationsToHeight(elevatorLeftMotor.getSensorPosition()),
                 setPoint);

@@ -4,6 +4,7 @@ import com.team766.config.ConfigFileReader;
 import com.team766.controllers.PIDController;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
+import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
@@ -32,11 +33,13 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     private Level level;
     private double targetAngle;
     private boolean noPIDMode;
+    private final EncoderReader absoluteEncoder;
     private final ValueProvider<Double> ffGain;
     private static final double POSITION_LOCATION_THRESHOLD = 1;
     private final PIDController holdAlgaeController;
     private static final double SHOOTER_SPEED_TOLERANCE = 100;
     private static final double NUDGE_AMOUNT = 5;
+    private boolean encoderInitialized = false;
 
     // TODO: Intake and shooter motor should drive when we shoot. Shooter motor should be slgithly
     // slower than the intake motor
@@ -77,6 +80,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         intakeSensor =
                 RobotProvider.instance.getTimeOfFlight(ConfigConstants.ALGAEINTAKE_INTAKESENSOR);
         intakeSensor.setRange(Range.Short);
+        absoluteEncoder = RobotProvider.instance.getEncoder(ConfigConstants.ALGAE_INTAKE_ENCODER);
 
         intakeMotor.setCurrentLimit(115);
         shooterMotor.setCurrentLimit(80);
@@ -273,6 +277,12 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
 
     @Override
     protected AlgaeIntakeStatus updateStatus() {
+        if (!encoderInitialized && absoluteEncoder.isConnected()) {
+            double encoderPos = absoluteEncoder.getPosition();
+            armMotor.setSensorPosition(encoderPos * 45.);
+            encoderInitialized = true;
+        }
+
         Optional<Double> intakeProximity = intakeSensor.getDistance();
         Optional<Double> ambientSignal = intakeSensor.getAmbientSignal();
 

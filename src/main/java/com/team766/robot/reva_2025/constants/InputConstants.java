@@ -6,8 +6,8 @@ public final class InputConstants extends com.team766.robot.common.constants.Inp
     public static final int BOXOP_GAMEPAD = 2;
 
     // All controls on gamepad
-    public static final int BUTTON_ELEVATOR_WRIST_INTAKE = GAMEPAD_A_BUTTON;
-    public static final int BUTTON_ELEVATOR_WRIST_L1 = GAMEPAD_X_BUTTON;
+    public static final int BUTTON_ELEVATOR_WRIST_L1 = GAMEPAD_A_BUTTON;
+    public static final int BUTTON_ELEVATOR_WRIST_L2 = GAMEPAD_X_BUTTON;
     public static final int BUTTON_ELEVATOR_WRIST_L3 = GAMEPAD_B_BUTTON;
     public static final int BUTTON_ELEVATOR_WRIST_L4 = GAMEPAD_Y_BUTTON;
     public static final int BUTTON_ELEVATOR_WRIST_MOVE_TARGETPOSITION = GAMEPAD_RIGHT_BUMPER_BUTTON;
@@ -26,6 +26,7 @@ public final class InputConstants extends com.team766.robot.common.constants.Inp
     // Controls on joysticks
     public static final int BUTTON_CORAL_PLACE = JOYSTICK_RIGHT_BUTTON;
     public static final int BUTTON_ALGAE_SHOOT = JOYSTICK_LEFT_BUTTON;
+    public static final int BUTTON_AUTO_SHOOT = JOYSTICK_TRIGGER;
     public static final int BUTTON_CORAL_AUTO_PLACE_LEFT = JOYSTICK_LEFT_BUTTON;
     public static final int BUTTON_CORAL_AUTO_PLACE_RIGHT = JOYSTICK_RIGHT_BUTTON;
 
