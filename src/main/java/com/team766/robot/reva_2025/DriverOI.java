@@ -24,13 +24,14 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
             QueuedControl queuedControl) {
         super(leftJoystick, rightJoystick, drive);
         addRule(
-                "Outtake Coral",
-                leftJoystick.whenButton(InputConstants.BUTTON_CORAL_PLACE),
-                ONCE_AND_HOLD,
-                coralIntake,
-                () -> {
-                    coralIntake.out();
-                });
+                        "Outtake Coral",
+                        leftJoystick.whenButton(InputConstants.BUTTON_CORAL_PLACE),
+                        ONCE_AND_HOLD,
+                        coralIntake,
+                        () -> {
+                            coralIntake.out();
+                        })
+                .withFinishedTriggeringProcedure(coralIntake, () -> coralIntake.stop());
         addRule(
                 "Shoot Algae",
                 leftJoystick.whenButton(InputConstants.BUTTON_ALGAE_SHOOT),
