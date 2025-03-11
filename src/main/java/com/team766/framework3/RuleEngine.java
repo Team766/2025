@@ -93,11 +93,6 @@ public class RuleEngine extends RuleGroupBase {
         // what the Rule pre-computed.
 
         // evaluate each rule
-        // NOTE: as part of evaluating Rules, each Rule queues up what it should log; however, we
-        // wait until
-        // we've evaluated all Rules to flush the logs, as we may end up preempting either that Rule
-        // or another Rule
-        // based on resource contention and Rule priority.
         ruleLoop:
         for (Rule rule : rules.values()) {
             try {
