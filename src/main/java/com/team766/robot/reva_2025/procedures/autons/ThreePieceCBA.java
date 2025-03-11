@@ -11,17 +11,18 @@ import com.team766.robot.reva_2025.procedures.CoralStationPositionAndIntake;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class ThreePieceJLA extends PathSequenceAuto {
-    public ThreePieceJLA(SwerveDrive drive, CoralIntake intake, Wrist wrist, Elevator elevator) {
-        super(drive, new Pose2d(7.611, 6.18, Rotation2d.fromDegrees(-180)));
-        addPath("Start Blue 2 - Reef J");
+public class ThreePieceCBA extends PathSequenceAuto {
+    public ThreePieceCBA(SwerveDrive drive, CoralIntake intake, Wrist wrist, Elevator elevator) {
+        super(drive, new Pose2d(7.648, 0.772, Rotation2d.fromDegrees(-180)));
+        addPath("Start Red 3 - Reef C");
         addProcedure(new ScoreCoral(RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
-        addPath("Reef J - CoralStation 1");
+        addPath("Reef C - CoralStation 2");
         addProcedure(new CoralStationPositionAndIntake(elevator, wrist, intake));
-        addPath("CoralStation 1 - Reef L");
+        addPath("CoralStation 2 - Reef B");
         addProcedure(new ScoreCoral(RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake));
-        addPath("Reef L - CoralStation 1");
-        addPath("CoralStation 1 - Reef A");
+        addPath("Reef B - CoralStation 2");
+        addProcedure(new CoralStationPositionAndIntake(elevator, wrist, intake));
+        addPath("CoralStation 2 - Reef A");
         addProcedure(new ScoreCoral(RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
     }
 }
