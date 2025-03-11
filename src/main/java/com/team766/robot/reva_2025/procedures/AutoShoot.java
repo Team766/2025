@@ -1,5 +1,6 @@
 package com.team766.robot.reva_2025.procedures;
 
+import com.pathplanner.lib.util.FlippingUtil;
 import com.team766.ViSIONbase.AnywhereScoringPosition;
 import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
@@ -14,6 +15,8 @@ import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.State;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -37,6 +40,13 @@ public class AutoShoot extends Procedure {
     public AutoShoot(AlgaeIntake algaeIntake, SwerveDrive drive) {
         this.algaeIntake = reserve(algaeIntake);
         this.drive = reserve(drive);
+
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            if (alliance.get().equals(Alliance.Red)) {
+                setPosition2D = FlippingUtil.flipFieldPose(setPosition2D);
+            }
+        }
     }
 
     @Override
@@ -49,6 +59,7 @@ public class AutoShoot extends Procedure {
     }
 
     public void shootFromSetPosition(Context context) {
+
         final Optional<DriveStatus> driveStatus =
                 StatusBus.getInstance().getStatus(SwerveDrive.DriveStatus.class);
         if (driveStatus.isEmpty()) {
