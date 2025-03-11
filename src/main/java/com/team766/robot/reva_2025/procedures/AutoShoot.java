@@ -69,11 +69,13 @@ public class AutoShoot extends Procedure {
         Pose2d curPose = driveStatus.get().currentPosition();
         Pose2d newPose = new Pose2d(curPose.getX(), setPosition2D.getY(), curPose.getRotation());
         algaeIntake.setArmAngle(Level.Shoot);
-        context.runSync(new AutoAlign(newPose, drive));
-        waitForStatusMatching(context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAtAngle());
         algaeIntake.setState(State.Shoot);
-        context.waitForSeconds(1);
-        algaeIntake.setState(State.Idle);
+        context.runSync(new AutoAlign(newPose, drive));
+        waitForStatusMatchingOrTimeout(
+                context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAtAngle(), 1);
+        waitForStatusMatchingOrTimeout(
+                context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAtTargetSpeed(), 1);
+        algaeIntake.setState(State.Feed);
     }
 
     // TODO: still need to interpolate between two nearest postions
