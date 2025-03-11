@@ -3,8 +3,10 @@ package com.team766.robot.reva_2025.procedures;
 import com.team766.ViSIONbase.AnywhereScoringPosition;
 import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
+import com.team766.framework3.StatusBus;
 import com.team766.logging.Severity;
 import com.team766.robot.common.mechanisms.SwerveDrive;
+import com.team766.robot.common.mechanisms.SwerveDrive.DriveStatus;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
@@ -47,8 +49,16 @@ public class AutoShoot extends Procedure {
     }
 
     public void shootFromSetPosition(Context context) {
+        final Optional<DriveStatus> driveStatus =
+                StatusBus.getInstance().getStatus(SwerveDrive.DriveStatus.class);
+        if (driveStatus.isEmpty()) {
+            log(Severity.ERROR, "Cannot find drive status, aborting AutoShoot");
+            return;
+        }
+        Pose2d curPose = driveStatus.get().currentPosition();
+        Pose2d newPose = new Pose2d(curPose.getX(), setPosition2D.getY(), curPose.getRotation());
         algaeIntake.setArmAngle(Level.Shoot);
-        context.runSync(new AutoAlign(setPosition2D, drive));
+        context.runSync(new AutoAlign(newPose, drive));
         waitForStatusMatching(context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAtAngle());
         algaeIntake.setState(State.Shoot);
         context.waitForSeconds(1);
