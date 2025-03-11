@@ -1,5 +1,6 @@
 package com.team766.framework3;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Collections;
@@ -60,6 +61,11 @@ public class Rule {
         CANCEL_NEWLY_ACTION,
     }
 
+    enum ResetReason {
+        IGNORED,
+        PREEMPTED
+    }
+
     private RuleGroupBase container;
     private String name;
     private BooleanSupplier predicate;
@@ -71,6 +77,7 @@ public class Rule {
 
     private TriggerType currentTriggerType = TriggerType.NONE;
     private boolean sealed = false;
+    private String logValue;
 
     /* package */ Rule(RuleGroupBase container, String name, BooleanSupplier predicate) {
         if (name == null) {
@@ -268,9 +275,9 @@ public class Rule {
         sealed = true;
     }
 
-    /* package */ void reset() {
+    /* package */ void reset(ResetReason reason) {
         currentTriggerType = TriggerType.NONE;
-        log("reset");
+        replaceLog(reason.toString());
     }
 
     /* package */ void evaluate() {
@@ -291,7 +298,7 @@ public class Rule {
                         case FINISHED -> TriggerType.NONE;
                     };
         }
-        log();
+        queueLog();
     }
 
     /* package */ Set<Subsystem> getSubsystemsToReserve() {
@@ -314,13 +321,24 @@ public class Rule {
         return null;
     }
 
-    /* package */ void log(String value) {
-        String containerName = container == null ? "" : container.getName();
-        Logger.recordOutput("Rules/" + containerName + "/" + name, value);
+    /* package */ void queueLog() {
+        if (!Strings.isNullOrEmpty(logValue)) {
+            return;
+        }
+        logValue = currentTriggerType.toString();
     }
 
-    /* package */ void log() {
-        log(currentTriggerType.toString());
+    /* package */ void replaceLog(String value) {
+        logValue = value;
+    }
+
+    /* package */ void flushLog() {
+        if (Strings.isNullOrEmpty(logValue)) {
+            return;
+        }
+        String containerName = container == null ? "" : container.getName();
+        Logger.recordOutput("Rules/" + containerName + "/" + name, logValue);
+        logValue = null;
     }
 
     @Override
