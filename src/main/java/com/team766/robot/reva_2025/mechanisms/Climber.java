@@ -10,10 +10,18 @@ import com.team766.robot.reva_2025.constants.ConfigConstants;
 public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     private MotorController leftClimberMotor;
     private MotorController rightClimberMotor;
+    private State state = State.Off;
     private double HIGH_LIMIT = 90;
     private double CLIMBER_POWER = 0.5;
 
-    public static record ClimberStatus(double currentPower) implements Status {}
+    public static record ClimberStatus(double currentPower, State state) implements Status {}
+
+    public enum State {
+        // velocity is in revolutions per minute
+        On,
+        Off,
+        Done
+    }
 
     public Climber() {
         leftClimberMotor = RobotProvider.instance.getMotor(ConfigConstants.CLIMBER_LEFT_MOTOR);
@@ -30,19 +38,22 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
 
     public void climb(double multiplier) {
         leftClimberMotor.set(CLIMBER_POWER * multiplier);
+        state = State.On;
     }
 
     public void climbOff() {
         leftClimberMotor.set(0);
+        state = State.Off;
     }
 
     @Override
     protected void onMechanismIdle() {
         climbOff();
+        state = State.Done;
     }
 
     @Override
     protected ClimberStatus updateStatus() {
-        return new ClimberStatus(leftClimberMotor.getSensorPosition());
+        return new ClimberStatus(leftClimberMotor.getSensorPosition(), state);
     }
 }

@@ -40,6 +40,10 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
             return Math.abs(state().getShooterVelocity() - currentShooterSpeed)
                     < SHOOTER_SPEED_TOLERANCE;
         }
+
+        public boolean algaeIntakeSuccessful() {
+            return true; // FIX THIS WITH SENSOR
+        }
     }
 
     public AlgaeIntake() {

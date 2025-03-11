@@ -1,15 +1,18 @@
 package com.team766.robot.reva_2025;
 
-import static com.team766.framework3.RulePersistence.ONCE;
-
+import com.ctre.phoenix.led.Animation;
+import com.ctre.phoenix.led.FireAnimation;
+import com.ctre.phoenix.led.RainbowAnimation;
 import com.team766.framework3.RuleEngine;
 import com.team766.framework3.Status;
 import com.team766.framework3.StatusesMixin;
 import com.team766.hal.JoystickReader;
 import com.team766.logging.Category;
 import com.team766.robot.common.constants.ColorConstants;
-import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.LEDString;
+import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
+import com.team766.robot.reva_2025.mechanisms.Climber;
+import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 
 public class Lights extends RuleEngine implements StatusesMixin {
     // private LEDString leds = new LEDString("leds");
@@ -66,20 +69,63 @@ public class Lights extends RuleEngine implements StatusesMixin {
         */
 
         addRule(
-                "Turn on lights",
-                boxopGamepad.whenButton(InputConstants.GAMEPAD_START_BUTTON),
-                ONCE,
-                leds,
-                () -> {
-                    publishStatus(new RobotStatus());
-                });
-
-        addRule(
-                "Lights for Testing",
-                whenRecentStatusMatching(RobotStatus.class, 2.0, s -> s.isReady()),
+                "Lights2 for Algae Intake Power",
+                whenRecentStatusMatching(
+                        AlgaeIntake.AlgaeIntakeStatus.class,
+                        2.0,
+                        s -> s.state() == AlgaeIntake.State.In),
                 leds,
                 () -> {
                     leds.setColor(ColorConstants.PURPLE);
+                });
+
+        addRule(
+                "Lights for Coral Intake",
+                whenRecentStatusMatching(
+                        CoralIntake.CoralIntakeStatus.class,
+                        2.0,
+                        s -> s.state() == CoralIntake.State.In),
+                leds,
+                () -> {
+                    leds.setColor(ColorConstants.ORANGE);
+                });
+
+        addRule(
+                "Lights for Successful Coral Intake",
+                whenRecentStatusMatching(
+                        CoralIntake.CoralIntakeStatus.class, 2.0, s -> s.coralIntakeSuccessful()),
+                leds,
+                () -> {
+                    leds.setColor(ColorConstants.YELLOW);
+                });
+
+        addRule(
+                "Lights for Successful Algae Intake",
+                whenRecentStatusMatching(
+                        AlgaeIntake.AlgaeIntakeStatus.class, 2.0, s -> s.algaeIntakeSuccessful()),
+                leds,
+                () -> {
+                    leds.setColor(ColorConstants.GREEN);
+                });
+
+        addRule(
+                "Lights for Gyro = 0",
+                whenRecentStatusMatching(
+                        Climber.ClimberStatus.class, 2.0, s -> s.state() == Climber.State.On),
+                leds,
+                () -> {
+                    Animation rainbowAnim = new RainbowAnimation();
+                    leds.animate(rainbowAnim);
+                });
+
+        // Doesn't work yet
+        addRule(
+                "Lights for End Game",
+                () -> false,
+                leds,
+                () -> {
+                    Animation fireAnim = new FireAnimation();
+                    leds.animate(fireAnim);
                 });
     }
 
