@@ -7,9 +7,9 @@ public final class InputConstants extends com.team766.robot.common.constants.Inp
 
     // All controls on gamepad
     public static final int BUTTON_ELEVATOR_WRIST_L1 = GAMEPAD_A_BUTTON;
-    public static final int BUTTON_ELEVATOR_WRIST_L2 = GAMEPAD_B_BUTTON;
-    public static final int BUTTON_ELEVATOR_WRIST_L3 = GAMEPAD_Y_BUTTON;
-    public static final int BUTTON_ELEVATOR_WRIST_L4 = GAMEPAD_X_BUTTON;
+    public static final int BUTTON_ELEVATOR_WRIST_L2 = GAMEPAD_X_BUTTON;
+    public static final int BUTTON_ELEVATOR_WRIST_L3 = GAMEPAD_B_BUTTON;
+    public static final int BUTTON_ELEVATOR_WRIST_L4 = GAMEPAD_Y_BUTTON;
     public static final int BUTTON_ELEVATOR_WRIST_MOVE_TARGETPOSITION = GAMEPAD_RIGHT_BUMPER_BUTTON;
     public static final int BUTTON_ALGAE_INTAKE_STOW = GAMEPAD_DPAD_DOWN;
     public static final int BUTTON_ALGAE_INTAKE_GROUND = GAMEPAD_DPAD_RIGHT;
@@ -26,4 +26,24 @@ public final class InputConstants extends com.team766.robot.common.constants.Inp
     // Controls on joysticks
     public static final int BUTTON_CORAL_PLACE = JOYSTICK_RIGHT_BUTTON;
     public static final int BUTTON_ALGAE_SHOOT = JOYSTICK_LEFT_BUTTON;
+    public static final int BUTTON_CORAL_AUTO_PLACE_LEFT = JOYSTICK_LEFT_BUTTON;
+    public static final int BUTTON_CORAL_AUTO_PLACE_RIGHT = JOYSTICK_RIGHT_BUTTON;
+
+    // Macropad buttons
+    public static final int CONTROL_ALGAE = 1;
+    public static final int CONTROL_ELEVATOR = 2;
+    public static final int CONTROL_WRIST = 3;
+    public static final int CONTROL_CLIMBER = 4;
+    public static final int INTAKE_IN = 5;
+    public static final int INTAKE_OUT = 6;
+    public static final int NUDGE_NO_PID = 7;
+    public static final int NUDGE_UP = 8;
+    public static final int STOW_POSITION = 9;
+    public static final int ALGAE_SHOOTER_ON = 10;
+    public static final int ALGAE_SHOOTER_FEED = 11;
+    public static final int NUDGE_DOWN = 12;
+    public static final int GROUND_POSITION = 13;
+    public static final int SHOOT_POSITION = 14;
+    public static final int L2L3_POSITION = 15;
+    public static final int L3L4_POSITION = 16;
 }

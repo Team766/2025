@@ -9,7 +9,7 @@ public class ShootWhenReady extends Procedure {
     private AlgaeIntake algaeIntake;
 
     public ShootWhenReady(AlgaeIntake algaeIntake) {
-        algaeIntake = reserve(algaeIntake);
+        this.algaeIntake = reserve(algaeIntake);
     }
 
     public void run(Context context) {
