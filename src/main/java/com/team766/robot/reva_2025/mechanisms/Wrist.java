@@ -21,7 +21,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     private final ValueProvider<Double> ffGain;
     private boolean noPIDMode;
     private final EncoderReader absoluteEncoder;
-    private final PigeonGyro gyro;
+    private final Pigeon2 gyro;
     private boolean encoderInitialized = false;
 
     public record WristStatus(double currentAngle, double targetAngle) implements Status {
@@ -65,7 +65,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         setPoint = WristPosition.CORAL_START.getAngle();
         noPIDMode = false;
         absoluteEncoder = RobotProvider.instance.getEncoder(WRIST_ENCODER);
-        gyro = (PigeonGyro) RobotProvider.instance.getGyro(WRIST_GYRO);
+        gyro = ((PigeonGyro) RobotProvider.instance.getGyro(WRIST_GYRO)).getPigeon();
         gyro.configurePosition(90, 0, -90);
     }
 
