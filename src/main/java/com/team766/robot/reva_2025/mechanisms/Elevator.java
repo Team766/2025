@@ -99,7 +99,9 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
                 && timeOfFlight.wasLastMeasurementValid()
                 && timeOfFlight.getDistance().isPresent()) {
             double encoderPos = absoluteEncoder.getPosition();
-            double timeOfFlightReading = timeOfFlight.getDistance().get();
+            double timeOfFlightReading =
+                    timeOfFlight.getDistance().get() * 39.37
+                            - 1.5; // to inches, zero is at bottom of elevator
             double convertedPos =
                     timeOfFlightReading
                             + Math.IEEEremainder(

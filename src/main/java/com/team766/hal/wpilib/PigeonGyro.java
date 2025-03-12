@@ -25,7 +25,7 @@ public class PigeonGyro implements GyroReader {
     public Pigeon2 getPigeon() {
         return pigeon;
     }
-    
+
     @Override
     public void calibrate() {}
 

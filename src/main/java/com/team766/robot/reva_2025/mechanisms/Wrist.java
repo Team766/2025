@@ -3,6 +3,7 @@ package com.team766.robot.reva_2025.mechanisms;
 import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_ENCODER;
 import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_GYRO;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
@@ -66,7 +67,6 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         noPIDMode = false;
         absoluteEncoder = RobotProvider.instance.getEncoder(WRIST_ENCODER);
         gyro = ((PigeonGyro) RobotProvider.instance.getGyro(WRIST_GYRO)).getPigeon();
-        gyro.configurePosition(90, 0, -90);
     }
 
     public void setAngle(WristPosition position) {
@@ -102,7 +102,10 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     protected WristStatus updateStatus() {
         if (!encoderInitialized && absoluteEncoder.isConnected()) {
             double encoderPos = absoluteEncoder.getPosition();
-            double gyroReading = gyro.getRoll() + 180;
+            double gyroReading =
+                    Math.atan2(
+                            gyro.getGravityVectorY().getValueAsDouble(),
+                            gyro.getGravityVectorZ().getValueAsDouble());
             double convertedPos =
                     gyroReading
                             + Math.IEEEremainder(
