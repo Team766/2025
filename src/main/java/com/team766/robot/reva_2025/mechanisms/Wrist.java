@@ -13,6 +13,8 @@ import com.team766.hal.wpilib.PigeonGyro;
 import com.team766.library.ValueProvider;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     private double setPoint;
@@ -33,8 +35,8 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     public enum WristPosition {
 
         // TODO: Change these angles to actual values
-        CORAL_BOTTOM(10),
-        CORAL_START(15),
+        CORAL_BOTTOM(30),
+        CORAL_START(30),
         CORAL_INTAKE(40),
         // CORAL_L2_PREP(260),
         CORAL_L1_PLACE(40),
@@ -66,7 +68,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         noPIDMode = false;
         absoluteEncoder = RobotProvider.instance.getEncoder(WRIST_ENCODER);
         gyro = (PigeonGyro) RobotProvider.instance.getGyro(WRIST_GYRO);
-        gyro.configurePosition(90, 0, -90);
+        gyro.configurePosition(0, 0, 90);
     }
 
     public void setAngle(WristPosition position) {
@@ -102,7 +104,9 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     protected WristStatus updateStatus() {
         if (!encoderInitialized && absoluteEncoder.isConnected()) {
             double encoderPos = absoluteEncoder.getPosition();
-            double gyroReading = gyro.getRoll() + 180;
+            SmartDashboard.putNumber("Wrist Encoder", encoderPos);
+            double gyroReading = - gyro.getRoll() + 180;
+            SmartDashboard.putNumber("Wrist Gyro", gyroReading);
             double convertedPos =
                     gyroReading
                             + Math.IEEEremainder(

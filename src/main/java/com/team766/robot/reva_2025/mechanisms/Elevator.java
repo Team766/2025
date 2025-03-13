@@ -8,6 +8,8 @@ import com.team766.hal.RobotProvider;
 import com.team766.hal.TimeOfFlightReader;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private MotorController elevatorLeftMotor;
     private static final double NUDGE_AMOUNT = 5;
@@ -94,7 +96,9 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
                 && timeOfFlight.wasLastMeasurementValid()
                 && timeOfFlight.getDistance().isPresent()) {
             double encoderPos = absoluteEncoder.getPosition();
-            double timeOfFlightReading = timeOfFlight.getDistance().get();
+            SmartDashboard.putNumber("Elevator Encoder Value", encoderPos);
+            double timeOfFlightReading = (timeOfFlight.getDistance().get()) * 39.37 - 1.5; // sensor is 1.5" below bottom
+            SmartDashboard.putNumber("Elevator TOF Value", timeOfFlightReading);
             double convertedPos =
                     timeOfFlightReading
                             + Math.IEEEremainder(

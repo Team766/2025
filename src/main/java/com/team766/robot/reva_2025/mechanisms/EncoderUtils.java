@@ -54,9 +54,9 @@ public final class EncoderUtils {
         return rotations * (1. / 9.) * ((1.61 * Math.PI) / 1.);
     }
 
-    public static final double ELEVATOR_ABSOLUTE_ENCODER_RANGE = elevatorRotationsToHeight(1);
+    public static final double ELEVATOR_ABSOLUTE_ENCODER_RANGE = 1.61 * Math.PI;
 
-    public static final double CORAL_WRIST_ABSOLUTE_ENCODER_RANGE = coralWristRotationsToDegrees(1);
+    public static final double CORAL_WRIST_ABSOLUTE_ENCODER_RANGE = 105;
 
     /**
      * Cosine law
