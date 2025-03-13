@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
     private static final double ALGAE_HOLD_DISTANCE = 0.15;
-    private static final double ALGAE_DETECTION_AMBIANCE = 50;
+    private static final double ALGAE_DETECTION_AMBIANCE = 25;
     private static final double STABLE_POSITION_THRESHOLD = 0.05;
     private static final double INTAKE_IDLE_RPS = 500. / 60.;
     private static final double INTAKE_IN_MAX_RPS = 3000. / 60.;

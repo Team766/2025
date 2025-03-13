@@ -11,15 +11,15 @@ import com.team766.robot.reva_2025.constants.ConfigConstants;
 public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     private MotorController leftClimberMotor;
     private double HIGH_LIMIT = 90;
-    private double CLIMBER_POWER = 0.5;
+    private double CLIMBER_POWER = 1.0;
 
     public static record ClimberStatus(double currentPower) implements Status {}
 
     public Climber() {
         leftClimberMotor = RobotProvider.instance.getMotor(ConfigConstants.CLIMBER_LEFT_MOTOR);
         leftClimberMotor.setNeutralMode(NeutralMode.Brake);
-        MotorUtil.setSoftLimits(leftClimberMotor, HIGH_LIMIT, 0);
-        MotorUtil.enableSoftLimits(leftClimberMotor, true);
+        // MotorUtil.setSoftLimits(leftClimberMotor, HIGH_LIMIT, 0);
+        // MotorUtil.enableSoftLimits(leftClimberMotor, true);
         leftClimberMotor.setSensorPosition(0);
     }
 

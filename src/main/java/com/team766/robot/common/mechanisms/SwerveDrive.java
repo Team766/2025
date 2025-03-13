@@ -386,8 +386,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                                 tag.toRobotPosition(Rotation2d.fromDegrees(heading)).getX());
                     }
                     kalmanFilter.updateWithVisionMeasurement(
-                            tagPoses, // RobotProvider.instance.getClock().getTime());
-                            cameraTags.get(0).collectTime());
+                            tagPoses, RobotProvider.instance.getClock().getTime());
+                        //     cameraTags.get(0).collectTime());
                 }
             }
         }
