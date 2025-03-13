@@ -35,6 +35,11 @@ public class ControlConstants {
     /**
      * degrees
      */
+    public static final double ROBOT_BALANCED_ANGLE = 5;
+
+    /**
+     * degrees
+     */
     public static final double AT_ROTATIONAL_ANGLE_THRESHOLD = 3.0; // TODO(MF3): Find actual value
 
     /**

@@ -43,7 +43,7 @@ public class Robot implements RobotConfigurator3 {
 
     @Override
     public RuleEngine createLights() {
-        return new Lights(RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD));
+        return new Lights();
     }
 
     @Override
