@@ -1,11 +1,13 @@
 package com.team766.robot.reva_2025.mechanisms;
 
+import com.team766.config.ConfigFileReader;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.TimeOfFlightReader;
+import com.team766.library.ValueProvider;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,6 +18,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private static final double POSITION_LOCATION_THRESHOLD = 1;
     private final EncoderReader absoluteEncoder;
     private final TimeOfFlightReader timeOfFlight;
+    private final ValueProvider<Double> ffGain;
     private boolean encoderInitialized = false;
     private double setPoint;
     private boolean noPIDMode;
@@ -53,6 +56,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         absoluteEncoder = RobotProvider.instance.getEncoder(ConfigConstants.ELEVATOR_ENCODER);
         timeOfFlight =
                 RobotProvider.instance.getTimeOfFlight(ConfigConstants.ELEVATOR_INTAKESENSOR);
+        ffGain = ConfigFileReader.instance.getDouble(ConfigConstants.ELEVATOR_FFGAIN);
         setPoint = 0;
     }
 
@@ -85,7 +89,8 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         if (!noPIDMode) {
             elevatorLeftMotor.set(
                     MotorController.ControlMode.Position,
-                    EncoderUtils.elevatorHeightToRotations(setPoint));
+                    EncoderUtils.elevatorHeightToRotations(setPoint),
+                    ffGain.valueOr(0.0));
         }
     }
 
@@ -96,9 +101,9 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
                 && timeOfFlight.wasLastMeasurementValid()
                 && timeOfFlight.getDistance().isPresent()) {
             double encoderPos = absoluteEncoder.getPosition();
-            SmartDashboard.putNumber("Elevator Encoder Value", encoderPos);
-            double timeOfFlightReading = (timeOfFlight.getDistance().get()) * 39.37 - 1.5; // sensor is 1.5" below bottom
-            SmartDashboard.putNumber("Elevator TOF Value", timeOfFlightReading);
+            double timeOfFlightReading =
+                    timeOfFlight.getDistance().get() * 39.37
+                            - 1.5; // to inches, zero is at bottom of elevator
             double convertedPos =
                     timeOfFlightReading
                             + Math.IEEEremainder(

@@ -13,6 +13,7 @@ import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.*;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
+import com.team766.robot.reva_2025.procedures.AutoShoot;
 import com.team766.robot.reva_2025.procedures.ScoreCoral;
 
 public class OI extends RuleEngine {
@@ -66,6 +67,11 @@ public class OI extends RuleEngine {
                                 elevator,
                                 wrist,
                                 coralIntake));
+        addRule(
+                "Auto Shoot Algae",
+                leftJoystick.whenButton(InputConstants.BUTTON_AUTO_SHOOT),
+                ONCE_AND_HOLD,
+                () -> new AutoShoot(algaeIntake, drive));
         addRules(
                 new DriverOI(
                         leftJoystick,

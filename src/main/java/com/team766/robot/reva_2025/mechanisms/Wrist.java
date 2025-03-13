@@ -3,6 +3,7 @@ package com.team766.robot.reva_2025.mechanisms;
 import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_ENCODER;
 import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_GYRO;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
@@ -23,7 +24,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     private final ValueProvider<Double> ffGain;
     private boolean noPIDMode;
     private final EncoderReader absoluteEncoder;
-    private final PigeonGyro gyro;
+    private final Pigeon2 gyro;
     private boolean encoderInitialized = false;
 
     public record WristStatus(double currentAngle, double targetAngle) implements Status {
@@ -67,8 +68,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         setPoint = WristPosition.CORAL_START.getAngle();
         noPIDMode = false;
         absoluteEncoder = RobotProvider.instance.getEncoder(WRIST_ENCODER);
-        gyro = (PigeonGyro) RobotProvider.instance.getGyro(WRIST_GYRO);
-        gyro.configurePosition(0, 0, 90);
+        gyro = ((PigeonGyro) RobotProvider.instance.getGyro(WRIST_GYRO)).getPigeon();
     }
 
     public void setAngle(WristPosition position) {
@@ -104,9 +104,12 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     protected WristStatus updateStatus() {
         if (!encoderInitialized && absoluteEncoder.isConnected()) {
             double encoderPos = absoluteEncoder.getPosition();
-            SmartDashboard.putNumber("Wrist Encoder", encoderPos);
-            double gyroReading = - gyro.getRoll() + 180;
-            SmartDashboard.putNumber("Wrist Gyro", gyroReading);
+            double gyroReading =
+                    180
+                            - Math.toDegrees(
+                                    Math.atan2(
+                                            gyro.getGravityVectorY().getValueAsDouble(),
+                                            gyro.getGravityVectorZ().getValueAsDouble()));
             double convertedPos =
                     gyroReading
                             + Math.IEEEremainder(
