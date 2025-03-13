@@ -42,6 +42,11 @@ public class LEDString extends Mechanism {
         setColor(color8.red, color8.green, color8.blue);
     }
 
+    @Override
+    public void onMechanismIdle() {
+        setColor(0, 0, 0);
+    }
+
     public void animate(Animation animation) {
         handleError(candle.animate(animation));
     }

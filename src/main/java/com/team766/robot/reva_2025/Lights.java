@@ -67,7 +67,7 @@ public class Lights extends RuleEngine implements StatusesMixin {
 
         addRule(
                 "Lights for Gyro = 0",
-                whenStatusMatching(SwerveDrive.DriveStatus.class, s -> s.isBalanced()),
+                whenStatusMatching(SwerveDrive.DriveStatus.class, s -> s.isBalanced() && (DriverStation.getMatchTime() < 20)),
                 leds,
                 () -> {
                     Animation rainbowAnim = new RainbowAnimation();
@@ -84,7 +84,6 @@ public class Lights extends RuleEngine implements StatusesMixin {
                     leds.animate(rainbowAnim);
                 });
 
-        // Doesn't work yet
         addRule(
                 "Lights for End Game",
                 () ->
