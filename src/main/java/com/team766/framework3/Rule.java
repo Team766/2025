@@ -321,14 +321,14 @@ public class Rule {
         return null;
     }
 
-    /* package */ void queueLog() {
+    private void queueLog() {
         if (!Strings.isNullOrEmpty(logValue)) {
             return;
         }
         logValue = currentTriggerType.toString();
     }
 
-    /* package */ void replaceLog(String value) {
+    private void replaceLog(String value) {
         logValue = value;
     }
 
