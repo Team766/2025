@@ -23,13 +23,14 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
         leftClimberMotor.setSensorPosition(0);
     }
 
-    public void climb(double multiplier) {
-        leftClimberMotor.set(CLIMBER_POWER * multiplier);
+    public void climb(double sign) {
+        leftClimberMotor.set(CLIMBER_POWER * Math.signum(sign));
     }
 
     public void climbOff() {
         leftClimberMotor.set(0);
     }
+    
 
     @Override
     protected void onMechanismIdle() {

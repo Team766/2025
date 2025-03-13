@@ -124,7 +124,7 @@ public class BoxOpOI extends RuleGroup {
                                                 boxopGamepad.whenButton(
                                                         InputConstants.GAMEPAD_START_BUTTON)),
                                         ONCE_AND_HOLD,
-                                        algaeIntake,
+                                        Set.of(elevator, wrist, coralIntake, algaeIntake),
                                         () -> {
                                             algaeIntake.setState(AlgaeIntake.State.Out);
                                         });
@@ -134,7 +134,7 @@ public class BoxOpOI extends RuleGroup {
                                         boxopGamepad.whenAxisMoved(
                                                 InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
                                         ONCE_AND_HOLD,
-                                        algaeIntake,
+                                        Set.of(elevator, wrist, coralIntake, algaeIntake),
                                         () -> {
                                                 if (queuedControl.algaeLevel == Level.GroundIntake) {
                                                         algaeIntake.setState(State.HoldAlgae);
