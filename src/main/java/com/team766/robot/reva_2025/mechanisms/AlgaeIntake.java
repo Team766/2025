@@ -278,7 +278,9 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     @Override
     protected AlgaeIntakeStatus updateStatus() {
         if (!encoderInitialized && absoluteEncoder.isConnected()) {
-            double angle = (absoluteEncoder.getPosition() / 3.) * 360. - 35.0; // offset so loops in the right spot
+            double angle =
+                    (absoluteEncoder.getPosition() / 3.) * 360.
+                            - 35.0; // offset so loops in the right spot
             SmartDashboard.putNumber("Algae Encoder Angle", angle);
             armMotor.setSensorPosition(EncoderUtils.algaeArmDegreesToRotations(angle));
             encoderInitialized = true;

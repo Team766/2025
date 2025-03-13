@@ -136,11 +136,11 @@ public class BoxOpOI extends RuleGroup {
                                         ONCE_AND_HOLD,
                                         Set.of(elevator, wrist, coralIntake, algaeIntake),
                                         () -> {
-                                                if (queuedControl.algaeLevel == Level.GroundIntake) {
-                                                        algaeIntake.setState(State.HoldAlgae);
-                                                } else {
-                                                        algaeIntake.setState(AlgaeIntake.State.In);
-                                                }
+                                            if (queuedControl.algaeLevel == Level.GroundIntake) {
+                                                algaeIntake.setState(State.HoldAlgae);
+                                            } else {
+                                                algaeIntake.setState(AlgaeIntake.State.In);
+                                            }
                                         });
                                 addRule(
                                         "Nudge Algae",
@@ -160,11 +160,13 @@ public class BoxOpOI extends RuleGroup {
                         () -> {
                             // make sure we don't squish an algae
                             var status = getStatus(AlgaeIntake.AlgaeIntakeStatus.class);
-                        if (status.isPresent() && status.get().intakeProximity().isPresent() && status.get().level() != Level.Stow) {
+                            if (status.isPresent()
+                                    && status.get().intakeProximity().isPresent()
+                                    && status.get().level() != Level.Stow) {
                                 algaeIntake.setArmAngle(Level.GroundIntake);
-                        } else {
+                            } else {
                                 algaeIntake.setArmAngle(Level.Stow);
-                        }
+                            }
                         });
 
         // ALGAE INTAKE MOTOR CONTROLS / SHOOTING
@@ -182,10 +184,11 @@ public class BoxOpOI extends RuleGroup {
         // ELEVATOR AND WRIST
 
         addRule(
-                "Grabber Motor Auto Intake",
-                boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
-                ONCE_AND_HOLD,
-                () -> new CoralStationPositionAndIntake(elevator, wrist, coralIntake)).withFinishedTriggeringProcedure(
+                        "Grabber Motor Auto Intake",
+                        boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                        ONCE_AND_HOLD,
+                        () -> new CoralStationPositionAndIntake(elevator, wrist, coralIntake))
+                .withFinishedTriggeringProcedure(
                         Set.of(elevator, wrist, coralIntake, algaeIntake),
                         () -> {
                             elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);

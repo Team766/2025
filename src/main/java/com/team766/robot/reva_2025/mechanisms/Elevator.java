@@ -10,8 +10,6 @@ import com.team766.hal.TimeOfFlightReader;
 import com.team766.library.ValueProvider;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private MotorController elevatorLeftMotor;
     private static final double NUDGE_AMOUNT = 5;

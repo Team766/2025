@@ -1,11 +1,7 @@
 package com.team766.robot.reva_2025.procedures;
 
-import java.util.logging.Logger;
-
 import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
-import com.team766.logging.Category;
-import com.team766.logging.Severity;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;

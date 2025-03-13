@@ -2,18 +2,17 @@ package com.team766.robot.reva_2025;
 
 import static com.team766.framework3.RulePersistence.*;
 
-import java.util.Set;
-
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.OI.QueuedControl;
-import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
+import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 import com.team766.robot.reva_2025.procedures.ShootWhenReady;
+import java.util.Set;
 
 public class DriverOI extends com.team766.robot.common.DriverOI {
     public DriverOI(

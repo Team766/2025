@@ -14,8 +14,6 @@ import com.team766.hal.wpilib.PigeonGyro;
 import com.team766.library.ValueProvider;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     private double setPoint;

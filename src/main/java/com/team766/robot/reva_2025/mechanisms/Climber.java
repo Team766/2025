@@ -5,7 +5,6 @@ import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.robot.reva.mechanisms.MotorUtil;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
 public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
@@ -30,7 +29,6 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     public void climbOff() {
         leftClimberMotor.set(0);
     }
-    
 
     @Override
     protected void onMechanismIdle() {
