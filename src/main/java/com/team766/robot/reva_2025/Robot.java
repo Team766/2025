@@ -6,6 +6,7 @@ import com.team766.hal.RobotConfigurator3;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
+<<<<<<< HEAD
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.Climber;
@@ -13,6 +14,11 @@ import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Vision;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
+=======
+import com.team766.robot.reva_2025.mechanisms.*;
+import com.team766.robot.reva_2025.procedures.*;
+import com.team766.robot.reva_2025.procedures.autons.OnePiece;
+>>>>>>> origin/bringup_revb
 
 public class Robot implements RobotConfigurator3 {
 
@@ -54,7 +60,7 @@ public class Robot implements RobotConfigurator3 {
             //
             // If your autonomous procedure has constructor arguments, you can
             // define one or more different autonomous modes with it like this:
-            //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
+            new AutonomousMode("OnePiece", () -> new OnePiece(drive, coral, wrist, elevator)),
             // new AutonomousMode(
             //         "AutoAlign", () -> new AutoAlign(new Pose2d(1, 0, new Rotation2d()), drive))
         };

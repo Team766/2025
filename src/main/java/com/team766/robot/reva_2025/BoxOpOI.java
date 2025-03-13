@@ -11,6 +11,7 @@ import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
+import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.State;
 import com.team766.robot.reva_2025.mechanisms.Climber;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
@@ -123,7 +124,7 @@ public class BoxOpOI extends RuleGroup {
                                                 boxopGamepad.whenButton(
                                                         InputConstants.GAMEPAD_START_BUTTON)),
                                         ONCE_AND_HOLD,
-                                        algaeIntake,
+                                        Set.of(elevator, wrist, coralIntake, algaeIntake),
                                         () -> {
                                             algaeIntake.setState(AlgaeIntake.State.Out);
                                         });
@@ -133,9 +134,13 @@ public class BoxOpOI extends RuleGroup {
                                         boxopGamepad.whenAxisMoved(
                                                 InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
                                         ONCE_AND_HOLD,
-                                        algaeIntake,
+                                        Set.of(elevator, wrist, coralIntake, algaeIntake),
                                         () -> {
-                                            algaeIntake.setState(AlgaeIntake.State.In);
+                                            if (queuedControl.algaeLevel == Level.GroundIntake) {
+                                                algaeIntake.setState(State.HoldAlgae);
+                                            } else {
+                                                algaeIntake.setState(AlgaeIntake.State.In);
+                                            }
                                         });
                                 addRule(
                                         "Nudge Algae",
@@ -155,7 +160,9 @@ public class BoxOpOI extends RuleGroup {
                         () -> {
                             // make sure we don't squish an algae
                             var status = getStatus(AlgaeIntake.AlgaeIntakeStatus.class);
-                            if (status.isPresent() && status.get().intakeProximity().isPresent()) {
+                            if (status.isPresent()
+                                    && status.get().intakeProximity().isPresent()
+                                    && status.get().level() != Level.Stow) {
                                 algaeIntake.setArmAngle(Level.GroundIntake);
                             } else {
                                 algaeIntake.setArmAngle(Level.Stow);
@@ -177,13 +184,17 @@ public class BoxOpOI extends RuleGroup {
         // ELEVATOR AND WRIST
 
         addRule(
-                "Grabber Motor Auto Intake",
-                boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
-                ONCE_AND_HOLD,
-                Set.of(wrist, elevator, coralIntake),
-                () -> {
-                    new CoralStationPositionAndIntake(elevator, wrist, coralIntake);
-                });
+                        "Grabber Motor Auto Intake",
+                        boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                        ONCE_AND_HOLD,
+                        () -> new CoralStationPositionAndIntake(elevator, wrist, coralIntake))
+                .withFinishedTriggeringProcedure(
+                        Set.of(elevator, wrist, coralIntake, algaeIntake),
+                        () -> {
+                            elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
+                            wrist.setAngle(WristPosition.CORAL_INTAKE);
+                            coralIntake.stop();
+                        });
 
         addRule(
                 "Queue Elevator and Wrist to L1 Position",

@@ -229,7 +229,7 @@ public abstract class RobotProvider {
             Logger.get(Category.CONFIGURATION)
                     .logData(
                             Severity.ERROR,
-                            "Encoder %s not found in config file, using mock encoder instead",
+                            "Encoder %s not found in config file, using mock encoder instead " + ex,
                             configName);
             return new MockEncoder();
         }

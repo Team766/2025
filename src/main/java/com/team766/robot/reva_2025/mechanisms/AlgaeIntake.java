@@ -17,8 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
-    private static final double ALGAE_HOLD_DISTANCE = 0.15;
-    private static final double ALGAE_DETECTION_AMBIANCE = 50;
+    private static final double ALGAE_HOLD_DISTANCE = 0.12;
+    private static final double ALGAE_DETECTION_AMBIANCE = 25;
     private static final double STABLE_POSITION_THRESHOLD = 0.05;
     private static final double INTAKE_IDLE_RPS = 500. / 60.;
     private static final double INTAKE_IN_MAX_RPS = 3000. / 60.;
@@ -278,8 +278,11 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     @Override
     protected AlgaeIntakeStatus updateStatus() {
         if (!encoderInitialized && absoluteEncoder.isConnected()) {
-            double encoderPos = absoluteEncoder.getPosition();
-            armMotor.setSensorPosition(encoderPos * 45.);
+            double angle =
+                    (absoluteEncoder.getPosition() / 3.) * 360.
+                            - 35.0; // offset so loops in the right spot
+            SmartDashboard.putNumber("Algae Encoder Angle", angle);
+            armMotor.setSensorPosition(EncoderUtils.algaeArmDegreesToRotations(angle));
             encoderInitialized = true;
         }
 
@@ -291,7 +294,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 level,
                 level.getDirection(),
                 targetAngle,
-                EncoderUtils.algaeArmDegreesToRotations(armMotor.getSensorPosition()),
+                EncoderUtils.algaeArmRotationsToDegrees(armMotor.getSensorPosition()),
                 ambientSignal.isPresent()
                                 && intakeProximity.isPresent()
                                 && ambientSignal.get() <= ALGAE_DETECTION_AMBIANCE

@@ -3,6 +3,7 @@ package com.team766.robot.reva_2025.mechanisms;
 import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_ENCODER;
 import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_GYRO;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
@@ -21,7 +22,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     private final ValueProvider<Double> ffGain;
     private boolean noPIDMode;
     private final EncoderReader absoluteEncoder;
-    private final PigeonGyro gyro;
+    private final Pigeon2 gyro;
     private boolean encoderInitialized = false;
 
     public record WristStatus(double currentAngle, double targetAngle) implements Status {
@@ -33,16 +34,16 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     public enum WristPosition {
 
         // TODO: Change these angles to actual values
-        CORAL_BOTTOM(10),
-        CORAL_START(15),
+        CORAL_BOTTOM(30),
+        CORAL_START(30),
         CORAL_INTAKE(40),
         // CORAL_L2_PREP(260),
         CORAL_L1_PLACE(40),
-        CORAL_L2_PLACE(210),
+        CORAL_L2_PLACE(245),
         // CORAL_L3_PREP(220),
         CORAL_L3_PLACE(210),
         // CORAL_L4_PREP(210),
-        CORAL_L4_PLACE(200),
+        CORAL_L4_PLACE(217),
         CORAL_TOP(300),
         CORAL_CLIMB(300);
 
@@ -65,8 +66,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         setPoint = WristPosition.CORAL_START.getAngle();
         noPIDMode = false;
         absoluteEncoder = RobotProvider.instance.getEncoder(WRIST_ENCODER);
-        gyro = (PigeonGyro) RobotProvider.instance.getGyro(WRIST_GYRO);
-        gyro.configurePosition(90, 0, -90);
+        gyro = ((PigeonGyro) RobotProvider.instance.getGyro(WRIST_GYRO)).getPigeon();
     }
 
     public void setAngle(WristPosition position) {
@@ -102,7 +102,11 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     protected WristStatus updateStatus() {
         if (!encoderInitialized && absoluteEncoder.isConnected()) {
             double encoderPos = absoluteEncoder.getPosition();
-            double gyroReading = gyro.getRoll() + 180;
+            double gyroReading = // 0;
+                    Math.toDegrees(
+                            Math.atan2(
+                                    gyro.getGravityVectorZ().getValueAsDouble(),
+                                    gyro.getGravityVectorY().getValueAsDouble()));
             double convertedPos =
                     gyroReading
                             + Math.IEEEremainder(
