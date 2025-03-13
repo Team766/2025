@@ -11,6 +11,7 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     private MotorController leftClimberMotor;
     private double HIGH_LIMIT = 90; // TODO: use absolute encoder soft limit
     private double CLIMBER_POWER = 1.0;
+    private State state;
 
     public static record ClimberStatus(double currentPower, State state) implements Status {}
 
@@ -27,6 +28,7 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
         // MotorUtil.setSoftLimits(leftClimberMotor, HIGH_LIMIT, 0);
         // MotorUtil.enableSoftLimits(leftClimberMotor, true);
         leftClimberMotor.setSensorPosition(0);
+        state = State.Off;
     }
 
     public void climb(double sign) {

@@ -87,8 +87,12 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         }
 
         public boolean isBalanced() {
-                return Math.toDegrees(
-                        Math.acos(Math.cos(Math.toRadians(roll) * Math.cos(Math.toRadians(pitch))))) < ControlConstants.ROBOT_BALANCED_ANGLE;
+            return Math.toDegrees(
+                            Math.acos(
+                                    Math.cos(
+                                            Math.toRadians(roll)
+                                                    * Math.cos(Math.toRadians(pitch)))))
+                    < ControlConstants.ROBOT_BALANCED_ANGLE;
         }
     }
 

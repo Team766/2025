@@ -44,7 +44,7 @@ public class Lights extends RuleEngine implements StatusesMixin {
                 () -> {
                     leds.setColor(ColorConstants.GREEN);
                 });
-                
+
         addRule(
                 "Lights for Algae Intake Power",
                 whenStatusMatching(
@@ -67,28 +67,29 @@ public class Lights extends RuleEngine implements StatusesMixin {
 
         addRule(
                 "Lights for Gyro = 0",
-                whenStatusMatching(
-                        SwerveDrive.DriveStatus.class, s -> s.isBalanced()),
+                whenStatusMatching(SwerveDrive.DriveStatus.class, s -> s.isBalanced()),
                 leds,
                 () -> {
                     Animation rainbowAnim = new RainbowAnimation();
                     leds.animate(rainbowAnim);
                 });
-        
+
         addRule(
                 "Lights for Climb",
                 whenRecentStatusMatching(
                         Climber.ClimberStatus.class, 2.0, s -> s.state() == Climber.State.On),
                 leds,
                 () -> {
-                        Animation rainbowAnim = new RainbowAnimation();
-                        leds.animate(rainbowAnim);
-                });      
+                    Animation rainbowAnim = new RainbowAnimation();
+                    leds.animate(rainbowAnim);
+                });
 
         // Doesn't work yet
         addRule(
                 "Lights for End Game",
-                () -> DriverStation.isTeleopEnabled() && (DriverStation.getMatchTime() < 20), // endgame time
+                () ->
+                        DriverStation.isTeleopEnabled()
+                                && (DriverStation.getMatchTime() < 20), // endgame time
                 leds,
                 () -> {
                     Animation fireAnim = new FireAnimation();
