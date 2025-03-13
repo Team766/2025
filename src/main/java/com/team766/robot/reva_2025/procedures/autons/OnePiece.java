@@ -24,7 +24,7 @@ public class OnePiece extends PathSequenceAuto {
         this.wrist = reserve(wrist);
         this.elevator = reserve(elevator);
         addProcedure(new IntakeCoralUntilIn(intake));
-        addPath("Simple");
+        addPath("Blue Line Start to H");
         addProcedure(new ScoreCoral(RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
     }
 }

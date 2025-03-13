@@ -10,7 +10,7 @@ import com.team766.robot.reva_2025.constants.ConfigConstants;
 
 public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     private MotorController leftClimberMotor;
-    private double HIGH_LIMIT = 90;
+    private double HIGH_LIMIT = 90; // TODO: use absolute encoder soft limit
     private double CLIMBER_POWER = 1.0;
 
     public static record ClimberStatus(double currentPower) implements Status {}

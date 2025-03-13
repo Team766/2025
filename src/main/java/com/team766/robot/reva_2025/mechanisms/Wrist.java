@@ -104,12 +104,11 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     protected WristStatus updateStatus() {
         if (!encoderInitialized && absoluteEncoder.isConnected()) {
             double encoderPos = absoluteEncoder.getPosition();
-            double gyroReading = 0;
-                    // 270
-                    //         - Math.toDegrees(
-                    //                 Math.atan2(
-                    //                         gyro.getGravityVectorY().getValueAsDouble(),
-                    //                         gyro.getGravityVectorZ().getValueAsDouble()));
+            double gyroReading = // 0;
+                    Math.toDegrees(
+                            Math.atan2(
+                                    gyro.getGravityVectorZ().getValueAsDouble(),
+                                    gyro.getGravityVectorY().getValueAsDouble()));
             double convertedPos =
                     gyroReading
                             + Math.IEEEremainder(

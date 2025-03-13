@@ -12,6 +12,8 @@ import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
+import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
+import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -120,5 +122,7 @@ public class ScoreCoral extends Procedure {
             context.waitForSeconds(0.25);
         }
         coral.stop();
+        wrist.setAngle(WristPosition.CORAL_INTAKE);
+        elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
     }
 }

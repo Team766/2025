@@ -27,7 +27,6 @@ public class CoralStationPositionAndIntake extends Procedure {
         elevator.setPosition(ElevatorPosition.ELEVATOR_INTAKE);
         wrist.setAngle(WristPosition.CORAL_INTAKE);
         coralIntake.in();
-        com.team766.logging.Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, "doing things");
 
         waitForStatusMatchingOrTimeout(
                 context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1.0);
