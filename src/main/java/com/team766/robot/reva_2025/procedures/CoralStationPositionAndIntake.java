@@ -16,6 +16,7 @@ public class CoralStationPositionAndIntake extends Procedure {
     public CoralStationPositionAndIntake(Elevator elevator, Wrist wrist, CoralIntake coralIntake) {
         this.elevator = reserve(elevator);
         this.wrist = reserve(wrist);
+        this.coralIntake = reserve(coralIntake);
     }
 
     public void run(Context context) {

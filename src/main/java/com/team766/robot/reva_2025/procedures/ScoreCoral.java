@@ -11,7 +11,9 @@ import com.team766.robot.reva_2025.constants.CoralConstants.RelativeReefPos;
 import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
+import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
+import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -94,10 +96,10 @@ public class ScoreCoral extends Procedure {
                 nearestPose = nearestPose(0, false);
                 break;
             case L3:
-                nearestPose = nearestPose(0.1778, false);
+                nearestPose = nearestPose(0.0, false);
                 break;
             case L4:
-                nearestPose = nearestPose(-0.05, false);
+                nearestPose = nearestPose(0.17, false);
                 break;
             default:
                 log(Severity.ERROR, "Invalid scoreLevel");
@@ -108,14 +110,19 @@ public class ScoreCoral extends Procedure {
         waitForStatusMatchingOrTimeout(
                 context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1);
         waitForStatusMatchingOrTimeout(context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
-        coral.out();
 
         if (scoreLevel.equals(ScoreHeight.L4)) {
-            context.runParallel(new AutoAlign(nearestPose(-0.15, false), drive));
+            wrist.nudge(1);
+            coral.out();
+            wrist.nudge(1);
+            context.runParallel(new AutoAlign(nearestPose(0.13, false), drive));
             context.waitForSeconds(0.25);
         } else {
+            coral.out();
             context.waitForSeconds(0.25);
         }
         coral.stop();
+        wrist.setAngle(WristPosition.CORAL_INTAKE);
+        elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
     }
 }

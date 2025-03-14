@@ -19,6 +19,7 @@ public final class ConfigConstants {
     public static final String LEFT_ELEVATOR_MOTOR = "elevator.leftMotor";
     public static final String RIGHT_ELEVATOR_MOTOR = "elevator.rightMotor";
     public static final String ELEVATOR_INTAKESENSOR = "elevator.IntakeSensor";
+    public static final String ELEVATOR_FFGAIN = "elevator.ffGain";
     public static final String WRIST_FFGAIN = "wrist.motor.ffGain";
     public static final String WRIST_ENCODER = "wrist.encoder";
     public static final String WRIST_GYRO = "wrist.gyro";

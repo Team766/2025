@@ -141,7 +141,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
 
-        rotationPID = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
+        rotationPID = PIDController.loadFromConfig(ConfigConstants.TARGET_LOCK_ROTATION_PID);
 
         SwerveModule[] moduleList = new SwerveModule[] {swerveFR, swerveFL, swerveBR, swerveBL};
         EncoderReader[] encoderList =
@@ -386,8 +386,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                                 tag.toRobotPosition(Rotation2d.fromDegrees(heading)).getX());
                     }
                     kalmanFilter.updateWithVisionMeasurement(
-                            tagPoses, // RobotProvider.instance.getClock().getTime());
-                            cameraTags.get(0).collectTime());
+                            tagPoses, RobotProvider.instance.getClock().getTime());
+                    //     cameraTags.get(0).collectTime());
                 }
             }
         }

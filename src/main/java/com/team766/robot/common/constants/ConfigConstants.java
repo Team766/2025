@@ -22,7 +22,7 @@ public final class ConfigConstants {
     public static final String DRIVE_ENCODER_BACK_RIGHT = "drive.EncoderBackRight";
     public static final String DRIVE_ENCODER_BACK_LEFT = "drive.EncoderBackLeft";
 
-    public static final String DRIVE_TARGET_ROTATION_PID = "drive.setpointPid";
+    public static final String TARGET_LOCK_ROTATION_PID = "drive.targetLockRotationPID";
 
     // pathplanner config values
     public static final String PATH_FOLLOWING_MAX_MODULE_SPEED_MPS =
