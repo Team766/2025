@@ -32,7 +32,7 @@ public class BoxOpOI extends RuleGroup {
             CoralIntake coralIntake,
             QueuedControl queuedControl) {
 
-        boxopGamepad.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
+        boxopGamepad.setAllAxisDeadzone(0.2);
 
         // CLIMBER
 

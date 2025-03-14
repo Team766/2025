@@ -27,5 +27,6 @@ public class OnePiece extends PathSequenceAuto {
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
+        
     }
 }
