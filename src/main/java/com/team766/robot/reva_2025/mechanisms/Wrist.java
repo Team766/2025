@@ -105,8 +105,8 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
             double gyroReading = // 0;
                     Math.toDegrees(
                             Math.atan2(
-                                    - gyro.getGravityVectorZ().getValueAsDouble(),
-                                    - gyro.getGravityVectorY().getValueAsDouble()));
+                                    -gyro.getGravityVectorZ().getValueAsDouble(),
+                                    -gyro.getGravityVectorY().getValueAsDouble()));
             double convertedPos =
                     gyroReading
                             + Math.IEEEremainder(

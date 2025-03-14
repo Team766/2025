@@ -1,15 +1,11 @@
 package com.team766.robot.reva_2025;
 
-import static com.team766.framework3.RulePersistence.ONCE_AND_HOLD;
-import static com.team766.framework3.RulePersistence.REPEATEDLY;
-
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
+import com.team766.framework3.Conditions.LogicalAnd;
 import com.team766.framework3.RuleEngine;
 import com.team766.framework3.Status;
-import com.team766.framework3.StatusesMixin;
-import com.team766.framework3.Conditions.LogicalAnd;
 import com.team766.logging.Category;
 import com.team766.robot.common.constants.ColorConstants;
 import com.team766.robot.common.mechanisms.LEDString;
@@ -71,7 +67,12 @@ public class Lights extends RuleEngine {
 
         addRule(
                 "Lights for Gyro = 0",
-                new LogicalAnd(whenStatusMatching(SwerveDrive.DriveStatus.class, s -> s.isBalanced()), whenRecentStatusMatching(Climber.ClimberStatus.class, 10.0, s -> s.state() == Climber.State.On)),
+                new LogicalAnd(
+                        whenStatusMatching(SwerveDrive.DriveStatus.class, s -> s.isBalanced()),
+                        whenRecentStatusMatching(
+                                Climber.ClimberStatus.class,
+                                10.0,
+                                s -> s.state() == Climber.State.On)),
                 leds,
                 () -> {
                     Animation rainbowAnim = new RainbowAnimation();
@@ -103,9 +104,8 @@ public class Lights extends RuleEngine {
                 () -> true,
                 leds,
                 () -> {
-                leds.setColor(0,0,0);
-                }
-        );
+                    leds.setColor(0, 0, 0);
+                });
     }
 
     @Override
