@@ -11,8 +11,16 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     private MotorController leftClimberMotor;
     private double HIGH_LIMIT = 90; // TODO: use absolute encoder soft limit
     private double CLIMBER_POWER = 1.0;
+    private State state;
 
-    public static record ClimberStatus(double currentPower) implements Status {}
+    public static record ClimberStatus(double currentPower, State state) implements Status {}
+
+    public enum State {
+        // velocity is in revolutions per minute
+        On,
+        Off,
+        Done
+    }
 
     public Climber() {
         leftClimberMotor = RobotProvider.instance.getMotor(ConfigConstants.CLIMBER_LEFT_MOTOR);
@@ -20,23 +28,27 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
         // MotorUtil.setSoftLimits(leftClimberMotor, HIGH_LIMIT, 0);
         // MotorUtil.enableSoftLimits(leftClimberMotor, true);
         leftClimberMotor.setSensorPosition(0);
+        state = State.Off;
     }
 
     public void climb(double sign) {
         leftClimberMotor.set(CLIMBER_POWER * Math.signum(sign));
+        state = State.On;
     }
 
     public void climbOff() {
         leftClimberMotor.set(0);
+        state = State.Off;
     }
 
     @Override
     protected void onMechanismIdle() {
         climbOff();
+        state = State.Done;
     }
 
     @Override
     protected ClimberStatus updateStatus() {
-        return new ClimberStatus(leftClimberMotor.getSensorPosition());
+        return new ClimberStatus(leftClimberMotor.getSensorPosition(), state);
     }
 }

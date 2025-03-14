@@ -6,8 +6,7 @@ import com.team766.hal.RobotConfigurator3;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.mechanisms.*;
-import com.team766.robot.reva_2025.procedures.*;
-import com.team766.robot.reva_2025.procedures.autons.OnePiece;
+import com.team766.robot.reva_2025.procedures.autons.*;
 
 public class Robot implements RobotConfigurator3 {
 
