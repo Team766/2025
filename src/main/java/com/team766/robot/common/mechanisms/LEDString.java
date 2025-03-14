@@ -34,6 +34,7 @@ public class LEDString extends Mechanism {
     }
 
     public void setColor(int r, int g, int b) {
+        animate(null);
         handleError(candle.setLEDs(r, g, b));
     }
 

@@ -103,7 +103,6 @@ public class Lights extends RuleEngine {
                 () -> true,
                 leds,
                 () -> {
-                leds.animate(null);
                 leds.setColor(0,0,0);
                 }
         );
