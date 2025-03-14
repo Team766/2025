@@ -1,11 +1,15 @@
 package com.team766.robot.reva_2025;
 
+import static com.team766.framework3.RulePersistence.ONCE_AND_HOLD;
+import static com.team766.framework3.RulePersistence.REPEATEDLY;
+
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.team766.framework3.RuleEngine;
 import com.team766.framework3.Status;
 import com.team766.framework3.StatusesMixin;
+import com.team766.framework3.Conditions.LogicalAnd;
 import com.team766.logging.Category;
 import com.team766.robot.common.constants.ColorConstants;
 import com.team766.robot.common.mechanisms.LEDString;
@@ -15,7 +19,7 @@ import com.team766.robot.reva_2025.mechanisms.Climber;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class Lights extends RuleEngine implements StatusesMixin {
+public class Lights extends RuleEngine {
     // private LEDString leds = new LEDString("leds");
     private final LEDString leds = new LEDString("leds");
 
@@ -67,7 +71,7 @@ public class Lights extends RuleEngine implements StatusesMixin {
 
         addRule(
                 "Lights for Gyro = 0",
-                whenStatusMatching(SwerveDrive.DriveStatus.class, s -> s.isBalanced() && (DriverStation.getMatchTime() < 20)),
+                new LogicalAnd(whenStatusMatching(SwerveDrive.DriveStatus.class, s -> s.isBalanced()), whenRecentStatusMatching(Climber.ClimberStatus.class, 10.0, s -> s.state() == Climber.State.On)),
                 leds,
                 () -> {
                     Animation rainbowAnim = new RainbowAnimation();
@@ -80,20 +84,29 @@ public class Lights extends RuleEngine implements StatusesMixin {
                         Climber.ClimberStatus.class, 2.0, s -> s.state() == Climber.State.On),
                 leds,
                 () -> {
-                    Animation rainbowAnim = new RainbowAnimation();
-                    leds.animate(rainbowAnim);
+                    leds.setColor(ColorConstants.PINK);
                 });
 
         addRule(
                 "Lights for End Game",
                 () ->
-                        DriverStation.isTeleopEnabled()
-                                && (DriverStation.getMatchTime() < 20), // endgame time
+                        (DriverStation.isTeleopEnabled()
+                                && DriverStation.getMatchTime() < 20), // endgame time
                 leds,
                 () -> {
                     Animation fireAnim = new FireAnimation();
                     leds.animate(fireAnim);
                 });
+
+        addRule(
+                "Default",
+                () -> true,
+                leds,
+                () -> {
+                leds.animate(null);
+                leds.setColor(0,0,0);
+                }
+        );
     }
 
     @Override
