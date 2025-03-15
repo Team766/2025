@@ -49,7 +49,7 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
             ONCE_AND_HOLD,
             wrist,
             () -> {
-                wrist.nudge(1);
+                wrist.nudge(-1);
             });
             
         addRule(
@@ -58,7 +58,7 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
             ONCE_AND_HOLD,
             wrist,
             () -> {
-                wrist.nudge(-1);
+                wrist.nudge(1);
             });
     }
 }

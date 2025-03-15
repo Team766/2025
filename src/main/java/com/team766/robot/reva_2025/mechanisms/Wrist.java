@@ -67,6 +67,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         noPIDMode = false;
         absoluteEncoder = RobotProvider.instance.getEncoder(WRIST_ENCODER);
         gyro = ((PigeonGyro) RobotProvider.instance.getGyro(WRIST_GYRO)).getPigeon();
+        wristMotor.setCurrentLimit(30);
     }
 
     public void setAngle(WristPosition position) {
