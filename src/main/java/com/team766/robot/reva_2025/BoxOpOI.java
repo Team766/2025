@@ -5,7 +5,6 @@ import static com.team766.framework3.RulePersistence.*;
 import com.team766.framework3.Conditions.LogicalAnd;
 import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
-import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.reva_2025.OI.QueuedControl;
 import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 import com.team766.robot.reva_2025.constants.InputConstants;

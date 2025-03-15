@@ -49,7 +49,9 @@ public class Robot implements RobotConfigurator3 {
             // If your autonomous procedure has constructor arguments, you can
             // define one or more different autonomous modes with it like this:
             new AutonomousMode("OnePiece", () -> new OnePiece(drive, coral, wrist, elevator)),
-            new AutonomousMode("Right Side Far Cage CBA", () -> new ThreePieceCBA(drive, coral, wrist, elevator)),
+            new AutonomousMode(
+                    "Right Side Far Cage CBA",
+                    () -> new ThreePieceCBA(drive, coral, wrist, elevator)),
             // new AutonomousMode(
             //         "AutoAlign", () -> new AutoAlign(new Pose2d(1, 0, new Rotation2d()), drive))
         };

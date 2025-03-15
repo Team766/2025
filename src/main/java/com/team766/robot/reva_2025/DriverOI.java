@@ -44,21 +44,21 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
                 () -> new ShootWhenReady(algaeIntake));
 
         addRule(
-            "Nudge Wrist Up",
-            rightJoystick.whenPOV(0),
-            ONCE_AND_HOLD,
-            wrist,
-            () -> {
-                wrist.nudge(-1);
-            });
-            
+                "Nudge Wrist Up",
+                rightJoystick.whenPOV(0),
+                ONCE_AND_HOLD,
+                wrist,
+                () -> {
+                    wrist.nudge(-1);
+                });
+
         addRule(
-            "Nudge Wrist Down",
-            rightJoystick.whenPOV(180),
-            ONCE_AND_HOLD,
-            wrist,
-            () -> {
-                wrist.nudge(1);
-            });
+                "Nudge Wrist Down",
+                rightJoystick.whenPOV(180),
+                ONCE_AND_HOLD,
+                wrist,
+                () -> {
+                    wrist.nudge(1);
+                });
     }
 }
