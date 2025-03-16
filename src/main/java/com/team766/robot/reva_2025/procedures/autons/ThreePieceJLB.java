@@ -12,8 +12,8 @@ import com.team766.robot.reva_2025.procedures.ScoreCoral;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class ThreePieceJLA extends PathSequenceAuto2025 {
-    public ThreePieceJLA(SwerveDrive drive, CoralIntake intake, Wrist wrist, Elevator elevator) {
+public class ThreePieceJLB extends PathSequenceAuto2025 {
+    public ThreePieceJLB(SwerveDrive drive, CoralIntake intake, Wrist wrist, Elevator elevator) {
         super(
                 drive,
                 intake,
@@ -31,7 +31,7 @@ public class ThreePieceJLA extends PathSequenceAuto2025 {
                 new ScoreCoral(
                         RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake));
         addPath("Reef L - CoralStation 1");
-        addPath("CoralStation 1 - Reef A");
+        addPath("CoralStation 1 - Reef B");
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));

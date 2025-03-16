@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start Blue 2 - Reef J"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef J - CoralStation 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CoralStation 1 - Reef L"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef L - CoralStation 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CoralStation 1 - Reef B"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

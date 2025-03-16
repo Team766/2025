@@ -5,7 +5,7 @@ import com.team766.framework3.Procedure;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 
 public class IntakeCoralUntilIn extends Procedure {
-    public static final double INTAKE_CURRENT_THRESHOLD = 6;
+    public static final double INTAKE_CURRENT_THRESHOLD = 5;
     private final CoralIntake intake;
 
     public IntakeCoralUntilIn(CoralIntake intake) {

@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.651051136363637,
-        "y": 4.149644886363635
+        "x": 8.173850952614638,
+        "y": 4.352766543498097
       },
       "isLocked": false,
-      "linkedName": "Start Blue Line"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.893210227272728,
-        "y": 4.18953125
+        "x": 5.82340909090909,
+        "y": 4.3609797297297295
       },
       "prevControl": {
-        "x": 6.141102859637056,
-        "y": 4.157139232164056
+        "x": 5.530293896293798,
+        "y": 4.3730386466290625
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef Position H"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Start - Reef",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

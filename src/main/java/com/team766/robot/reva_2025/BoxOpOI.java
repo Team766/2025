@@ -41,7 +41,7 @@ public class BoxOpOI extends RuleGroup {
                         ONCE_AND_HOLD,
                         Set.of(algaeIntake, wrist, elevator),
                         () -> {
-                            algaeIntake.setArmAngle(Level.Stow);
+                            algaeIntake.setArmAngle(Level.GroundIntake);
                             elevator.setPosition(ElevatorPosition.ELEVATOR_CLIMB);
                             wrist.setAngle(WristPosition.CORAL_CLIMB);
                         })
