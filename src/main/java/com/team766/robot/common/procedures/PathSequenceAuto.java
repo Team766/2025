@@ -134,6 +134,9 @@ public abstract class PathSequenceAuto extends Procedure {
                 new PIDConstants(rotationP, rotationI, rotationD));
     }
 
+    /**
+     * Add a path to the sequence.  Must be called in the constructor of the subclass.
+     */
     protected void addPath(String pathName) {
         // TODO: should this log errors and otherwise proceed, or throw an exception and
         // somehow disable the entire auton (but not disable the robot completely, so teleop still
@@ -152,10 +155,17 @@ public abstract class PathSequenceAuto extends Procedure {
         }
     }
 
+    /**
+     * Add a procedure to the sequence.  Must be called in the constructor of the subclass.
+     */
     protected void addProcedure(Procedure procedure) {
+        reserve(procedure.reservations()); // reserve any mechanisms (etc) this sub-procedure uses
         pathItems.add(procedure);
     }
 
+    /**
+     * Add a wait to the sequence.  Must be called in the constructor of the subclass.
+     */
     protected void addWait(double waitForSeconds) {
         pathItems.add(
                 new FunctionalProcedure(
