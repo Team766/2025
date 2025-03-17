@@ -189,7 +189,7 @@ public class WPIRobotProvider extends RobotProvider {
             if (type.get() == EncoderReader.Type.CANcoder) {
                 ValueProvider<String> canBus =
                         ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
-                return new CANcoderEncoder(index1, canBus.get());
+                return new CANcoderEncoder(index1, getStringOrEmpty(canBus));
             } else if (type.get() == EncoderReader.Type.REVThroughBoreDutyCycle) {
                 ValueProvider<Double> offset =
                         ConfigFileReader.getInstance().getDouble(configPrefix + ".offset");

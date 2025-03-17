@@ -34,12 +34,18 @@ public class LEDString extends Mechanism {
     }
 
     public void setColor(int r, int g, int b) {
+        animate(null);
         handleError(candle.setLEDs(r, g, b));
     }
 
     public void setColor(Color color) {
         var color8 = new Color8Bit(color);
         setColor(color8.red, color8.green, color8.blue);
+    }
+
+    @Override
+    public void onMechanismIdle() {
+        setColor(0, 0, 0);
     }
 
     public void animate(Animation animation) {

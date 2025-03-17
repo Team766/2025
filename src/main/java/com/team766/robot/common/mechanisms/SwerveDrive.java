@@ -85,6 +85,15 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                             targetChassisSpeeds, Rotation2d.fromDegrees(heading)),
                     includeRotation);
         }
+
+        public boolean isBalanced() {
+            return Math.toDegrees(
+                            Math.acos(
+                                    Math.cos(
+                                            Math.toRadians(roll)
+                                                    * Math.cos(Math.toRadians(pitch)))))
+                    < ControlConstants.ROBOT_BALANCED_ANGLE;
+        }
     }
 
     private final SwerveConfig config;
@@ -141,7 +150,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
 
-        rotationPID = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
+        rotationPID = PIDController.loadFromConfig(ConfigConstants.TARGET_LOCK_ROTATION_PID);
 
         SwerveModule[] moduleList = new SwerveModule[] {swerveFR, swerveFL, swerveBR, swerveBL};
         EncoderReader[] encoderList =
@@ -386,8 +395,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                                 tag.toRobotPosition(Rotation2d.fromDegrees(heading)).getX());
                     }
                     kalmanFilter.updateWithVisionMeasurement(
-                            tagPoses, // RobotProvider.instance.getClock().getTime());
-                            cameraTags.get(0).collectTime());
+                            tagPoses, RobotProvider.instance.getClock().getTime());
+                    //     cameraTags.get(0).collectTime());
                 }
             }
         }
