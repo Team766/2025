@@ -3,6 +3,7 @@ package com.team766.framework3;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.team766.framework3.Rule.ResetReason;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -118,7 +119,7 @@ public class RuleEngine extends RuleGroupBase {
                                             + "; mechanism "
                                             + subsystem.getName()
                                             + " already reserved by higher priority rule.");
-                            rule.reset();
+                            rule.reset(ResetReason.IGNORED);
                             continue ruleLoop;
                         }
                         // see if a previously triggered rule is still using the mechanism
@@ -140,7 +141,7 @@ public class RuleEngine extends RuleGroupBase {
                                                     + "; mechanism "
                                                     + subsystem.getName()
                                                     + " already being used in CommandScheduler by higher priority rule.");
-                                    rule.reset();
+                                    rule.reset(ResetReason.IGNORED);
                                     continue ruleLoop;
                                 } else if (rule != existingRule) {
                                     // new rule takes priority
@@ -153,14 +154,13 @@ public class RuleEngine extends RuleGroupBase {
                                                     + subsystem.getName()
                                                     + " will now be reserved by higher priority rule "
                                                     + rule.getName());
-                                    existingRule.reset();
+                                    existingRule.reset(ResetReason.PREEMPTED);
                                 }
                             }
                         }
                     }
 
                     // we're good to proceed
-
                     if (triggerType == Rule.TriggerType.FINISHED
                             && rule.getCancellationOnFinish()
                                     == Rule.Cancellation.CANCEL_NEWLY_ACTION) {
@@ -194,6 +194,10 @@ public class RuleEngine extends RuleGroupBase {
                         "Exception caught while trying to run(): "
                                 + LoggerExceptionUtils.exceptionToString(ex));
             }
+        }
+
+        for (Rule rule : rules.values()) {
+            rule.flushLog();
         }
     }
 }
