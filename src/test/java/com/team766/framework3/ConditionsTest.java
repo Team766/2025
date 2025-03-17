@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.team766.TestCase3;
 import com.team766.framework3.test.FakeMechanism.FakeStatus;
+import com.team766.hal.RobotProvider;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
 import java.util.Set;
@@ -252,5 +253,27 @@ public class ConditionsTest extends TestCase3 implements StatusesMixin {
 
     @Test
     public void testTimedLatch() {
+        testClock.setTime(1710411240);
+        var predicate = new BooleanSupplier() {
+            private int counter = 0;
+
+            public boolean getAsBoolean() {
+                return (counter++) % 4 == 1;
+            }
+        };
+
+        var timedLatch = new Conditions.TimedLatch(predicate, 2.0);
+
+        assertFalse(timedLatch.getAsBoolean()); // 0->false
+        assertTrue(timedLatch.getAsBoolean()); // 1->true
+        testClock.tick(1.0);
+        assertTrue(timedLatch.getAsBoolean()); // 2->false, but still within 2.0s
+        testClock.tick(0.5);
+        assertTrue(timedLatch.getAsBoolean()); // 3->false, but still within 2.0s
+        testClock.tick(0.6);
+        assertFalse(timedLatch.getAsBoolean()); // 4->false, 2.1s elapsed
+        testClock.tick(1.0);
+        assertTrue(timedLatch.getAsBoolean()); // 1->true
+        // TODO: add test to ensure clock resets whenever underlying predicate is true
     }
 }
