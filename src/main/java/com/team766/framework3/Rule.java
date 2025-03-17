@@ -1,5 +1,6 @@
 package com.team766.framework3;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Collections;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Rule to be evaluated in the {@link RuleEngine}.  Rules contain a
@@ -59,8 +61,13 @@ public class Rule {
         CANCEL_NEWLY_ACTION,
     }
 
+    enum ResetReason {
+        IGNORED,
+        PREEMPTED
+    }
+
     private RuleGroupBase container;
-    private final String name;
+    private String name;
     private BooleanSupplier predicate;
     private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
@@ -70,8 +77,17 @@ public class Rule {
 
     private TriggerType currentTriggerType = TriggerType.NONE;
     private boolean sealed = false;
+    private String logValue;
 
     /* package */ Rule(RuleGroupBase container, String name, BooleanSupplier predicate) {
+        if (name == null) {
+            throw new IllegalArgumentException("Rule name has not been set.");
+        }
+
+        if (name.contains("/")) {
+            throw new IllegalArgumentException("Rule name cannot contain a '/' character.");
+        }
+
         if (predicate == null) {
             throw new IllegalArgumentException("Rule predicate has not been set.");
         }
@@ -205,6 +221,7 @@ public class Rule {
         }
         this.container = container;
         if (parent != null) {
+            this.name = parent.getName() + '/' + this.name;
             final var previousPredicate = this.predicate;
             this.predicate =
                     triggerValue
@@ -258,8 +275,9 @@ public class Rule {
         sealed = true;
     }
 
-    /* package */ void reset() {
+    /* package */ void reset(ResetReason reason) {
         currentTriggerType = TriggerType.NONE;
+        replaceLog(reason.toString());
     }
 
     /* package */ void evaluate() {
@@ -280,6 +298,7 @@ public class Rule {
                         case FINISHED -> TriggerType.NONE;
                     };
         }
+        queueLog();
     }
 
     /* package */ Set<Subsystem> getSubsystemsToReserve() {
@@ -302,11 +321,33 @@ public class Rule {
         return null;
     }
 
+    private void queueLog() {
+        if (!Strings.isNullOrEmpty(logValue)) {
+            return;
+        }
+        logValue = currentTriggerType.toString();
+    }
+
+    private void replaceLog(String value) {
+        logValue = value;
+    }
+
+    /* package */ void flushLog() {
+        if (Strings.isNullOrEmpty(logValue)) {
+            return;
+        }
+        String containerName = container == null ? "" : container.getName();
+        Logger.recordOutput("Rules/" + containerName + "/" + name, logValue);
+        logValue = null;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("[ name: ");
         builder.append(name);
+        builder.append(", cancelledOnFinish: ");
+        builder.append(cancellationOnFinish);
         builder.append(", predicate: ");
         builder.append(predicate);
         builder.append(", currentTriggerType: ");
