@@ -249,4 +249,8 @@ public class ConditionsTest extends TestCase3 implements StatusesMixin {
         assertFalse(t.getAsBoolean());
         assertFalse(t.getAsBoolean());
     }
+
+    @Test
+    public void testTimedLatch() {
+    }
 }
