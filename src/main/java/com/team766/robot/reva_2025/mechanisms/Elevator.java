@@ -30,11 +30,11 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
     public enum ElevatorPosition {
         ELEVATOR_TOP(28.5),
-        ELEVATOR_BOTTOM(2),
+        ELEVATOR_BOTTOM(0.5),
         ELEVATOR_INTAKE(14.5),
         ELEVATOR_L1(2),
-        ELEVATOR_L2(2),
-        ELEVATOR_L3(2),
+        ELEVATOR_L2(0.5),
+        ELEVATOR_L3(2.5),
         ELEVATOR_L4(ELEVATOR_TOP.getHeight()),
         ELEVATOR_CLIMB(5);
 

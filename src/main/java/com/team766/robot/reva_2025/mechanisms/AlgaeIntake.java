@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 
 public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStatus> {
-    private static final double ALGAE_HOLD_DISTANCE = 0.12;
+    private static final double ALGAE_HOLD_DISTANCE = 0.15;
     private static final double ALGAE_DETECTION_AMBIANCE = 25;
     private static final double STABLE_POSITION_THRESHOLD = 0.05;
     private static final double INTAKE_IDLE_RPS = 500. / 60.;
@@ -128,11 +128,11 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     }
 
     public enum Level {
-        GroundIntake(-45, 1, 0.09, 0.31),
+        GroundIntake(-40, 1, 0.09, 0.31),
         L2L3AlgaeIntake(20, -1, 0.15, 0.37),
         L3L4AlgaeIntake(60, -1, 0.45, 0.67),
         Stow(-80, 1, 0.6, 0.28),
-        Shoot(-25, 1, 0.15, 0.37); // placeholder number
+        Shoot(-22, 1, 0.15, 0.37); // placeholder number
 
         private final double angle;
         private final double direction;
@@ -256,6 +256,18 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                     intakeMotor.set(output);
                 }
                 shooterMotor.stopMotor();
+                break;
+            case Shoot:
+                if (getStatus().intakeProximity().isEmpty()) {
+                    intakeMotor.set(ControlMode.Velocity, State.In.getIntakeVelocity());
+                } else {
+                    holdAlgaeController.setSetpoint(ALGAE_HOLD_DISTANCE);
+                    holdAlgaeController.calculate(getStatus().intakeProximity().get());
+                    var output = holdAlgaeController.getOutput();
+                    SmartDashboard.putNumber("Hold algae velocity", output);
+                    intakeMotor.set(output);
+                }
+                shooterMotor.set(ControlMode.Velocity, state.getShooterVelocity());
                 break;
             case Stop:
                 intakeMotor.stopMotor();

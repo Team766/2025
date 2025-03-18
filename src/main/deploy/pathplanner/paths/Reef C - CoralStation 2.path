@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6662671232950412,
-        "y": 2.9206121575274517
+        "x": 3.4701136363636365,
+        "y": 2.65390625
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7946584629987377,
-        "y": 2.2803927823421906
+        "x": 2.598504976067333,
+        "y": 2.0136868748147387
       },
       "isLocked": false,
       "linkedName": "Reef Position C"
     },
     {
       "anchor": {
-        "x": 1.1738486842105262,
-        "y": 1.0615131578947363
+        "x": 0.7877556818181819,
+        "y": 0.3105823863636351
       },
       "prevControl": {
-        "x": 2.4363824490121644,
-        "y": 1.9506953001701868
+        "x": 2.0502894466198214,
+        "y": 1.199764528639085
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Coral Station 2"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

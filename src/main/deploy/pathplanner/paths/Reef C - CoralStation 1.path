@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6662671232950412,
-        "y": 2.9206121575274517
+        "x": 3.4701136363636365,
+        "y": 2.65390625
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0686677631578947,
-        "y": 1.8986019736842108
+        "x": 1.87251427622649,
+        "y": 1.6318960661567592
       },
       "isLocked": false,
       "linkedName": "Reef Position C"
     },
     {
       "anchor": {
-        "x": 1.2989309210527895,
-        "y": 7.036595394738682
+        "x": 1.116818181818182,
+        "y": 7.171036931818182
       },
       "prevControl": {
-        "x": 3.146299342105422,
-        "y": 6.728700657896576
+        "x": 2.9641866028708144,
+        "y": 6.863142194976076
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

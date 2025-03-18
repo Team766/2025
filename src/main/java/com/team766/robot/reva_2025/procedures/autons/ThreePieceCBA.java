@@ -20,6 +20,7 @@ public class ThreePieceCBA extends PathSequenceAuto2025 {
                 wrist,
                 elevator,
                 new Pose2d(7.648, 0.772, Rotation2d.fromDegrees(-180)));
+        addProcedure(new CoralStationPositionAndIntake(elevator, wrist, intake));
         addPath("Start Red 3 - Reef C");
         addProcedure(
                 new ScoreCoral(

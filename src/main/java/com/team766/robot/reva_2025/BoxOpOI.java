@@ -192,7 +192,7 @@ public class BoxOpOI extends RuleGroup {
                         () -> {
                             elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
                             wrist.setAngle(WristPosition.CORAL_INTAKE);
-                            coralIntake.stop();
+                            coralIntake.idle();
                         });
 
         addRule(
