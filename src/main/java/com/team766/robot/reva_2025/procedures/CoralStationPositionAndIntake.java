@@ -30,7 +30,8 @@ public class CoralStationPositionAndIntake extends Procedure {
         waitForStatusMatchingOrTimeout(
                 context,
                 CoralIntake.CoralIntakeStatus.class,
-                s -> s.current() > IntakeCoralUntilIn.INTAKE_CURRENT_THRESHOLD, 2);
+                s -> s.current() > IntakeCoralUntilIn.INTAKE_CURRENT_THRESHOLD,
+                2);
 
         coralIntake.idle();
     }

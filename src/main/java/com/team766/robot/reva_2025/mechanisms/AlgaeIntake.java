@@ -257,7 +257,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 }
                 shooterMotor.stopMotor();
                 break;
-            case Shoot:
+            case Shoot: // TODO: make not suck
                 if (getStatus().intakeProximity().isEmpty()) {
                     intakeMotor.set(ControlMode.Velocity, State.In.getIntakeVelocity());
                 } else {
