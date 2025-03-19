@@ -3,9 +3,11 @@ package com.team766.framework3;
 import com.team766.logging.Category;
 import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Objects;
 import java.util.Set;
+import org.littletonrobotics.junction.Logger;
 
 public abstract class Mechanism implements Reservable, LoggingBase {
     private final class ProxySubsystem extends SubsystemBase implements MechanismSubsystem {
@@ -122,6 +124,14 @@ public abstract class Mechanism implements Reservable, LoggingBase {
             publishStatus();
 
             isRunningPeriodic = true;
+
+            Command command = CommandScheduler.getInstance().requiring(subsystem);
+            if (CommandScheduler.getInstance().requiring(subsystem) != null) {
+                Logger.recordOutput("/Mechanisms/" + getName(), command.toString());
+            } else {
+                Logger.recordOutput("/Mechanisms/" + getName(), "<IDLE>");
+            }
+
             run();
         } catch (Exception ex) {
             ex.printStackTrace();
