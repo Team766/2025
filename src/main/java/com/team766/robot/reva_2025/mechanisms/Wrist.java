@@ -41,9 +41,9 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         CORAL_L1_PLACE(40),
         CORAL_L2_PLACE(245),
         // CORAL_L3_PREP(220),
-        CORAL_L3_PLACE(210),
+        CORAL_L3_PLACE(215),
         // CORAL_L4_PREP(210),
-        CORAL_L4_PLACE(217),
+        CORAL_L4_PLACE(213),
         CORAL_TOP(300),
         CORAL_CLIMB(300);
 
@@ -67,6 +67,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         noPIDMode = false;
         absoluteEncoder = RobotProvider.instance.getEncoder(WRIST_ENCODER);
         gyro = ((PigeonGyro) RobotProvider.instance.getGyro(WRIST_GYRO)).getPigeon();
+        wristMotor.setCurrentLimit(30);
     }
 
     public void setAngle(WristPosition position) {

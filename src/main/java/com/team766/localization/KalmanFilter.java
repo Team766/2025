@@ -41,7 +41,7 @@ public class KalmanFilter {
 
     // FIXME: placeholder values
     private static final Matrix<N2, N2> VISION_COVARIANCE_DEFAULT =
-            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.1, 0, 0, 0.1);
+            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.3, 0, 0, 0.3);
 
     private static final double VELOCITY_INPUT_DELETION_TIME_DEFAULT = 1; // in seconds
 

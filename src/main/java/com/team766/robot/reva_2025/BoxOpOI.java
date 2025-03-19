@@ -32,7 +32,7 @@ public class BoxOpOI extends RuleGroup {
             CoralIntake coralIntake,
             QueuedControl queuedControl) {
 
-        boxopGamepad.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
+        boxopGamepad.setAllAxisDeadzone(ControlConstants.GAMEPAD_DEADZONE);
 
         // CLIMBER
 
@@ -42,7 +42,7 @@ public class BoxOpOI extends RuleGroup {
                         ONCE_AND_HOLD,
                         Set.of(algaeIntake, wrist, elevator),
                         () -> {
-                            algaeIntake.setArmAngle(Level.Stow);
+                            algaeIntake.setArmAngle(Level.GroundIntake);
                             elevator.setPosition(ElevatorPosition.ELEVATOR_CLIMB);
                             wrist.setAngle(WristPosition.CORAL_CLIMB);
                         })
@@ -193,7 +193,7 @@ public class BoxOpOI extends RuleGroup {
                         () -> {
                             elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
                             wrist.setAngle(WristPosition.CORAL_INTAKE);
-                            coralIntake.stop();
+                            coralIntake.idle();
                         });
 
         addRule(

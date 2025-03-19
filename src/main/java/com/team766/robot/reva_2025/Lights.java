@@ -98,14 +98,6 @@ public class Lights extends RuleEngine {
                     Animation fireAnim = new FireAnimation();
                     leds.animate(fireAnim);
                 });
-
-        addRule(
-                "Default",
-                () -> true,
-                leds,
-                () -> {
-                    leds.setColor(0, 0, 0);
-                });
     }
 
     @Override

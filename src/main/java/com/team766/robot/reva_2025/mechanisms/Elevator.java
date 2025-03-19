@@ -30,11 +30,11 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
     public enum ElevatorPosition {
         ELEVATOR_TOP(28.5),
-        ELEVATOR_BOTTOM(1),
-        ELEVATOR_INTAKE(15),
-        ELEVATOR_L1(0),
-        ELEVATOR_L2(0),
-        ELEVATOR_L3(0),
+        ELEVATOR_BOTTOM(0.5),
+        ELEVATOR_INTAKE(14.5),
+        ELEVATOR_L1(2),
+        ELEVATOR_L2(0.5),
+        ELEVATOR_L3(2.5),
         ELEVATOR_L4(ELEVATOR_TOP.getHeight()),
         ELEVATOR_CLIMB(5);
 
@@ -56,7 +56,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
                 RobotProvider.instance.getTimeOfFlight(ConfigConstants.ELEVATOR_INTAKESENSOR);
         ffGain = ConfigFileReader.instance.getDouble(ConfigConstants.ELEVATOR_FFGAIN);
         elevatorLeftMotor.setCurrentLimit(40);
-        setPoint = 0;
+        setPoint = ElevatorPosition.ELEVATOR_BOTTOM.getHeight();
     }
 
     public void setPosition(double setPosition) {
