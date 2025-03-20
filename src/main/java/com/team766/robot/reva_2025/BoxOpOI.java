@@ -18,7 +18,6 @@ import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
-import com.team766.robot.reva_2025.procedures.CoralStationPositionAndIntake;
 import java.util.Set;
 
 public class BoxOpOI extends RuleGroup {
@@ -187,9 +186,14 @@ public class BoxOpOI extends RuleGroup {
                         "Grabber Motor Auto Intake",
                         boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
                         ONCE_AND_HOLD,
-                        () -> new CoralStationPositionAndIntake(elevator, wrist, coralIntake))
+                        Set.of(elevator, wrist, coralIntake),
+                        () -> {
+                            elevator.setPosition(ElevatorPosition.ELEVATOR_INTAKE);
+                            wrist.setAngle(WristPosition.CORAL_INTAKE);
+                            coralIntake.in();
+                        })
                 .withFinishedTriggeringProcedure(
-                        Set.of(elevator, wrist, coralIntake, algaeIntake),
+                        Set.of(elevator, wrist, coralIntake),
                         () -> {
                             elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
                             wrist.setAngle(WristPosition.CORAL_INTAKE);
