@@ -126,10 +126,10 @@ public abstract class Mechanism implements Reservable, LoggingBase {
             isRunningPeriodic = true;
 
             Command command = CommandScheduler.getInstance().requiring(subsystem);
-            if (CommandScheduler.getInstance().requiring(subsystem) != null) {
-                Logger.recordOutput("/Mechanisms/" + getName(), command.toString());
+            if (command != null) {
+                Logger.recordOutput("Mechanisms/" + getName(), command.toString());
             } else {
-                Logger.recordOutput("/Mechanisms/" + getName(), "<IDLE>");
+                Logger.recordOutput("Mechanisms/" + getName(), "<IDLE>");
             }
 
             run();
