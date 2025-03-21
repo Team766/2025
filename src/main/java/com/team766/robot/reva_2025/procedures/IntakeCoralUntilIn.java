@@ -15,10 +15,11 @@ public class IntakeCoralUntilIn extends Procedure {
     @Override
     public void run(Context context) {
         intake.in();
-        waitForStatusMatching(
+        waitForStatusMatchingOrTimeout(
                 context,
                 CoralIntake.CoralIntakeStatus.class,
-                s -> s.current() > INTAKE_CURRENT_THRESHOLD);
+                s -> s.current() > INTAKE_CURRENT_THRESHOLD, 
+                2);
         intake.idle();
     }
 }

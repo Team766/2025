@@ -55,6 +55,9 @@ public class Robot implements RobotConfigurator3 {
             new AutonomousMode(
                     "Left Side Mid Cage JLB",
                     () -> new ThreePieceJLB(drive, coral, wrist, elevator)),
+            new AutonomousMode(
+                "Left Side Far Cage KL",
+                () -> new TwoPieceKL(drive, coral, wrist, elevator)),
             // new AutonomousMode(
             //         "AutoAlign", () -> new AutoAlign(new Pose2d(1, 0, new Rotation2d()), drive))
         };
