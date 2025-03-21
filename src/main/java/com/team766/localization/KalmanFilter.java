@@ -262,6 +262,23 @@ public class KalmanFilter {
         updateWithPositionMeasurement(measurementTreeMap, time);
     }
 
+    /**
+     * Updates the esimated position using vision measurements mapped to their covariance, allowing for a unique covariance for each measurement
+     * @param measurements map key is the vision measurements (x, y), value is covariance matrix of that measurement
+     * @param covariance the covariance of this camera
+     * @param time the time that the measurement took place, in seconds
+     */
+    public void updateWithVisionMeasurement(List<Translation2d> measurements, double covariance, double time) {
+        Map<Translation2d, Matrix<N2, N2>> measurementTreeMap = new HashMap<>();
+        for (Translation2d measurement : measurements) {
+            // TODO: do this logic earlier in the covariance field
+            measurementTreeMap.put(
+                    measurement,
+                    MatBuilder.fill(Nat.N2(), Nat.N2(), covariance, 0, 0, covariance).times(Math.pow(measurement.getNorm(), 2)));
+        }
+        updateWithPositionMeasurement(measurementTreeMap, time);
+    }
+
     public Translation2d getPos() {
         return new Translation2d(new Vector<N2>(curState));
     }
