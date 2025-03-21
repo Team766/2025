@@ -7,31 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start Red 3 - Reef C"
+            "pathName": "Start Blue 3 - Reef K"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Reef C - Coral Station 2"
+            "pathName": "Reef K - Coral Station 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Coral Station 2 - Reef B"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Reef B - Coral Station 2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Coral Station 2 - Reef A"
+            "pathName": "Coral Station 1 - Reef L"
           }
         }
       ]

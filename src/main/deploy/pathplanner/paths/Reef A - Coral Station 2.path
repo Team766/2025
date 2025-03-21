@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4701136363636365,
-        "y": 2.65390625
+        "x": 3.0652397260273974,
+        "y": 4.182769691780822
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.598504976067333,
-        "y": 2.0136868748147387
+        "x": 2.5305098684210523,
+        "y": 2.7549342105263155
       },
       "isLocked": false,
-      "linkedName": "Reef Position C"
+      "linkedName": "Reef Position A"
     },
     {
       "anchor": {
-        "x": 0.7877556818181819,
-        "y": 0.3105823863636351
+        "x": 1.2663920454545454,
+        "y": 0.958735795454545
       },
       "prevControl": {
-        "x": 2.0502894466198214,
-        "y": 1.199764528639085
+        "x": 2.7673788875598078,
+        "y": 1.2377654007177035
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Coral Station 2"
     }
   ],
   "rotationTargets": [],
@@ -45,10 +45,10 @@
     "rotation": 55.0
   },
   "reversed": false,
-  "folder": "Reef - CoralStation",
+  "folder": "Reef - Coral Station",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
