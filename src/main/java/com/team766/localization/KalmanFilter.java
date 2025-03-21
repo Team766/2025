@@ -24,8 +24,6 @@ public class KalmanFilter {
     private TreeMap<Double, Translation2d> inputLog; // TODO: make circular buffer?
     private double velocityInputDeletionTime; // in seconds
 
-    private static final double COVARIANCE_MULTIPLIER = 8;
-
     private static final Matrix<N2, N1> CUR_STATE_DEFAULT =
             MatBuilder.fill(Nat.N2(), Nat.N1(), 0, 0);
 
@@ -37,13 +35,13 @@ public class KalmanFilter {
 
     // FIXME: placeholder values
     private static final Matrix<N2, N2> ODOMETRY_COVARIANCE_PER_DIST_DEFAULT =
-            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.2, 0, 0, 0.05);
+            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.0025, 0, 0, 0.0001);
 
     // FIXME: placeholder values
     private static final Matrix<N2, N2> VISION_COVARIANCE_DEFAULT =
-            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.3, 0, 0, 0.3);
+            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.0009, 0, 0, 0.0009);
 
-    private static final double VELOCITY_INPUT_DELETION_TIME_DEFAULT = 1; // in seconds
+    private static final double VELOCITY_INPUT_DELETION_TIME_DEFAULT = 0.1; // in seconds
 
     public KalmanFilter(
             Matrix<N2, N1> curState,
@@ -259,7 +257,7 @@ public class KalmanFilter {
         for (Translation2d measurement : measurements) {
             measurementTreeMap.put(
                     measurement,
-                    visionCovariance.times(measurement.getNorm() * COVARIANCE_MULTIPLIER));
+                    visionCovariance.times(Math.pow(measurement.getNorm(), 2)));
         }
         updateWithPositionMeasurement(measurementTreeMap, time);
     }

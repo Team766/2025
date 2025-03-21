@@ -96,7 +96,7 @@ public class ScoreCoral extends Procedure {
                 nearestPose = nearestPose(0, false);
                 break;
             case L3:
-                nearestPose = nearestPose(0.0, false);
+                nearestPose = nearestPose(0.25, false);
                 break;
             case L4:
                 nearestPose = nearestPose(0.40, false);
