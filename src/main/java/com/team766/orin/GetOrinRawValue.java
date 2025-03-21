@@ -24,9 +24,12 @@ public class GetOrinRawValue {
     private double[] arr = new double[] {Double.NEGATIVE_INFINITY};
     private DoubleArrayEntry poseValues = pose.getEntry(arr);
 
-    public GetOrinRawValue(String topicName) {
+    private double covariance;
+
+    public GetOrinRawValue(String topicName, double covariance) {
         pose = table.getDoubleArrayTopic(topicName);
         poseValues = pose.getEntry(arr);
+        this.covariance = covariance;
     }
 
     public double[] getRawPoseData() throws ValueNotFoundOnTableError {
@@ -35,6 +38,10 @@ public class GetOrinRawValue {
         }
 
         return poseValues.get();
+    }
+
+    public double getCovariance() {
+        return covariance;
     }
 
     public void closeAll() {

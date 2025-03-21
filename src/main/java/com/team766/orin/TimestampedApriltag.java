@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public record TimestampedApriltag(double collectTime, int tagId, Pose3d pose3d) {
+public record TimestampedApriltag(double collectTime, int tagId, Pose3d pose3d, double covariance) {
     public Translation2d toRobotPosition(Rotation2d gyro) {
         Translation2d tagPosition =
                 (tagId == FieldConstants.TEST_TAG_ID)
