@@ -19,14 +19,14 @@ public class ThreePieceJLB extends PathSequenceAuto {
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
-        addPath("Reef J - CoralStation 1");
+        addPath("Reef J - Coral Station 1");
         addProcedure(new CoralStationPositionAndIntake(elevator, wrist, intake));
-        addPath("CoralStation 1 - Reef L");
+        addPath("Coral Station 1 - Reef L");
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake));
-        addPath("Reef L - CoralStation 1");
-        addPath("CoralStation 1 - Reef B");
+        addPath("Reef L - Coral Station 1");
+        addPath("Coral Station 1 - Reef B");
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
