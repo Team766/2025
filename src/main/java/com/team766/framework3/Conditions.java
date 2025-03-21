@@ -72,7 +72,7 @@ public class Conditions {
 
         @Override
         public boolean getAsBoolean() {
-            for (BooleanSupplier condition: conditions) {
+            for (BooleanSupplier condition : conditions) {
                 if (!condition.getAsBoolean()) return false;
             }
             return true;

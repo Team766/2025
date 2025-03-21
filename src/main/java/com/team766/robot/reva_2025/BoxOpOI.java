@@ -2,8 +2,8 @@ package com.team766.robot.reva_2025;
 
 import static com.team766.framework3.RulePersistence.*;
 
-import com.team766.framework3.Conditions.LogicalAnd;
 import com.team766.framework3.Conditions;
+import com.team766.framework3.Conditions.LogicalAnd;
 import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
@@ -20,7 +20,6 @@ import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import java.util.Set;
-import java.util.concurrent.locks.Condition;
 
 public class BoxOpOI extends RuleGroup {
 
@@ -39,7 +38,8 @@ public class BoxOpOI extends RuleGroup {
 
         addRule(
                         "Control Climber",
-                        new Conditions.Toggle(() -> boxopGamepad.getButtonPressed(InputConstants.BUTTON_CLIMB)),
+                        new Conditions.Toggle(
+                                () -> boxopGamepad.getButtonPressed(InputConstants.BUTTON_CLIMB)),
                         ONCE_AND_HOLD,
                         Set.of(algaeIntake, wrist, elevator),
                         () -> {
@@ -195,7 +195,12 @@ public class BoxOpOI extends RuleGroup {
                             coralIntake.in();
                         })
                 .withFinishedTriggeringProcedure(
-                        Set.of(elevator, wrist, coralIntake, algaeIntake), // reserves algae mechanism so that control for intaking algae is higher priority
+                        Set.of(
+                                elevator,
+                                wrist,
+                                coralIntake,
+                                algaeIntake), // reserves algae mechanism so that control for
+                        // intaking algae is higher priority
                         () -> {
                             elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
                             wrist.setAngle(WristPosition.CORAL_INTAKE);
