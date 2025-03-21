@@ -276,4 +276,18 @@ public class ConditionsTest extends TestCase3 implements StatusesMixin {
         assertTrue(timedLatch.getAsBoolean()); // 1->true
         // TODO: add test to ensure clock resets whenever underlying predicate is true
     }
+
+    @Test
+    public void testLogicalAnd() {
+        BooleanSupplier predicateFalse = () -> false;
+        BooleanSupplier predicateTrue = () -> true;
+
+        assertTrue(new Conditions.LogicalAnd());
+        assertTrue(new Conditions.LogicalAnd(predicateTrue));
+        assertFalse(new Conditions.LogicalAnd(predicateFalse));
+        assertFalse(new Conditions.LogicalAnd(predicateFalse, predicateFalse));
+        assertTrue(new Conditions.LogicalAnd(predicateTrue, predicateTrue));
+        assertFalse(new Conditions.LogicalAnd(predicateTrue, predicateTrue, predicateFalse));
+        assertTrue(new Conditions.LogicalAnd(predicateTrue, predicateTrue, predicateTrue));
+    }
 }
