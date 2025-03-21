@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.867927631578947,
-        "y": 2.7356907894736846
+        "x": 3.831549657534247,
+        "y": 2.522431506849315
       },
       "prevControl": {
-        "x": 2.9153782894736837,
-        "y": 2.0236842105263175
+        "x": 2.879000315428984,
+        "y": 1.810424927901948
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 55.0
+    "rotation": 59.99999999999999
   },
   "reversed": false,
   "folder": "Coral Station - Reef",

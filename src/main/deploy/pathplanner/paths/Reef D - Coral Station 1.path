@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.867927631578947,
-        "y": 2.7356907894736846
+        "x": 3.831549657534247,
+        "y": 2.522431506849315
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1263980263157887,
-        "y": 0.07047697368421035
+        "x": 2.090020052271089,
+        "y": -0.1427823089401592
       },
       "isLocked": false,
       "linkedName": "Reef Position D"
@@ -48,7 +48,7 @@
   "folder": "Reef - Coral Station",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 55.0
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true
 }
