@@ -30,7 +30,7 @@ public class BoxOpOI extends RuleGroup {
             Wrist wrist,
             Climber climber,
             CoralIntake coralIntake,
-            QueuedControl queuedControl) {
+            QueuedControl queuedControl) {      
 
         boxopGamepad.setAllAxisDeadzone(ControlConstants.GAMEPAD_DEADZONE);
 
@@ -51,7 +51,7 @@ public class BoxOpOI extends RuleGroup {
                         new RuleGroup() {
                             {
                                 addRule(
-                                        "Move Climber Up/Down",
+                                        "Move Climber Up or Down",
                                         boxopGamepad.whenAxisMoved(
                                                 InputConstants.GAMEPAD_RIGHT_STICK_YAXIS),
                                         ONCE_AND_HOLD,
@@ -85,7 +85,7 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                "Queue Algae Intake to L2/L3 Position",
+                "Queue Algae Intake to L2 L3 Position",
                 () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L2_L3,
                 ONCE,
                 algaeIntake,
@@ -94,7 +94,7 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                "Queue Algae Intake to L3/L4 Position",
+                "Queue Algae Intake to L3 L4 Position",
                 () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L3_L4,
                 ONCE,
                 Set.of(elevator, wrist, algaeIntake),
