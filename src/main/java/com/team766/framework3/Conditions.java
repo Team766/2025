@@ -64,17 +64,18 @@ public class Conditions {
     }
 
     public static final class LogicalAnd implements BooleanSupplier {
-        private final BooleanSupplier firstPredicate;
-        private final BooleanSupplier secondPredicate;
+        BooleanSupplier[] conditions;
 
-        public LogicalAnd(BooleanSupplier first, BooleanSupplier second) {
-            firstPredicate = first;
-            secondPredicate = second;
+        public LogicalAnd(BooleanSupplier... conditions) {
+            this.conditions = conditions;
         }
 
         @Override
         public boolean getAsBoolean() {
-            return firstPredicate.getAsBoolean() && secondPredicate.getAsBoolean();
+            for (BooleanSupplier condition: conditions) {
+                if (!condition.getAsBoolean()) return false;
+            }
+            return true;
         }
     }
 

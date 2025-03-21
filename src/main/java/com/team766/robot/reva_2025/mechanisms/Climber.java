@@ -49,6 +49,6 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
 
     @Override
     protected ClimberStatus updateStatus() {
-        return new ClimberStatus(leftClimberMotor.getSensorPosition(), state);
+        return new ClimberStatus(leftClimberMotor.get(), state);
     }
 }
