@@ -28,11 +28,15 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.checkerframework.checker.units.qual.s;
 
 public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     /**
@@ -119,6 +123,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     private boolean movingToTarget = false;
     private double x;
     private double y;
+    private double startTime;
 
     public SwerveDrive(SwerveConfig config) {
         this.config = config;
@@ -166,6 +171,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
         swerveDriveKinematics = new SwerveDriveKinematics(wheelPositions);
 
+
         swerveOdometry =
                 new Odometry(
                         gyro,
@@ -175,6 +181,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                         config.encoderToRevolutionConstant());
 
         kalmanFilter = new KalmanFilter();
+        startTime = RobotProvider.instance.getClock().getTime();
     }
 
     @Override
@@ -375,7 +382,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     protected DriveStatus updateStatus() {
         kalmanFilter.addOdometryInput(
                 swerveOdometry.calculateCurrentPositionChange(),
-                RobotProvider.instance.getClock().getTime());
+                RobotProvider.instance.getClock().getTime() - startTime);
 
         final double heading = gyro.getAngle();
         final double pitch = gyro.getPitch();
@@ -383,21 +390,27 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
         var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
         if (visionStatus.isPresent() && !visionStatus.get().allTags().isEmpty()) {
+        int camCounter = 0;
             for (List<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
+                camCounter++;
                 List<Translation2d> tagPoses = new ArrayList<>();
                 if (cameraTags.size() > 0) {
                     for (TimestampedApriltag tag : cameraTags) {
-                        tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
-                        SmartDashboard.putNumber(
-                                "Vision Heading", Rotation2d.fromDegrees(heading).getDegrees());
-                        SmartDashboard.putNumber(
-                                "Vision Pos",
-                                tag.toRobotPosition(Rotation2d.fromDegrees(heading)).getX());
+                        Translation2d position = tag.toRobotPosition(Rotation2d.fromDegrees(heading));
+                        tagPoses.add(position);
+                        if (Logger.isLoggingToDataLog()) {
+                                SmartDashboard.putNumber(
+                                        "CamVals/Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(), position.getX());
+                                org.littletonrobotics.junction.Logger.recordOutput(
+                                        "CamVals/Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(), new Pose2d(position, Rotation2d.fromDegrees(heading)));
+                        }
                     }
+        
+                    SmartDashboard.putNumber("delay", RobotProvider.instance.getClock().getTime() - (cameraTags.get(0).collectTime() / 1000000.));
                     kalmanFilter.updateWithVisionMeasurement(
-                            tagPoses,// RobotProvider.instance.getClock().getTime());
-                        cameraTags.get(0).covariance(),
-                            cameraTags.get(0).collectTime());
+                            tagPoses,
+                        cameraTags.get(0).covariance(), RobotProvider.instance.getClock().getTime());
+                        // cameraTags.get(0).collectTime() / 1000000.);
                 }
             }
         }
