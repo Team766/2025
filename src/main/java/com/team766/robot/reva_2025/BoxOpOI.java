@@ -19,6 +19,8 @@ import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
+import com.team766.robot.reva_2025.procedures.HoldAlgae;
+import com.team766.robot.reva_2025.procedures.IntakeAlgae;
 import java.util.Set;
 
 public class BoxOpOI extends RuleGroup {
@@ -106,13 +108,13 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                        "Move Algae Intake to Target Position",
-                        boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON),
-                        ONCE,
-                        algaeIntake,
-                        () -> {
-                            algaeIntake.setArmAngle(queuedControl.algaeLevel);
-                        })
+                "Move Algae Intake to Target Position",
+                boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON),
+                ONCE,
+                algaeIntake,
+                () -> {
+                        algaeIntake.setArmAngle(queuedControl.algaeLevel);
+                })
                 .whenTriggering(
                         new RuleGroup() {
                             {
@@ -136,13 +138,7 @@ public class BoxOpOI extends RuleGroup {
                                                 InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
                                         ONCE_AND_HOLD,
                                         Set.of(elevator, wrist, coralIntake, algaeIntake),
-                                        () -> {
-                                            if (queuedControl.algaeLevel == Level.GroundIntake) {
-                                                algaeIntake.setState(State.HoldAlgae);
-                                            } else {
-                                                algaeIntake.setState(AlgaeIntake.State.In);
-                                            }
-                                        });
+                                        () -> new IntakeAlgae(algaeIntake, queuedControl.algaeLevel));
                                 addRule(
                                         "Nudge Algae",
                                         boxopGamepad.whenAxisMoved(
@@ -158,17 +154,7 @@ public class BoxOpOI extends RuleGroup {
                         })
                 .withFinishedTriggeringProcedure(
                         algaeIntake,
-                        () -> {
-                            // make sure we don't squish an algae
-                            var status = getStatus(AlgaeIntake.AlgaeIntakeStatus.class);
-                            if (status.isPresent()
-                                    && status.get().intakeProximity().isPresent()
-                                    && status.get().level() != Level.Stow) {
-                                algaeIntake.setArmAngle(Level.GroundIntake);
-                            } else {
-                                algaeIntake.setArmAngle(Level.Stow);
-                            }
-                        });
+                        () -> new HoldAlgae(algaeIntake));
 
         // ALGAE INTAKE MOTOR CONTROLS / SHOOTING
 
