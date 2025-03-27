@@ -138,12 +138,14 @@ public class BoxOpOI extends RuleGroup {
                                                 InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
                                         ONCE_AND_HOLD,
                                         Set.of(elevator, wrist, coralIntake, algaeIntake),
-                                        () -> {
+                                        context -> {
                                             if (queuedControl.algaeLevel == Level.GroundIntake) {
                                                 algaeIntake.setState(State.HoldAlgae);
                                             } else {
-                                                new IntakeAlgae(
-                                                        algaeIntake, queuedControl.algaeLevel);
+                                                context.runSync(
+                                                        new IntakeAlgae(
+                                                                algaeIntake,
+                                                                queuedControl.algaeLevel));
                                             }
                                         });
                                 addRule(
@@ -161,7 +163,7 @@ public class BoxOpOI extends RuleGroup {
                         })
                 .withFinishedTriggeringProcedure(
                         algaeIntake,
-                        () -> {
+                        context -> {
                             // make sure we don't squish an algae
                             var status = getStatus(AlgaeIntake.AlgaeIntakeStatus.class);
                             if (status.isPresent()
@@ -169,7 +171,7 @@ public class BoxOpOI extends RuleGroup {
                                     && status.get().level() != Level.Stow) {
                                 if (status.get().level() == Level.L2L3AlgaeIntake
                                         || status.get().level() == Level.L3L4AlgaeIntake) {
-                                    new HoldAlgae(algaeIntake);
+                                    context.runSync(new HoldAlgae(algaeIntake));
                                 } else {
                                     algaeIntake.setArmAngle(Level.GroundIntake);
                                 }
