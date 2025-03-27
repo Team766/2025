@@ -15,7 +15,6 @@ public class HoldAlgae extends Procedure {
 
     @Override
     public void run(Context context) {
-        // context.waitForSeconds(2);
         intake.setArmAngle(Level.Shoot);
         intake.setState(State.MatchVelocity);
         waitForStatusMatching(context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAtAngle());
