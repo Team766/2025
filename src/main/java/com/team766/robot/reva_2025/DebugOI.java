@@ -318,12 +318,12 @@ public class DebugOI extends RuleGroup {
                                         "Debug Climber Up",
                                         macropad.whenButton(InputConstants.NUDGE_UP),
                                         climber,
-                                        () -> climber.climb(0.5));
+                                        () -> climber.runClimb(0.5));
                                 addRule(
                                         "Debug Climber Down",
                                         macropad.whenButton(InputConstants.NUDGE_DOWN),
                                         climber,
-                                        () -> climber.climb(-0.5));
+                                        () -> climber.runClimb(-0.5));
                             }
                         });
     }

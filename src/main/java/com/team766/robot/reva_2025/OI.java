@@ -81,6 +81,7 @@ public class OI extends RuleEngine {
                         wrist,
                         coralIntake,
                         algaeIntake,
+                        climber,
                         queuedControl));
         addRules(
                 new BoxOpOI(

@@ -5,55 +5,60 @@ import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.MotorController.ControlMode;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
 public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
-    private MotorController leftClimberMotor;
-    private double HIGH_LIMIT = 90; // TODO: use absolute encoder soft limit
+    private MotorController climberMotor;
     private double CLIMBER_POWER = 1.0;
-    private State state;
 
-    public static record ClimberStatus(double currentPower, State state) implements Status {}
+    public static record ClimberStatus(double currentPower, double currentPosition) implements Status {}
 
-    public enum State {
-        // velocity is in revolutions per minute
-        On,
-        Off,
-        Done
+    public enum ClimbPosition {
+        TOP(-400),
+        CLIMB(-122),
+        BOTTOM(0);
+
+        private double motorRotations;
+
+        private ClimbPosition(double motorRotations) {
+            this.motorRotations = motorRotations;
+        }
+
+        public double getPosition() {
+            return motorRotations;
+        }
     }
 
     public Climber() {
-        leftClimberMotor = RobotProvider.instance.getMotor(ConfigConstants.CLIMBER_LEFT_MOTOR);
-        leftClimberMotor.setNeutralMode(NeutralMode.Brake);
-        MotorUtil.setSoftLimits(leftClimberMotor, -122, -400);
-        leftClimberMotor.setSensorPosition(0);
-        state = State.Off;
+        climberMotor = RobotProvider.instance.getMotor(ConfigConstants.CLIMBER_LEFT_MOTOR);
+        climberMotor.setNeutralMode(NeutralMode.Brake);
+        MotorUtil.setSoftLimits(climberMotor, -122, -400);
+        climberMotor.setSensorPosition(0);
     }
 
-    public void climb(double sign) {
-        if (sign < 0) { //up
-            MotorUtil.enableSoftLimits(leftClimberMotor, false);
+    public void runClimb(double sign) {
+        if (sign <= 0) { //up
+            MotorUtil.enableSoftLimits(climberMotor, false);
         } else {
-            MotorUtil.enableSoftLimits(leftClimberMotor, true);
+            MotorUtil.enableSoftLimits(climberMotor, true);
         }
-        leftClimberMotor.set(CLIMBER_POWER * Math.signum(sign));
-        state = State.On;
+        climberMotor.set(CLIMBER_POWER * Math.signum(sign));
     }
 
-    public void climbOff() {
-        leftClimberMotor.set(0);
-        state = State.Off;
+    public void moveClimber(ClimbPosition position) {
+        MotorUtil.enableSoftLimits(climberMotor, false);
+        climberMotor.set(ControlMode.Position, position.getPosition());
     }
 
     @Override
     protected void onMechanismIdle() {
-        climbOff();
-        state = State.Done;
+        runClimb(0);
     }
 
     @Override
     protected ClimberStatus updateStatus() {
-        return new ClimberStatus(leftClimberMotor.get(), state);
+        return new ClimberStatus(climberMotor.get(), climberMotor.getSensorPosition());
     }
 }

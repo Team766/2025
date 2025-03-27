@@ -8,9 +8,11 @@ import com.team766.robot.reva_2025.OI.QueuedControl;
 import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
+import com.team766.robot.reva_2025.mechanisms.Climber;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
+import com.team766.robot.reva_2025.mechanisms.Climber.ClimbPosition;
 import com.team766.robot.reva_2025.procedures.ShootWhenReady;
 import java.util.Set;
 
@@ -23,6 +25,7 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
             Wrist wrist,
             CoralIntake coralIntake,
             AlgaeIntake algaeIntake,
+            Climber climber,
             QueuedControl queuedControl) {
         super(leftJoystick, rightJoystick, drive);
         addRule(
@@ -59,6 +62,13 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
                 wrist,
                 () -> {
                     wrist.nudge(1);
+                });
+        addRule("Climber Climb",
+                rightJoystick.whenButton(4),
+                ONCE,
+                climber,
+                () -> {
+                    climber.moveClimber(ClimbPosition.CLIMB);
                 });
     }
 }

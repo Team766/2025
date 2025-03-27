@@ -57,7 +57,8 @@ public class CoralConstants {
         L1(ElevatorPosition.ELEVATOR_L1, WristPosition.CORAL_L1_PLACE),
         L2(ElevatorPosition.ELEVATOR_L2, WristPosition.CORAL_L2_PLACE),
         L3(ElevatorPosition.ELEVATOR_L3, WristPosition.CORAL_L3_PLACE),
-        L4(ElevatorPosition.ELEVATOR_L4, WristPosition.CORAL_L4_PLACE);
+        L4(ElevatorPosition.ELEVATOR_L4, WristPosition.CORAL_L4_PLACE),
+        CLIMB(ElevatorPosition.ELEVATOR_CLIMB, WristPosition.CORAL_CLIMB);
 
         private final ElevatorPosition elevatorPosition;
         private final WristPosition wristPosition;

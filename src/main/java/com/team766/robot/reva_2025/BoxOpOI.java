@@ -13,6 +13,7 @@ import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.State;
+import com.team766.robot.reva_2025.mechanisms.Climber.ClimbPosition;
 import com.team766.robot.reva_2025.mechanisms.Climber;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
@@ -46,6 +47,7 @@ public class BoxOpOI extends RuleGroup {
                             algaeIntake.setArmAngle(Level.GroundIntake);
                             elevator.setPosition(ElevatorPosition.ELEVATOR_CLIMB);
                             wrist.setAngle(WristPosition.CORAL_CLIMB);
+                            climber.moveClimber(ClimbPosition.TOP);
                         })
                 .whenTriggering(
                         new RuleGroup() {
@@ -57,12 +59,13 @@ public class BoxOpOI extends RuleGroup {
                                         ONCE_AND_HOLD,
                                         climber,
                                         () ->
-                                                climber.climb(
+                                                climber.runClimb(
                                                         boxopGamepad.getAxis(
                                                                 InputConstants
                                                                         .GAMEPAD_RIGHT_STICK_YAXIS)));
                             }
-                        });
+                        })
+                        .withFinishedTriggeringProcedure(climber, () -> climber.moveClimber(ClimbPosition.BOTTOM));
 
         // ALGAE INTAKE POSITIONS
 
