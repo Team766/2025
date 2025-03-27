@@ -19,6 +19,8 @@ import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
+import com.team766.robot.reva_2025.procedures.HoldAlgae;
+import com.team766.robot.reva_2025.procedures.IntakeAlgae;
 import java.util.Set;
 
 public class BoxOpOI extends RuleGroup {
@@ -140,7 +142,8 @@ public class BoxOpOI extends RuleGroup {
                                             if (queuedControl.algaeLevel == Level.GroundIntake) {
                                                 algaeIntake.setState(State.HoldAlgae);
                                             } else {
-                                                algaeIntake.setState(AlgaeIntake.State.In);
+                                                new IntakeAlgae(
+                                                        algaeIntake, queuedControl.algaeLevel);
                                             }
                                         });
                                 addRule(
@@ -164,7 +167,12 @@ public class BoxOpOI extends RuleGroup {
                             if (status.isPresent()
                                     && status.get().intakeProximity().isPresent()
                                     && status.get().level() != Level.Stow) {
-                                algaeIntake.setArmAngle(Level.GroundIntake);
+                                if (status.get().level() == Level.L2L3AlgaeIntake
+                                        || status.get().level() == Level.L3L4AlgaeIntake) {
+                                    new HoldAlgae(algaeIntake);
+                                } else {
+                                    algaeIntake.setArmAngle(Level.GroundIntake);
+                                }
                             } else {
                                 algaeIntake.setArmAngle(Level.Stow);
                             }
