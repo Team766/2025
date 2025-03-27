@@ -8,6 +8,7 @@ import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 import com.team766.robot.reva_2025.procedures.StartCoralIntake;
+import com.team766.robot.reva_2025.procedures.IntakeCoralUntilIn;
 import com.team766.robot.reva_2025.procedures.MoveElevator;
 import com.team766.robot.reva_2025.procedures.ScoreCoral;
 
@@ -23,15 +24,23 @@ public class ThreePieceCDE extends PathSequenceAuto {
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
-        addPath("Reef C - Coral Station 2");
+        
         addProcedure(new StartCoralIntake(intake));
+        addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.Intake));
+        addPath("Reef C - Coral Station 2");
+        addProcedure(new IntakeCoralUntilIn(intake));
+
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.L4));
         addPath("Coral Station 2 - Reef D");
         addProcedure(
                 new ScoreCoral(
-                        RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
-        addPath("Reef D - CoralStation 2");
+                        RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake));
+        
         addProcedure(new StartCoralIntake(intake));
+        addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.Intake));
+        addPath("Reef D - CoralStation 2");
+        addProcedure(new IntakeCoralUntilIn(intake));
+
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.L4));
         addPath("CoralStation 2 - Reef E");
         addProcedure(

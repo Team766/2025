@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.893210227272728,
-        "y": 4.18953125
+        "x": 6.1425,
+        "y": 4.179559659090909
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.58125,
-        "y": 5.455923295454545
+        "x": 6.830539772727272,
+        "y": 5.445951704545454
       },
       "isLocked": false,
       "linkedName": "Reef Position H"

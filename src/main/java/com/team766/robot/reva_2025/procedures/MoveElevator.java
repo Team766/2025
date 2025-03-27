@@ -15,6 +15,7 @@ public class MoveElevator extends Procedure {
             Elevator elevator, Wrist wrist, ScoreHeight height) {
         this.elevator = reserve(elevator);
         this.wrist = reserve(wrist);
+        this.scoreHeight = height;
     }
 
     public void run(Context context) {
