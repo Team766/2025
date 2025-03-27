@@ -108,13 +108,13 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                "Move Algae Intake to Target Position",
-                boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON),
-                ONCE,
-                algaeIntake,
-                () -> {
-                        algaeIntake.setArmAngle(queuedControl.algaeLevel);
-                })
+                        "Move Algae Intake to Target Position",
+                        boxopGamepad.whenButton(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON),
+                        ONCE,
+                        algaeIntake,
+                        () -> {
+                            algaeIntake.setArmAngle(queuedControl.algaeLevel);
+                        })
                 .whenTriggering(
                         new RuleGroup() {
                             {
@@ -138,7 +138,14 @@ public class BoxOpOI extends RuleGroup {
                                                 InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
                                         ONCE_AND_HOLD,
                                         Set.of(elevator, wrist, coralIntake, algaeIntake),
-                                        () -> new IntakeAlgae(algaeIntake, queuedControl.algaeLevel));
+                                        () -> {
+                                            if (queuedControl.algaeLevel == Level.GroundIntake) {
+                                                algaeIntake.setState(State.HoldAlgae);
+                                            } else {
+                                                new IntakeAlgae(
+                                                        algaeIntake, queuedControl.algaeLevel);
+                                            }
+                                        });
                                 addRule(
                                         "Nudge Algae",
                                         boxopGamepad.whenAxisMoved(
@@ -154,7 +161,22 @@ public class BoxOpOI extends RuleGroup {
                         })
                 .withFinishedTriggeringProcedure(
                         algaeIntake,
-                        () -> new HoldAlgae(algaeIntake));
+                        () -> {
+                            // make sure we don't squish an algae
+                            var status = getStatus(AlgaeIntake.AlgaeIntakeStatus.class);
+                            if (status.isPresent()
+                                    && status.get().intakeProximity().isPresent()
+                                    && status.get().level() != Level.Stow) {
+                                if (status.get().level() == Level.L2L3AlgaeIntake
+                                        || status.get().level() == Level.L3L4AlgaeIntake) {
+                                    new HoldAlgae(algaeIntake);
+                                } else {
+                                    algaeIntake.setArmAngle(Level.GroundIntake);
+                                }
+                            } else {
+                                algaeIntake.setArmAngle(Level.Stow);
+                            }
+                        });
 
         // ALGAE INTAKE MOTOR CONTROLS / SHOOTING
 
