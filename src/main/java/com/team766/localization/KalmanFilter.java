@@ -11,6 +11,8 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +43,7 @@ public class KalmanFilter {
     private static final Matrix<N2, N2> VISION_COVARIANCE_DEFAULT =
             MatBuilder.fill(Nat.N2(), Nat.N2(), 0.0009, 0, 0, 0.0009);
 
-    private static final double VELOCITY_INPUT_DELETION_TIME_DEFAULT = 0.02; // in seconds
+    private static final double VELOCITY_INPUT_DELETION_TIME_DEFAULT = 0.05; // in seconds
 
     public KalmanFilter(
             Matrix<N2, N1> curState,
@@ -95,10 +97,12 @@ public class KalmanFilter {
         if (inputLog.size() > 1) {
             predictCurrentState(inputLog.lowerKey(time));
         }
+        SmartDashboard.putNumber("inputLog length", inputLog.size());
 
         if (time - inputLog.firstKey() > velocityInputDeletionTime) {
             inputLog.remove(inputLog.firstKey()); // delete old velocityInput values
         }
+        
     }
 
     private void predict(double time, double nextStepTime, double dt) {

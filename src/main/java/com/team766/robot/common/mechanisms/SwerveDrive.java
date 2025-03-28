@@ -123,7 +123,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     private boolean movingToTarget = false;
     private double x;
     private double y;
-    private double startTime;
 
     public SwerveDrive(SwerveConfig config) {
         this.config = config;
@@ -181,7 +180,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                         config.encoderToRevolutionConstant());
 
         kalmanFilter = new KalmanFilter();
-        startTime = RobotProvider.instance.getClock().getTime();
     }
 
     @Override
@@ -382,7 +380,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     protected DriveStatus updateStatus() {
         kalmanFilter.addOdometryInput(
                 swerveOdometry.calculateCurrentPositionChange(),
-                RobotProvider.instance.getClock().getTime() - startTime);
+                RobotProvider.instance.getClock().getTime());
 
         final double heading = gyro.getAngle();
         final double pitch = gyro.getPitch();
