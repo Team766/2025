@@ -13,6 +13,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.security.KeyStore.Entry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -261,7 +262,7 @@ public class KalmanFilter {
         for (Translation2d measurement : measurements) {
             measurementTreeMap.put(
                     measurement,
-                    visionCovariance.times(Math.pow(measurement.getNorm(), 2)));
+                    measurement.getNorm() > 3 ? Matrix.eye(Nat.N2()) : visionCovariance.times(Math.pow(measurement.getNorm(), 2)));
         }
         updateWithPositionMeasurement(measurementTreeMap, time);
     }
@@ -272,13 +273,13 @@ public class KalmanFilter {
      * @param covariance the covariance of this camera
      * @param time the time that the measurement took place, in seconds
      */
-    public void updateWithVisionMeasurement(List<Translation2d> measurements, double covariance, double time) {
+    public void updateWithVisionMeasurement(Map<Translation2d, Double> measurements, double covariance, double time) {
         Map<Translation2d, Matrix<N2, N2>> measurementTreeMap = new HashMap<>();
-        for (Translation2d measurement : measurements) {
+        for (Map.Entry<Translation2d, Double> measurement : measurements.entrySet()) {
             // TODO: do this logic earlier in the covariance field
             measurementTreeMap.put(
-                    measurement,
-                    MatBuilder.fill(Nat.N2(), Nat.N2(), covariance, 0, 0, covariance).times(Math.pow(measurement.getNorm(), 2)));
+                    measurement.getKey(),
+                    measurement.getValue() > 3 ? Matrix.eye(Nat.N2()) : MatBuilder.fill(Nat.N2(), Nat.N2(), covariance, 0, 0, covariance).times(Math.pow(measurement.getValue(), 2)));
         }
         updateWithPositionMeasurement(measurementTreeMap, time);
     }

@@ -99,22 +99,22 @@ public class ScoreCoral extends Procedure {
                 nearestPose = nearestPose(0.25, false);
                 break;
             case L4:
-                nearestPose = nearestPose(0.30, false);
+                nearestPose = nearestPose(0.25, false);
                 break;
             default:
                 log(Severity.ERROR, "Invalid scoreLevel");
                 return;
         }
 
-        context.runSync(new AutoAlign(nearestPose, drive));
+        context.runSync(new AutoAlign(nearestPose, 0.12, drive));
         waitForStatusMatchingOrTimeout(
                 context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1);
         waitForStatusMatchingOrTimeout(context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
 
         if (scoreLevel.equals(ScoreHeight.L4)) {
-            context.runSync(new AutoAlign(nearestPose(0.03, false), drive));
+            context.runSync(new AutoAlign(nearestPose(0.01, false), drive));
             coral.out();
-            context.waitForSeconds(0.5);
+            context.waitForSeconds(0.25);
         } else {
             coral.out();
             context.waitForSeconds(0.25);

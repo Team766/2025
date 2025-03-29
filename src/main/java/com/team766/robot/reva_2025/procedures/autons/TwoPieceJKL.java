@@ -14,13 +14,13 @@ import com.team766.robot.reva_2025.procedures.StartCoralIntake;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class TwoPieceKL extends PathSequenceAuto {
-    public TwoPieceKL(SwerveDrive drive, CoralIntake intake, Wrist wrist, Elevator elevator) {
-        super(drive, new Pose2d(7.586, 7.259, Rotation2d.fromDegrees(-180)));
+public class TwoPieceJKL extends PathSequenceAuto {
+    public TwoPieceJKL(SwerveDrive drive, CoralIntake intake, Wrist wrist, Elevator elevator) {
+        super(drive, new Pose2d(7.100, 5.596, Rotation2d.fromDegrees(-180)));
         // Score on K
         addProcedure(new StartCoralIntake(intake));
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.L4));
-        addPath("Start Blue 3 - Reef K");
+        addPath("Start Blue 2 - Reef J");
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
@@ -28,13 +28,23 @@ public class TwoPieceKL extends PathSequenceAuto {
         // Intake
         addProcedure(new StartCoralIntake(intake));
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.Intake));
-        addPath("Reef K - Coral Station 1");
+        addPath("Reef J - Coral Station 1");
         addProcedure(new IntakeCoralUntilIn(intake));
 
         // Score on L
-        addPath("Coral Station 1 - Reef L");
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake));
+        
+        // Intake
+        addProcedure(new StartCoralIntake(intake));
+        addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.Intake));
+        addPath("Reef L - Coral Station 1");
+        addProcedure(new IntakeCoralUntilIn(intake));
+
+        // Score on L
+        addProcedure(
+                new ScoreCoral(
+                        RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
     }
 }

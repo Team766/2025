@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -391,14 +392,14 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         int camCounter = 0;
             for (List<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
                 camCounter++;
-                List<Translation2d> tagPoses = new ArrayList<>();
+                HashMap<Translation2d, Double> tagPoses = new HashMap<>();
                 if (cameraTags.size() > 0) {
                     for (TimestampedApriltag tag : cameraTags) {
                         Translation2d position = tag.toRobotPosition(Rotation2d.fromDegrees(heading));
-                        tagPoses.add(position);
+                        tagPoses.put(position, tag.pose3d().getTranslation().getNorm());
                         if (Logger.isLoggingToDataLog()) {
                                 SmartDashboard.putNumber(
-                                        "CamVals/Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(), position.getX());
+                                        "CamVals/Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(), position.getY());
                                 org.littletonrobotics.junction.Logger.recordOutput(
                                         "CamVals/Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(), new Pose2d(position, Rotation2d.fromDegrees(heading)));
                         }

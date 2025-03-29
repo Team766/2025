@@ -8,11 +8,11 @@ import com.team766.robot.reva.mechanisms.MotorUtil;
 
 public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStatus> {
     private static final double POWER_IN = 0.30;
-    private static final double POWER_IDLE = 0.075;
+    private static final double POWER_IDLE = 0.1;
     private static final double POWER_OUT = -0.75;
     private State state = State.Stop;
     private MotorController motor;
-    public static final double INTAKE_CURRENT_THRESHOLD = 6;
+    public static final double INTAKE_CURRENT_THRESHOLD = 5;
 
     public static record CoralIntakeStatus(double intakePower, double current, State state)
             implements Status {

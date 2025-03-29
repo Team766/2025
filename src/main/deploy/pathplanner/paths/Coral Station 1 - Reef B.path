@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.076372251157406,
-        "y": 7.276037688078703
+        "x": 1.525653409090909,
+        "y": 7.240838068181818
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4048261985256696,
-        "y": 5.5056429512347576
+        "x": 3.8541073564591737,
+        "y": 5.470443331337872
       },
       "isLocked": false,
-      "linkedName": "Coral Station 1"
+      "linkedName": null
     },
     {
       "anchor": {
