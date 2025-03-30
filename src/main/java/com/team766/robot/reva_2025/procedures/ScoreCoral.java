@@ -96,7 +96,7 @@ public class ScoreCoral extends Procedure {
                 nearestPose = nearestPose(0, false);
                 break;
             case L3:
-                nearestPose = nearestPose(0.25, false);
+                nearestPose = nearestPose(0.05, false);
                 break;
             case L4:
                 nearestPose = nearestPose(0.25, false);
@@ -106,16 +106,19 @@ public class ScoreCoral extends Procedure {
                 return;
         }
 
-        context.runSync(new AutoAlign(nearestPose, 0.12, drive));
-        waitForStatusMatchingOrTimeout(
-                context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1);
-        waitForStatusMatchingOrTimeout(context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
-
         if (scoreLevel.equals(ScoreHeight.L4)) {
+            context.runSync(new AutoAlign(nearestPose, 0.12, drive));
+            waitForStatusMatchingOrTimeout(
+                context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1);
+            waitForStatusMatchingOrTimeout(context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
             context.runSync(new AutoAlign(nearestPose(0.01, false), drive));
             coral.out();
             context.waitForSeconds(0.25);
         } else {
+            context.runSync(new AutoAlign(nearestPose, drive));
+            waitForStatusMatchingOrTimeout(
+                context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1);
+            waitForStatusMatchingOrTimeout(context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
             coral.out();
             context.waitForSeconds(0.25);
         }
