@@ -125,6 +125,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     private double x;
     private double y;
 
+    private double[] prevCamTimes;
+
     public SwerveDrive(SwerveConfig config) {
         this.config = config;
 
@@ -171,7 +173,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
         swerveDriveKinematics = new SwerveDriveKinematics(wheelPositions);
 
-
         swerveOdometry =
                 new Odometry(
                         gyro,
@@ -181,6 +182,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                         config.encoderToRevolutionConstant());
 
         kalmanFilter = new KalmanFilter();
+
+        prevCamTimes = new double[4];
     }
 
     @Override
@@ -406,10 +409,13 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                     }
         
                     SmartDashboard.putNumber("delay", RobotProvider.instance.getClock().getTime() - (cameraTags.get(0).collectTime() / 1000000.));
-                    kalmanFilter.updateWithVisionMeasurement(
+                    if (prevCamTimes[0] != 0 && Math.abs(cameraTags.get(0).collectTime() - prevCamTimes[camCounter - 1]) > 1) {
+                        kalmanFilter.updateWithVisionMeasurement(
                             tagPoses,
                         cameraTags.get(0).covariance(), RobotProvider.instance.getClock().getTime());
                         // cameraTags.get(0).collectTime() / 1000000.);
+                    }
+                    prevCamTimes[camCounter - 1] = cameraTags.get(0).collectTime();
                 }
             }
         }

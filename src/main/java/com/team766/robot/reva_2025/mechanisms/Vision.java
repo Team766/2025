@@ -6,6 +6,7 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import com.team766.orin.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,8 +37,8 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
                     // disabling cameras for now
                     new GetOrinRawValue("left_back", 0.0009),
                     new GetOrinRawValue("left_front", 0.0009),
-                    new GetOrinRawValue("right_back", 21.0009),
-                    new GetOrinRawValue("right_front", 21.0009)
+                    new GetOrinRawValue("right_back", 0.0009),
+                    new GetOrinRawValue("right_front", 0.0009)
                 };
     }
 
@@ -47,7 +48,14 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
         for (GetOrinRawValue camera : cameraList) {
             try {
                 double[] poseData = camera.getRawPoseData();
-                tags.add(GetApriltagPoseData.getAllTags(poseData, camera.getCovariance()));
+                var tagData = GetApriltagPoseData.getAllTags(poseData, camera.getCovariance());
+                for (int i = 0; i < tagData.size(); i++) {
+                    if (Arrays.asList( 14, 15).contains(tagData.get(i).tagId())) {
+                        tagData.remove(i);
+                        i--;
+                    }
+                }
+                tags.add(tagData);
             } catch (ValueNotFoundOnTableError e) {
                 // maintain camera list order even if one is not connected
                 tags.add(new ArrayList<>());
