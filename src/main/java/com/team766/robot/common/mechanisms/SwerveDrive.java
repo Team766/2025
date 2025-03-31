@@ -28,16 +28,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-
-import org.checkerframework.checker.units.qual.s;
 
 public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     /**
@@ -392,28 +387,50 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
         var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
         if (visionStatus.isPresent() && !visionStatus.get().allTags().isEmpty()) {
-        int camCounter = 0;
+            int camCounter = 0;
             for (List<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
                 camCounter++;
                 HashMap<Translation2d, Double> tagPoses = new HashMap<>();
                 if (cameraTags.size() > 0) {
                     for (TimestampedApriltag tag : cameraTags) {
-                        Translation2d position = tag.toRobotPosition(Rotation2d.fromDegrees(heading));
+                        Translation2d position =
+                                tag.toRobotPosition(Rotation2d.fromDegrees(heading));
                         tagPoses.put(position, tag.pose3d().getTranslation().getNorm());
                         if (Logger.isLoggingToDataLog()) {
-                                SmartDashboard.putNumber(
-                                        "CamVals/Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(), position.getY());
-                                org.littletonrobotics.junction.Logger.recordOutput(
-                                        "CamVals/Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(), new Pose2d(position, Rotation2d.fromDegrees(heading)));
+                            SmartDashboard.putNumber(
+                                    "CamVals/Vision Pos/cam "
+                                            + camCounter
+                                            + "/tagID "
+                                            + tag.tagId(),
+                                    position.getY());
+                            org.littletonrobotics.junction.Logger.recordOutput(
+                                    "CamVals/Vision Pos/cam "
+                                            + camCounter
+                                            + "/tagID "
+                                            + tag.tagId(),
+                                    new Pose2d(position, Rotation2d.fromDegrees(heading)));
                         }
                     }
-        
-                    SmartDashboard.putNumber("delay", RobotProvider.instance.getClock().getTime() - (cameraTags.get(0).collectTime() / 1000000.));
-                    if (prevCamTimes[0] != 0 && Math.abs(cameraTags.get(0).collectTime() - prevCamTimes[camCounter - 1]) > 1) {
+
+                    SmartDashboard.putNumber(
+                            "delay",
+                            RobotProvider.instance.getClock().getTime()
+                                    - (cameraTags.get(0).collectTime() / 1000000.));
+
+                    // Only do position update if current timestamp doesn't match with previous
+                    // timestamp
+                    if (prevCamTimes[0] != 0
+                            && Math.abs(
+                                            cameraTags.get(0).collectTime()
+                                                    - prevCamTimes[camCounter - 1])
+                                    > 1) {
                         kalmanFilter.updateWithVisionMeasurement(
-                            tagPoses,
-                        cameraTags.get(0).covariance(), RobotProvider.instance.getClock().getTime());
-                        // cameraTags.get(0).collectTime() / 1000000.);
+                                tagPoses,
+                                cameraTags.get(0).covariance(),
+                                RobotProvider.instance
+                                        .getClock()
+                                        .getTime()); // Latency correction off
+                        // cameraTags.get(0).collectTime() / 1000000.); // Latency correction option
                     }
                     prevCamTimes[camCounter - 1] = cameraTags.get(0).collectTime();
                 }

@@ -35,7 +35,7 @@ public class TwoPieceJKL extends PathSequenceAuto {
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake));
-        
+
         // Intake
         addProcedure(new StartCoralIntake(intake));
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.Intake));

@@ -28,10 +28,7 @@ public class CoralStationPositionAndIntake extends Procedure {
                 context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1.0);
         waitForStatusMatchingOrTimeout(context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
         waitForStatusMatchingOrTimeout(
-                context,
-                CoralIntake.CoralIntakeStatus.class,
-                s -> s.coralIntakeSuccessful(), 
-                2);
+                context, CoralIntake.CoralIntakeStatus.class, s -> s.coralIntakeSuccessful(), 2);
 
         coralIntake.idle();
     }

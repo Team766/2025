@@ -7,11 +7,10 @@ import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
-import com.team766.robot.reva_2025.procedures.StartCoralIntake;
 import com.team766.robot.reva_2025.procedures.IntakeCoralUntilIn;
 import com.team766.robot.reva_2025.procedures.MoveElevator;
 import com.team766.robot.reva_2025.procedures.ScoreCoral;
-
+import com.team766.robot.reva_2025.procedures.StartCoralIntake;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -24,7 +23,7 @@ public class ThreePieceCDE extends PathSequenceAuto {
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
-        
+
         addProcedure(new StartCoralIntake(intake));
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.Intake));
         addPath("Reef C - Coral Station 2");
@@ -35,7 +34,7 @@ public class ThreePieceCDE extends PathSequenceAuto {
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake));
-        
+
         addProcedure(new StartCoralIntake(intake));
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.Intake));
         addPath("Reef D - CoralStation 2");

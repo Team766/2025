@@ -32,7 +32,7 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     }
 
     public void climb(double sign) {
-        if (sign < 0) { //up
+        if (sign < 0) { // up
             MotorUtil.enableSoftLimits(leftClimberMotor, false);
         } else {
             MotorUtil.enableSoftLimits(leftClimberMotor, true);

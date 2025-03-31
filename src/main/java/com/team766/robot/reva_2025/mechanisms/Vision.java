@@ -28,6 +28,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
     private final GetOrinRawValue[] cameraList;
     private boolean hasLoggedError = false;
+    private final List<Integer> IGNORED_TAGS = Arrays.asList(4, 5, 14, 15);
 
     public Vision() {
         // TODO: have this as a config input
@@ -50,7 +51,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
                 double[] poseData = camera.getRawPoseData();
                 var tagData = GetApriltagPoseData.getAllTags(poseData, camera.getCovariance());
                 for (int i = 0; i < tagData.size(); i++) {
-                    if (Arrays.asList( 14, 15).contains(tagData.get(i).tagId())) {
+                    if (IGNORED_TAGS.contains(tagData.get(i).tagId())) {
                         tagData.remove(i);
                         i--;
                     }

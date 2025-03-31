@@ -30,7 +30,7 @@ public class BoxOpOI extends RuleGroup {
             Wrist wrist,
             Climber climber,
             CoralIntake coralIntake,
-            QueuedControl queuedControl) {      
+            QueuedControl queuedControl) {
 
         boxopGamepad.setAllAxisDeadzone(ControlConstants.GAMEPAD_DEADZONE);
 
