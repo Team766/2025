@@ -11,8 +11,7 @@ public class MoveElevator extends Procedure {
     private Wrist wrist;
     private ScoreHeight scoreHeight;
 
-    public MoveElevator(
-            Elevator elevator, Wrist wrist, ScoreHeight height) {
+    public MoveElevator(Elevator elevator, Wrist wrist, ScoreHeight height) {
         this.elevator = reserve(elevator);
         this.wrist = reserve(wrist);
         this.scoreHeight = height;
