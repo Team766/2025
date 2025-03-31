@@ -1,0 +1,20 @@
+plugins {
+    id "java-library"
+}
+
+def errorproneVersion = '2.37.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    annotationProcessor "com.google.auto.service:auto-service:1.1.1"
+    implementation "com.google.errorprone:error_prone_core:$errorproneVersion"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += [
+        "--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+    ]
+}
