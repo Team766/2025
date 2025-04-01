@@ -16,12 +16,12 @@ public class CoralConstants {
         ReefB(3.16, 3.860, 0, RelativeReefPos.Right),
         ReefC(3.679, 2.954, 60, RelativeReefPos.Left),
         ReefD(3.965, 2.792, 60, RelativeReefPos.Right),
-        ReefE(5.010, 2.792, 120, RelativeReefPos.Right),
-        ReefF(5.297, 2.954, 120, RelativeReefPos.Left),
-        ReefG(5.815, 3.860, 180, RelativeReefPos.Right),
-        ReefH(5.815, 4.190, 180, RelativeReefPos.Left),
-        ReefI(5.297, 5.094, -120, RelativeReefPos.Right),
-        ReefJ(5.010, 5.258, -120, RelativeReefPos.Left),
+        ReefE(5.010, 2.792, 120, RelativeReefPos.Left),
+        ReefF(5.297, 2.954, 120, RelativeReefPos.Right),
+        ReefG(5.815, 3.860, 180, RelativeReefPos.Left),
+        ReefH(5.815, 4.190, 180, RelativeReefPos.Right),
+        ReefI(5.297, 5.094, -120, RelativeReefPos.Left),
+        ReefJ(5.010, 5.258, -120, RelativeReefPos.Right),
         ReefK(3.965, 5.258, -60, RelativeReefPos.Left),
         ReefL(3.679, 5.094, -60, RelativeReefPos.Right);
 

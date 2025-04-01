@@ -17,11 +17,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class ThreePieceEDC extends PathSequenceAuto {
     public ThreePieceEDC(SwerveDrive drive, CoralIntake intake, Wrist wrist, Elevator elevator) {
         super(drive, new Pose2d(7.100, 2.454, Rotation2d.fromDegrees(-180)));
-        
         // Score on E
         addProcedure(new StartCoralIntake(intake));
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.L4));
-        addPath("Start Blue 2 - Reef J");
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
@@ -29,10 +27,10 @@ public class ThreePieceEDC extends PathSequenceAuto {
         // Intake
         addProcedure(new StartCoralIntake(intake));
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.Intake));
-        addPath("Reef J - Coral Station 1");
+        addPath("Reef E - Coral Station 2");
         addProcedure(new IntakeCoralUntilIn(intake));
 
-        // Score on L
+        // Score on D
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake));
@@ -40,12 +38,18 @@ public class ThreePieceEDC extends PathSequenceAuto {
         // Intake
         addProcedure(new StartCoralIntake(intake));
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.Intake));
-        addPath("Reef L - Coral Station 1");
+        addPath("Reef D - Coral Station 2");
         addProcedure(new IntakeCoralUntilIn(intake));
 
-        // Score on L
+        // Score on C
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
+        
+        // Intake
+        addProcedure(new StartCoralIntake(intake));
+        addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.Intake));
+        addPath("Reef D - Coral Station 2");
+        addProcedure(new IntakeCoralUntilIn(intake));
     }
 }

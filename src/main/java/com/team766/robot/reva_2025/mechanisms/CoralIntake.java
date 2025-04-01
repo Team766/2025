@@ -12,7 +12,7 @@ public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStat
     private static final double POWER_OUT = -0.75;
     private State state = State.Stop;
     private MotorController motor;
-    public static final double INTAKE_CURRENT_THRESHOLD = 15;
+    public static final double INTAKE_CURRENT_THRESHOLD = 16;
 
     public static record CoralIntakeStatus(double intakePower, double current, State state)
             implements Status {

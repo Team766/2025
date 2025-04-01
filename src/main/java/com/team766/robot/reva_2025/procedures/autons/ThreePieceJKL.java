@@ -17,13 +17,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class ThreePieceJKL extends PathSequenceAuto {
     public ThreePieceJKL(SwerveDrive drive, CoralIntake intake, Wrist wrist, Elevator elevator) {
         super(drive, new Pose2d(7.100, 5.596, Rotation2d.fromDegrees(-180)));
-        // Score on K
+        // Score on J
         addProcedure(new StartCoralIntake(intake));
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.L4));
         addPath("Start Blue 2 - Reef J");
         addProcedure(
                 new ScoreCoral(
-                        RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
+                        RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake));
 
         // Intake
         addProcedure(new StartCoralIntake(intake));
