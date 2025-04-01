@@ -24,7 +24,7 @@ public class AutoShoot extends Procedure {
     private AlgaeIntake algaeIntake;
     private SwerveDrive drive;
     private Pose2d setPosition2D =
-            new Pose2d(5.0, 5.0, new Rotation2d(90.0)); // TODO: update with actual values
+            new Pose2d(6.75, 0, new Rotation2d(-25)); // TODO: update with actual values
     private final boolean useSetPosition = true;
     protected static ArrayList<AnywhereScoringPosition> shootingPositions =
             new ArrayList<AnywhereScoringPosition>() {

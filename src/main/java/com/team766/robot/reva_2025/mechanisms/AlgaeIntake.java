@@ -93,9 +93,6 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         ffGain = ConfigFileReader.getInstance().getDouble(ConfigConstants.ALGAEINTAKE_ARMFFGAIN);
         holdAlgaeController =
                 PIDController.loadFromConfig(ConfigConstants.ALGAE_INTAKE_HOLD_ALGAE_PID);
-
-        shooterMotor.setCurrentLimit(80);
-        shooterMotor.setCurrentLimit(115);
     }
 
     public enum State {
@@ -105,9 +102,9 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         MatchVelocity(0, 0), // velocities will be set automatically
         Stop(0, 0),
         Out(-3000. / 60., 0),
-        Shoot(0, 3000. / 60.),
-        Feed(5000. / 60., 3000. / 60.),
-        HoldAlgae(5000. / 60., 0), // velocities will be set automatically
+        Shoot(0, 3500. / 60.),
+        Feed(5500. / 60., 3500. / 60.),
+        HoldAlgae(5500. / 60., 0), // velocities will be set automatically
         Idle(500. / 60., 500. / 60.);
 
         private final double intakeVelocity;
@@ -132,7 +129,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         L2L3AlgaeIntake(20, -1, 0.15, 0.37),
         L3L4AlgaeIntake(60, -1, 0.45, 0.67),
         Stow(-80, 1, 0.6, 0.28),
-        Shoot(-22, 1, 0.15, 0.37); // placeholder number
+        Shoot(-25, 1, 0.15, 0.37); // placeholder number
 
         private final double angle;
         private final double direction;
