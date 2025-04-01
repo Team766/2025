@@ -8,6 +8,7 @@ import com.team766.robot.reva_2025.OI.QueuedControl;
 import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
+import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
@@ -42,6 +43,32 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
                 leftJoystick.whenButton(InputConstants.BUTTON_ALGAE_SHOOT),
                 ONCE_AND_HOLD,
                 () -> new ShootWhenReady(algaeIntake));
+
+        addRule(
+                "Algae Intake to L2 L3",
+                () -> leftJoystick.getPOV() == InputConstants.BUTTON_JOYSTICK_ALGAE_INTAKE_L2_L3,
+                ONCE,
+                algaeIntake,
+                () -> {
+                    algaeIntake.setArmAngle(Level.L2L3AlgaeIntake);
+                });
+
+        addRule(
+                "Algae Intake to L3 L4",
+                () -> leftJoystick.getPOV() == InputConstants.BUTTON_JOYSTICK_ALGAE_INTAKE_L3_L4,
+                ONCE,
+                algaeIntake,
+                () -> {
+                    algaeIntake.setArmAngle(Level.L3L4AlgaeIntake);
+                });
+        addRule(
+                "Algae Intake to Stow",
+                leftJoystick.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_STOW),
+                ONCE,
+                algaeIntake,
+                () -> {
+                    algaeIntake.setArmAngle(Level.Stow);
+                });
 
         addRule(
                 "Nudge Wrist Up",

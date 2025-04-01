@@ -20,6 +20,8 @@ public class InputConstants {
     public static final int JOYSTICK_RIGHT_BUTTON = 4;
     public static final int JOYSTICK_BOTTOM_BUTTON = 2;
     public static final int JOYSTICK_TRIGGER = 0;
+    public static final int JOYSTICK_HAT_UP = 0;
+    public static final int JOYSTICK_HAT_DOWN = 180;
 
     // gamepad buttons
     public static final int GAMEPAD_LEFT_STICK_XAXIS = 0;
