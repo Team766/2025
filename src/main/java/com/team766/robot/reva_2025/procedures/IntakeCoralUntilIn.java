@@ -15,10 +15,7 @@ public class IntakeCoralUntilIn extends Procedure {
     public void run(Context context) {
         intake.in();
         waitForStatusMatchingOrTimeout(
-                context,
-                CoralIntake.CoralIntakeStatus.class,
-                s -> s.coralIntakeSuccessful(), 
-                2);
+                context, CoralIntake.CoralIntakeStatus.class, s -> s.coralIntakeSuccessful(), 2);
         intake.idle();
     }
 }

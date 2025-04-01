@@ -7,10 +7,12 @@ plugins {
     id 'com.google.protobuf' version '0.8.19'
     id "com.peterabeles.gversion" version "1.10"
     id "io.freefair.aspectj.post-compile-weaving" version "8.11"
+    id "net.ltgt.errorprone" version "4.1.0"
 }
 
 
 def protobufVersion = '3.21.6'
+def errorproneVersion = '2.37.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -145,6 +147,8 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.26.3")
 
     implementation "org.aspectj:aspectjrt:1.9.21.1"
+    errorprone("com.google.errorprone:error_prone_core:$errorproneVersion")
+    errorprone(project(":annotations"))
 }
 
 project.compileJava.dependsOn(createVersionFile)
@@ -164,6 +168,14 @@ javadoc {
 test {
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.errorprone {
+        disableAllChecks.set(true) // TODO(rcahoon, 2025-03-28): Re-enable more default checks
+        error("DontDiscardProcedures")
+        excludedPaths.set(".*/build/generated/.*")
+    }
 }
 
 compileTestJava.ajc.options.aspectpath.from sourceSets.main.output

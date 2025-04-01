@@ -12,8 +12,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import java.security.KeyStore.Entry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +101,6 @@ public class KalmanFilter {
         if (time - inputLog.firstKey() > velocityInputDeletionTime) {
             inputLog.remove(inputLog.firstKey()); // delete old velocityInput values
         }
-        
     }
 
     private void predict(double time, double nextStepTime, double dt) {
@@ -260,9 +257,13 @@ public class KalmanFilter {
     public void updateWithVisionMeasurement(List<Translation2d> measurements, double time) {
         Map<Translation2d, Matrix<N2, N2>> measurementTreeMap = new HashMap<>();
         for (Translation2d measurement : measurements) {
+            // TODO: probably don't need the >3 check (throwing away data from tags >3m away), but
+            // needs to be tested
             measurementTreeMap.put(
                     measurement,
-                    measurement.getNorm() > 3 ? Matrix.eye(Nat.N2()) : visionCovariance.times(Math.pow(measurement.getNorm(), 2)));
+                    measurement.getNorm() > 3
+                            ? Matrix.eye(Nat.N2())
+                            : visionCovariance.times(Math.pow(measurement.getNorm(), 2)));
         }
         updateWithPositionMeasurement(measurementTreeMap, time);
     }
@@ -273,13 +274,19 @@ public class KalmanFilter {
      * @param covariance the covariance of this camera
      * @param time the time that the measurement took place, in seconds
      */
-    public void updateWithVisionMeasurement(Map<Translation2d, Double> measurements, double covariance, double time) {
+    public void updateWithVisionMeasurement(
+            Map<Translation2d, Double> measurements, double covariance, double time) {
         Map<Translation2d, Matrix<N2, N2>> measurementTreeMap = new HashMap<>();
         for (Map.Entry<Translation2d, Double> measurement : measurements.entrySet()) {
             // TODO: do this logic earlier in the covariance field
+            // TODO: probably don't need the >3 check (throwing away data from tags >3m away), but
+            // needs to be tested
             measurementTreeMap.put(
                     measurement.getKey(),
-                    measurement.getValue() > 3 ? Matrix.eye(Nat.N2()) : MatBuilder.fill(Nat.N2(), Nat.N2(), covariance, 0, 0, covariance).times(Math.pow(measurement.getValue(), 2)));
+                    measurement.getValue() > 3
+                            ? Matrix.eye(Nat.N2())
+                            : MatBuilder.fill(Nat.N2(), Nat.N2(), covariance, 0, 0, covariance)
+                                    .times(Math.pow(measurement.getValue(), 2)));
         }
         updateWithPositionMeasurement(measurementTreeMap, time);
     }

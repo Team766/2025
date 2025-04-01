@@ -4,8 +4,6 @@ import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.TimestampedDoubleArray;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /*
  * This class is used to get raw values from the NetworkTable. We can send values on the Orin to NetworkTables and get them easily here.
@@ -39,9 +37,6 @@ public class GetOrinRawValue {
             throw new ValueNotFoundOnTableError("Pose Data Not Present on Table");
         }
 
-        TimestampedDoubleArray values = poseValues.getAtomic();
-        SmartDashboard.putNumber("timestamping stuff", values.timestamp);
-        SmartDashboard.putNumber("server timing stuff", values.serverTime);
         return poseValues.get();
     }
 

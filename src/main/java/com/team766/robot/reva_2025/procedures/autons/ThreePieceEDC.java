@@ -11,6 +11,7 @@ import com.team766.robot.reva_2025.procedures.IntakeCoralUntilIn;
 import com.team766.robot.reva_2025.procedures.MoveElevator;
 import com.team766.robot.reva_2025.procedures.ScoreCoral;
 import com.team766.robot.reva_2025.procedures.StartCoralIntake;
+import com.team766.robot.reva_2025.procedures.StartCoralIntake;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
