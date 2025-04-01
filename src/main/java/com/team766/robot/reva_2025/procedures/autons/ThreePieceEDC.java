@@ -14,10 +14,11 @@ import com.team766.robot.reva_2025.procedures.StartCoralIntake;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class TwoPieceJKL extends PathSequenceAuto {
-    public TwoPieceJKL(SwerveDrive drive, CoralIntake intake, Wrist wrist, Elevator elevator) {
-        super(drive, new Pose2d(7.100, 5.596, Rotation2d.fromDegrees(-180)));
-        // Score on K
+public class ThreePieceEDC extends PathSequenceAuto {
+    public ThreePieceEDC(SwerveDrive drive, CoralIntake intake, Wrist wrist, Elevator elevator) {
+        super(drive, new Pose2d(7.100, 2.454, Rotation2d.fromDegrees(-180)));
+        
+        // Score on E
         addProcedure(new StartCoralIntake(intake));
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.L4));
         addPath("Start Blue 2 - Reef J");

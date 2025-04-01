@@ -61,7 +61,7 @@ public class Robot implements RobotConfigurator3 {
                 () -> new TwoPieceKL(drive, coral, wrist, elevator)),
             new AutonomousMode(
                 "Left Side Mid Cage JKL",
-                () -> new TwoPieceJKL(drive, coral, wrist, elevator)),
+                () -> new ThreePieceJKL(drive, coral, wrist, elevator)),
             new AutonomousMode(
                 "Right Side Far Cage CDE",
                 () -> new ThreePieceCDE(drive, coral, wrist, elevator)),

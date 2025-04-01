@@ -82,7 +82,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         intakeSensor.setRange(Range.Short);
         absoluteEncoder = RobotProvider.instance.getEncoder(ConfigConstants.ALGAE_INTAKE_ENCODER);
 
-        intakeMotor.setCurrentLimit(115);
+        intakeMotor.setCurrentLimit(70);
         shooterMotor.setCurrentLimit(80);
 
         state = State.Stop;

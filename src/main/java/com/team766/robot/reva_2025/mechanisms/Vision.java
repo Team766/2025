@@ -50,7 +50,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
                 double[] poseData = camera.getRawPoseData();
                 var tagData = GetApriltagPoseData.getAllTags(poseData, camera.getCovariance());
                 for (int i = 0; i < tagData.size(); i++) {
-                    if (Arrays.asList( 14, 15).contains(tagData.get(i).tagId())) {
+                    if (Arrays.asList().contains(tagData.get(i).tagId())) {
                         tagData.remove(i);
                         i--;
                     }
