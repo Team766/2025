@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -23,8 +22,6 @@ public class KalmanFilter {
     private Matrix<N2, N2> visionCovariance;
     private TreeMap<Double, Translation2d> inputLog; // TODO: make circular buffer?
     private double velocityInputDeletionTime; // in seconds
-
-    private static final double COVARIANCE_MULTIPLIER = 8;
 
     private static final Matrix<N2, N1> CUR_STATE_DEFAULT =
             MatBuilder.fill(Nat.N2(), Nat.N1(), 0, 0);
@@ -37,13 +34,13 @@ public class KalmanFilter {
 
     // FIXME: placeholder values
     private static final Matrix<N2, N2> ODOMETRY_COVARIANCE_PER_DIST_DEFAULT =
-            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.2, 0, 0, 0.05);
+            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.0025, 0, 0, 0.0001);
 
     // FIXME: placeholder values
     private static final Matrix<N2, N2> VISION_COVARIANCE_DEFAULT =
-            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.3, 0, 0, 0.3);
+            MatBuilder.fill(Nat.N2(), Nat.N2(), 0.0009, 0, 0, 0.0009);
 
-    private static final double VELOCITY_INPUT_DELETION_TIME_DEFAULT = 1; // in seconds
+    private static final double VELOCITY_INPUT_DELETION_TIME_DEFAULT = 0.05; // in seconds
 
     public KalmanFilter(
             Matrix<N2, N1> curState,
@@ -251,15 +248,23 @@ public class KalmanFilter {
 
     /**
      * Updates the esimated position using vision measurements mapped to their covariance, allowing for a unique covariance for each measurement
-     * @param measurements map key is the vision measurements (x, y), value is covariance matrix of that measurement
+     * @param measurements map key is the vision-based robot position (x, y), value is the distance from the tag to the robot
+     * @param covariance the covariance of this camera
      * @param time the time that the measurement took place, in seconds
      */
-    public void updateWithVisionMeasurement(List<Translation2d> measurements, double time) {
+    public void updateWithVisionMeasurement(
+            Map<Translation2d, Double> measurements, double covariance, double time) {
         Map<Translation2d, Matrix<N2, N2>> measurementTreeMap = new HashMap<>();
-        for (Translation2d measurement : measurements) {
+        for (Map.Entry<Translation2d, Double> measurement : measurements.entrySet()) {
+            // TODO: do this logic earlier in the covariance field
+            // TODO: probably don't need the >3 check (throwing away data from tags >3m away), but
+            // needs to be tested
             measurementTreeMap.put(
-                    measurement,
-                    visionCovariance.times(measurement.getNorm() * COVARIANCE_MULTIPLIER));
+                    measurement.getKey(),
+                    measurement.getValue() > 3
+                            ? Matrix.eye(Nat.N2())
+                            : MatBuilder.fill(Nat.N2(), Nat.N2(), covariance, 0, 0, covariance)
+                                    .times(Math.pow(measurement.getValue(), 2)));
         }
         updateWithPositionMeasurement(measurementTreeMap, time);
     }

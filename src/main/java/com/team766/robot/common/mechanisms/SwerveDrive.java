@@ -30,7 +30,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -120,6 +120,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     private double x;
     private double y;
 
+    private double[] prevCamTimes;
+
     public SwerveDrive(SwerveConfig config) {
         this.config = config;
 
@@ -175,6 +177,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                         config.encoderToRevolutionConstant());
 
         kalmanFilter = new KalmanFilter();
+
+        prevCamTimes = new double[4];
     }
 
     @Override
@@ -383,20 +387,55 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
         var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
         if (visionStatus.isPresent() && !visionStatus.get().allTags().isEmpty()) {
+            int camCounter = 0;
             for (List<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
-                List<Translation2d> tagPoses = new ArrayList<>();
+                camCounter++;
+                HashMap<Translation2d, Double> tagPoses = new HashMap<>();
                 if (cameraTags.size() > 0) {
                     for (TimestampedApriltag tag : cameraTags) {
-                        tagPoses.add(tag.toRobotPosition(Rotation2d.fromDegrees(heading)));
-                        SmartDashboard.putNumber(
-                                "Vision Heading", Rotation2d.fromDegrees(heading).getDegrees());
-                        SmartDashboard.putNumber(
-                                "Vision Pos",
-                                tag.toRobotPosition(Rotation2d.fromDegrees(heading)).getX());
+                        Translation2d position =
+                                tag.toRobotPosition(Rotation2d.fromDegrees(heading));
+                        tagPoses.put(position, tag.pose3d().getTranslation().getNorm());
+                        if (!DriverStation.isFMSAttached()) {
+                            SmartDashboard.putNumber(
+                                    "CamVals/Vision Pos/cam "
+                                            + camCounter
+                                            + "/tagID "
+                                            + tag.tagId(),
+                                    position.getY());
+                            org.littletonrobotics.junction.Logger.recordOutput(
+                                    "CamVals/Vision Pos/cam "
+                                            + camCounter
+                                            + "/tagID "
+                                            + tag.tagId(),
+                                    new Pose2d(position, Rotation2d.fromDegrees(heading)));
+                        }
                     }
-                    kalmanFilter.updateWithVisionMeasurement(
-                            tagPoses, RobotProvider.instance.getClock().getTime());
-                    //     cameraTags.get(0).collectTime());
+
+                    if (!DriverStation.isFMSAttached()) {
+                        SmartDashboard.putNumber(
+                                "delay",
+                                RobotProvider.instance.getClock().getTime()
+                                        - (cameraTags.get(0).collectTime() / 1000000.));
+                    }
+
+                    // Only do position update if current timestamp doesn't match with previous
+                    // timestamp
+                    if (prevCamTimes[0] != 0
+                            && Math.abs(
+                                            cameraTags.get(0).collectTime()
+                                                    - prevCamTimes[camCounter - 1])
+                                    > 1 // microseconds
+                    ) {
+                        kalmanFilter.updateWithVisionMeasurement(
+                                tagPoses,
+                                cameraTags.get(0).covariance(),
+                                RobotProvider.instance
+                                        .getClock()
+                                        .getTime()); // Latency correction off
+                        // cameraTags.get(0).collectTime() / 1000000.); // Latency correction option
+                    }
+                    prevCamTimes[camCounter - 1] = cameraTags.get(0).collectTime();
                 }
             }
         }

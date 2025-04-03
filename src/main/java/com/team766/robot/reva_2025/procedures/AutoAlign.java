@@ -23,6 +23,12 @@ public class AutoAlign extends Procedure {
                 PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
     }
 
+    public AutoAlign(Pose2d targetPosition, double threshold, SwerveDrive drive) {
+        this(targetPosition, drive);
+        pidControllerX.setThreshold(threshold);
+        pidControllerY.setThreshold(threshold);
+    }
+
     public void run(Context context) {
         Pose2d currentPosition;
         double currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading();

@@ -43,7 +43,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         // CORAL_L3_PREP(220),
         CORAL_L3_PLACE(215),
         // CORAL_L4_PREP(210),
-        CORAL_L4_PLACE(213),
+        CORAL_L4_PLACE(215),
         CORAL_TOP(300),
         CORAL_CLIMB(300);
 

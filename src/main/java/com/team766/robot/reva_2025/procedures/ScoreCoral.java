@@ -93,30 +93,35 @@ public class ScoreCoral extends Procedure {
                 nearestPose = nearestPose(0, true);
                 break;
             case L2:
-                nearestPose = nearestPose(0, false);
+                nearestPose = nearestPose(0, false); // FIXME: figure out better position
                 break;
             case L3:
-                nearestPose = nearestPose(0.0, false);
+                nearestPose = nearestPose(0.05, false);
                 break;
             case L4:
-                nearestPose = nearestPose(0.40, false);
+                nearestPose = nearestPose(0.25, false);
                 break;
             default:
                 log(Severity.ERROR, "Invalid scoreLevel");
                 return;
         }
 
-        context.runSync(new AutoAlign(nearestPose, drive));
-        waitForStatusMatchingOrTimeout(
-                context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1);
-        waitForStatusMatchingOrTimeout(context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
-
+        // TODO: clean up sequence/logic
         if (scoreLevel.equals(ScoreHeight.L4)) {
-            context.runParallel(new AutoAlign(nearestPose(0.03, false), drive));
-            context.waitForSeconds(0.25);
+            context.runSync(new AutoAlign(nearestPose, 0.12, drive));
+            waitForStatusMatchingOrTimeout(
+                    context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1);
+            waitForStatusMatchingOrTimeout(
+                    context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
+            context.runSync(new AutoAlign(nearestPose(0.01, false), drive));
             coral.out();
-            context.waitForSeconds(0.5);
+            context.waitForSeconds(0.25);
         } else {
+            context.runSync(new AutoAlign(nearestPose, drive));
+            waitForStatusMatchingOrTimeout(
+                    context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1);
+            waitForStatusMatchingOrTimeout(
+                    context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
             coral.out();
             context.waitForSeconds(0.25);
         }

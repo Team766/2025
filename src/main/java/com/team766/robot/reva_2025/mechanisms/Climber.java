@@ -5,6 +5,7 @@ import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.robot.reva.mechanisms.MotorUtil;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
 public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
@@ -25,13 +26,17 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     public Climber() {
         leftClimberMotor = RobotProvider.instance.getMotor(ConfigConstants.CLIMBER_LEFT_MOTOR);
         leftClimberMotor.setNeutralMode(NeutralMode.Brake);
-        // MotorUtil.setSoftLimits(leftClimberMotor, HIGH_LIMIT, 0);
-        // MotorUtil.enableSoftLimits(leftClimberMotor, true);
+        MotorUtil.setSoftLimits(leftClimberMotor, -122, -400);
         leftClimberMotor.setSensorPosition(0);
         state = State.Off;
     }
 
     public void climb(double sign) {
+        if (sign < 0) { // up
+            MotorUtil.enableSoftLimits(leftClimberMotor, false);
+        } else {
+            MotorUtil.enableSoftLimits(leftClimberMotor, true);
+        }
         leftClimberMotor.set(CLIMBER_POWER * Math.signum(sign));
         state = State.On;
     }

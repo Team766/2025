@@ -230,6 +230,10 @@ public class PIDController {
         needsUpdate = true;
     }
 
+    public void setThreshold(final double threshold) {
+        ((SettableValueProvider<Double>) endthreshold).set(threshold);
+    }
+
     /**
      * Same as calculate() except that it prints debugging information
      *

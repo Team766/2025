@@ -20,15 +20,15 @@ public class ThreePieceCBA extends PathSequenceAuto {
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
-        addPath("Reef C - CoralStation 2");
+        addPath("Reef C - Coral Station 2");
         addProcedure(new CoralStationPositionAndIntake(elevator, wrist, intake));
-        addPath("CoralStation 2 - Reef B");
+        addPath("Coral Station 2 - Reef B");
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake));
-        addPath("Reef B - CoralStation 2");
+        addPath("Reef B - Coral Station 2");
         addProcedure(new CoralStationPositionAndIntake(elevator, wrist, intake));
-        addPath("CoralStation 2 - Reef A");
+        addPath("Coral Station 2 - Reef A");
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake));
