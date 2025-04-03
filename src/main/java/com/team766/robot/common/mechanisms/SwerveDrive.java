@@ -425,7 +425,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                             && Math.abs(
                                             cameraTags.get(0).collectTime()
                                                     - prevCamTimes[camCounter - 1])
-                                    > 1) {
+                                    > 1 // microseconds
+                    ) {
                         kalmanFilter.updateWithVisionMeasurement(
                                 tagPoses,
                                 cameraTags.get(0).covariance(),
