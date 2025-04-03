@@ -396,7 +396,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                         Translation2d position =
                                 tag.toRobotPosition(Rotation2d.fromDegrees(heading));
                         tagPoses.put(position, tag.pose3d().getTranslation().getNorm());
-                        if (Logger.isLoggingToDataLog()) {
+                        if (!DriverStation.isFMSAttached()) {
                             SmartDashboard.putNumber(
                                     "CamVals/Vision Pos/cam "
                                             + camCounter
@@ -412,10 +412,12 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                         }
                     }
 
-                    SmartDashboard.putNumber(
-                            "delay",
-                            RobotProvider.instance.getClock().getTime()
-                                    - (cameraTags.get(0).collectTime() / 1000000.));
+                    if (!DriverStation.isFMSAttached()) {
+                        SmartDashboard.putNumber(
+                                "delay",
+                                RobotProvider.instance.getClock().getTime()
+                                        - (cameraTags.get(0).collectTime() / 1000000.));
+                    }
 
                     // Only do position update if current timestamp doesn't match with previous
                     // timestamp
