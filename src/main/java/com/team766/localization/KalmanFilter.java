@@ -13,7 +13,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -251,26 +250,7 @@ public class KalmanFilter {
 
     /**
      * Updates the esimated position using vision measurements mapped to their covariance, allowing for a unique covariance for each measurement
-     * @param measurements map key is the vision measurements (x, y), value is covariance matrix of that measurement
-     * @param time the time that the measurement took place, in seconds
-     */
-    public void updateWithVisionMeasurement(List<Translation2d> measurements, double time) {
-        Map<Translation2d, Matrix<N2, N2>> measurementTreeMap = new HashMap<>();
-        for (Translation2d measurement : measurements) {
-            // TODO: probably don't need the >3 check (throwing away data from tags >3m away), but
-            // needs to be tested
-            measurementTreeMap.put(
-                    measurement,
-                    measurement.getNorm() > 3
-                            ? Matrix.eye(Nat.N2())
-                            : visionCovariance.times(Math.pow(measurement.getNorm(), 2)));
-        }
-        updateWithPositionMeasurement(measurementTreeMap, time);
-    }
-
-    /**
-     * Updates the esimated position using vision measurements mapped to their covariance, allowing for a unique covariance for each measurement
-     * @param measurements map key is the vision measurements (x, y), value is covariance matrix of that measurement
+     * @param measurements map key is the vision-based robot position (x, y), value is the distance from the tag to the robot
      * @param covariance the covariance of this camera
      * @param time the time that the measurement took place, in seconds
      */

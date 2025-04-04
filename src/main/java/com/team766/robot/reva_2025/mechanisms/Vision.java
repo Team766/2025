@@ -49,13 +49,9 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
         for (GetOrinRawValue camera : cameraList) {
             try {
                 double[] poseData = camera.getRawPoseData();
-                var tagData = GetApriltagPoseData.getAllTags(poseData, camera.getCovariance());
-                for (int i = 0; i < tagData.size(); i++) {
-                    if (IGNORED_TAGS.contains(tagData.get(i).tagId())) {
-                        tagData.remove(i);
-                        i--;
-                    }
-                }
+                List<TimestampedApriltag> tagData =
+                        GetApriltagPoseData.getAllTags(poseData, camera.getCovariance());
+                tagData.removeIf(tag -> IGNORED_TAGS.contains(tag.tagId()));
                 tags.add(tagData);
             } catch (ValueNotFoundOnTableError e) {
                 // maintain camera list order even if one is not connected
