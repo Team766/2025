@@ -294,7 +294,6 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 "Algae Shooter Current Limit", MotorUtil.getCurrentUsage(shooterMotor));
         SmartDashboard.putNumber(
                 "Algae Intake Current Limit", MotorUtil.getCurrentUsage(intakeMotor));
-        SmartDashboard.putBoolean("isAtAngle", getStatus().isAtAngle());
     }
 
     @Override
