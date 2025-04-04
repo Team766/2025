@@ -3,7 +3,6 @@ package com.team766.robot.reva_2025;
 import static com.team766.framework3.RulePersistence.*;
 
 import com.team766.framework3.Conditions;
-import com.team766.framework3.Conditions.LogicalAnd;
 import com.team766.framework3.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
@@ -117,12 +116,9 @@ public class BoxOpOI extends RuleGroup {
                             if (queuedControl.algaeLevel == Level.GroundIntake) {
                                 algaeIntake.setState(State.HoldAlgae);
                             } else {
-                                elevator.setPosition(
-                                    ElevatorPosition.ELEVATOR_INTAKE);
+                                elevator.setPosition(ElevatorPosition.ELEVATOR_INTAKE);
                                 context.runSync(
-                                    new IntakeAlgae(
-                                        algaeIntake,
-                                        queuedControl.algaeLevel));
+                                        new IntakeAlgae(algaeIntake, queuedControl.algaeLevel));
                             }
                         })
                 .whenTriggering(

@@ -11,7 +11,10 @@ import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
+import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
+import com.team766.robot.reva_2025.procedures.HoldAlgae;
+import com.team766.robot.reva_2025.procedures.IntakeAlgae;
 import com.team766.robot.reva_2025.procedures.ShootWhenReady;
 import java.util.Set;
 
@@ -49,25 +52,41 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
                 () -> leftJoystick.getPOV() == InputConstants.BUTTON_JOYSTICK_ALGAE_INTAKE_L2_L3,
                 ONCE,
                 algaeIntake,
-                () -> {
+                (context) -> {
                     algaeIntake.setArmAngle(Level.L2L3AlgaeIntake);
+                    context.runSync(new IntakeAlgae(algaeIntake, queuedControl.algaeLevel));
                 });
 
         addRule(
                 "Algae Intake to L3 L4",
                 () -> leftJoystick.getPOV() == InputConstants.BUTTON_JOYSTICK_ALGAE_INTAKE_L3_L4,
                 ONCE,
-                algaeIntake,
-                () -> {
+                Set.of(algaeIntake, elevator),
+                (context) -> {
                     algaeIntake.setArmAngle(Level.L3L4AlgaeIntake);
+                    elevator.setPosition(ElevatorPosition.ELEVATOR_INTAKE);
+                    context.runSync(new IntakeAlgae(algaeIntake, queuedControl.algaeLevel));
                 });
         addRule(
                 "Algae Intake to Stow",
                 leftJoystick.whenButton(InputConstants.BUTTON_ALGAE_INTAKE_STOW),
                 ONCE,
                 algaeIntake,
-                () -> {
-                    algaeIntake.setArmAngle(Level.Stow);
+                (context) -> {
+                    // make sure we don't squish an algae
+                    var status = getStatus(AlgaeIntake.AlgaeIntakeStatus.class);
+                    if (status.isPresent()
+                            && status.get().intakeProximity().isPresent()
+                            && status.get().level() != Level.Stow) {
+                        if (status.get().level() == Level.L2L3AlgaeIntake
+                                || status.get().level() == Level.L3L4AlgaeIntake) {
+                            context.runSync(new HoldAlgae(algaeIntake));
+                        } else {
+                            algaeIntake.setArmAngle(Level.GroundIntake);
+                        }
+                    } else {
+                        algaeIntake.setArmAngle(Level.Stow);
+                    }
                 });
 
         addRule(
