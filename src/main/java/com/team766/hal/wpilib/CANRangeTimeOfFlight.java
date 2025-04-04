@@ -72,18 +72,9 @@ public class CANRangeTimeOfFlight implements TimeOfFlightReader {
     public boolean wasLastMeasurementValid() {
         StatusSignal<MeasurementHealthValue> health = sensor.getMeasurementHealth();
         if (health.getStatus().isOK()) {
-            if (health.getValue() != MeasurementHealthValue.Good) {
-                return false;
-            }
+            return health.getValue() == MeasurementHealthValue.Good;
         } else {
             statusCodeToException(ExceptionTarget.LOG, health.getStatus());
-            return false;
-        }
-        StatusSignal<Boolean> isDetected = sensor.getIsDetected();
-        if (isDetected.getStatus().isOK()) {
-            return isDetected.getValue();
-        } else {
-            statusCodeToException(ExceptionTarget.LOG, isDetected.getStatus());
             return false;
         }
     }

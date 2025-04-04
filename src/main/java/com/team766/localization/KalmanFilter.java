@@ -95,7 +95,6 @@ public class KalmanFilter {
         if (inputLog.size() > 1) {
             predictCurrentState(inputLog.lowerKey(time));
         }
-        SmartDashboard.putNumber("inputLog length", inputLog.size());
 
         if (time - inputLog.firstKey() > velocityInputDeletionTime) {
             inputLog.remove(inputLog.firstKey()); // delete old velocityInput values
