@@ -6,6 +6,8 @@ import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.State;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class HoldAlgae extends Procedure {
     private final AlgaeIntake intake;
 
@@ -17,7 +19,10 @@ public class HoldAlgae extends Procedure {
     public void run(Context context) {
         intake.setArmAngle(Level.Shoot);
         intake.setState(State.MatchVelocity);
+        context.yield(); // otherwise this returns true because it is at its previous angle
         waitForStatusMatching(context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAtAngle());
         intake.setState(State.HoldAlgae);
+        waitForStatusMatching(context, AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAlgaeStable());
+
     }
 }
