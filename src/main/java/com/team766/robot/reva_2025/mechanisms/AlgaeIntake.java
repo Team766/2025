@@ -254,7 +254,9 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
                 break;
             case HoldAlgae:
                 if (getStatus().intakeProximity().isEmpty()) {
-                    intakeMotor.set(ControlMode.Velocity, level.getDirection() * State.In.getIntakeVelocity());
+                    intakeMotor.set(
+                            ControlMode.Velocity,
+                            level.getDirection() * State.In.getIntakeVelocity());
                 } else {
                     holdAlgaeController.setSetpoint(level.stablePosition());
                     holdAlgaeController.calculate(ALGAE_HOLD_DISTANCE);
@@ -309,7 +311,8 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         Optional<Double> intakeProximity = intakeSensor.getDistance();
         Optional<Double> ambientSignal = intakeSensor.getAmbientSignal();
 
-        SmartDashboard.putBoolean("Algae last measurement valid", intakeSensor.wasLastMeasurementValid());
+        SmartDashboard.putBoolean(
+                "Algae last measurement valid", intakeSensor.wasLastMeasurementValid());
 
         return new AlgaeIntakeStatus(
                 state,

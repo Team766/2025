@@ -19,19 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Coral Station 1 - Reef L"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Reef L - Coral Station 1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Coral Station 1 - Reef K"
           }
         }
       ]

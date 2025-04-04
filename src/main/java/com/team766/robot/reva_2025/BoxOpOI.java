@@ -142,7 +142,8 @@ public class BoxOpOI extends RuleGroup {
                                             if (queuedControl.algaeLevel == Level.GroundIntake) {
                                                 algaeIntake.setState(State.HoldAlgae);
                                             } else {
-                                                elevator.setPosition(ElevatorPosition.ELEVATOR_INTAKE);
+                                                elevator.setPosition(
+                                                        ElevatorPosition.ELEVATOR_INTAKE);
                                                 context.runSync(
                                                         new IntakeAlgae(
                                                                 algaeIntake,

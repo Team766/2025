@@ -13,25 +13,13 @@
         {
           "type": "path",
           "data": {
+            "pathName": "Reef D - Coral Station 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "Reef C - Coral Station 2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Coral Station 2 - Reef B"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Reef B - Coral Station 2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Coral Station 2 - Reef A"
           }
         }
       ]
