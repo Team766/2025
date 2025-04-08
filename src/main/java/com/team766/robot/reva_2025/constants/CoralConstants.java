@@ -53,18 +53,20 @@ public class CoralConstants {
     }
 
     public enum ScoreHeight {
-        Intake(ElevatorPosition.ELEVATOR_INTAKE, WristPosition.CORAL_INTAKE),
-        L1(ElevatorPosition.ELEVATOR_L1, WristPosition.CORAL_L1_PLACE),
-        L2(ElevatorPosition.ELEVATOR_L2, WristPosition.CORAL_L2_PLACE),
-        L3(ElevatorPosition.ELEVATOR_L3, WristPosition.CORAL_L3_PLACE),
-        L4(ElevatorPosition.ELEVATOR_L4, WristPosition.CORAL_L4_PLACE);
+        Intake(ElevatorPosition.ELEVATOR_INTAKE, WristPosition.CORAL_INTAKE, 0.50),
+        L1(ElevatorPosition.ELEVATOR_L1, WristPosition.CORAL_L1_PLACE, -0.75),
+        L2(ElevatorPosition.ELEVATOR_L2, WristPosition.CORAL_L2_PLACE, -0.5),
+        L3(ElevatorPosition.ELEVATOR_L3, WristPosition.CORAL_L3_PLACE, -0.5),
+        L4(ElevatorPosition.ELEVATOR_L4, WristPosition.CORAL_L4_PLACE, -0.75);
 
         private final ElevatorPosition elevatorPosition;
         private final WristPosition wristPosition;
+        private final double coralPower;
 
-        private ScoreHeight(ElevatorPosition elevatorPosition, WristPosition wristPosition) {
+        private ScoreHeight(ElevatorPosition elevatorPosition, WristPosition wristPosition, double outtakePower) {
             this.elevatorPosition = elevatorPosition;
             this.wristPosition = wristPosition;
+            this.coralPower = outtakePower;
         }
 
         public ElevatorPosition getElevatorPosition() {
@@ -73,6 +75,10 @@ public class CoralConstants {
 
         public WristPosition getWristPosition() {
             return wristPosition;
+        }
+
+        public double getCoralPower() {
+            return coralPower;
         }
     }
 }

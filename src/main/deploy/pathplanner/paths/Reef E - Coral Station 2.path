@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.055596590909091,
-        "y": 2.663877840909091
+        "x": 5.0356534090909095,
+        "y": 2.6937926136363637
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.152205408817146,
-        "y": 1.6120587692403021
+        "x": 3.1322622269989644,
+        "y": 1.6419735419675747
       },
       "isLocked": false,
-      "linkedName": "Reef Position E"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 2.7187823909336055,
-        "y": 1.434760403160065
+        "y": 1.4347604031600647
       },
       "nextControl": null,
       "isLocked": false,

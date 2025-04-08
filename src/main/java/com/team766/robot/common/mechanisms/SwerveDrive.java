@@ -396,7 +396,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                         Translation2d position =
                                 tag.toRobotPosition(Rotation2d.fromDegrees(heading));
                         tagPoses.put(position, tag.pose3d().getTranslation().getNorm());
-                        if (!DriverStation.isFMSAttached()) {
+                        if (Logger.isLoggingToDataLog()) {
                             SmartDashboard.putNumber(
                                     "CamVals/Vision Pos/cam "
                                             + camCounter
@@ -412,7 +412,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                         }
                     }
 
-                    if (!DriverStation.isFMSAttached()) {
+                    if (Logger.isLoggingToDataLog()) {
                         SmartDashboard.putNumber(
                                 "delay",
                                 RobotProvider.instance.getClock().getTime()

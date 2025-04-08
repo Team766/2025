@@ -50,10 +50,10 @@ public class Robot implements RobotConfigurator3 {
             // define one or more different autonomous modes with it like this:
             new AutonomousMode(
                     "Left Side Between Cages JKL",
-                    () -> new ThreePieceJKL(drive, coral, wrist, elevator)),
+                    () -> new ThreePieceJKL(drive, coral, wrist, elevator, algaeIntake)),
             new AutonomousMode(
                     "Right Side Between Cages EDC",
-                    () -> new ThreePieceEDC(drive, coral, wrist, elevator)),
+                    () -> new ThreePieceEDC(drive, coral, wrist, elevator, algaeIntake)),
             // new AutonomousMode(
             //         "AutoAlign", () -> new AutoAlign(new Pose2d(1, 0, new Rotation2d()), drive))
         };

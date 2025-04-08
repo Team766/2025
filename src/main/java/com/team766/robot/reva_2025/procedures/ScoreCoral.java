@@ -9,10 +9,12 @@ import com.team766.robot.common.mechanisms.SwerveDrive.DriveStatus;
 import com.team766.robot.reva_2025.constants.CoralConstants.ReefPos;
 import com.team766.robot.reva_2025.constants.CoralConstants.RelativeReefPos;
 import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
+import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
+import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,6 +32,7 @@ public class ScoreCoral extends Procedure {
     private Elevator elevator;
     private Wrist wrist;
     private CoralIntake coral;
+    private AlgaeIntake algaeIntake;
 
     public ScoreCoral(
             RelativeReefPos side,
@@ -37,12 +40,14 @@ public class ScoreCoral extends Procedure {
             SwerveDrive drive,
             Elevator elevator,
             Wrist wrist,
-            CoralIntake coral) {
+            CoralIntake coral,
+            AlgaeIntake algaeIntake) {
 
         this.drive = reserve(drive);
         this.elevator = reserve(elevator);
         this.wrist = reserve(wrist);
         this.coral = reserve(coral);
+        this.algaeIntake = reserve(algaeIntake);
 
         this.side = side;
         this.scoreLevel = scoreLevel;
@@ -86,6 +91,10 @@ public class ScoreCoral extends Procedure {
         elevator.setPosition(scoreLevel.getElevatorPosition());
         wrist.setAngle(scoreLevel.getWristPosition());
 
+        if (scoreLevel == ScoreHeight.L2) {
+            algaeIntake.setArmAngle(Level.GroundIntake);
+        }
+
         Pose2d nearestPose;
 
         switch (scoreLevel) {
@@ -113,8 +122,9 @@ public class ScoreCoral extends Procedure {
                     context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1);
             waitForStatusMatchingOrTimeout(
                     context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
-            context.runSync(new AutoAlign(nearestPose(0.01, false), drive));
+            context.runSync(new AutoAlign(nearestPose(-0.01, false), drive));
             coral.out();
+            context.runSync(new AutoAlign(nearestPose(-0.05, false), drive));
             context.waitForSeconds(0.25);
         } else {
             context.runSync(new AutoAlign(nearestPose, drive));
@@ -123,10 +133,13 @@ public class ScoreCoral extends Procedure {
             waitForStatusMatchingOrTimeout(
                     context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
             coral.out();
-            context.waitForSeconds(0.25);
+            context.waitForSeconds(0.5);
         }
         coral.stop();
         wrist.setAngle(WristPosition.CORAL_INTAKE);
         elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
+        if (scoreLevel == ScoreHeight.L2) {
+            algaeIntake.setArmAngle(Level.Stow);
+        }
     }
 }
