@@ -16,7 +16,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ThreePieceEDC extends PathSequenceAuto {
-    public ThreePieceEDC(SwerveDrive drive, CoralIntake intake, Wrist wrist, Elevator elevator, AlgaeIntake algaeIntake) {
+    public ThreePieceEDC(
+            SwerveDrive drive,
+            CoralIntake intake,
+            Wrist wrist,
+            Elevator elevator,
+            AlgaeIntake algaeIntake) {
         super(drive, new Pose2d(7.100, 2.454, Rotation2d.fromDegrees(-180)));
         // Score on E
         addProcedure(new StartCoralIntake(intake));
@@ -25,7 +30,13 @@ public class ThreePieceEDC extends PathSequenceAuto {
 
         addProcedure(
                 new ScoreCoral(
-                        RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake, algaeIntake));
+                        RelativeReefPos.Left,
+                        ScoreHeight.L4,
+                        drive,
+                        elevator,
+                        wrist,
+                        intake,
+                        algaeIntake));
 
         // Intake
         addProcedure(new StartCoralIntake(intake));
@@ -36,7 +47,13 @@ public class ThreePieceEDC extends PathSequenceAuto {
         // Score on D
         addProcedure(
                 new ScoreCoral(
-                        RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake, algaeIntake));
+                        RelativeReefPos.Right,
+                        ScoreHeight.L4,
+                        drive,
+                        elevator,
+                        wrist,
+                        intake,
+                        algaeIntake));
 
         // Intake
         addProcedure(new StartCoralIntake(intake));
@@ -47,7 +64,13 @@ public class ThreePieceEDC extends PathSequenceAuto {
         // Score on C
         addProcedure(
                 new ScoreCoral(
-                        RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake, algaeIntake));
+                        RelativeReefPos.Left,
+                        ScoreHeight.L4,
+                        drive,
+                        elevator,
+                        wrist,
+                        intake,
+                        algaeIntake));
 
         // Intake
         addProcedure(new StartCoralIntake(intake));
