@@ -178,6 +178,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         kalmanFilter = new KalmanFilter();
 
         prevCamTimes = new double[4];
+
+
     }
 
     @Override
@@ -479,6 +481,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
     @Override
     protected void run() {
+        resetGyro();
         if (movingToTarget) {
             rotationPID.calculate(getStatus().heading());
             controlAllianceOriented(

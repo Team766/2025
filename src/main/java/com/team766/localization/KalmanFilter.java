@@ -261,7 +261,7 @@ public class KalmanFilter {
             // needs to be tested
             measurementTreeMap.put(
                     measurement.getKey(),
-                    measurement.getValue() > 3
+                    measurement.getValue() > 10
                             ? Matrix.eye(Nat.N2())
                             : MatBuilder.fill(Nat.N2(), Nat.N2(), covariance, 0, 0, covariance)
                                     .times(Math.pow(measurement.getValue(), 2)));
