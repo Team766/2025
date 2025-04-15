@@ -8,6 +8,7 @@ import com.team766.robot.reva_2025.OI.QueuedControl;
 import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 import com.team766.robot.reva_2025.constants.InputConstants;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
+import com.team766.robot.reva_2025.mechanisms.Climber;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
@@ -23,7 +24,8 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
             Wrist wrist,
             CoralIntake coralIntake,
             AlgaeIntake algaeIntake,
-            QueuedControl queuedControl) {
+            QueuedControl queuedControl,
+            Climber climber) {
         super(leftJoystick, rightJoystick, drive);
         addRule(
                         "Outtake Coral",
@@ -31,10 +33,10 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
                         ONCE_AND_HOLD,
                         Set.of(coralIntake, wrist),
                         () -> {
-                            if (queuedControl.scoreHeight == ScoreHeight.L4) {
+                            if (queuedControl.scoreHeight == ScoreHeight.L2) {
                                 wrist.nudge(1);
                             }
-                            coralIntake.out();
+                            coralIntake.out(queuedControl.scoreHeight);
                         })
                 .withFinishedTriggeringProcedure(coralIntake, () -> coralIntake.stop());
         addRule(
@@ -59,6 +61,14 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
                 wrist,
                 () -> {
                     wrist.nudge(1);
+                });
+        addRule(
+                "Winch Climber Down",
+                leftJoystick.whenButton(InputConstants.BUTTON_WINCH_CLIMBER),
+                ONCE_AND_HOLD,
+                climber,
+                () -> {
+                    climber.climb(1);
                 });
     }
 }

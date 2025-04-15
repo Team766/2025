@@ -7,6 +7,12 @@
         {
           "type": "path",
           "data": {
+            "pathName": "Start Red 1 - Reef E"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "Reef E - Coral Station 2"
           }
         },

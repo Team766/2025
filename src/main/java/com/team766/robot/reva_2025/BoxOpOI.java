@@ -260,10 +260,13 @@ public class BoxOpOI extends RuleGroup {
                         "Move Elevator and Wrist to Target Position",
                         boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
                         ONCE,
-                        Set.of(elevator, wrist),
+                        Set.of(elevator, wrist, algaeIntake),
                         () -> {
                             elevator.setPosition(queuedControl.scoreHeight.getElevatorPosition());
                             wrist.setAngle(queuedControl.scoreHeight.getWristPosition());
+                            if (queuedControl.scoreHeight == ScoreHeight.L2) {
+                                algaeIntake.setArmAngle(Level.GroundIntake);
+                            }
                         })
                 .whenTriggering(
                         new RuleGroup() {
@@ -294,10 +297,13 @@ public class BoxOpOI extends RuleGroup {
                             }
                         })
                 .withFinishedTriggeringProcedure(
-                        Set.of(elevator, wrist),
+                        Set.of(elevator, wrist, algaeIntake),
                         () -> {
                             elevator.setPosition(ElevatorPosition.ELEVATOR_BOTTOM);
                             wrist.setAngle(WristPosition.CORAL_INTAKE);
+                            if (queuedControl.scoreHeight == ScoreHeight.L2) {
+                                algaeIntake.setArmAngle(Level.Stow);
+                            }
                         });
     }
 }

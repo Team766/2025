@@ -54,7 +54,8 @@ public class OI extends RuleEngine {
                                 drive,
                                 elevator,
                                 wrist,
-                                coralIntake));
+                                coralIntake,
+                                algaeIntake));
         addRule(
                 "Auto Score Coral Right",
                 rightJoystick.whenButton(InputConstants.BUTTON_CORAL_AUTO_PLACE_RIGHT),
@@ -66,7 +67,8 @@ public class OI extends RuleEngine {
                                 drive,
                                 elevator,
                                 wrist,
-                                coralIntake));
+                                coralIntake,
+                                algaeIntake));
         addRule(
                 "Auto Shoot Algae",
                 leftJoystick.whenButton(InputConstants.BUTTON_AUTO_SHOOT),
@@ -81,7 +83,8 @@ public class OI extends RuleEngine {
                         wrist,
                         coralIntake,
                         algaeIntake,
-                        queuedControl));
+                        queuedControl,
+                        climber));
         addRules(
                 new BoxOpOI(
                         boxopGamepad,
