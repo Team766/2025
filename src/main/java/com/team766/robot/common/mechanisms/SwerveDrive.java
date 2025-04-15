@@ -481,7 +481,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
     @Override
     protected void run() {
-        resetGyro();
         if (movingToTarget) {
             rotationPID.calculate(getStatus().heading());
             controlAllianceOriented(
