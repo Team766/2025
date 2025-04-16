@@ -28,7 +28,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
     private final GetOrinRawValue[] cameraList;
     private boolean hasLoggedError = false;
-    private final List<Integer> IGNORED_TAGS = Arrays.asList();
+    private final List<Integer> IGNORED_TAGS = Arrays.asList(3, 4, 5);
 
     public Vision() {
         // TODO: have this as a config input
@@ -37,9 +37,9 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
                 new GetOrinRawValue[] {
                     // disabling cameras for now
                     new GetOrinRawValue("left_back", 0.0009),
-                    new GetOrinRawValue("left_front", 0.0049),
+                    new GetOrinRawValue("left_front", 0.0009),
                     new GetOrinRawValue("right_back", 0.0009),
-                    new GetOrinRawValue("right_front", 0.0049)
+                    new GetOrinRawValue("right_front", 0.0009)
                 };
     }
 
