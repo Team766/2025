@@ -179,8 +179,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         kalmanFilter = new KalmanFilter();
 
         prevCamTimes = new double[4];
-
-
     }
 
     @Override

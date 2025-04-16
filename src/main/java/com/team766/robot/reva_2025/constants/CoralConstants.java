@@ -63,7 +63,10 @@ public class CoralConstants {
         private final WristPosition wristPosition;
         private final double coralPower;
 
-        private ScoreHeight(ElevatorPosition elevatorPosition, WristPosition wristPosition, double outtakePower) {
+        private ScoreHeight(
+                ElevatorPosition elevatorPosition,
+                WristPosition wristPosition,
+                double outtakePower) {
             this.elevatorPosition = elevatorPosition;
             this.wristPosition = wristPosition;
             this.coralPower = outtakePower;

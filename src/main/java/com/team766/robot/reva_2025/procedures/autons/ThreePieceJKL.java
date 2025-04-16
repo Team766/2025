@@ -16,7 +16,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ThreePieceJKL extends PathSequenceAuto {
-    public ThreePieceJKL(SwerveDrive drive, CoralIntake intake, Wrist wrist, Elevator elevator, AlgaeIntake algaeIntake) {
+    public ThreePieceJKL(
+            SwerveDrive drive,
+            CoralIntake intake,
+            Wrist wrist,
+            Elevator elevator,
+            AlgaeIntake algaeIntake) {
         super(drive, new Pose2d(7.100, 5.596, Rotation2d.fromDegrees(-180)));
         // Score on J
         addProcedure(new StartCoralIntake(intake));
@@ -24,7 +29,13 @@ public class ThreePieceJKL extends PathSequenceAuto {
         addPath("Start Blue 2 - Reef J");
         addProcedure(
                 new ScoreCoral(
-                        RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake, algaeIntake));
+                        RelativeReefPos.Right,
+                        ScoreHeight.L4,
+                        drive,
+                        elevator,
+                        wrist,
+                        intake,
+                        algaeIntake));
 
         // Intake
         addProcedure(new StartCoralIntake(intake));
@@ -35,7 +46,13 @@ public class ThreePieceJKL extends PathSequenceAuto {
         // Score on L
         addProcedure(
                 new ScoreCoral(
-                        RelativeReefPos.Right, ScoreHeight.L4, drive, elevator, wrist, intake, algaeIntake));
+                        RelativeReefPos.Right,
+                        ScoreHeight.L4,
+                        drive,
+                        elevator,
+                        wrist,
+                        intake,
+                        algaeIntake));
 
         // Intake
         addProcedure(new StartCoralIntake(intake));
@@ -46,6 +63,12 @@ public class ThreePieceJKL extends PathSequenceAuto {
         // Score on L
         addProcedure(
                 new ScoreCoral(
-                        RelativeReefPos.Left, ScoreHeight.L4, drive, elevator, wrist, intake, algaeIntake));
+                        RelativeReefPos.Left,
+                        ScoreHeight.L4,
+                        drive,
+                        elevator,
+                        wrist,
+                        intake,
+                        algaeIntake));
     }
 }

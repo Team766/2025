@@ -49,7 +49,7 @@ public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStat
     public void out(ScoreHeight scoreHeight) {
         motor.set(scoreHeight.getCoralPower());
         state = State.Out;
-    } 
+    }
 
     public void idle() {
         motor.set(POWER_IDLE);
