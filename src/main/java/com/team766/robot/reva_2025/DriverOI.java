@@ -64,7 +64,7 @@ public class DriverOI extends com.team766.robot.common.DriverOI {
                 });
         addRule(
                 "Winch Climber Down",
-                leftJoystick.whenButton(2),
+                leftJoystick.whenButton(InputConstants.BUTTON_WINCH_CLIMBER),
                 ONCE_AND_HOLD,
                 climber,
                 () -> {

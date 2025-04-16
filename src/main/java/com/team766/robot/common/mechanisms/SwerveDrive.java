@@ -29,7 +29,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -179,6 +178,8 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         kalmanFilter = new KalmanFilter();
 
         prevCamTimes = new double[4];
+
+
     }
 
     @Override
@@ -397,23 +398,17 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                                 tag.toRobotPosition(Rotation2d.fromDegrees(heading));
                         tagPoses.put(position, tag.pose3d().getTranslation().getNorm());
                         if (Logger.isLoggingToDataLog()) {
-                            SmartDashboard.putNumber(
-                                    "CamVals/Vision Pos/cam "
-                                            + camCounter
-                                            + "/tagID "
-                                            + tag.tagId(),
+                            org.littletonrobotics.junction.Logger.recordOutput(
+                                    "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
                                     position.getY());
                             org.littletonrobotics.junction.Logger.recordOutput(
-                                    "CamVals/Vision Pos/cam "
-                                            + camCounter
-                                            + "/tagID "
-                                            + tag.tagId(),
+                                    "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
                                     new Pose2d(position, Rotation2d.fromDegrees(heading)));
                         }
                     }
 
                     if (Logger.isLoggingToDataLog()) {
-                        SmartDashboard.putNumber(
+                        org.littletonrobotics.junction.Logger.recordOutput(
                                 "delay",
                                 RobotProvider.instance.getClock().getTime()
                                         - (cameraTags.get(0).collectTime() / 1000000.));
