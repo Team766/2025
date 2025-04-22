@@ -6,6 +6,7 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import com.team766.orin.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
     private final GetOrinRawValue[] cameraList;
     private boolean hasLoggedError = false;
+    private final List<Integer> IGNORED_TAGS = Arrays.asList(4, 5, 14, 15);
 
     public Vision() {
         // TODO: have this as a config input
@@ -34,10 +36,10 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
         cameraList =
                 new GetOrinRawValue[] {
                     // disabling cameras for now
-                    new GetOrinRawValue("left_back"),
-                    new GetOrinRawValue("left_front"),
-                    new GetOrinRawValue("right_back"),
-                    new GetOrinRawValue("right_front")
+                    new GetOrinRawValue("left_back", 0.0009),
+                    new GetOrinRawValue("left_front", 0.0049),
+                    new GetOrinRawValue("right_back", 0.0009),
+                    new GetOrinRawValue("right_front", 0.0049)
                 };
     }
 
@@ -47,7 +49,10 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
         for (GetOrinRawValue camera : cameraList) {
             try {
                 double[] poseData = camera.getRawPoseData();
-                tags.add(GetApriltagPoseData.getAllTags(poseData));
+                List<TimestampedApriltag> tagData =
+                        GetApriltagPoseData.getAllTags(poseData, camera.getCovariance());
+                tagData.removeIf(tag -> IGNORED_TAGS.contains(tag.tagId()));
+                tags.add(tagData);
             } catch (ValueNotFoundOnTableError e) {
                 // maintain camera list order even if one is not connected
                 tags.add(new ArrayList<>());

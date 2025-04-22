@@ -3,6 +3,7 @@ package com.team766.robot.reva_2025;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
+import com.team766.framework3.Conditions;
 import com.team766.framework3.Conditions.LogicalAnd;
 import com.team766.framework3.RuleEngine;
 import com.team766.framework3.Status;
@@ -29,8 +30,11 @@ public class Lights extends RuleEngine {
 
         addRule(
                 "Lights for Successful Coral Intake",
-                whenRecentStatusMatching(
-                        CoralIntake.CoralIntakeStatus.class, 2.0, s -> s.coralIntakeSuccessful()),
+                new Conditions.TimedLatch(
+                        whenStatusMatching(
+                                CoralIntake.CoralIntakeStatus.class,
+                                s -> s.coralIntakeSuccessful()),
+                        2),
                 leds,
                 () -> {
                     leds.setColor(ColorConstants.YELLOW);
@@ -38,8 +42,10 @@ public class Lights extends RuleEngine {
 
         addRule(
                 "Lights for Successful Algae Intake",
-                whenRecentStatusMatching(
-                        AlgaeIntake.AlgaeIntakeStatus.class, 2.0, s -> s.isAlgaeStable()),
+                new Conditions.TimedLatch(
+                        whenStatusMatching(
+                                AlgaeIntake.AlgaeIntakeStatus.class, s -> s.isAlgaeStable()),
+                        2),
                 leds,
                 () -> {
                     leds.setColor(ColorConstants.GREEN);
@@ -69,10 +75,15 @@ public class Lights extends RuleEngine {
                 "Lights for Gyro = 0",
                 new LogicalAnd(
                         whenStatusMatching(SwerveDrive.DriveStatus.class, s -> s.isBalanced()),
-                        whenRecentStatusMatching(
-                                Climber.ClimberStatus.class,
-                                10.0,
-                                s -> s.state() == Climber.State.On)),
+                        new Conditions.TimedLatch(
+                                whenStatusMatching(
+                                        Climber.ClimberStatus.class,
+                                        s -> s.state() == Climber.State.On),
+                                5),
+                        new Conditions.TimedLatch(
+                                whenStatusMatching(
+                                        SwerveDrive.DriveStatus.class, s -> !s.isBalanced()),
+                                20)),
                 leds,
                 () -> {
                     Animation rainbowAnim = new RainbowAnimation();
@@ -81,8 +92,7 @@ public class Lights extends RuleEngine {
 
         addRule(
                 "Lights for Climb",
-                whenRecentStatusMatching(
-                        Climber.ClimberStatus.class, 2.0, s -> s.state() == Climber.State.On),
+                whenStatusMatching(Climber.ClimberStatus.class, s -> s.state() == Climber.State.On),
                 leds,
                 () -> {
                     leds.setColor(ColorConstants.PINK);

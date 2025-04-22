@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.610773026315789,
-        "y": 6.1802631578947365
+        "x": 7.1,
+        "y": 5.596
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.181572494400104,
-        "y": 5.955128618475549
+        "x": 6.182613636363637,
+        "y": 5.855261363636364
       },
       "isLocked": false,
       "linkedName": "Start Blue 2"
     },
     {
       "anchor": {
-        "x": 5.080263157894737,
-        "y": 5.362417763157894
+        "x": 5.215142045454546,
+        "y": 5.5955255681818175
       },
       "prevControl": {
-        "x": 5.8086082891387125,
-        "y": 5.542112363159494
+        "x": 5.69377840909091,
+        "y": 5.784985795454546
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

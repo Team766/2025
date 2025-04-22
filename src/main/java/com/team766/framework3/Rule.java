@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -159,6 +160,19 @@ public class Rule {
     }
 
     public Rule withOnTriggeringProcedure(
+            RulePersistence rulePersistence,
+            Set<Reservable> reservations,
+            Consumer<Context> action) {
+        return withOnTriggeringProcedure(
+                rulePersistence, () -> new FunctionalProcedure(reservations, action));
+    }
+
+    public Rule withOnTriggeringProcedure(
+            RulePersistence rulePersistence, Reservable reservation, Consumer<Context> action) {
+        return withOnTriggeringProcedure(rulePersistence, Set.of(reservation), action);
+    }
+
+    public Rule withOnTriggeringProcedure(
             RulePersistence rulePersistence, Set<Reservable> reservations, Runnable action) {
         return withOnTriggeringProcedure(
                 rulePersistence, () -> new FunctionalInstantProcedure(reservations, action));
@@ -183,6 +197,15 @@ public class Rule {
         triggerProcedures.put(TriggerType.FINISHED, action);
         triggerReservations.put(TriggerType.FINISHED, getReservationsForProcedure(action));
         return this;
+    }
+
+    public Rule withFinishedTriggeringProcedure(
+            Set<Reservable> reservations, Consumer<Context> action) {
+        return withFinishedTriggeringProcedure(() -> new FunctionalProcedure(reservations, action));
+    }
+
+    public Rule withFinishedTriggeringProcedure(Reservable reservation, Consumer<Context> action) {
+        return withFinishedTriggeringProcedure(Set.of(reservation), action);
     }
 
     public Rule withFinishedTriggeringProcedure(Set<Reservable> reservations, Runnable action) {

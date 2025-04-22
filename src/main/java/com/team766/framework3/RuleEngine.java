@@ -101,24 +101,14 @@ public class RuleEngine extends RuleGroupBase {
                 // see if the rule is triggering
                 final Rule.TriggerType triggerType = rule.getCurrentTriggerType();
                 if (triggerType != Rule.TriggerType.NONE) {
-                    log(Severity.INFO, "Rule " + rule.getName() + " triggering: " + triggerType);
-
                     int priority = getPriorityForRule(rule);
 
                     // see if there are mechanisms a potential procedure would want to reserve
                     Set<Subsystem> reservations = rule.getSubsystemsToReserve();
-                    log(Severity.INFO, "Rule " + rule.getName() + " would reserve " + reservations);
                     for (Subsystem subsystem : reservations) {
                         // see if any of the mechanisms higher priority rules will use would also be
                         // used by this lower priority rule's procedure.
                         if (subsystemsToUse.contains(subsystem)) {
-                            log(
-                                    Severity.INFO,
-                                    "RULE CONFLICT!  Ignoring rule: "
-                                            + rule.getName()
-                                            + "; mechanism "
-                                            + subsystem.getName()
-                                            + " already reserved by higher priority rule.");
                             rule.reset(ResetReason.IGNORED);
                             continue ruleLoop;
                         }
@@ -134,26 +124,11 @@ public class RuleEngine extends RuleGroupBase {
                                 if (existingPriority < priority /* less is more */) {
                                     // existing rule takes priority.
                                     // don't proceed with this new rule.
-                                    log(
-                                            Severity.INFO,
-                                            "RULE CONFLICT!  Ignoring rule: "
-                                                    + rule.getName()
-                                                    + "; mechanism "
-                                                    + subsystem.getName()
-                                                    + " already being used in CommandScheduler by higher priority rule.");
                                     rule.reset(ResetReason.IGNORED);
                                     continue ruleLoop;
                                 } else if (rule != existingRule) {
                                     // new rule takes priority
                                     // reset existing rule
-                                    log(
-                                            Severity.INFO,
-                                            "Pre-empting rule: "
-                                                    + existingRule.getName()
-                                                    + "; mechanism "
-                                                    + subsystem.getName()
-                                                    + " will now be reserved by higher priority rule "
-                                                    + rule.getName());
                                     existingRule.reset(ResetReason.PREEMPTED);
                                 }
                             }
@@ -177,7 +152,11 @@ public class RuleEngine extends RuleGroupBase {
                     }
                     log(
                             Severity.INFO,
-                            "Running Procedure "
+                            "Rule "
+                                    + rule.getName()
+                                    + " triggered ("
+                                    + rule.getCurrentTriggerType()
+                                    + ").  Running Procedure "
                                     + procedure.getName()
                                     + " with reservations "
                                     + reservations);

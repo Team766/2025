@@ -13,8 +13,8 @@ public final class InputConstants extends com.team766.robot.common.constants.Inp
     public static final int BUTTON_ELEVATOR_WRIST_MOVE_TARGETPOSITION = GAMEPAD_RIGHT_BUMPER_BUTTON;
     public static final int BUTTON_ALGAE_INTAKE_STOW = GAMEPAD_DPAD_DOWN;
     public static final int BUTTON_ALGAE_INTAKE_GROUND = GAMEPAD_DPAD_RIGHT;
-    public static final int BUTTON_ALGAE_INTAKE_L2_L3 = GAMEPAD_DPAD_UP;
-    public static final int BUTTON_ALGAE_INTAKE_L3_L4 = GAMEPAD_DPAD_LEFT;
+    public static final int BUTTON_ALGAE_INTAKE_L2_L3 = GAMEPAD_DPAD_LEFT;
+    public static final int BUTTON_ALGAE_INTAKE_L3_L4 = GAMEPAD_DPAD_UP;
     public static final int BUTTON_ALGAE_INTAKE_MOVE_TARGETPOSITION = GAMEPAD_LEFT_BUMPER_BUTTON;
     public static final int BUTTON_ALGAE_MOTOR_INTAKE_POWER = GAMEPAD_LEFT_TRIGGER;
     public static final int BUTTON_ALGAE_SHOOTER_ON = GAMEPAD_RIGHT_TRIGGER;
@@ -29,6 +29,7 @@ public final class InputConstants extends com.team766.robot.common.constants.Inp
     public static final int BUTTON_AUTO_SHOOT = JOYSTICK_TRIGGER;
     public static final int BUTTON_CORAL_AUTO_PLACE_LEFT = JOYSTICK_LEFT_BUTTON;
     public static final int BUTTON_CORAL_AUTO_PLACE_RIGHT = JOYSTICK_RIGHT_BUTTON;
+    public static final int BUTTON_WINCH_CLIMBER = JOYSTICK_BOTTOM_BUTTON;
 
     // Macropad buttons
     public static final int CONTROL_ALGAE = 1;

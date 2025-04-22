@@ -8,7 +8,7 @@ import java.util.List;
 
 public class GetApriltagPoseData {
 
-    public static List<TimestampedApriltag> getAllTags(double[] ntArray) {
+    public static List<TimestampedApriltag> getAllTags(double[] ntArray, double covariance) {
         ArrayList<TimestampedApriltag> apriltags = new ArrayList<TimestampedApriltag>();
 
         double[] tagData;
@@ -25,7 +25,8 @@ public class GetApriltagPoseData {
                             new Pose3d(
                                     new Translation3d(
                                             tagData[i + 2], tagData[i + 3], tagData[i + 4]),
-                                    new Rotation3d()));
+                                    new Rotation3d()),
+                            covariance);
             apriltags.add(tag);
         }
         return apriltags;
