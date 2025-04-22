@@ -5,14 +5,16 @@ import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.reva.mechanisms.MotorUtil;
+import com.team766.robot.reva_2025.constants.CoralConstants.ScoreHeight;
 
 public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStatus> {
     private static final double POWER_IN = 0.50;
-    private static final double POWER_IDLE = 0.1;
+    private static final double POWER_IDLE = 0.03;
     private static final double POWER_OUT = -0.75;
+
     private State state = State.Stop;
     private MotorController motor;
-    public static final double INTAKE_CURRENT_THRESHOLD = 15;
+    public static final double INTAKE_CURRENT_THRESHOLD = 18;
 
     public static record CoralIntakeStatus(double intakePower, double current, State state)
             implements Status {
@@ -41,6 +43,11 @@ public class CoralIntake extends MechanismWithStatus<CoralIntake.CoralIntakeStat
 
     public void out() {
         motor.set(POWER_OUT);
+        state = State.Out;
+    }
+
+    public void out(ScoreHeight scoreHeight) {
+        motor.set(scoreHeight.getCoralPower());
         state = State.Out;
     }
 
