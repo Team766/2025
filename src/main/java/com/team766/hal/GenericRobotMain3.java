@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 // Team 766 - Robot Interface Base class
 
-public final class GenericRobotMain3 implements GenericRobotMainBase {
+public final class GenericRobotMain3 {
     private RobotConfigurator3 configurator;
     private RuleEngine m_oi;
     private RuleEngine m_lights;
@@ -35,12 +35,12 @@ public final class GenericRobotMain3 implements GenericRobotMainBase {
     private boolean faultInAutoInit = false;
     private boolean faultInTeleopInit = false;
 
-    public GenericRobotMain3(RobotConfigurator3 configurator) {
+    public GenericRobotMain3() {
         SchedulerUtils.reset();
         SchedulerMonitor.start();
 
-        this.configurator = configurator;
-        var autonSelector = new AutonomousSelector<>(configurator.getAutonomousModes());
+        configurator = RobotSelector.createConfigurator();
+        var autonSelector = new AutonomousSelector(configurator.getAutonomousModes());
         autonomous = new AutonomousModeStateMachine(autonSelector::getSelectedAutonMode);
         m_webServer = new WebServer();
         m_webServer.addHandler(new Dashboard());
