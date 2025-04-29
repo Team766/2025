@@ -5,7 +5,7 @@ import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-/*
+/**
  * This class is used to get raw values from the NetworkTable. We can send values on the Orin to NetworkTables and get them easily here.
  * Each camera needs its own GetOrinRawValue object with it's own topic name that is set in the constructor.
  * One important caveat of the NetworkTables code is that it doesn't throw exceptions when a value is not found.

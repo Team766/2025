@@ -31,7 +31,9 @@ public class TimedPredicateTest {
                             private int counter = 0;
 
                             public boolean getAsBoolean() {
-                                return (counter++) >= 2;
+                                final boolean b = counter >= 2;
+                                counter++;
+                                return b;
                             }
                         },
                         1.766);

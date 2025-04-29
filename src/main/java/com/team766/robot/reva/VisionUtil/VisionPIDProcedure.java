@@ -4,7 +4,7 @@ import com.team766.ViSIONbase.AnywhereScoringPosition;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Procedure;
-import java.util.ArrayList;
+import java.util.List;
 
 public abstract class VisionPIDProcedure extends Procedure {
     protected PIDController xPID = new PIDController(0.4, 0, 0, 0, -0.75, 0.75, 0.02);
@@ -32,22 +32,8 @@ public abstract class VisionPIDProcedure extends Procedure {
     private static AnywhereScoringPosition a10 = new AnywhereScoringPosition(0, 0, 0);
     private static AnywhereScoringPosition a11 = new AnywhereScoringPosition(0, 0, 0);
 
-    protected static ArrayList<AnywhereScoringPosition> scoringPositions =
-            new ArrayList<AnywhereScoringPosition>() {
-                {
-                    add(aa1);
-                    add(a1);
-                    add(a2);
-                    add(a3);
-                    add(a4);
-                    add(a5);
-                    add(a6);
-                    add(a7);
-                    add(a8);
-                    add(a9);
-                    // add(a10);
-                }
-            };
+    protected static List<AnywhereScoringPosition> scoringPositions =
+            List.of(aa1, a1, a2, a3, a4, a5, a6, a7, a8, a9 /*, a10 */);
 
     public static double getBestPowerToUse(double distanceFromCenterApriltag)
             throws AprilTagGeneralCheckedException {

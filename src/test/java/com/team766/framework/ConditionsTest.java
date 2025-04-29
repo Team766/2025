@@ -30,7 +30,7 @@ public class ConditionsTest extends TestCase implements StatusesMixin {
     }
 
     private static boolean step(int numSteps, Command command) {
-        for (int i = 0; i < 5; ++i) {
+        for (int i = 0; i < numSteps; ++i) {
             command.execute();
         }
         return command.isFinished();
@@ -39,7 +39,6 @@ public class ConditionsTest extends TestCase implements StatusesMixin {
     private static void finish(Command command) {
         while (!command.isFinished()) {
             command.execute();
-            Thread.yield();
         }
     }
 
@@ -258,7 +257,9 @@ public class ConditionsTest extends TestCase implements StatusesMixin {
                     private int counter = 0;
 
                     public boolean getAsBoolean() {
-                        return (counter++) % 4 == 1;
+                        final boolean b = counter % 4 == 1;
+                        counter++;
+                        return b;
                     }
                 };
 

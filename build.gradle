@@ -172,7 +172,11 @@ test {
 
 tasks.withType(JavaCompile).configureEach {
     options.errorprone {
-        disableAllChecks.set(true) // TODO(rcahoon, 2025-03-28): Re-enable more default checks
+        disable("MissingOverride")
+        disable("ReferenceEquality")
+        disable("UnusedVariable")
+        disable("MissingSummary")
+        disable("StringCaseLocaleUsage")
         error("DontDiscardProcedures")
         excludedPaths.set(".*/build/generated/.*")
     }

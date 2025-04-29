@@ -26,7 +26,6 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
     private Supplier<Double> sensorVelocitySupplier;
     private Function<Double, REVLibError> sensorPositionSetter;
     private Function<Boolean, REVLibError> sensorInvertedSetter;
-    private boolean sensorInverted = false;
     private boolean shouldReportDefaultCurrentLimit;
 
     public CANSparkMaxMotorController(String deviceName, final int deviceId) {
@@ -130,6 +129,7 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
                 break;
             case Voltage:
                 getClosedLoopController().setReference(value, SparkMax.ControlType.kVoltage);
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported control mode " + mode);
         }
@@ -247,14 +247,17 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
             case CTRE_MagEncoder_Absolute:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder"));
+                break;
             case CTRE_MagEncoder_Relative:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder"));
+                break;
             case None:
                 return;
             case PulseWidthEncodedPosition:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support PWM sensors"));
+                break;
             case QuadEncoder:
                 // TODO: should we pass a real counts-per-rev scale here?
                 RelativeEncoder encoder = getAlternateEncoder();
@@ -277,22 +280,28 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
             case RemoteSensor0:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support remote sensors"));
+                break;
             case RemoteSensor1:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support remote sensors"));
+                break;
             case SensorDifference:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support SensorDifference"));
+                break;
             case SensorSum:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support SensorSum"));
+                break;
             case SoftwareEmulatedSensor:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException(
                                 "SparkMax does not support SoftwareEmulatedSensor"));
+                break;
             case Tachometer:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support Tachometer"));
+                break;
             default:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("Unsupported sensor type " + feedbackDevice));
@@ -301,7 +310,6 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
 
     @Override
     public void setSensorInverted(final boolean inverted) {
-        sensorInverted = inverted;
         if (inverted) {
             revErrorToException(ExceptionTarget.LOG, sensorInvertedSetter.apply(inverted));
         }
@@ -316,7 +324,7 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
 
     public void setCurrentLimit(final double ampsLimit) {
         SparkMaxConfig config = new SparkMaxConfig();
-        config.smartCurrentLimit((int) (ampsLimit));
+        config.smartCurrentLimit((int) ampsLimit);
         configureAndCheckRevError(config);
         shouldReportDefaultCurrentLimit = false;
     }

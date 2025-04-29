@@ -1,6 +1,7 @@
 package com.team766.web;
 
 public class LocalLogReader {
+    @SuppressWarnings("EmptyCatch")
     public static void main(String[] args) {
         var webServer = new WebServer();
         webServer.addHandler(new ReadLogs());

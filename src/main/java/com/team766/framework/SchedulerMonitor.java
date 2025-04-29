@@ -23,6 +23,7 @@ public class SchedulerMonitor {
         }
     }
 
+    @SuppressWarnings("EmptyCatch")
     private static void monitor() {
         int lastIterationCount = 0;
         while (true) {

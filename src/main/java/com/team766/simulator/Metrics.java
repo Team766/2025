@@ -62,7 +62,7 @@ public class Metrics {
      * @param enabled If false, data from this series will be ignored. This allows for an easy,
      *     centralized way of selecting which data should be processed/visualized.
      * @return A handle to this series, which should be passed when adding data via a Point.
-     * @throws IllegalStateException if called after data has been added (via {@link #add()})
+     * @throws IllegalStateException if called after data has been added (via {@link #add})
      */
     public Series addSeries(String name, boolean enabled) {
         if (metrics.size() != 0) {

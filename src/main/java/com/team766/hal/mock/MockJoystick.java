@@ -1,7 +1,7 @@
 package com.team766.hal.mock;
 
 import com.team766.hal.JoystickReader;
-import com.team766.math.Math;
+import com.team766.math.Maths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +23,7 @@ public class MockJoystick implements JoystickReader {
 
     @Override
     public double getAxis(final int axis) {
-        return Math.deadzone(
+        return Maths.deadzone(
                 axisValues[axis], axisDeadzoneMap.getOrDefault(axis, defaultAxisDeadzone));
     }
 

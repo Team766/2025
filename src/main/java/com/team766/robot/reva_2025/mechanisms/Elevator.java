@@ -8,6 +8,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.TimeOfFlightReader;
 import com.team766.library.ValueProvider;
+import com.team766.math.Maths;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 
 public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
@@ -38,7 +39,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         ELEVATOR_L4(ELEVATOR_TOP.getHeight()),
         ELEVATOR_CLIMB(5);
 
-        double height = 0;
+        final double height;
 
         ElevatorPosition(double height) {
             this.height = height;
@@ -62,7 +63,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     public void setPosition(double setPosition) {
         noPIDMode = false;
         setPoint =
-                com.team766.math.Math.clamp(
+                Maths.clamp(
                         setPosition,
                         ElevatorPosition.ELEVATOR_BOTTOM.getHeight(),
                         ElevatorPosition.ELEVATOR_TOP.getHeight());

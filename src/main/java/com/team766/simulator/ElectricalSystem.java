@@ -3,12 +3,13 @@ package com.team766.simulator;
 import com.team766.simulator.interfaces.ElectricalDevice;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ElectricalSystem {
     private double nominalVoltage = Parameters.BATTERY_VOLTAGE;
     private double primaryResistance = Parameters.PRIMARY_ELECTRICAL_RESISTANCE;
 
-    public class BranchInfo {
+    public static class BranchInfo {
         public final ElectricalDevice device;
         public ElectricalDevice.Output flow;
 
@@ -45,7 +46,7 @@ public class ElectricalSystem {
         return systemState.voltage;
     }
 
-    public LinkedHashMap<String, Double> getBranchCurrents() {
+    public Map<String, Double> getBranchCurrents() {
         var currents = new LinkedHashMap<String, Double>();
         for (BranchInfo branch : branchCircuits) {
             currents.put(branch.device.name(), branch.flow.current);

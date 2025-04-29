@@ -114,6 +114,7 @@ public class RuleTest {
 
     @Test
     public void testGetMechanismsToReserve() {
+        @SuppressWarnings("DistinctVarargsChecker")
         final Set<Reservable> newlyMechanisms = Set.of(new FakeMechanism(), new FakeMechanism());
         final Set<Reservable> finishedMechanisms = Set.of(new FakeMechanism());
 
