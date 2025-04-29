@@ -2,8 +2,8 @@ package com.team766.robot.reva_2025.mechanisms;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.controllers.PIDController;
-import com.team766.framework3.MechanismWithStatus;
-import com.team766.framework3.Status;
+import com.team766.framework.MechanismWithStatus;
+import com.team766.framework.Status;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;

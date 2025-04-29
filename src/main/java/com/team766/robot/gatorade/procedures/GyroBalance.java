@@ -1,8 +1,8 @@
 package com.team766.robot.gatorade.procedures;
 
-import com.team766.framework3.Context;
-import com.team766.framework3.FunctionalProcedure;
-import com.team766.framework3.Procedure;
+import com.team766.framework.Context;
+import com.team766.framework.FunctionalProcedure;
+import com.team766.framework.Procedure;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.gatorade.constants.ChargeConstants;
 import com.team766.robot.gatorade.mechanisms.Elevator;

@@ -1,6 +1,6 @@
 package com.team766.web;
 
-import com.team766.framework3.AutonomousMode;
+import com.team766.framework.AutonomousMode;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;

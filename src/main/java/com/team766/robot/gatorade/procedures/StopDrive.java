@@ -1,6 +1,6 @@
 package com.team766.robot.gatorade.procedures;
 
-import com.team766.framework3.InstantProcedure;
+import com.team766.framework.InstantProcedure;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 
 public class StopDrive extends InstantProcedure {

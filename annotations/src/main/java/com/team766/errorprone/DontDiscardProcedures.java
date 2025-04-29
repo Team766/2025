@@ -18,7 +18,7 @@ public class DontDiscardProcedures extends AbstractReturnValueIgnored {
     @Override
     protected Matcher<? super ExpressionTree> specializedMatcher() {
         return constructor()
-                .forClass(TypePredicates.isDescendantOf("com.team766.framework3.Procedure"));
+                .forClass(TypePredicates.isDescendantOf("com.team766.framework.Procedure"));
     }
 
     @Override

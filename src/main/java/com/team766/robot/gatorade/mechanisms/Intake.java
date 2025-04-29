@@ -2,8 +2,8 @@ package com.team766.robot.gatorade.mechanisms;
 
 import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
-import com.team766.framework3.MechanismWithStatus;
-import com.team766.framework3.Status;
+import com.team766.framework.MechanismWithStatus;
+import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.gatorade.GamePieceType;
