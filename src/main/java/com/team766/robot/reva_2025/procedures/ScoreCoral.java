@@ -117,15 +117,14 @@ public class ScoreCoral extends Procedure {
 
         // TODO: clean up sequence/logic
         if (scoreLevel.equals(ScoreHeight.L4)) {
-            context.runSync(new AutoAlign(nearestPose, 0.12, drive));
+            context.runSync(new AutoAlign(nearestPose, 0.10, drive));
             waitForStatusMatchingOrTimeout(
                     context, Elevator.ElevatorStatus.class, s -> s.isAtHeight(), 1);
             waitForStatusMatchingOrTimeout(
                     context, Wrist.WristStatus.class, s -> s.isAtAngle(), 0.5);
-            context.runSync(new AutoAlign(nearestPose(-0.01, false), drive));
+            context.runSync(new AutoAlign(nearestPose(0.04, false), drive));
             coral.out();
-            context.runSync(new AutoAlign(nearestPose(-0.05, false), drive));
-            context.waitForSeconds(0.25);
+            context.runSync(new AutoAlign(nearestPose(-0.01, false), drive));
         } else {
             context.runSync(new AutoAlign(nearestPose, drive));
             waitForStatusMatchingOrTimeout(

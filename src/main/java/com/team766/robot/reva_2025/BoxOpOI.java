@@ -63,6 +63,16 @@ public class BoxOpOI extends RuleGroup {
                                                         boxopGamepad.getAxis(
                                                                 InputConstants
                                                                         .GAMEPAD_RIGHT_STICK_YAXIS)));
+                                addRule(
+                                        "Move Climber to Starting Position",
+                                        new LogicalAnd(
+                                                boxopGamepad.whenButton(
+                                                        InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON),
+                                                boxopGamepad.whenButton(
+                                                        InputConstants.GAMEPAD_START_BUTTON)),
+                                        ONCE,
+                                        climber,
+                                        () -> climber.moveToStartPosition());
                             }
                         });
 

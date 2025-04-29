@@ -54,6 +54,9 @@ public class Robot implements RobotConfigurator3 {
             new AutonomousMode(
                     "Right Side Between Cages EDC",
                     () -> new ThreePieceEDC(drive, coral, wrist, elevator, algaeIntake)),
+            new AutonomousMode(
+                    "Center Start G",
+                    () -> new OnePieceCenterG(drive, coral, wrist, elevator, algaeIntake)),
             // new AutonomousMode(
             //         "AutoAlign", () -> new AutoAlign(new Pose2d(1, 0, new Rotation2d()), drive))
         };
