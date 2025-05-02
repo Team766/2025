@@ -208,12 +208,12 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
         sensorPositionSetter = encoder::setPosition;
         sensorInvertedSetter =
                 (inverted) -> {
-                    SparkMaxConfig config = new SparkMaxConfig();
-                    config.encoder.inverted(inverted);
-                    return configure(
-                            config,
-                            ResetMode.kNoResetSafeParameters,
-                            PersistMode.kPersistParameters);
+                    // The brushless motors' built-in encoder can't be inverted. Fail if the user
+                    // has requested inversion; succeed if the user has requested non-inversion.
+                    if (inverted) {
+                        return REVLibError.kParamInvalid;
+                    }
+                    return REVLibError.kOk;
                 };
 
         SparkMaxConfig config = new SparkMaxConfig();
@@ -301,10 +301,7 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
 
     @Override
     public void setSensorInverted(final boolean inverted) {
-        sensorInverted = inverted;
-        if (inverted) {
-            revErrorToException(ExceptionTarget.LOG, sensorInvertedSetter.apply(inverted));
-        }
+        revErrorToException(ExceptionTarget.LOG, sensorInvertedSetter.apply(inverted));
     }
 
     @Override
