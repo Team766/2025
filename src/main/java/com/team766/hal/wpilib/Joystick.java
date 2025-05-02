@@ -1,7 +1,7 @@
 package com.team766.hal.wpilib;
 
 import com.team766.hal.JoystickReader;
-import com.team766.math.Math;
+import com.team766.math.Maths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +15,7 @@ public class Joystick extends edu.wpi.first.wpilibj.Joystick implements Joystick
 
     @Override
     public double getAxis(final int axis) {
-        return Math.deadzone(
+        return Maths.deadzone(
                 getRawAxis(axis), axisDeadzoneMap.getOrDefault(axis, defaultAxisDeadzone));
     }
 

@@ -53,7 +53,7 @@ public class RobotMain extends LoggedRobot {
         // via the presence of a value in the config file, via an invocation of caniv to
         // see if any CAN buses are present, etc.  Until we update this logic, we'll
         // temporarily disable this altogether with a short-circuit AND.
-        if (false && new File(CanivPoller.CANIV_BIN).exists()) {
+        if (false /* new File(CanivPoller.CANIV_BIN).exists() */) {
             canivPoller = new CanivPoller(10 * 1000 /* millis */);
             new Thread(canivPoller, "caniv poller").start();
         }
@@ -87,8 +87,7 @@ public class RobotMain extends LoggedRobot {
     public void robotInit() {
         try {
             boolean configFromUSB = true;
-            String filename = null;
-            filename = checkForAndReturnPathToConfigFile(USB_CONFIG_FILE);
+            String filename = checkForAndReturnPathToConfigFile(USB_CONFIG_FILE);
 
             if (filename == null) {
                 filename = INTERNAL_CONFIG_FILE;

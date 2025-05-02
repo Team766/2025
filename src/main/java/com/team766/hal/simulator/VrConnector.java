@@ -1,6 +1,6 @@
 package com.team766.hal.simulator;
 
-import static com.team766.math.Math.normalizeAngleDegrees;
+import static com.team766.math.Maths.normalizeAngleDegrees;
 
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.simulator.ProgramInterface;

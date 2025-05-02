@@ -1,6 +1,6 @@
 package com.team766.robot.common.mechanisms;
 
-import static com.team766.math.Math.normalizeAngleDegrees;
+import static com.team766.math.Maths.normalizeAngleDegrees;
 import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.team766.controllers.PIDController;
@@ -154,8 +154,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         rotationPID = PIDController.loadFromConfig(ConfigConstants.TARGET_LOCK_ROTATION_PID);
 
         SwerveModule[] moduleList = new SwerveModule[] {swerveFR, swerveFL, swerveBR, swerveBL};
-        EncoderReader[] encoderList =
-                new EncoderReader[] {encoderFR, encoderFL, encoderBR, encoderBL};
         double halfDistanceBetweenWheels = config.distanceBetweenWheels() / 2;
         this.wheelPositions =
                 new Translation2d[] {
@@ -167,13 +165,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
         swerveDriveKinematics = new SwerveDriveKinematics(wheelPositions);
 
-        swerveOdometry =
-                new Odometry(
-                        gyro,
-                        moduleList,
-                        config.wheelCircumference(),
-                        config.driveGearRatio(),
-                        config.encoderToRevolutionConstant());
+        swerveOdometry = new Odometry(gyro, moduleList);
 
         kalmanFilter = new KalmanFilter();
 
@@ -230,7 +222,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
     /**
      * Overloads controlRobotOriented to work with a chassisSpeeds input
-     * @param chassisSpeeds
      */
     public void controlRobotOriented(ChassisSpeeds chassisSpeeds) {
         movingToTarget = false;
@@ -264,7 +255,6 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
 
     /**
      * Overloads controlFieldOriented to work with a chassisSpeeds input
-     * @param chassisSpeeds
      */
     public void controlFieldOriented(ChassisSpeeds chassisSpeeds) {
         movingToTarget = false;

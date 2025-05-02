@@ -3,7 +3,7 @@ package com.team766.ViSIONbase;
 public class ScoringPosition {
     public final double speed, angle, x_position, y_position, swerve_angle;
 
-    /*
+    /**
      * @param speed the speed to set the shooter, in motor shaft rps.
      * @param angle the angle to set the shooter
      * @param x_position the x_position of the robot relative to the AprilTag

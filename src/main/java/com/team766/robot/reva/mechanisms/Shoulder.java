@@ -14,6 +14,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.library.ValueProvider;
+import com.team766.math.Maths;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
@@ -121,7 +122,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
 
     public void rotate(double angle) {
         double targetAngle =
-                com.team766.math.Math.clamp(
+                Maths.clamp(
                         angle, ShoulderPosition.BOTTOM.getAngle(), ShoulderPosition.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
         // SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);

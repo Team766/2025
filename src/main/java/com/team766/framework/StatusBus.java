@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 /**
  * Bus for broadcasting and querying {@link Status} of different parts of the robot (eg state of a Mechanism).
- * This is a Singleton.  Producers can call {@link #publish} to publish their latest {@link Status}.
+ * This is a Singleton.  Producers can call {@link #publishStatus} to publish their latest {@link Status}.
  * Consumers can call {@link #getStatus(Class)} with the class Object (eg, {@code MyStatus.class})
  * for the {@link Status} they are interested in querying, to get the latest published {@link Status}.
  */
@@ -27,6 +27,8 @@ public class StatusBus {
     }
 
     /**
+     * Create a new StatusBus Entry
+     *
      * @param status The {@link Status} that was published
      * @param timestamp The time at which the Status was published
      */
@@ -37,7 +39,7 @@ public class StatusBus {
     }
 
     /**
-     * Remove all published @{link Status}es from the StatusBus.
+     * Remove all published {@link Status}es from the StatusBus.
      */
     public void clear() {
         statuses.clear();

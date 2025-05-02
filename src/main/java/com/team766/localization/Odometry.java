@@ -22,27 +22,12 @@ public class Odometry {
     private double[] prevDriveDisplacement;
     private double[] driveDisplacementChange;
 
-    // In meters
-    private final double WHEEL_CIRCUMFERENCE;
-    public final double GEAR_RATIO;
-    public final int ENCODER_TO_REVOLUTION_CONSTANT;
-
     /**
      * Constructor for Odometry, taking in several defines for the robot.
      * @param gyro The gyro sensor used to determine heading, etc.
-     * @param motors A list of every wheel-controlling motor on the robot.
-     * @param CANCoders A list of the CANCoders corresponding to each wheel, in the same order as motors.
-     * @param wheelLocations A list of the locations of each wheel, in the same order as motors.
-     * @param wheelCircumference The circumfrence of the wheels, including treads.
-     * @param gearRatio The gear ratio of the wheels.
-     * @param encoderToRevolutionConstant The encoder to revolution constant of the wheels.
+     * @param moduleList A list of the swerve modules on the robot.
      */
-    public Odometry(
-            GyroReader gyro,
-            SwerveModule[] moduleList,
-            double wheelCircumference,
-            double gearRatio,
-            int encoderToRevolutionConstant) {
+    public Odometry(GyroReader gyro, SwerveModule[] moduleList) {
 
         this.gyro = gyro;
         this.moduleList = moduleList;
@@ -54,10 +39,6 @@ public class Odometry {
 
         prevDriveDisplacement = new double[moduleCount];
         driveDisplacementChange = new double[moduleCount];
-
-        this.WHEEL_CIRCUMFERENCE = wheelCircumference;
-        this.GEAR_RATIO = gearRatio;
-        this.ENCODER_TO_REVOLUTION_CONSTANT = encoderToRevolutionConstant;
 
         for (int i = 0; i < moduleCount; i++) {
             prevWheelRotation[i] = new Rotation2d();

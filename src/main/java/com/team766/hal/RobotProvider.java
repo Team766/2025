@@ -17,18 +17,19 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class RobotProvider {
 
     public static RobotProvider instance;
 
-    private HashMap<Integer, String> motorDeviceIdNames = new HashMap<Integer, String>();
-    private HashMap<Integer, String> motorPortNames = new HashMap<Integer, String>();
-    private HashMap<Integer, String> digitalIoNames = new HashMap<Integer, String>();
-    private HashMap<Integer, String> analogInputNames = new HashMap<Integer, String>();
-    private HashMap<Integer, String> relayNames = new HashMap<Integer, String>();
-    private HashMap<Integer, String> solenoidNames = new HashMap<Integer, String>();
-    private HashMap<Integer, String> gyroNames = new HashMap<Integer, String>();
+    private Map<Integer, String> motorDeviceIdNames = new HashMap<Integer, String>();
+    private Map<Integer, String> motorPortNames = new HashMap<Integer, String>();
+    private Map<Integer, String> digitalIoNames = new HashMap<Integer, String>();
+    private Map<Integer, String> analogInputNames = new HashMap<Integer, String>();
+    private Map<Integer, String> relayNames = new HashMap<Integer, String>();
+    private Map<Integer, String> solenoidNames = new HashMap<Integer, String>();
+    private Map<Integer, String> gyroNames = new HashMap<Integer, String>();
 
     // HAL
     protected abstract MotorController getMotor(
@@ -67,7 +68,7 @@ public abstract class RobotProvider {
 
     private void checkDeviceName(
             final String deviceType,
-            final HashMap<Integer, String> deviceNames,
+            final Map<Integer, String> deviceNames,
             final Integer portId,
             final String configName) {
         String previousName = deviceNames.putIfAbsent(portId, configName);
@@ -229,8 +230,9 @@ public abstract class RobotProvider {
             Logger.get(Category.CONFIGURATION)
                     .logData(
                             Severity.ERROR,
-                            "Encoder %s not found in config file, using mock encoder instead " + ex,
-                            configName);
+                            "Encoder %s not found in config file, using mock encoder instead %s",
+                            configName,
+                            ex.toString());
             return new MockEncoder();
         }
     }

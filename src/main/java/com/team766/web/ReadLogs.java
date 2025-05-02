@@ -40,9 +40,9 @@ public class ReadLogs implements WebServer.Handler {
             r +=
                     String.format(
                             "<tr><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td></tr>\n",
-                            entry.getCategory(),
+                            entry.getCategory().name(),
                             entry.getTime(),
-                            entry.getSeverity(),
+                            entry.getSeverity().name(),
                             LogEntryRenderer.renderLogEntry(entry, reader));
         }
         r += "</table>";

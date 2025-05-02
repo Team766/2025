@@ -20,13 +20,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
 public abstract class PathSequenceAuto extends Procedure {
 
-    private final LinkedList<Procedure> pathItems;
+    private final ArrayList<Procedure> pathItems;
     private final SwerveDrive drive;
     private final Pose2d initialPosition;
     private final RobotConfig robotConfig;
@@ -38,10 +38,10 @@ public abstract class PathSequenceAuto extends Procedure {
      * @param initialPosition Starting position on Blue Alliance in meters (gets flipped when on red)
      */
     public PathSequenceAuto(SwerveDrive drive, Pose2d initialPosition) {
-        pathItems = new LinkedList<Procedure>();
+        pathItems = new ArrayList<Procedure>();
         this.drive = reserve(drive);
         this.robotConfig = createRobotConfig(drive);
-        this.controller = createDriveController(drive);
+        this.controller = createDriveController();
         this.initialPosition = initialPosition;
     }
 
@@ -103,7 +103,7 @@ public abstract class PathSequenceAuto extends Procedure {
         return robotConfig;
     }
 
-    private PPHolonomicDriveController createDriveController(SwerveDrive drive) {
+    private PPHolonomicDriveController createDriveController() {
         double translationP =
                 ConfigFileReader.getInstance()
                         .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P)

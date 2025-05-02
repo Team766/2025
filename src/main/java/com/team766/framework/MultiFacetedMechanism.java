@@ -28,6 +28,7 @@ public abstract class MultiFacetedMechanism implements Reservable, LoggingBase {
         }
     }
 
+    @SuppressWarnings("ClassCanBeStatic")
     protected class MechanismFacet extends Mechanism {}
 
     @SuppressWarnings("unused")

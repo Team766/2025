@@ -2,7 +2,7 @@ package com.team766.math;
 
 import java.util.function.Function;
 
-public class Math {
+public class Maths {
     public static double clamp(final double x, final double min, final double max) {
         if (x < min) {
             return min;

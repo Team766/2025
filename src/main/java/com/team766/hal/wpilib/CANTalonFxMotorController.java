@@ -187,8 +187,7 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
 
     @Override
     public void follow(final MotorController leader) {
-        if (leader instanceof CANTalonFxMotorController) {
-            CANTalonFxMotorController talonFxLeader = (CANTalonFxMotorController) leader;
+        if (leader instanceof CANTalonFxMotorController talonFxLeader) {
             StrictFollower follower = new StrictFollower(talonFxLeader.getDeviceID());
             statusCodeToException(ExceptionTarget.LOG, super.setControl(follower));
         } else {

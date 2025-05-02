@@ -1,5 +1,6 @@
 package com.team766.logging;
 
+import com.google.errorprone.annotations.FormatMethod;
 import com.team766.config.ConfigFileReader;
 import com.team766.library.CircularBuffer;
 import edu.wpi.first.util.datalog.StringLogEntry;
@@ -18,6 +19,7 @@ public final class Logger {
             new AtomicReference<StringLogEntry>();
 
     private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
+        @SuppressWarnings("CatchAndPrintStackTrace")
         public void uncaughtException(final Thread t, final Throwable e) {
             e.printStackTrace();
 
@@ -117,6 +119,7 @@ public final class Logger {
         return Collections.unmodifiableCollection(m_recentEntries);
     }
 
+    @FormatMethod
     public void logData(final Severity severity, final String format, final Object... args) {
         var entry =
                 LogEntry.newBuilder()

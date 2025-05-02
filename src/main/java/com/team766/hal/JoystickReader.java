@@ -24,7 +24,8 @@ public interface JoystickReader {
 
     /**
      * Returns a condition that can be used when defining a Rule. The condition will trigger
-     * whenever the given axis moves out of its deadzone. {@see #isAxisMoved(int)}
+     * whenever the given axis moves out of its deadzone.
+     * @see #isAxisMoved(int)
      */
     default BooleanSupplier whenAxisMoved(int axis) {
         return () -> isAxisMoved(axis);
@@ -33,7 +34,7 @@ public interface JoystickReader {
     /**
      * Returns a condition that can be used when defining a Rule. The condition will trigger
      * whenever at least one of the given axes have moved out of their respective deadzones.
-     * {@see #isAxisMoved(int)}
+     * @see #isAxisMoved(int)
      */
     default BooleanSupplier whenAnyAxisMoved(int... axes) {
         return () -> {
@@ -75,7 +76,8 @@ public interface JoystickReader {
 
     /**
      * Returns a condition that can be used when defining a Rule. The condition will trigger
-     * whenever the given button is being pressed. {@see #getButton(int)}
+     * whenever the given button is being pressed.
+     * @see #getButton(int)
      */
     default BooleanSupplier whenButton(int button) {
         return () -> getButton(button);
@@ -83,7 +85,8 @@ public interface JoystickReader {
 
     /**
      * Returns a condition that can be used when defining a Rule. The condition will trigger
-     * whenever at least one of the given buttons are being pressed. {@see #getButton(int)}
+     * whenever at least one of the given buttons are being pressed.
+     * @see #getButton(int)
      */
     default BooleanSupplier whenAnyButton(int... buttons) {
         return () -> {
@@ -105,7 +108,8 @@ public interface JoystickReader {
 
     /**
      * Returns a condition that can be used when defining a Rule. The condition will trigger
-     * whenever all of the given buttons are being pressed. {@see #getButton(int)}
+     * whenever all of the given buttons are being pressed.
+     * @see #getButton(int)
      */
     default BooleanSupplier whenAllButtons(int... buttons) {
         return () -> {

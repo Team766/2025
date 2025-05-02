@@ -57,7 +57,7 @@ public class Metrics extends JPanel {
                 System.out.println(
                         String.format(
                                 "(%s, %f): %f",
-                                source.getName(), selectedTime, source.get(1, index)));
+                                source.getName(), selectedTime, (Double) source.get(1, index)));
             }
         }
 
