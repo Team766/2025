@@ -26,7 +26,7 @@ public class AutoShoot extends Procedure {
     private Pose2d setPosition2D =
             new Pose2d(6.75, 0, new Rotation2d(-25)); // TODO: update with actual values
     private final boolean useSetPosition = true;
-    protected static List<AnywhereScoringPosition> shootingPositions =
+    protected static final List<AnywhereScoringPosition> shootingPositions =
             List.of(
                     // TODO: change temporary values
                     new AnywhereScoringPosition(1.9506, 4800, 23.516),
