@@ -48,6 +48,7 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     }
 
     public void moveToStartPosition() {
+        MotorUtil.enableSoftLimits(leftClimberMotor, false);
         movingToStartPosition = true;
     }
 
