@@ -3,6 +3,7 @@ package com.team766.robot.common.mechanisms;
 import static com.team766.math.Math.normalizeAngleDegrees;
 import static com.team766.robot.common.constants.ConfigConstants.*;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.team766.controllers.PIDController;
 import com.team766.framework3.MechanismWithStatus;
 import com.team766.framework3.NoReservationRequired;
@@ -12,6 +13,7 @@ import com.team766.hal.EncoderReader;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.wpilib.PigeonGyro;
 import com.team766.localization.KalmanFilter;
 import com.team766.localization.Odometry;
 import com.team766.logging.Category;
@@ -29,6 +31,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +48,9 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
             Pose2d currentPosition,
             ChassisSpeeds robotOrientedChassisSpeeds,
             ChassisSpeeds fieldOrientedChassisSpeeds,
+            double xAccel,
+            double yAccel,
+            double zAccel,
             SwerveModuleState[] swerveStates)
             implements Status {
 
@@ -103,7 +110,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
     private final SwerveModule swerveBR;
     private final SwerveModule swerveBL;
 
-    private final GyroReader gyro;
+    private final PigeonGyro gyro;
 
     // declaration of odometry object
     private Odometry swerveOdometry;
@@ -149,7 +156,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         swerveBL = new SwerveModule("BL", driveBL, steerBL, encoderBL, config);
 
         // Sets up odometry
-        gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
+        gyro = (PigeonGyro) RobotProvider.instance.getGyro(DRIVE_GYRO);
 
         rotationPID = PIDController.loadFromConfig(ConfigConstants.TARGET_LOCK_ROTATION_PID);
 
@@ -385,6 +392,10 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         final double heading = gyro.getAngle();
         final double pitch = gyro.getPitch();
         final double roll = gyro.getRoll();
+        Pigeon2 pigeonGyro = gyro.getPigeon();
+        final double xAccel = pigeonGyro.getAccelerationX().getValueAsDouble();
+        final double yAccel = pigeonGyro.getAccelerationY().getValueAsDouble();
+        final double zAccel = pigeonGyro.getAccelerationZ().getValueAsDouble();
 
         var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
         if (visionStatus.isPresent() && !visionStatus.get().allTags().isEmpty()) {
@@ -398,7 +409,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                                 tag.toRobotPosition(Rotation2d.fromDegrees(heading));
                         tagPoses.put(position, tag.pose3d().getTranslation().getNorm());
                         if (Logger.isLoggingToDataLog()) {
-                            org.littletonrobotics.junction.Logger.recordOutput(
+                            SmartDashboard.putNumber(
                                     "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
                                     position.getY());
                             org.littletonrobotics.junction.Logger.recordOutput(
@@ -408,7 +419,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                     }
 
                     if (Logger.isLoggingToDataLog()) {
-                        org.littletonrobotics.junction.Logger.recordOutput(
+                        SmartDashboard.putNumber(
                                 "delay",
                                 RobotProvider.instance.getClock().getTime()
                                         - (cameraTags.get(0).collectTime() / 1000000.));
@@ -476,6 +487,9 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                 currentPosition,
                 robotOrientedChassisSpeeds,
                 fieldOrientedChassisSpeeds,
+                xAccel,
+                yAccel,
+                zAccel,
                 swerveModuleStates);
     }
 
