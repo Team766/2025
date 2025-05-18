@@ -16,11 +16,10 @@ import com.team766.localization.KalmanFilter;
 import com.team766.localization.Odometry;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
-import com.team766.orin.TimestampedApriltag;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.ControlConstants;
-import com.team766.robot.reva_2025.mechanisms.Vision;
+import com.team766.robot.reva_2025.mechanisms.Quest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -29,8 +28,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
 public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
@@ -373,58 +370,59 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         final double heading = gyro.getAngle();
         final double pitch = gyro.getPitch();
         final double roll = gyro.getRoll();
+        /*
+                var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
+                if (visionStatus.isPresent() && !visionStatus.get().allTags().isEmpty()) {
+                    int camCounter = 0;
+                    for (List<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
+                        camCounter++;
+                        HashMap<Translation2d, Double> tagPoses = new HashMap<>();
+                        if (cameraTags.size() > 0) {
+                            for (TimestampedApriltag tag : cameraTags) {
+                                Translation2d position =
+                                        tag.toRobotPosition(Rotation2d.fromDegrees(heading));
+                                tagPoses.put(position, tag.pose3d().getTranslation().getNorm());
+                                if (Logger.isLoggingToDataLog()) {
+                                    org.littletonrobotics.junction.Logger.recordOutput(
+                                            "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
+                                            position.getY());
+                                    org.littletonrobotics.junction.Logger.recordOutput(
+                                            "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
+                                            new Pose2d(position, Rotation2d.fromDegrees(heading)));
+                                }
+                            }
 
-        var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
-        if (visionStatus.isPresent() && !visionStatus.get().allTags().isEmpty()) {
-            int camCounter = 0;
-            for (List<TimestampedApriltag> cameraTags : visionStatus.get().allTags()) {
-                camCounter++;
-                HashMap<Translation2d, Double> tagPoses = new HashMap<>();
-                if (cameraTags.size() > 0) {
-                    for (TimestampedApriltag tag : cameraTags) {
-                        Translation2d position =
-                                tag.toRobotPosition(Rotation2d.fromDegrees(heading));
-                        tagPoses.put(position, tag.pose3d().getTranslation().getNorm());
-                        if (Logger.isLoggingToDataLog()) {
-                            org.littletonrobotics.junction.Logger.recordOutput(
-                                    "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
-                                    position.getY());
-                            org.littletonrobotics.junction.Logger.recordOutput(
-                                    "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
-                                    new Pose2d(position, Rotation2d.fromDegrees(heading)));
+                            if (Logger.isLoggingToDataLog()) {
+                                org.littletonrobotics.junction.Logger.recordOutput(
+                                        "delay",
+                                        RobotProvider.instance.getClock().getTime()
+                                                - (cameraTags.get(0).collectTime() / 1000000.));
+                            }
+
+                            // Only do position update if current timestamp doesn't match with previous
+                            // timestamp
+                            if (prevCamTimes[0] != 0
+                                    && Math.abs(
+                                                    cameraTags.get(0).collectTime()
+                                                            - prevCamTimes[camCounter - 1])
+                                            > 1 // microseconds
+                            ) {
+                                kalmanFilter.updateWithVisionMeasurement(
+                                        tagPoses,
+                                        cameraTags.get(0).covariance(),
+                                        RobotProvider.instance
+                                                .getClock()
+                                                .getTime()); // Latency correction off
+                                // cameraTags.get(0).collectTime() / 1000000.); // Latency correction option
+                            }
+                            prevCamTimes[camCounter - 1] = cameraTags.get(0).collectTime();
                         }
                     }
-
-                    if (Logger.isLoggingToDataLog()) {
-                        org.littletonrobotics.junction.Logger.recordOutput(
-                                "delay",
-                                RobotProvider.instance.getClock().getTime()
-                                        - (cameraTags.get(0).collectTime() / 1000000.));
-                    }
-
-                    // Only do position update if current timestamp doesn't match with previous
-                    // timestamp
-                    if (prevCamTimes[0] != 0
-                            && Math.abs(
-                                            cameraTags.get(0).collectTime()
-                                                    - prevCamTimes[camCounter - 1])
-                                    > 1 // microseconds
-                    ) {
-                        kalmanFilter.updateWithVisionMeasurement(
-                                tagPoses,
-                                cameraTags.get(0).covariance(),
-                                RobotProvider.instance
-                                        .getClock()
-                                        .getTime()); // Latency correction off
-                        // cameraTags.get(0).collectTime() / 1000000.); // Latency correction option
-                    }
-                    prevCamTimes[camCounter - 1] = cameraTags.get(0).collectTime();
                 }
-            }
-        }
-
+        */
         final Pose2d currentPosition =
-                new Pose2d(kalmanFilter.getPos(), Rotation2d.fromDegrees(heading));
+                StatusBus.getInstance().getStatus(Quest.QuestStatus.class).get().getPose();
+        // new Pose2d(kalmanFilter.getPos(), Rotation2d.fromDegrees(heading));
 
         final ChassisSpeeds robotOrientedChassisSpeeds =
                 swerveDriveKinematics.toChassisSpeeds(

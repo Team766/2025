@@ -58,10 +58,10 @@ public class ScoreCoral extends Procedure {
                 StatusBus.getInstance().getStatus(SwerveDrive.DriveStatus.class);
         final Optional<Alliance> alliance = DriverStation.getAlliance();
         if (driveStatus.isEmpty()) {
-            log(Severity.ERROR, "Cannot find drive status");
+            log(Severity.ERROR, "Cannot find drive status (QUESTNAV MODE)");
             return new Pose2d();
         } else if (alliance.isEmpty()) {
-            log(Severity.ERROR, "Cannot find alliance");
+            log(Severity.ERROR, "Cannot find alliance (QUESTNAV MODE)");
             return driveStatus.get().currentPosition();
         }
         List<Pose2d> points = new ArrayList<>();
