@@ -13,6 +13,7 @@ import com.team766.robot.reva_2025.mechanisms.AlgaeIntake;
 import com.team766.robot.reva_2025.mechanisms.AlgaeIntake.Level;
 import com.team766.robot.reva_2025.mechanisms.CoralIntake;
 import com.team766.robot.reva_2025.mechanisms.Elevator;
+import com.team766.robot.reva_2025.mechanisms.Quest;
 import com.team766.robot.reva_2025.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.reva_2025.mechanisms.Wrist;
 import com.team766.robot.reva_2025.mechanisms.Wrist.WristPosition;
@@ -55,13 +56,13 @@ public class ScoreCoral extends Procedure {
 
     private Pose2d nearestPose(double dist, boolean rotated) {
         final Optional<DriveStatus> driveStatus =
-                StatusBus.getInstance().getStatus(SwerveDrive.DriveStatus.class);
+            StatusBus.getInstance().getStatus(SwerveDrive.DriveStatus.class);
         final Optional<Alliance> alliance = DriverStation.getAlliance();
         if (driveStatus.isEmpty()) {
-            log(Severity.ERROR, "Cannot find drive status");
+            log(Severity.ERROR, "Cannot find drive status (QUESTNAV MODE)");
             return new Pose2d();
         } else if (alliance.isEmpty()) {
-            log(Severity.ERROR, "Cannot find alliance");
+            log(Severity.ERROR, "Cannot find alliance (QUESTNAV MODE)");
             return driveStatus.get().currentPosition();
         }
         List<Pose2d> points = new ArrayList<>();

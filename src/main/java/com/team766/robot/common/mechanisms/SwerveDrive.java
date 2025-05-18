@@ -20,6 +20,7 @@ import com.team766.orin.TimestampedApriltag;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.ControlConstants;
+import com.team766.robot.reva_2025.mechanisms.Quest;
 import com.team766.robot.reva_2025.mechanisms.Vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -373,7 +374,7 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
         final double heading = gyro.getAngle();
         final double pitch = gyro.getPitch();
         final double roll = gyro.getRoll();
-
+/* 
         var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
         if (visionStatus.isPresent() && !visionStatus.get().allTags().isEmpty()) {
             int camCounter = 0;
@@ -422,9 +423,9 @@ public class SwerveDrive extends MechanismWithStatus<SwerveDrive.DriveStatus> {
                 }
             }
         }
-
-        final Pose2d currentPosition =
-                new Pose2d(kalmanFilter.getPos(), Rotation2d.fromDegrees(heading));
+*/
+        final Pose2d currentPosition = StatusBus.getInstance().getStatus(Quest.QuestStatus.class).get().getPose();
+                //new Pose2d(kalmanFilter.getPos(), Rotation2d.fromDegrees(heading));
 
         final ChassisSpeeds robotOrientedChassisSpeeds =
                 swerveDriveKinematics.toChassisSpeeds(
