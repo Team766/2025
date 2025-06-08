@@ -38,9 +38,9 @@ public class AutoAlign extends Procedure {
         double correctedTargetDegrees =
                 targetPosition.getRotation().getDegrees()
                         + 360
-                                * (Math.round(
+                                * Math.round(
                                         (currentHeading - targetPosition.getRotation().getDegrees())
-                                                / 360));
+                                                / 360);
         pidControllerRotation.setSetpoint(correctedTargetDegrees);
         while (!pidControllerX.isDone()
                 || !pidControllerY.isDone()

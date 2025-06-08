@@ -13,6 +13,7 @@ public class LoggerExceptionUtils {
         return sw.toString();
     }
 
+    @SuppressWarnings("CatchAndPrintStackTrace")
     public static String logException(final Throwable e) {
         String str = exceptionToString(e);
         try {

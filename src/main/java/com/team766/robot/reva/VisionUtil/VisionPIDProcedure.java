@@ -4,7 +4,7 @@ import com.team766.ViSIONbase.AnywhereScoringPosition;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Procedure;
-import java.util.ArrayList;
+import java.util.List;
 
 public abstract class VisionPIDProcedure extends Procedure {
     protected PIDController xPID = new PIDController(0.4, 0, 0, 0, -0.75, 0.75, 0.02);
@@ -17,37 +17,31 @@ public abstract class VisionPIDProcedure extends Procedure {
     /*
      * Scoringposition distances need to be in sequential order. Ie, the first one added needs to be the closest distance.
      */
-    private static AnywhereScoringPosition aa1 = new AnywhereScoringPosition(1.237, 4800, 17.343);
-    private static AnywhereScoringPosition a1 = new AnywhereScoringPosition(1.453, 4800, 17.80599);
-    private static AnywhereScoringPosition a2 =
+    private static final AnywhereScoringPosition aa1 =
+            new AnywhereScoringPosition(1.237, 4800, 17.343);
+    private static final AnywhereScoringPosition a1 =
+            new AnywhereScoringPosition(1.453, 4800, 17.80599);
+    private static final AnywhereScoringPosition a2 =
             new AnywhereScoringPosition(1.7201, 4800, 22.205946);
-    private static AnywhereScoringPosition a3 = new AnywhereScoringPosition(1.9506, 4800, 23.516);
-    private static AnywhereScoringPosition a4 = new AnywhereScoringPosition(2.072, 4800, 27.32);
-    private static AnywhereScoringPosition a5 = new AnywhereScoringPosition(2.29161, 4800, 30.109);
-    private static AnywhereScoringPosition a6 = new AnywhereScoringPosition(2.4616, 4800, 30.8987);
-    private static AnywhereScoringPosition a7 = new AnywhereScoringPosition(2.6942, 4800, 32.699);
-    private static AnywhereScoringPosition a8 =
+    private static final AnywhereScoringPosition a3 =
+            new AnywhereScoringPosition(1.9506, 4800, 23.516);
+    private static final AnywhereScoringPosition a4 =
+            new AnywhereScoringPosition(2.072, 4800, 27.32);
+    private static final AnywhereScoringPosition a5 =
+            new AnywhereScoringPosition(2.29161, 4800, 30.109);
+    private static final AnywhereScoringPosition a6 =
+            new AnywhereScoringPosition(2.4616, 4800, 30.8987);
+    private static final AnywhereScoringPosition a7 =
+            new AnywhereScoringPosition(2.6942, 4800, 32.699);
+    private static final AnywhereScoringPosition a8 =
             new AnywhereScoringPosition(2.8657, 4800, 34.103733);
-    private static AnywhereScoringPosition a9 = new AnywhereScoringPosition(3.2926, 4800, 34.6842);
-    private static AnywhereScoringPosition a10 = new AnywhereScoringPosition(0, 0, 0);
-    private static AnywhereScoringPosition a11 = new AnywhereScoringPosition(0, 0, 0);
+    private static final AnywhereScoringPosition a9 =
+            new AnywhereScoringPosition(3.2926, 4800, 34.6842);
+    private static final AnywhereScoringPosition a10 = new AnywhereScoringPosition(0, 0, 0);
+    private static final AnywhereScoringPosition a11 = new AnywhereScoringPosition(0, 0, 0);
 
-    protected static ArrayList<AnywhereScoringPosition> scoringPositions =
-            new ArrayList<AnywhereScoringPosition>() {
-                {
-                    add(aa1);
-                    add(a1);
-                    add(a2);
-                    add(a3);
-                    add(a4);
-                    add(a5);
-                    add(a6);
-                    add(a7);
-                    add(a8);
-                    add(a9);
-                    // add(a10);
-                }
-            };
+    protected static final List<AnywhereScoringPosition> scoringPositions =
+            List.of(aa1, a1, a2, a3, a4, a5, a6, a7, a8, a9 /*, a10 */);
 
     public static double getBestPowerToUse(double distanceFromCenterApriltag)
             throws AprilTagGeneralCheckedException {

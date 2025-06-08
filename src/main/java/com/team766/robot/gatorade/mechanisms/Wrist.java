@@ -147,7 +147,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     /**
      * Starts rotating the wrist to the specified angle.
      * NOTE: this method returns immediately.  Check the current wrist position of the wrist
-     * with {@link #getAngle()}.
+     * with {@link WristStatus#angle}.
      */
     public void rotate(double angle) {
         System.err.println("Setting target angle to " + angle);

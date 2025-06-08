@@ -3,6 +3,7 @@ package com.team766.robot.example;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
+import com.team766.logging.Category;
 import com.team766.robot.example.mechanisms.*;
 import com.team766.robot.example.procedures.*;
 
@@ -17,5 +18,10 @@ public class OI extends RuleEngine {
         final JoystickReader joystick2 = RobotProvider.instance.getJoystick(2);
 
         // Add driver control rules here.
+    }
+
+    @Override
+    public Category getLoggerCategory() {
+        return Category.OPERATOR_INTERFACE;
     }
 }

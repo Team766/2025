@@ -58,32 +58,4 @@ public final class EncoderUtils {
         // rotations * sprocket ratio * net gear ratio * (degrees / rotations)
         return rotations * (12.0 / 52.0) * (30.0 / 64.0) * (1. / 4.) * (1. / 3.) * (360. / 1.);
     }
-
-    /**
-     * Cosine law
-     * @param side1
-     * @param side2
-     * @param angle in degrees
-     * @return
-     */
-    public static double lawOfCosines(double side1, double side2, double angle) {
-        double side3Squared =
-                (Math.pow(side1, 2.0)
-                        + Math.pow(side2, 2.0)
-                        - (2 * side1 * side2 * Math.cos(Math.toRadians(angle))));
-        return Math.sqrt(side3Squared);
-    }
-
-    public static double lawOfSines(double side1, double angle1, double side2) {
-        return Math.asin(side2 * Math.sin(angle1) / side1);
-    }
-
-    public static double clampValueToRange(double value, double min, double max) {
-        if (value > max) {
-            value = max;
-        } else if (value < min) {
-            value = min;
-        }
-        return value;
-    }
 }

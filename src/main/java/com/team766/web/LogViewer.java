@@ -24,9 +24,9 @@ public class LogViewer implements WebServer.Handler {
             r +=
                     String.format(
                             "<tr><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td></tr>\n",
-                            entry.getCategory(),
+                            entry.getCategory().name(),
                             timeFormat.format(new Date(entry.getTime() / 1000000)),
-                            entry.getSeverity(),
+                            entry.getSeverity().name(),
                             LogEntryRenderer.renderLogEntry(entry, null));
         }
         r += "</table>";

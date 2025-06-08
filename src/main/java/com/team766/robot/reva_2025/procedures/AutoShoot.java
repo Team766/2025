@@ -17,7 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class AutoShoot extends Procedure {
@@ -26,16 +26,14 @@ public class AutoShoot extends Procedure {
     private Pose2d setPosition2D =
             new Pose2d(6.75, 0, new Rotation2d(-25)); // TODO: update with actual values
     private final boolean useSetPosition = true;
-    protected static ArrayList<AnywhereScoringPosition> shootingPositions =
-            new ArrayList<AnywhereScoringPosition>() {
-                { // TODO: change temporary values
-                    add(new AnywhereScoringPosition(1.9506, 4800, 23.516));
-                    add(new AnywhereScoringPosition(2.072, 4800, 27.32));
-                    add(new AnywhereScoringPosition(2.29161, 4800, 30.109));
-                    add(new AnywhereScoringPosition(2.4616, 4800, 30.8987));
-                    add(new AnywhereScoringPosition(2.6942, 4800, 32.699));
-                }
-            };
+    protected static final List<AnywhereScoringPosition> shootingPositions =
+            List.of(
+                    // TODO: change temporary values
+                    new AnywhereScoringPosition(1.9506, 4800, 23.516),
+                    new AnywhereScoringPosition(2.072, 4800, 27.32),
+                    new AnywhereScoringPosition(2.29161, 4800, 30.109),
+                    new AnywhereScoringPosition(2.4616, 4800, 30.8987),
+                    new AnywhereScoringPosition(2.6942, 4800, 32.699));
 
     public AutoShoot(AlgaeIntake algaeIntake, SwerveDrive drive) {
         this.algaeIntake = reserve(algaeIntake);

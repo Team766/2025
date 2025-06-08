@@ -47,14 +47,11 @@ public class CANRangeTimeOfFlight implements TimeOfFlightReader {
     public void setRange(TimeOfFlightReader.Range range) {
         ToFParamsConfigs config = new ToFParamsConfigs();
         config.UpdateFrequency = 100.; // TODO: use a different value?
-        switch (range) {
-            case Short:
-                config.UpdateMode = UpdateModeValue.ShortRangeUserFreq;
-                break;
-            case Long:
-                config.UpdateMode = UpdateModeValue.LongRangeUserFreq;
-                break;
-        }
+        config.UpdateMode =
+                switch (range) {
+                    case Short -> UpdateModeValue.ShortRangeUserFreq;
+                    case Long -> UpdateModeValue.LongRangeUserFreq;
+                };
         statusCodeToException(ExceptionTarget.LOG, sensor.getConfigurator().apply(config));
     }
 

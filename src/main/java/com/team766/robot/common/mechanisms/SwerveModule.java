@@ -89,7 +89,7 @@ public class SwerveModule {
     /**
      * Controls just the steer for this module.
      * Can be used to turn the wheels without moving
-     * @param vector the vector specifying the module's motion
+     * @param angle the angle specifying the module's motion
      */
     public void steer(Rotation2d angle) {
 
@@ -97,11 +97,11 @@ public class SwerveModule {
         double realAngleDegrees =
                 angle.getDegrees()
                         + 360
-                                * (Math.round(
+                                * Math.round(
                                         (steer.getSensorPosition() / encoderConversionFactor
                                                         - offset
                                                         - angle.getDegrees())
-                                                / 360))
+                                                / 360)
                         + offset;
 
         // Sets the degree of the steer wheel

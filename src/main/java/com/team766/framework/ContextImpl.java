@@ -211,6 +211,7 @@ import java.util.function.BooleanSupplier;
      *        baton-passing state that should be waited for)
      * @throws ContextStoppedException if cancel() is called on this Context while waiting.
      */
+    @SuppressWarnings("EmptyCatch")
     private void waitForControl(final ControlOwner thisOwner) {
         // If this is being called from the worker thread, log from where in the
         // user's code that the context is waiting. This is provided as a

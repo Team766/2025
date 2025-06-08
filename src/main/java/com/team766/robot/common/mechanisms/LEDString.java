@@ -8,7 +8,7 @@ import com.team766.framework.MultiFacetedMechanism;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Severity;
-import com.team766.math.Math;
+import com.team766.math.Maths;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import java.util.ArrayList;
@@ -106,7 +106,7 @@ public class LEDString extends MultiFacetedMechanism {
     public Segment makeSegment(int ledStartIndex, int ledCount) {
         final int ledEndIndex = ledStartIndex + ledCount;
         for (var s : segments) {
-            if (Math.overlaps(ledStartIndex, ledEndIndex, s.startIndex, s.startIndex + s.count)) {
+            if (Maths.overlaps(ledStartIndex, ledEndIndex, s.startIndex, s.startIndex + s.count)) {
                 throw new IllegalArgumentException(
                         "Range of LEDs overlaps with an existing segment");
             }

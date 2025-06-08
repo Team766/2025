@@ -11,6 +11,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.hal.TimeOfFlightReader;
 import com.team766.hal.TimeOfFlightReader.Range;
 import com.team766.library.ValueProvider;
+import com.team766.math.Maths;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 import com.team766.robot.reva_2025.constants.ConfigConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -168,8 +169,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
     public void setArmAngle(double angle) {
         noPIDMode = false;
         this.targetAngle =
-                com.team766.math.Math.clamp(
-                        angle, Level.Stow.getAngle(), Level.L3L4AlgaeIntake.getAngle());
+                Maths.clamp(angle, Level.Stow.getAngle(), Level.L3L4AlgaeIntake.getAngle());
     }
 
     public void nudge(double sign) {

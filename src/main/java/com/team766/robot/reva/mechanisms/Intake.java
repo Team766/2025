@@ -11,6 +11,7 @@ import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
+import com.team766.math.Maths;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
@@ -91,7 +92,7 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     protected void run() {
         if (setIntakePowerForSensorDistance) {
             intakeMotor.set(
-                    com.team766.math.Math.interpolate(
+                    Maths.interpolate(
                             positions,
                             sensor.getRange(),
                             IntakePosition::proximityValue,
@@ -105,7 +106,7 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
         // SmartDashboard.putNumber("[INTAKE] Current", MotorUtil.getCurrentUsage(intakeMotor));
         SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
         return new IntakeStatus(
-                (threshold.get()) > sensor.getRange() && sensor.isRangeValid(),
-                (IS_CLOSE_THRESHOLD) > sensor.getRange() && sensor.isRangeValid());
+                threshold.get() > sensor.getRange() && sensor.isRangeValid(),
+                IS_CLOSE_THRESHOLD > sensor.getRange() && sensor.isRangeValid());
     }
 }

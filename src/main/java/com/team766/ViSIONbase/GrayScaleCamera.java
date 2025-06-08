@@ -10,7 +10,6 @@ public class GrayScaleCamera extends PhotonCamera {
     /**
      * This is the constructor for the CameraPlus class
      * @param cameraName the name of the camera
-     * @extends the PhotonCamera class and supers the cameraName
      */
     public GrayScaleCamera(String cameraName) {
         super(cameraName);

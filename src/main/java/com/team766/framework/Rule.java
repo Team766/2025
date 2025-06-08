@@ -25,15 +25,16 @@ import org.littletonrobotics.junction.Logger;
  * {@link Rule}s are always created and used with a {@link RuleEngine}.  Typically creation would be:
  *
  * <pre>
- * {@code
- *   public class MyRules extends RuleEngine {
+ * <code>
+ * public class MyRules extends RuleEngine {
  *     public MyRules() {
- *       // add rule to spin up the shooter when the boxop presses the right trigger on the gamepad
- *       addRule("spin up shooter", gamepad.getButton(InputConstants.XBOX_RT),
- *               () -> new ShooterSpin(shooter)));
- *       ...
+ *         // add rule to spin up the shooter when the boxop presses the right trigger on the gamepad
+ *         addRule("spin up shooter", gamepad.getButton(InputConstants.XBOX_RT),
+ *                 () -> new ShooterSpin(shooter)));
+ *         ...
  *     }
  * }
+ * </code>
  * </pre>
  */
 public class Rule {

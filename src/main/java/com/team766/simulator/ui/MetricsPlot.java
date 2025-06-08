@@ -170,7 +170,8 @@ public class MetricsPlot extends JPanel {
         final var legend = plot.getLegend();
         legend.clear();
         for (int i = 0; i < sources.length; ++i) {
-            sources[i].setName(String.format("%s: %.4f", labels.get(i), data.get(i + 1, index)));
+            sources[i].setName(
+                    String.format("%s: %.4f", labels.get(i), (Double) data.get(i + 1, index)));
             legend.add(sources[i]);
         }
     }

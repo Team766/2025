@@ -18,6 +18,7 @@ public class RobotMain {
     private GenericRobotMain robot;
     private Runnable simulator;
 
+    @SuppressWarnings("StaticAssignmentInConstructor")
     public RobotMain(final Mode mode) {
         try {
             // TODO: update this to come from deploy directory?

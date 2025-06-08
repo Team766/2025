@@ -9,7 +9,7 @@ public class ColorCamera extends PhotonCamera {
         super(cameraName);
     }
 
-    /*
+    /**
      * Gets the best notes picked up by the camera. The PTT should be kept as a PhotonTrackedTarget for use.
      * The camera using this needs to be set in 2D mode.
      * @throws AprilTagGeneralCheckedException if there are no notes avalible for the camera to see

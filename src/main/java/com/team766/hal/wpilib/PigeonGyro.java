@@ -49,7 +49,7 @@ public class PigeonGyro implements GyroReader {
                                         .withMountPoseRoll(roll));
         if (!status.isOK()) {
             Logger.get(Category.GYRO)
-                    .logData(Severity.ERROR, "Unable to configure position", status.toString());
+                    .logData(Severity.ERROR, "Unable to configure position %s", status.toString());
         }
     }
 

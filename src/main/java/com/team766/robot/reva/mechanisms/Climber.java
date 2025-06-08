@@ -7,6 +7,7 @@ import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.math.Maths;
 
 public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
 
@@ -89,12 +90,12 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     }
 
     public void setLeftPower(double power) {
-        power = com.team766.math.Math.clamp(power, -1, 1);
+        power = Maths.clamp(power, -1, 1);
         leftMotor.set(power);
     }
 
     public void setRightPower(double power) {
-        power = com.team766.math.Math.clamp(power, -1, 1);
+        power = Maths.clamp(power, -1, 1);
         rightMotor.set(power);
     }
 

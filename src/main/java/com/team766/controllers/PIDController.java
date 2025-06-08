@@ -144,14 +144,14 @@ public class PIDController {
      * @param I Integral value used in the PID controller
      * @param D Derivative value used in the PID controller
      * @param threshold the end threshold for declaring the PID 'done'
-     * @param timeProvider
+     * @param timeProvider provides clock times to this controller while it is running
      */
     public PIDController(
             final double P,
             final double I,
             final double D,
             final double threshold,
-            final TimeProviderI timeProvider_) {
+            final TimeProviderI timeProvider) {
         Kp = new SetValueProvider<Double>(P);
         Ki = new SetValueProvider<Double>(I);
         Kd = new SetValueProvider<Double>(D);
@@ -159,7 +159,7 @@ public class PIDController {
         maxoutput_low = new SetValueProvider<Double>();
         maxoutput_high = new SetValueProvider<Double>();
         endthreshold = new SetValueProvider<Double>(threshold);
-        setTimeProvider(timeProvider_);
+        setTimeProvider(timeProvider);
     }
 
     public PIDController(
@@ -329,11 +329,11 @@ public class PIDController {
      * Clips value for sending to motor controllers. This deals with if you don't want to run an arm
      * or wheels at full speed under PID.
      *
-     * @param clipped
+     * @param value the value to be clipped
      * @return clipped value, safe for setting to controllers
      */
-    private double clip(final double clipped) {
-        double out = clipped;
+    private double clip(final double value) {
+        double out = value;
         if (maxoutput_high.hasValue() && out > maxoutput_high.get()) {
             out = maxoutput_high.get();
         }

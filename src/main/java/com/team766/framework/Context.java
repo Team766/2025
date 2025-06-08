@@ -103,6 +103,7 @@ public interface Context {
      * Procedures should call this periodically if they wouldn't otherwise call one of the wait*
      * methods for a while.
      */
+    @SuppressWarnings("NamedLikeContextualKeyword")
     void yield();
 
     /**

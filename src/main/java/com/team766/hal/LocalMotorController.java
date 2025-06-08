@@ -59,9 +59,8 @@ public class LocalMotorController implements MotorController {
                                         // support proper output disabling if this.motor is a
                                         // MotorController
                                         if (LocalMotorController.this.motor
-                                                instanceof MotorController) {
-                                            ((MotorController) LocalMotorController.this.motor)
-                                                    .set(ControlMode.Disabled, 0);
+                                                instanceof MotorController localMotorController) {
+                                            localMotorController.set(ControlMode.Disabled, 0);
                                         } else {
                                             setPower(0);
                                         }
@@ -79,13 +78,12 @@ public class LocalMotorController implements MotorController {
                                         break;
                                     case Voltage:
                                         if (LocalMotorController.this.motor
-                                                instanceof MotorController) {
+                                                instanceof MotorController localMotorController) {
                                             double voltage = setpoint;
                                             if (inverted) {
                                                 voltage *= -1;
                                             }
-                                            ((MotorController) LocalMotorController.this.motor)
-                                                    .set(ControlMode.Voltage, voltage);
+                                            localMotorController.set(ControlMode.Voltage, voltage);
                                         } else {
                                             setPower(
                                                     setpoint
@@ -236,8 +234,8 @@ public class LocalMotorController implements MotorController {
 
     @Override
     public void setNeutralMode(final NeutralMode neutralMode) {
-        if (this.motor instanceof MotorController) {
-            ((MotorController) this.motor).setNeutralMode(neutralMode);
+        if (this.motor instanceof MotorController localMotorController) {
+            localMotorController.setNeutralMode(neutralMode);
         } else {
             LoggerExceptionUtils.logException(
                     new UnsupportedOperationException(
