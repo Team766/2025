@@ -13,14 +13,15 @@ import edu.wpi.first.wpilibj.util.Color;
 public class Lights extends RuleEngine {
     private static final int LED_COUNT = 90;
     private static final Animation rainbowAnimation = new RainbowAnimation(1, 1.5, LED_COUNT);
-    private final LEDString leds = new LEDString("leds");
+    private final LEDString ledString = new LEDString("leds");
+    private final LEDString.Segment segment = ledString.makeSegment(0, LED_COUNT);
 
     public Lights() {
         addRule(
                 "OI State Updated",
                 () -> checkForRecentStatus(OI.OIStatus.class, 1.3),
                 REPEATEDLY,
-                leds,
+                segment,
                 () -> {
                     final OI.OIStatus status = getStatusOrThrow(OI.OIStatus.class);
                     setLightsForGamePiece(status.gamePieceType());
@@ -31,14 +32,14 @@ public class Lights extends RuleEngine {
                 "Endgame",
                 () -> DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 17,
                 ONCE_AND_HOLD,
-                leds,
-                () -> leds.animate(rainbowAnimation));
+                segment,
+                () -> segment.animate(rainbowAnimation));
 
         addRule(
                 "Default display",
                 () -> checkForStatus(OI.OIStatus.class),
                 REPEATEDLY,
-                leds,
+                segment,
                 () -> {
                     final OI.OIStatus status = getStatusOrThrow(OI.OIStatus.class);
                     setLightsForGamePiece(status.gamePieceType());
@@ -49,10 +50,10 @@ public class Lights extends RuleEngine {
     private void setLightsForPlacement(
             PlacementPosition placementPosition, GamePieceType gamePieceType) {
         switch (placementPosition) {
-            case NONE -> leds.setColor(Color.kWhite);
-            case LOW_NODE -> leds.setColor(Color.kLime);
-            case MID_NODE -> leds.setColor(Color.kRed);
-            case HIGH_NODE -> leds.setColor(Color.kOrangeRed);
+            case NONE -> segment.setColor(Color.kWhite);
+            case LOW_NODE -> segment.setColor(Color.kLime);
+            case MID_NODE -> segment.setColor(Color.kRed);
+            case HIGH_NODE -> segment.setColor(Color.kOrangeRed);
             case HUMAN_PLAYER -> setLightsForGamePiece(gamePieceType);
             default ->
             // warn, ignore
@@ -62,8 +63,8 @@ public class Lights extends RuleEngine {
 
     private void setLightsForGamePiece(GamePieceType gamePieceType) {
         switch (gamePieceType) {
-            case CUBE -> leds.setColor(Color.kPurple);
-            case CONE -> leds.setColor(Color.kOrange);
+            case CUBE -> segment.setColor(Color.kPurple);
+            case CONE -> segment.setColor(Color.kOrange);
         }
     }
 }

@@ -13,7 +13,8 @@ import java.util.function.BooleanSupplier;
 
 public class Lights extends RuleEngine {
 
-    private final LEDString leds = new LEDString("leds");
+    private final LEDString ledString = new LEDString("leds");
+    private final LEDString.Segment segment = ledString.makeSegment(0, 512);
 
     public Lights() {
         final BooleanSupplier isCameraMissing =
@@ -29,13 +30,13 @@ public class Lights extends RuleEngine {
                                 addRule(
                                         "Camera Missing",
                                         isCameraMissing,
-                                        leds,
+                                        segment,
                                         () -> signalCameraNotConnected());
 
                                 addRule(
                                         "Alliance Color",
                                         UNCONDITIONAL,
-                                        leds,
+                                        segment,
                                         () -> {
                                             var alliance = DriverStation.getAlliance();
                                             if (alliance.isEmpty()) {
@@ -54,13 +55,13 @@ public class Lights extends RuleEngine {
                 "Note in intake",
                 whenRecentStatusMatching(
                         IntakeUntilIn.IntakeUntilInStatus.class, 2.0, s -> s.noteInIntake()),
-                leds,
+                segment,
                 () -> signalNoteInIntake());
         addRule(
                 "No note in intake yet",
                 whenRecentStatusMatching(
                         IntakeUntilIn.IntakeUntilInStatus.class, 2.0, s -> !s.noteInIntake()),
-                leds,
+                segment,
                 () -> signalNoNoteInIntakeYet());
 
         addRule(
@@ -68,7 +69,7 @@ public class Lights extends RuleEngine {
                 () ->
                         checkForRecentStatus(ShootingProcedureStatus.class, 2.0)
                                 && isCameraMissing.getAsBoolean(),
-                leds,
+                segment,
                 () -> signalCameraNotConnected());
         addRule(
                 "Shooting procedure: starting",
@@ -76,7 +77,7 @@ public class Lights extends RuleEngine {
                         ShootingProcedureStatus.class,
                         2.0,
                         s -> s.status() == ShootingProcedureStatus.Status.RUNNING),
-                leds,
+                segment,
                 () -> signalStartingShootingProcedure());
         addRule(
                 "Shooting procedure: out of range",
@@ -84,7 +85,7 @@ public class Lights extends RuleEngine {
                         ShootingProcedureStatus.class,
                         2.0,
                         s -> s.status() == ShootingProcedureStatus.Status.OUT_OF_RANGE),
-                leds,
+                segment,
                 context -> signalShooterOutOfRange(context));
         addRule(
                 "Shooting procedure: finished",
@@ -92,35 +93,35 @@ public class Lights extends RuleEngine {
                         ShootingProcedureStatus.class,
                         2.0,
                         s -> s.status() == ShootingProcedureStatus.Status.FINISHED),
-                leds,
+                segment,
                 () -> signalFinishingShootingProcedure());
 
         addRule(
                 "Has tag",
                 whenStatusMatching(Orin.OrinStatus.class, s -> s.apriltags().size() > 0),
-                leds,
+                segment,
                 () -> signalHasTag());
 
-        addRule("No display", UNCONDITIONAL, leds, () -> turnLightsOff());
+        addRule("No display", UNCONDITIONAL, segment, () -> turnLightsOff());
     }
 
     // Lime green
     public void signalCameraConnected() {
-        leds.setColor(92, 250, 40);
+        segment.setColor(92, 250, 40);
     }
 
     public void signalFinishedShootingProcedure() {
-        leds.setColor(0, 150, 0);
+        segment.setColor(0, 150, 0);
     }
 
     // Purple
     public void signalCameraNotConnected() {
-        leds.setColor(100, 0, 100);
+        segment.setColor(100, 0, 100);
     }
 
     public void signalShooterOutOfRange(Context context) {
         while (true) {
-            leds.setColor(150, 0, 0);
+            segment.setColor(150, 0, 0);
             context.waitForSeconds(0.5);
             turnLightsOff();
             context.waitForSeconds(0.5);
@@ -129,44 +130,44 @@ public class Lights extends RuleEngine {
 
     // Coral orange
     public void signalNoteInIntake() {
-        leds.setColor(255, 95, 21);
+        segment.setColor(255, 95, 21);
     }
 
     // Off
     public void turnLightsOff() {
-        leds.setColor(0, 0, 0);
+        segment.setColor(0, 0, 0);
     }
 
     // Blue
     public void signalNoNoteInIntakeYet() {
-        leds.setColor(0, 0, 100);
+        segment.setColor(0, 0, 100);
     }
 
     public void isDoingShootingProcedure() {
-        leds.setColor(0, 227, 197);
+        segment.setColor(0, 227, 197);
     }
 
     public void signalFinishingShootingProcedure() {
-        leds.setColor(0, 50, 100);
+        segment.setColor(0, 50, 100);
     }
 
     public void signalStartingShootingProcedure() {
-        leds.setColor(50, 50, 2);
+        segment.setColor(50, 50, 2);
     }
 
     public void signalHasTag() {
-        leds.setColor(255, 215, 0);
+        segment.setColor(255, 215, 0);
     }
 
     public void red() {
-        leds.setColor(100, 0, 0);
+        segment.setColor(100, 0, 0);
     }
 
     public void blue() {
-        leds.setColor(0, 0, 100);
+        segment.setColor(0, 0, 100);
     }
 
     public void purple() {
-        leds.setColor(100, 0, 100);
+        segment.setColor(100, 0, 100);
     }
 }
