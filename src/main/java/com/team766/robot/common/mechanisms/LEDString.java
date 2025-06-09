@@ -7,6 +7,7 @@ import com.team766.config.ConfigFileReader;
 import com.team766.framework.MultiFacetedMechanism;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
+import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 import com.team766.math.Maths;
 import edu.wpi.first.wpilibj.util.Color;
@@ -23,8 +24,19 @@ public class LEDString extends MultiFacetedMechanism {
                 ConfigFileReader.getInstance().getInt(configPrefix + ".deviceId");
         final ValueProvider<String> canBus =
                 ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
-        candle = new CANdle(deviceId.get(), canBus.valueOr(""));
-        activeAnimations = new boolean[candle.getMaxSimultaneousAnimationCount()];
+        if (deviceId.hasValue()) {
+            candle = new CANdle(deviceId.get(), canBus.valueOr(""));
+            activeAnimations = new boolean[candle.getMaxSimultaneousAnimationCount()];
+        } else {
+            Logger.get(Category.CONFIGURATION)
+                    .logRaw(
+                            Severity.ERROR,
+                            "Error getting configuration for LEDString "
+                                    + configPrefix
+                                    + " from config file. No lights will be shown.");
+            candle = null;
+            activeAnimations = new boolean[0];
+        }
     }
 
     @Override
@@ -49,6 +61,9 @@ public class LEDString extends MultiFacetedMechanism {
     }
 
     private void releaseAnimation(int animationIndex) {
+        if (candle == null) {
+            return;
+        }
         handleError(candle.clearAnimation(animationIndex));
         activeAnimations[animationIndex] = false;
     }
@@ -74,6 +89,9 @@ public class LEDString extends MultiFacetedMechanism {
         }
 
         public void setColor(int r, int g, int b) {
+            if (candle == null) {
+                return;
+            }
             handleError(candle.setLEDs(r, g, b, 0, startIndex, count));
             if (animationIndex != -1) {
                 releaseAnimation(animationIndex);
@@ -86,6 +104,9 @@ public class LEDString extends MultiFacetedMechanism {
         }
 
         public void animate(Animation animation) {
+            if (candle == null) {
+                return;
+            }
             if (animationIndex == -1) {
                 animationIndex = reserveAnimation();
                 if (animationIndex == -1) {
