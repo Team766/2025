@@ -126,7 +126,7 @@ public class Rule {
                                     procedure.getName(),
                                     procedure.reservations(),
                                     context -> {
-                                        procedure.run(context);
+                                        context.runSync(procedure);
                                         context.waitFor(() -> false);
                                     });
                         };
