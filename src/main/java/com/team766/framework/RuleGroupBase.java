@@ -5,8 +5,6 @@ import static com.team766.framework.RulePersistence.ONCE_AND_HOLD;
 import com.team766.logging.Category;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /* package */ abstract class RuleGroupBase implements StatusesMixin, LoggingBase {
     protected static final BooleanSupplier UNCONDITIONAL = () -> true;
@@ -28,11 +26,12 @@ import java.util.function.Supplier;
             String name,
             BooleanSupplier condition,
             RulePersistence rulePersistence,
-            Supplier<Procedure> action) {
+            SerializableLambda.Supplier<Procedure> action) {
         return addRule(name, condition).withOnTriggeringProcedure(rulePersistence, action);
     }
 
-    protected Rule addRule(String name, BooleanSupplier condition, Supplier<Procedure> action) {
+    protected Rule addRule(
+            String name, BooleanSupplier condition, SerializableLambda.Supplier<Procedure> action) {
         return addRule(name, condition, ONCE_AND_HOLD, action);
     }
 
@@ -41,7 +40,7 @@ import java.util.function.Supplier;
             BooleanSupplier condition,
             RulePersistence rulePersistence,
             Set<Reservable> mechanisms,
-            Consumer<Context> action) {
+            SerializableLambda.Consumer<Context> action) {
         return addRule(
                 name,
                 condition,
@@ -53,7 +52,7 @@ import java.util.function.Supplier;
             String name,
             BooleanSupplier condition,
             Set<Reservable> mechanisms,
-            Consumer<Context> action) {
+            SerializableLambda.Consumer<Context> action) {
         return addRule(name, condition, ONCE_AND_HOLD, mechanisms, action);
     }
 
@@ -62,12 +61,15 @@ import java.util.function.Supplier;
             BooleanSupplier condition,
             RulePersistence rulePersistence,
             Mechanism mechanism,
-            Consumer<Context> action) {
+            SerializableLambda.Consumer<Context> action) {
         return addRule(name, condition, rulePersistence, Set.of(mechanism), action);
     }
 
     protected Rule addRule(
-            String name, BooleanSupplier condition, Mechanism mechanism, Consumer<Context> action) {
+            String name,
+            BooleanSupplier condition,
+            Mechanism mechanism,
+            SerializableLambda.Consumer<Context> action) {
         return addRule(name, condition, ONCE_AND_HOLD, mechanism, action);
     }
 
@@ -76,7 +78,7 @@ import java.util.function.Supplier;
             BooleanSupplier condition,
             RulePersistence rulePersistence,
             Set<Reservable> mechanisms,
-            Runnable action) {
+            SerializableLambda.Runnable action) {
         return addRule(
                 name,
                 condition,
@@ -85,7 +87,10 @@ import java.util.function.Supplier;
     }
 
     protected Rule addRule(
-            String name, BooleanSupplier condition, Set<Reservable> mechanisms, Runnable action) {
+            String name,
+            BooleanSupplier condition,
+            Set<Reservable> mechanisms,
+            SerializableLambda.Runnable action) {
         return addRule(name, condition, ONCE_AND_HOLD, mechanisms, action);
     }
 
@@ -94,12 +99,15 @@ import java.util.function.Supplier;
             BooleanSupplier condition,
             RulePersistence rulePersistence,
             Reservable mechanism,
-            Runnable action) {
+            SerializableLambda.Runnable action) {
         return addRule(name, condition, rulePersistence, Set.of(mechanism), action);
     }
 
     protected Rule addRule(
-            String name, BooleanSupplier condition, Reservable mechanism, Runnable action) {
+            String name,
+            BooleanSupplier condition,
+            Reservable mechanism,
+            SerializableLambda.Runnable action) {
         return addRule(name, condition, ONCE_AND_HOLD, mechanism, action);
     }
 

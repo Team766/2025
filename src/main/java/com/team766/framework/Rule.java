@@ -1,7 +1,10 @@
 package com.team766.framework;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -38,6 +40,23 @@ import org.littletonrobotics.junction.Logger;
  * </pre>
  */
 public class Rule {
+
+    private static Set<Subsystem> getCapturedMechanisms(SerializableLambda lambda) {
+        return FluentIterable.from(SerializableLambda.getLambdaCaptures(lambda))
+                .filter(Subsystem.class)
+                .toSet();
+    }
+
+    private static void checkCapturedMechanisms(
+            Set<Reservable> reservations, SerializableLambda lambda) {
+        final Set<Subsystem> unreservedMechanisms =
+                Sets.difference(getCapturedMechanisms(lambda), reservations);
+        if (!unreservedMechanisms.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Action uses unreserved Mechanisms: "
+                            + Joiner.on(" ").join(unreservedMechanisms));
+        }
+    }
 
     /**
      * Rules will be in one of four "trigger" (based on rule predicate) states:
@@ -71,7 +90,7 @@ public class Rule {
     private RuleGroupBase container;
     private String name;
     private BooleanSupplier predicate;
-    private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
+    private final Map<TriggerType, SerializableLambda.Supplier<Procedure>> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
     private final Map<TriggerType, Set<Subsystem>> triggerReservations =
             Maps.newEnumMap(TriggerType.class);
@@ -100,7 +119,8 @@ public class Rule {
     }
 
     public Rule withOnTriggeringProcedure(
-            RulePersistence rulePersistence, Supplier<Procedure> onTriggeringProcedure) {
+            RulePersistence rulePersistence,
+            SerializableLambda.Supplier<Procedure> onTriggeringProcedure) {
         if (sealed) {
             throw new IllegalStateException(
                     "Cannot modify rules once they've been evaluated in the RuleEngine");
@@ -109,7 +129,7 @@ public class Rule {
             throw new IllegalStateException("This trigger already has an OnTriggering action");
         }
 
-        final Supplier<Procedure> newlyTriggeringProcedure =
+        final SerializableLambda.Supplier<Procedure> newlyTriggeringProcedure =
                 switch (rulePersistence) {
                     case ONCE -> {
                         this.cancellationOnFinish = Cancellation.DO_NOT_CANCEL;
@@ -185,7 +205,7 @@ public class Rule {
     }
 
     /** Specify a creator for the Procedure that should be run when this rule was triggering before and is no longer triggering. */
-    public Rule withFinishedTriggeringProcedure(Supplier<Procedure> action) {
+    public Rule withFinishedTriggeringProcedure(SerializableLambda.Supplier<Procedure> action) {
         if (sealed) {
             throw new IllegalStateException(
                     "Cannot modify rules once they've been evaluated in the RuleEngine");
@@ -264,12 +284,15 @@ public class Rule {
         }
     }
 
-    private static Set<Subsystem> getReservationsForProcedure(Supplier<Procedure> supplier) {
+    private static Set<Subsystem> getReservationsForProcedure(
+            SerializableLambda.Supplier<Procedure> supplier) {
         if (supplier != null) {
             Procedure procedure = supplier.get();
             if (procedure != null) {
+                var reservations = procedure.reservations();
+                checkCapturedMechanisms(reservations, supplier);
                 HashSet<Subsystem> subsystems = new HashSet<>();
-                for (var r : procedure.reservations()) {
+                for (var r : reservations) {
                     subsystems.addAll(r.getReservableSubsystems());
                 }
                 return subsystems;
@@ -336,7 +359,8 @@ public class Rule {
     /* package */ Procedure getProcedureToRun() {
         if (currentTriggerType != TriggerType.NONE) {
             if (triggerProcedures.containsKey(currentTriggerType)) {
-                Supplier<Procedure> supplier = triggerProcedures.get(currentTriggerType);
+                SerializableLambda.Supplier<Procedure> supplier =
+                        triggerProcedures.get(currentTriggerType);
                 if (supplier != null) {
                     return supplier.get();
                 }
