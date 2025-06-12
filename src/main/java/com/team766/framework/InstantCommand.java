@@ -13,11 +13,19 @@ import edu.wpi.first.wpilibj2.command.Command;
         setName(procedure.getName());
     }
 
+    @SuppressWarnings("DontInvokeProcedureRunDirectly")
     @Override
     public void execute() {
         ReservingCommand.enterCommand(this);
         try {
-            procedure.run();
+            procedure.run(
+                    new InstantContext() {
+                        @Override
+                        public void runSync(InstantProcedure p) {
+                            p.checkReservations(InstantCommand.this);
+                            p.run(this);
+                        }
+                    });
         } finally {
             ReservingCommand.exitCommand(this);
         }

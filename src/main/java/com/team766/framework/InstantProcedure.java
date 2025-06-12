@@ -3,7 +3,7 @@ package com.team766.framework;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Set;
 
-public abstract class InstantProcedure extends Procedure implements Runnable {
+public abstract class InstantProcedure extends Procedure {
     protected InstantProcedure() {
         super();
     }
@@ -12,12 +12,18 @@ public abstract class InstantProcedure extends Procedure implements Runnable {
         super(name, reservations);
     }
 
-    @Override
-    public abstract void run();
+    public abstract void run(InstantContext context);
 
+    @SuppressWarnings("DontInvokeProcedureRunDirectly")
     @Override
     public final void run(Context context) {
-        run();
+        run(
+                new InstantContext() {
+                    @Override
+                    public void runSync(InstantProcedure procedure) {
+                        context.runSync(procedure);
+                    }
+                });
     }
 
     @Override
