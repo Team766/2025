@@ -40,14 +40,4 @@ public class Joystick extends edu.wpi.first.wpilibj.Joystick implements Joystick
     public boolean getButton(final int button) {
         return getRawButton(button);
     }
-
-    @Override
-    public boolean getButtonPressed(final int button) {
-        return getRawButtonPressed(button);
-    }
-
-    @Override
-    public boolean getButtonReleased(final int button) {
-        return getRawButtonReleased(button);
-    }
 }
