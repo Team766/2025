@@ -10,7 +10,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import java.lang.StackWalker.StackFrame;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -105,7 +107,13 @@ import java.util.function.BooleanSupplier;
 
     private static ExecutorService getThreadPool() {
         if (threadPool == null) {
-            threadPool = Executors.newCachedThreadPool();
+            threadPool =
+                    new ThreadPoolExecutor(
+                            3,
+                            Integer.MAX_VALUE,
+                            20,
+                            TimeUnit.SECONDS,
+                            new SynchronousQueue<Runnable>());
         }
         return threadPool;
     }
