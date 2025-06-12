@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.google.common.collect.FluentIterable;
 import com.team766.framework.Rule.Cancellation;
-import com.team766.framework.Rule.TriggerType;
+import com.team766.framework.Rule.TriggerState;
 import com.team766.framework.test.FakeMechanism;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Collections;
@@ -61,29 +61,29 @@ public class RuleTest {
         Rule alwaysTrue =
                 new Rule(null, "always true", () -> true)
                         .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP);
-        assertEquals(Rule.TriggerType.NONE, alwaysTrue.getCurrentTriggerType());
+        assertEquals(Rule.TriggerState.NONE, alwaysTrue.getCurrentTriggerState());
         alwaysTrue.evaluate();
-        assertEquals(TriggerType.NEWLY, alwaysTrue.getCurrentTriggerType());
+        assertEquals(TriggerState.NEWLY, alwaysTrue.getCurrentTriggerState());
         alwaysTrue.evaluate();
-        assertEquals(TriggerType.CONTINUING, alwaysTrue.getCurrentTriggerType());
+        assertEquals(TriggerState.CONTINUING, alwaysTrue.getCurrentTriggerState());
         alwaysTrue.evaluate();
-        assertEquals(TriggerType.CONTINUING, alwaysTrue.getCurrentTriggerType());
+        assertEquals(TriggerState.CONTINUING, alwaysTrue.getCurrentTriggerState());
 
         // test a full cycle: NONE->NEWLY->CONTINUING->FINISHED->NONE->NEWLY->...
         Rule duckDuckGooseGoose =
                 new Rule(null, "duck duck goose goose", new DuckDuckGooseGoosePredicate())
                         .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP);
-        assertEquals(Rule.TriggerType.NONE, duckDuckGooseGoose.getCurrentTriggerType());
+        assertEquals(Rule.TriggerState.NONE, duckDuckGooseGoose.getCurrentTriggerState());
         duckDuckGooseGoose.evaluate();
-        assertEquals(TriggerType.NEWLY, duckDuckGooseGoose.getCurrentTriggerType());
+        assertEquals(TriggerState.NEWLY, duckDuckGooseGoose.getCurrentTriggerState());
         duckDuckGooseGoose.evaluate();
-        assertEquals(TriggerType.CONTINUING, duckDuckGooseGoose.getCurrentTriggerType());
+        assertEquals(TriggerState.CONTINUING, duckDuckGooseGoose.getCurrentTriggerState());
         duckDuckGooseGoose.evaluate();
-        assertEquals(TriggerType.FINISHED, duckDuckGooseGoose.getCurrentTriggerType());
+        assertEquals(TriggerState.FINISHED, duckDuckGooseGoose.getCurrentTriggerState());
         duckDuckGooseGoose.evaluate();
-        assertEquals(TriggerType.NONE, duckDuckGooseGoose.getCurrentTriggerType());
+        assertEquals(TriggerState.NONE, duckDuckGooseGoose.getCurrentTriggerState());
         duckDuckGooseGoose.evaluate();
-        assertEquals(TriggerType.NEWLY, duckDuckGooseGoose.getCurrentTriggerType());
+        assertEquals(TriggerState.NEWLY, duckDuckGooseGoose.getCurrentTriggerState());
     }
 
     private static Set<? extends Subsystem> getSubsystems(Set<Reservable> mechanisms) {
