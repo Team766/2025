@@ -17,6 +17,7 @@ public class Robot implements RobotConfigurator {
     private Elevator elevator;
     private CoralIntake coral;
     private Climber climber;
+    private Quest quest;
 
     @Override
     public void initializeMechanisms() {
@@ -28,6 +29,7 @@ public class Robot implements RobotConfigurator {
         elevator = new Elevator();
         coral = new CoralIntake();
         climber = new Climber();
+        quest = new Quest();
     }
 
     @Override
