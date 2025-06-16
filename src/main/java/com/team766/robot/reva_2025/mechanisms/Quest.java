@@ -17,7 +17,7 @@ public class Quest extends MechanismWithStatus<Quest.QuestStatus> {
 
     // First, Declare our geometrical transform from the Quest to the robot center
     private static Transform2d QUEST_TO_ROBOT =
-            new Transform2d(/*TODO: Put your x, y, rotational offsets here!*/ );
+            new Transform2d(/*TODO: Put your x, y, rotational offsets here!*/);
 
     public record QuestStatus(Pose2d questPose) implements Status {
         public Pose2d getPose() {
