@@ -1,6 +1,7 @@
 package com.team766.robot.reva_2025;
 
 import com.team766.framework.AutonomousMode;
+import com.team766.framework.Context;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;

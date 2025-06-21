@@ -23,34 +23,38 @@ public class Quest extends MechanismWithStatus<Quest.QuestStatus> {
 
     private static double x_offset = ConfigFileReader.instance.getDouble("quest.x_offset").valueOr(0d);
     private static double y_offset = ConfigFileReader.instance.getDouble("quest.y_offset").valueOr(0d);
-    private static double rotation_x = ConfigFileReader.instance.getDouble("quest.rotation_x").valueOr(0d);
-    private static double rotation_y = ConfigFileReader.instance.getDouble("quest.rotation_y").valueOr(0d);
-
+    private static double rotation = ConfigFileReader.instance.getDouble("quest.rotation_degrees").valueOr(0d);
+    
     private static double x_field_translation = ConfigFileReader.instance.getDouble("quest.x_translation").valueOr(0d);
     private static double y_field_translastion = ConfigFileReader.instance.getDouble("quest.y_translation").valueOr(0d);
 
     private static Transform2d QUEST_TO_ROBOT =
-            new Transform2d(x_offset, y_offset, new Rotation2d(rotation_x, rotation_y));
+            new Transform2d(x_offset, y_offset, Rotation2d.fromDegrees(rotation));
 
     private static Pose2d robotPose = new Pose2d(x_field_translation, y_field_translastion, new Rotation2d());
 
     private static Pose2d questPose = robotPose.transformBy(QUEST_TO_ROBOT);
 
-    public record QuestStatus(Pose2d questPose) implements Status {
+    public record QuestStatus(Pose2d currentPose) implements Status {
         public Pose2d getPose() {
-            return questPose;
+            
+            return currentPose;
         }
     }
 
     public Quest() {
         questNav = new QuestNav();
+        questNav.setPose(questPose);
+        //resetQuestPosition();
+    }
 
+    public void resetQuestPosition(){
         questNav.setPose(questPose);
     }
 
     protected QuestStatus updateStatus() {
-        Pose2d questPose = questNav.getPose();
-        
-        return new QuestStatus(questPose);
+        Pose2d currentPose = questNav.getPose();
+        questNav.setPose(currentPose);
+        return new QuestStatus(currentPose);
     }
 }
