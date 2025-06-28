@@ -58,7 +58,7 @@ public class Quest extends MechanismWithStatus<Quest.QuestStatus> {
 
     protected QuestStatus updateStatus() {
         Pose2d currentPose = questNav.getPose();
-        questNav.setPose(currentPose);
+        questNav.setPose(currentPose.transformBy(QUEST_TO_ROBOT));
         return new QuestStatus(currentPose);
     }
 }
