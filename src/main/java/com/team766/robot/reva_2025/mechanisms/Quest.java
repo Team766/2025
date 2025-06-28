@@ -3,10 +3,10 @@ package com.team766.robot.reva_2025.mechanisms;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
-import com.team766.quest.QuestNav;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import gg.questnav.questnav.QuestNav;
 
 public class Quest extends MechanismWithStatus<Quest.QuestStatus> {
 
@@ -59,7 +59,12 @@ public class Quest extends MechanismWithStatus<Quest.QuestStatus> {
     }
 
     protected QuestStatus updateStatus() {
-        pose = questNav.getPose().transformBy(QUEST_TO_ROBOT.inverse());
+
+        if (questNav.isConnected() && questNav.isTracking()) pose = questNav.getPose();
         return new QuestStatus(pose);
+    }
+
+    public void run(){
+        questNav.commandPeriodic();
     }
 }
