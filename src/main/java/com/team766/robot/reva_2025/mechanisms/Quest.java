@@ -64,7 +64,7 @@ public class Quest extends MechanismWithStatus<Quest.QuestStatus> {
         return new QuestStatus(pose);
     }
 
-    public void run(){
+    public void run() {
         questNav.commandPeriodic();
     }
 }
