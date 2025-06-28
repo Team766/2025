@@ -59,11 +59,7 @@ public class Quest extends MechanismWithStatus<Quest.QuestStatus> {
     }
 
     protected QuestStatus updateStatus() {
-        if(questNav.isConnected() && questNav.isTracking()){
-                pose = questNav.getPose().transformBy(QUEST_TO_ROBOT.inverse());
-        } else {
-                log("Quest got disconnected");
-        }
+        pose = questNav.getPose().transformBy(QUEST_TO_ROBOT.inverse());
         return new QuestStatus(pose);
     }
 }
