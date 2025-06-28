@@ -39,6 +39,8 @@ public class Quest extends MechanismWithStatus<Quest.QuestStatus> {
 
     private static Pose2d questPose = robotPose.transformBy(QUEST_TO_ROBOT);
 
+    private Pose2d pose = questPose;
+
     public record QuestStatus(Pose2d currentPose) implements Status {
         public Pose2d getPose() {
 
@@ -57,8 +59,11 @@ public class Quest extends MechanismWithStatus<Quest.QuestStatus> {
     }
 
     protected QuestStatus updateStatus() {
-        Pose2d currentPose = questNav.getPose();
-        questNav.setPose(currentPose.transformBy(QUEST_TO_ROBOT));
-        return new QuestStatus(currentPose);
+        if(questNav.isConnected() && questNav.isTracking()){
+                pose = questNav.getPose().transformBy(QUEST_TO_ROBOT.inverse());
+        } else {
+                log("Quest got disconnected");
+        }
+        return new QuestStatus(pose);
     }
 }
