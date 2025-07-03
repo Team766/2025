@@ -1,64 +1,77 @@
 package com.team766.robot.copy_2910.mechanisms;
 
+import com.team766.config.ConfigFileReader;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
+import com.team766.orin.GetOrinRawValue;
+import com.team766.orin.ValueNotFoundOnTableError;
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import java.util.List;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
-    // TODO: Confirm if this is the correct field
-    public static final AprilTagFieldLayout kTagLayout =
-            AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+        private static double leftScoringPositionX =
+            ConfigFileReader.instance.getDouble("vision.leftScoringPositionX").valueOr(0d);
 
-    // TODO: Update with real extrinsics
-    public static final Transform3d kRobotToCam =
-            new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
+        private static double leftScoringPositionY =
+            ConfigFileReader.instance.getDouble("vision.leftScoringPositionY").valueOr(0d);
 
-    PhotonCamera camera = new PhotonCamera("Main2910Camera");
+        private static double rightScoringPositionX =
+            ConfigFileReader.instance.getDouble("vision.rightScoringPositionX").valueOr(0d);
 
-    Pose3d globalPose = new Pose3d();
+        private static double rightScoringPositionY =
+            ConfigFileReader.instance.getDouble("vision.rightScoringPositionY").valueOr(0d);
 
-    public static record VisionStatus(Pose3d pose) implements Status {
+        private GetOrinRawValue camera = new GetOrinRawValue("MainCamera", 0);
 
-        public Pose3d getPose() {
-            return pose;
+    public static record VisionStatus (int ID, double x, double y) implements Status {
+
+        public Pose2d getApriltagPose2d(){
+
+            return new Pose2d(x, y, new Rotation2d());
         }
     }
+
+    public Vision() {
+        
+    }
+
+    public static Pose2d getTargetPositionLeft(){
+        double x = leftScoringPositionX;
+        double y = leftScoringPositionY;
+        Pose2d targetPosition = new Pose2d(x, y, new Rotation2d());
+        return targetPosition;
+    }
+
+    public static Pose2d getTargetPositionRight(){
+        double x = rightScoringPositionX;
+        double y = rightScoringPositionY;
+        Pose2d targetPosition = new Pose2d(x, y, new Rotation2d());
+        return targetPosition;
+    }
+
+
 
     @Override
     protected VisionStatus updateStatus() {
-        List<PhotonPipelineResult> res = camera.getAllUnreadResults();
-
+        double[] poseData;
         try {
-            PhotonPipelineResult mostRecentResult = res.get(0);
-
-            PhotonTrackedTarget bestTrackedTarget = mostRecentResult.getBestTarget();
-
-            if (kTagLayout.getTagPose(bestTrackedTarget.getFiducialId()).isPresent()) {
-                Pose3d robotPose =
-                        PhotonUtils.estimateFieldToRobotAprilTag(
-                                bestTrackedTarget.getBestCameraToTarget(),
-                                kTagLayout.getTagPose(bestTrackedTarget.getFiducialId()).get(),
-                                kRobotToCam);
-                globalPose = robotPose;
-            }
-        } catch (Exception e) {
-            // TODO: Add lights flagging for no tag seen
-            log("No most recent pipeline result found");
+            poseData = camera.getRawPoseData();
+        } catch (ValueNotFoundOnTableError e) {
+            log("No pose data found on table", e);
+            return new VisionStatus(0, 0, 0); // Return a default status if no data is found
         }
 
-        return new VisionStatus(globalPose);
-    }
+        /*
+         * Can assume there will be only one tag as the tag here should always be the one on the reef\
+         * poseData[0] is the collect time - can ignore for this situation
+         */
+        //AprilTag tag = new AprilTag((int) poseData[1], new Pose3d(poseData[2], poseData[3], poseData[4], new Rotation3d()));
+        return new VisionStatus((int) poseData[1], poseData[2], poseData[3]);
 
-    public void run() {}
+    }
+    
 }
