@@ -54,7 +54,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
         try {
             poseData = camera.getRawPoseData();
         } catch (ValueNotFoundOnTableError e) {
-            log("No pose data found on table", e);
+            log("No pose data found on table for camera: " + e.getMessage());
             return new VisionStatus(0, 0, 0); // Return a default status if no data is found
         }
 
