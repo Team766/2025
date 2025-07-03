@@ -35,6 +35,7 @@ public class AutoAlign extends Procedure {
         try{
             currentPosition = getStatusOrThrow(Vision.VisionStatus.class).getApriltagPose2d();
         } catch (Exception e){
+            drive.stopDrive();
             log("No valid pose found from vision: " + e.getMessage());
             return; // Exit if no valid pose is found
         }
