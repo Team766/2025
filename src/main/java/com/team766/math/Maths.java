@@ -17,6 +17,10 @@ public class Maths {
         return java.lang.Math.abs(value) >= deadzone ? value : 0;
     }
 
+    public static double absMax(double a, double b) {
+        return (Math.abs(a) >= Math.abs(b)) ? a : b;
+    }
+
     public static boolean overlaps(int start1, int end1, int start2, int end2) {
         return start1 < end2 && start2 < end1;
     }

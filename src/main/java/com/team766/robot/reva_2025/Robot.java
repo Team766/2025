@@ -21,13 +21,13 @@ public class Robot implements RobotConfigurator {
     @Override
     public void initializeMechanisms() {
         SwerveConfig swerveConfig = new SwerveConfig();
-        algaeIntake = new AlgaeIntake();
+        // algaeIntake = new AlgaeIntake();
         drive = new SwerveDrive(swerveConfig);
-        vision = new Vision();
-        wrist = new Wrist();
-        elevator = new Elevator();
-        coral = new CoralIntake();
-        climber = new Climber();
+        // vision = new Vision();
+        // wrist = new Wrist();
+        // elevator = new Elevator();
+        // coral = new CoralIntake();
+        // climber = new Climber();
     }
 
     @Override

@@ -4,6 +4,7 @@ import static com.team766.framework.RulePersistence.*;
 
 import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
+import com.team766.math.Maths;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
@@ -40,6 +41,8 @@ public class DriverOI extends RuleGroup {
                 () ->
                         leftJoystick.isAxisMoved(InputConstants.AXIS_FORWARD_BACKWARD)
                                 || leftJoystick.isAxisMoved(InputConstants.AXIS_LEFT_RIGHT)
+                                || leftJoystick.isAxisMoved(
+                                        InputConstants.GAMEPAD_RIGHT_STICK_XAXIS)
                                 || rightJoystick.isAxisMoved(InputConstants.AXIS_LEFT_RIGHT),
                 REPEATEDLY,
                 drive,
@@ -47,37 +50,58 @@ public class DriverOI extends RuleGroup {
                     // For fwd/rv
                     // Negative because forward is negative in driver station
                     final double leftJoystickX =
-                            -leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)
-                                    * ControlConstants.MAX_TRANSLATIONAL_VELOCITY;
+                            -killDeadzone(
+                                    curvedJoystickPower(
+                                            leftJoystick.getAxis(
+                                                    InputConstants.AXIS_FORWARD_BACKWARD),
+                                            ControlConstants.TRANSLATIONAL_CURVE_POWER));
                     // For left/right
                     // Negative because left is negative in driver station
                     final double leftJoystickY =
-                            -leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)
-                                    * ControlConstants.MAX_TRANSLATIONAL_VELOCITY;
+                            -killDeadzone(
+                                    curvedJoystickPower(
+                                            leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT),
+                                            ControlConstants.TRANSLATIONAL_CURVE_POWER));
                     // For steer
                     // Negative because left is negative in driver station
                     final double rightJoystickY =
-                            -rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)
-                                    * ControlConstants.MAX_ROTATIONAL_VELOCITY;
+                            -killDeadzone(
+                                    curvedJoystickPower(
+                                            Maths.absMax(
+                                                    rightJoystick.getAxis(
+                                                            InputConstants.AXIS_LEFT_RIGHT),
+                                                    leftJoystick.getAxis(
+                                                            InputConstants
+                                                                    .GAMEPAD_RIGHT_STICK_XAXIS)),
+                                            ControlConstants.ROTATIONAL_CURVE_POWER));
                     // If a button is pressed, drive is just fine adjustment
                     final double drivingCoefficient =
-                            rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)
+                            // rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)
+                            leftJoystick.getAxis(InputConstants.GAMEPAD_RIGHT_TRIGGER) < 0.5
                                     ? ControlConstants.FINE_DRIVING_COEFFICIENT
                                     : 1;
-                    drive.controlAllianceOriented(
+                    // drive.controlAllianceOriented(
+                    drive.controlRobotOriented(
                             drivingCoefficient
-                                    * curvedJoystickPower(
-                                            leftJoystickX,
-                                            ControlConstants.TRANSLATIONAL_CURVE_POWER),
+                                    * leftJoystickX
+                                    * ControlConstants.MAX_TRANSLATIONAL_VELOCITY,
                             drivingCoefficient
-                                    * curvedJoystickPower(
-                                            leftJoystickY,
-                                            ControlConstants.TRANSLATIONAL_CURVE_POWER),
+                                    * leftJoystickY
+                                    * ControlConstants.MAX_TRANSLATIONAL_VELOCITY,
                             drivingCoefficient
-                                    * curvedJoystickPower(
-                                            rightJoystickY,
-                                            ControlConstants.ROTATIONAL_CURVE_POWER));
+                                    * rightJoystickY
+                                    * ControlConstants.MAX_ROTATIONAL_VELOCITY);
                 });
+    }
+
+    private static double killDeadzone(double value) {
+        if (value < 0) {
+            value -= 0.15;
+        }
+        if (value > 0) {
+            value += 0.15;
+        }
+        return value;
     }
 
     private static double curvedJoystickPower(double value, double power) {

@@ -10,7 +10,7 @@ public class ControlConstants {
     public static final double GAMEPAD_DEADZONE = 0.20;
 
     // Exponent giving joystick curved power mapping for translational movement
-    public static final double TRANSLATIONAL_CURVE_POWER = 1.0;
+    public static final double TRANSLATIONAL_CURVE_POWER = 3.0;
 
     // Exponent giving joystick curved power mapping for rotational movement
     public static final double ROTATIONAL_CURVE_POWER = 1.0;
@@ -18,7 +18,7 @@ public class ControlConstants {
     /**
      * Translational velocity of robot that max joystick power controls in m/s
      */
-    public static final double MAX_TRANSLATIONAL_VELOCITY = 5.0;
+    public static final double MAX_TRANSLATIONAL_VELOCITY = 2.0;
 
     /**
      * m/s
