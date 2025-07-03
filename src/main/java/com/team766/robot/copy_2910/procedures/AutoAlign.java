@@ -32,9 +32,8 @@ public class AutoAlign extends Procedure {
 
     public void run(Context context) {
         Pose2d currentPosition = getStatusOrThrow(Vision.VisionStatus.class).getApriltagPose2d();
-        //currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading()
+        // currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading()
         double currentHeading = 0;
-        
 
         pidControllerX.setSetpoint(targetPosition.getX());
         pidControllerY.setSetpoint(targetPosition.getY());
@@ -49,7 +48,7 @@ public class AutoAlign extends Procedure {
                 || !pidControllerY.isDone()
                 || !pidControllerRotation.isDone()) {
             currentPosition = getStatusOrThrow(Vision.VisionStatus.class).getApriltagPose2d();
-            //currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading()
+            // currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading()
             currentHeading = 0;
 
             pidControllerX.calculate(currentPosition.getX());
