@@ -31,7 +31,13 @@ public class AutoAlign extends Procedure {
     }
 
     public void run(Context context) {
-        Pose2d currentPosition = getStatusOrThrow(Vision.VisionStatus.class).getApriltagPose2d();
+        Pose2d currentPosition;
+        try{
+            currentPosition = getStatusOrThrow(Vision.VisionStatus.class).getApriltagPose2d();
+        } catch (Exception e){
+            log("No valid pose found from vision: " + e.getMessage());
+            return; // Exit if no valid pose is found
+        }
         // currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading()
         double currentHeading = 0;
 
@@ -47,7 +53,13 @@ public class AutoAlign extends Procedure {
         while (!pidControllerX.isDone()
                 || !pidControllerY.isDone()
                 || !pidControllerRotation.isDone()) {
-            currentPosition = getStatusOrThrow(Vision.VisionStatus.class).getApriltagPose2d();
+            try{
+                currentPosition = getStatusOrThrow(Vision.VisionStatus.class).getApriltagPose2d();
+            } catch (Exception e){
+                log("No valid pose found from vision: " + e.getMessage());
+                drive.stopDrive();
+                return; // Exit if no valid pose is found
+            }
             // currentHeading = getStatusOrThrow(SwerveDrive.DriveStatus.class).heading()
             currentHeading = 0;
 

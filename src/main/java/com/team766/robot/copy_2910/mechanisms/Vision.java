@@ -24,10 +24,13 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
     private GetOrinRawValue camera = new GetOrinRawValue("MainCamera", 0);
 
-    public static record VisionStatus(int ID, double x, double y) implements Status {
+    public static record VisionStatus(int ID, double x, double y, boolean isValid) implements Status{
 
-        public Pose2d getApriltagPose2d() {
+        public Pose2d getApriltagPose2d() throws Exception {
 
+            if (!isValid) {
+                throw new Exception("Pose is not valid");
+            }
             return new Pose2d(x, y, new Rotation2d());
         }
     }
@@ -35,17 +38,11 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
     public Vision() {}
 
     public static Pose2d getTargetPositionLeft() {
-        double x = leftScoringPositionX;
-        double y = leftScoringPositionY;
-        Pose2d targetPosition = new Pose2d(x, y, new Rotation2d());
-        return targetPosition;
+        return new Pose2d(leftScoringPositionX, leftScoringPositionY, new Rotation2d());
     }
 
     public static Pose2d getTargetPositionRight() {
-        double x = rightScoringPositionX;
-        double y = rightScoringPositionY;
-        Pose2d targetPosition = new Pose2d(x, y, new Rotation2d());
-        return targetPosition;
+        return new Pose2d(rightScoringPositionX, rightScoringPositionY, new Rotation2d());
     }
 
     @Override
@@ -55,7 +52,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
             poseData = camera.getRawPoseData();
         } catch (ValueNotFoundOnTableError e) {
             log("No pose data found on table for camera: " + e.getMessage());
-            return new VisionStatus(0, 0, 0); // Return a default status if no data is found
+            return new VisionStatus(0, 0, 0, false); // Return a default status if no data is found
         }
 
         /*
@@ -64,6 +61,6 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
          */
         // AprilTag tag = new AprilTag((int) poseData[1], new Pose3d(poseData[2], poseData[3],
         // poseData[4], new Rotation3d()));
-        return new VisionStatus((int) poseData[1], poseData[2], poseData[3]);
+        return new VisionStatus((int) poseData[1], poseData[2], poseData[3], true);
     }
 }
