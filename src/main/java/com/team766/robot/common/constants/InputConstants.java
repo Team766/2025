@@ -12,10 +12,10 @@ public class InputConstants {
     public static final int AXIS_TWIST = 3;
 
     // buttons
-    public static final int BUTTON_FINE_DRIVING = 1;
-    public static final int BUTTON_CROSS_WHEELS = 3;
-    public static final int BUTTON_RESET_GYRO = 9;
-    public static final int BUTTON_RESET_POS = 15;
+    public static final int BUTTON_FINE_DRIVING = 2; // previously 1
+    public static final int BUTTON_CROSS_WHEELS = 3; // previously 3
+    public static final int BUTTON_RESET_GYRO = 1; // previously 9
+    public static final int BUTTON_RESET_POS = 2; // previously 15
     public static final int JOYSTICK_LEFT_BUTTON = 3;
     public static final int JOYSTICK_RIGHT_BUTTON = 4;
     public static final int JOYSTICK_BOTTOM_BUTTON = 2;
