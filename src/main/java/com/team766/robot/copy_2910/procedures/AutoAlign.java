@@ -32,9 +32,9 @@ public class AutoAlign extends Procedure {
 
     public void run(Context context) {
         Pose2d currentPosition;
-        try{
+        try {
             currentPosition = getStatusOrThrow(Vision.VisionStatus.class).getApriltagPose2d();
-        } catch (Exception e){
+        } catch (Exception e) {
             drive.stopDrive();
             log("No valid pose found from vision: " + e.getMessage());
             return; // Exit if no valid pose is found
@@ -54,9 +54,9 @@ public class AutoAlign extends Procedure {
         while (!pidControllerX.isDone()
                 || !pidControllerY.isDone()
                 || !pidControllerRotation.isDone()) {
-            try{
+            try {
                 currentPosition = getStatusOrThrow(Vision.VisionStatus.class).getApriltagPose2d();
-            } catch (Exception e){
+            } catch (Exception e) {
                 log("No valid pose found from vision: " + e.getMessage());
                 drive.stopDrive();
                 return; // Exit if no valid pose is found

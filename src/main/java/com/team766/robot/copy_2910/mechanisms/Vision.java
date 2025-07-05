@@ -24,7 +24,8 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
     private GetOrinRawValue camera = new GetOrinRawValue("MainCamera", 0);
 
-    public static record VisionStatus(int ID, double x, double y, boolean isValid) implements Status{
+    public static record VisionStatus(int ID, double x, double y, boolean isValid)
+            implements Status {
 
         public Pose2d getApriltagPose2d() throws Exception {
 
