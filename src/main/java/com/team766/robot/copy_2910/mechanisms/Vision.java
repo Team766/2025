@@ -22,7 +22,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
     private static double rightScoringPositionY =
             ConfigFileReader.instance.getDouble("vision.rightScoringPositionY").valueOr(0d);
 
-    private GetOrinRawValue camera = new GetOrinRawValue("MainCamera", 0);
+    private GetOrinRawValue camera = new GetOrinRawValue("766", 0);
 
     public static record VisionStatus(int ID, double x, double y, boolean isValid)
             implements Status {
