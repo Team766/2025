@@ -18,6 +18,9 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
     private static final double CORAL_THRESHOLD = 200; // TODO: Set this to a real value
 
+    private double leftPower = 0.25;
+    private double rightPower = 0.25;
+
     public Intake() {
         leftCANRange = (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.left");
         rightCANRange = (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.right");
@@ -59,6 +62,43 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     public void setRight(double power) {
         rightMotor.set(power);
     }
+
+    public void setLeftPower(double power) {
+        this.leftPower = power;
+    }
+
+    public void setRightPower(double power) {
+        this.rightPower = power;
+    }
+
+    public void turnLeftPositive() {
+        leftMotor.set(leftPower);
+    }
+
+    public void turnLeftNegative() {
+        leftMotor.set(-leftPower);
+    }
+
+    public void turnRightPositive() {
+        rightMotor.set(rightPower);
+    }
+    public void turnRightNegative() {
+        rightMotor.set(-rightPower);
+    }
+
+    public void stop() {
+        leftMotor.set(0);
+        rightMotor.set(0);
+    }
+
+    public void stopLeft() {
+        leftMotor.set(0);
+    }
+    public void stopRight() {
+        rightMotor.set(0);
+    }
+
+
 
     @Override
     protected IntakeStatus updateStatus() {
