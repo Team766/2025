@@ -5,7 +5,6 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.copy_2910.mechanisms.Vision;
-import com.team766.robot.reva_2025.constants.ConfigConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class AutoAlign extends Procedure {
@@ -18,10 +17,10 @@ public class AutoAlign extends Procedure {
     public AutoAlign(Pose2d targetPosition, SwerveDrive drive) {
         this.targetPosition = targetPosition;
         this.drive = reserve(drive);
-        pidControllerX = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_TRANSLATION_PID);
-        pidControllerY = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_TRANSLATION_PID);
+        pidControllerX = PIDController.loadFromConfig("DRIVE_X_PID");
+        pidControllerY = PIDController.loadFromConfig("DRIVE_Y_PID");
         pidControllerRotation =
-                PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
+                PIDController.loadFromConfig("DRIVE_ROTATION_PID");
     }
 
     public AutoAlign(Pose2d targetPosition, double threshold, SwerveDrive drive) {
