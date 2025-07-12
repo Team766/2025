@@ -75,21 +75,11 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     public void nudgeUp() {
-        setPoint += NUDGE_AMOUNT;
-        setPoint =
-                MathUtil.clamp(
-                        setPoint,
-                        WristPosition.MINIMUM.getPosition(),
-                        WristPosition.MAXIMUM.getPosition());
+        setSetpoint(setPoint + NUDGE_AMOUNT);
     }
 
     public void nudgeDown() {
-        setPoint -= NUDGE_AMOUNT;
-        setPoint =
-                MathUtil.clamp(
-                        setPoint,
-                        WristPosition.MINIMUM.getPosition(),
-                        WristPosition.MAXIMUM.getPosition());
+        setSetpoint(setPoint - NUDGE_AMOUNT);
     }
 
     @Override
