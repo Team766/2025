@@ -13,11 +13,17 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     private MotorController leftMotor;
     private MotorController rightMotor;
 
-    private static final double THRESHOLD = 0.5; // Threshold for determining if the shoulder is near a position | TODO: Adjust this value based on the shoulder's characteristics
+    private static final double THRESHOLD =
+            0.5; // Threshold for determining if the shoulder is near a position | TODO: Adjust this
+    // value based on the shoulder's characteristics
     private double setPoint;
     private ValueProvider<Double> ffGain;
 
-    private final double NUDGE_AMOUNT = 5; // Amount to nudge up/down | TODO: Adjust this value based on the shoulder's characteristics
+    private final double NUDGE_AMOUNT =
+            5; // Amount to nudge up/down | TODO: Adjust this value based on the shoulder's
+
+    // characteristics
+
     public record ShoulderStatus(double position, double setPoint) implements Status {
         public boolean isNearTo(ShoulderPosition position) {
             return isNearTo(position.getPosition());
@@ -48,37 +54,54 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
         }
     }
 
-    public Shoulder(){
-        leftMotor = RobotProvider.instance.getMotor("LeftShoulderMotor"); // Replace with actual motor name
-        rightMotor = RobotProvider.instance.getMotor("RightShoulderMotor"); // Replace with actual motor name
+    public Shoulder() {
+        leftMotor =
+                RobotProvider.instance.getMotor(
+                        "LeftShoulderMotor"); // Replace with actual motor name
+        rightMotor =
+                RobotProvider.instance.getMotor(
+                        "RightShoulderMotor"); // Replace with actual motor name
 
         rightMotor.follow(leftMotor);
 
-        ffGain = ConfigFileReader.instance.getDouble("ShoulderFFGain"); // Replace with actual config key
+        ffGain =
+                ConfigFileReader.instance.getDouble(
+                        "ShoulderFFGain"); // Replace with actual config key
         setPoint = ShoulderPosition.READY.getPosition(); // Default position
     }
 
     public void setSetpoint(double setpoint) {
-        setPoint = MathUtil.clamp(setpoint, ShoulderPosition.MINIMUM.getPosition(), ShoulderPosition.MAXIMUM.getPosition());
+        setPoint =
+                MathUtil.clamp(
+                        setpoint,
+                        ShoulderPosition.MINIMUM.getPosition(),
+                        ShoulderPosition.MAXIMUM.getPosition());
     }
 
-    public void run(){
+    public void run() {
         leftMotor.set(MotorController.ControlMode.Position, setPoint, ffGain.get());
     }
 
     public void nudgeUp() {
         setPoint += NUDGE_AMOUNT;
-        setPoint = MathUtil.clamp(setPoint, ShoulderPosition.MINIMUM.getPosition(), ShoulderPosition.MAXIMUM.getPosition());
+        setPoint =
+                MathUtil.clamp(
+                        setPoint,
+                        ShoulderPosition.MINIMUM.getPosition(),
+                        ShoulderPosition.MAXIMUM.getPosition());
     }
-    
+
     public void nudgeDown() {
         setPoint -= NUDGE_AMOUNT;
-        setPoint = MathUtil.clamp(setPoint, ShoulderPosition.MINIMUM.getPosition(), ShoulderPosition.MAXIMUM.getPosition());
+        setPoint =
+                MathUtil.clamp(
+                        setPoint,
+                        ShoulderPosition.MINIMUM.getPosition(),
+                        ShoulderPosition.MAXIMUM.getPosition());
     }
 
     @Override
     protected ShoulderStatus updateStatus() {
         return new ShoulderStatus(leftMotor.getSensorPosition(), setPoint);
     }
-    
 }
