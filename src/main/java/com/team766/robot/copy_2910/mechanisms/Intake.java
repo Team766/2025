@@ -15,25 +15,33 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     private MotorController leftMotor;
     private MotorController rightMotor;
 
+    private MotorController centerAlgaeMotor;
+
     private static final double CORAL_THRESHOLD = 200; // TODO: Set this to a real value
 
     private double leftPower = 0.25;
     private double rightPower = 0.25;
 
+    private double algaePower = 0.35;
+
     public Intake() {
         leftCANRange =
-                (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.left");
+                (CANRangeTimeOfFlight)
+                        RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.left");
         rightCANRange =
-                (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.right");
+                (CANRangeTimeOfFlight)
+                        RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.right");
         frontCenterCANRange =
                 (CANRangeTimeOfFlight)
-                        RobotProvider.instance.getTimeOfFlight("CANRange.front_center");
+                        RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.front_center");
         backCenterCANRange =
                 (CANRangeTimeOfFlight)
-                        RobotProvider.instance.getTimeOfFlight("CANRange.back_center");
+                        RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.back_center");
 
-        leftMotor = RobotProvider.instance.getMotor("leftIntakeMotor");
-        rightMotor = RobotProvider.instance.getMotor("rightIntakeMotor");
+        leftMotor = RobotProvider.instance.getMotor("INTAKE.leftIntakeMotor");
+        rightMotor = RobotProvider.instance.getMotor("INTAKE.rightIntakeMotor");
+
+        centerAlgaeMotor = RobotProvider.instance.getMotor("INTAKE.centerAlgaeMotor");
     }
 
     public record IntakeStatus(
@@ -68,12 +76,20 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
         rightMotor.set(power);
     }
 
+    public void setAlgae(double power) {
+        centerAlgaeMotor.set(power);
+    }
+
     public void setLeftPower(double power) {
         this.leftPower = power;
     }
 
     public void setRightPower(double power) {
         this.rightPower = power;
+    }
+
+    public void setAlgaePower(double power) {
+        this.algaePower = power;
     }
 
     public void turnLeftPositive() {
@@ -92,9 +108,18 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
         rightMotor.set(-rightPower);
     }
 
+    public void turnAlgaePositive() {
+        centerAlgaeMotor.set(algaePower);
+    }
+
+    public void turnAlgaeNegative() {
+        centerAlgaeMotor.set(-algaePower);
+    }
+
     public void stop() {
         leftMotor.set(0);
         rightMotor.set(0);
+        centerAlgaeMotor.set(0);
     }
 
     public void stopLeft() {
@@ -103,6 +128,10 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
     public void stopRight() {
         rightMotor.set(0);
+    }
+
+    public void stopAlgae() {
+        centerAlgaeMotor.set(0);
     }
 
     @Override
