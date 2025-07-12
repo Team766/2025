@@ -58,7 +58,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
         ffGain =
                 ConfigFileReader.instance.getDouble(
-                        "ShoulderFFGain"); // Replace with actual config key
+                        "WristFFGain"); // Replace with actual config key
         setPoint = WristPosition.READY.getPosition(); // Default position
     }
 
