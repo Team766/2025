@@ -83,21 +83,11 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public void nudgeUp() {
-        setPoint += NUDGE_AMOUNT;
-        setPoint =
-                MathUtil.clamp(
-                        setPoint,
-                        ShoulderPosition.MINIMUM.getPosition(),
-                        ShoulderPosition.MAXIMUM.getPosition());
+        setSetpoint(setPoint + NUDGE_AMOUNT);
     }
 
     public void nudgeDown() {
-        setPoint -= NUDGE_AMOUNT;
-        setPoint =
-                MathUtil.clamp(
-                        setPoint,
-                        ShoulderPosition.MINIMUM.getPosition(),
-                        ShoulderPosition.MAXIMUM.getPosition());
+        setSetpoint(setPoint - NUDGE_AMOUNT);
     }
 
     @Override
