@@ -19,8 +19,7 @@ public class AutoAlign extends Procedure {
         this.drive = reserve(drive);
         pidControllerX = PIDController.loadFromConfig("DRIVE_X_PID");
         pidControllerY = PIDController.loadFromConfig("DRIVE_Y_PID");
-        pidControllerRotation =
-                PIDController.loadFromConfig("DRIVE_ROTATION_PID");
+        pidControllerRotation = PIDController.loadFromConfig("DRIVE_ROTATION_PID");
     }
 
     public AutoAlign(Pose2d targetPosition, double threshold, SwerveDrive drive) {
