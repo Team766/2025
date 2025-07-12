@@ -4,7 +4,6 @@ import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.*;
 import com.team766.hal.wpilib.CANRangeTimeOfFlight;
-import com.team766.logging.Severity;
 
 public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
@@ -22,10 +21,16 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     private double rightPower = 0.25;
 
     public Intake() {
-        leftCANRange = (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.left");
-        rightCANRange = (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.right");
-        frontCenterCANRange = (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.front_center");
-        backCenterCANRange = (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.back_center");
+        leftCANRange =
+                (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.left");
+        rightCANRange =
+                (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.right");
+        frontCenterCANRange =
+                (CANRangeTimeOfFlight)
+                        RobotProvider.instance.getTimeOfFlight("CANRange.front_center");
+        backCenterCANRange =
+                (CANRangeTimeOfFlight)
+                        RobotProvider.instance.getTimeOfFlight("CANRange.back_center");
 
         leftMotor = RobotProvider.instance.getMotor("leftIntakeMotor");
         rightMotor = RobotProvider.instance.getMotor("rightIntakeMotor");
@@ -82,6 +87,7 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     public void turnRightPositive() {
         rightMotor.set(rightPower);
     }
+
     public void turnRightNegative() {
         rightMotor.set(-rightPower);
     }
@@ -94,11 +100,10 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     public void stopLeft() {
         leftMotor.set(0);
     }
+
     public void stopRight() {
         rightMotor.set(0);
     }
-
-
 
     @Override
     protected IntakeStatus updateStatus() {
