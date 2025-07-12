@@ -62,22 +62,12 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
     @Override
     protected IntakeStatus updateStatus() {
-        try {
-            double leftDistance = leftCANRange.getDistance().get();
-            double rightDistance = rightCANRange.getDistance().get();
-            double frontCenterDistance = frontCenterCANRange.getDistance().get();
-            double backCenterDistance = backCenterCANRange.getDistance().get();
-
-            return new IntakeStatus(
-                    leftDistance, rightDistance, frontCenterDistance, backCenterDistance);
-        } catch (Exception e) {
-            log(
-                    "Error reading CAN Range Time of Flight sensors: " + e.getMessage(),
-                    Severity.ERROR);
-        }
+        double leftDistance = leftCANRange.getDistance().orElse(Double.MAX_VALUE);
+        double rightDistance = rightCANRange.getDistance().orElse(Double.MAX_VALUE);
+        double frontCenterDistance = frontCenterCANRange.getDistance().orElse(Double.MAX_VALUE);
+        double backCenterDistance = backCenterCANRange.getDistance().orElse(Double.MAX_VALUE);
 
         return new IntakeStatus(
-                Double.MAX_VALUE, Double.MAX_VALUE,
-                Double.MAX_VALUE, Double.MAX_VALUE);
+                leftDistance, rightDistance, frontCenterDistance, backCenterDistance);
     }
 }
