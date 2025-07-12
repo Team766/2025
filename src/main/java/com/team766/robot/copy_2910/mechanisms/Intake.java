@@ -3,7 +3,6 @@ package com.team766.robot.copy_2910.mechanisms;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.*;
-import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.CANRangeTimeOfFlight;
 import com.team766.logging.Severity;
 
@@ -20,10 +19,10 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     private static final double CORAL_THRESHOLD = 200; // TODO: Set this to a real value
 
     public Intake() {
-        leftCANRange = new CANRangeTimeOfFlight(-1); // TODO: Fix these with real IDs
-        rightCANRange = new CANRangeTimeOfFlight(-1); // TODO: Fix these with real IDs
-        frontCenterCANRange = new CANRangeTimeOfFlight(-1); // TODO: Fix these with real IDs
-        backCenterCANRange = new CANRangeTimeOfFlight(-1); // TODO: Fix these with real IDs
+        leftCANRange = (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.left");
+        rightCANRange = (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.right");
+        frontCenterCANRange = (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.front_center");
+        backCenterCANRange = (CANRangeTimeOfFlight) RobotProvider.instance.getTimeOfFlight("CANRange.back_center");
 
         leftMotor = RobotProvider.instance.getMotor("leftIntakeMotor");
         rightMotor = RobotProvider.instance.getMotor("rightIntakeMotor");
