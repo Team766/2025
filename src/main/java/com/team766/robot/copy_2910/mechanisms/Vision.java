@@ -62,6 +62,10 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
          */
         // AprilTag tag = new AprilTag((int) poseData[1], new Pose3d(poseData[2], poseData[3],
         // poseData[4], new Rotation3d()));
+        if(Math.sqrt(poseData[2] * poseData[2] + poseData[3] * poseData[3]) > 2.0) {
+            log("Closest tag is over two meters away. Move closer to the tag, as this is probably not a valid reef tag.");
+            return new VisionStatus((int) poseData[1], 0, 0, false); // Return invalid status
+        }
         return new VisionStatus((int) poseData[1], poseData[2], poseData[3], true);
     }
 }
