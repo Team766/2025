@@ -15,14 +15,9 @@ public class OuttakeCoral extends Procedure {
 
     @Override
     public void run(Context context) {
-        Optional<Intake.IntakeStatus> status = getStatus(Intake.IntakeStatus.class);
-
-        while (status.get().hasCoralInFrontCenter()) {
-            status = getStatus(Intake.IntakeStatus.class);
-
-            intake.turnRightPositive();
-            intake.turnLeftNegative();
-        }
+        intake.turnRightPositive();
+        intake.turnLeftNegative();
+        waitForStatusMatching(context, Intake.IntakeStatus.class, s -> s.hasCoralInFrontCenter());
         intake.stop();
     }
 }
