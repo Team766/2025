@@ -66,7 +66,7 @@ public class AutoAlign extends Procedure {
             pidControllerY.calculate(currentPosition.getY());
             pidControllerRotation.calculate(currentHeading);
 
-            drive.controlFieldOriented(
+            drive.controlRobotOriented(
                     pidControllerX.isDone() ? 0 : pidControllerX.getOutput(),
                     pidControllerY.isDone() ? 0 : pidControllerY.getOutput(),
                     pidControllerRotation.isDone() ? 0 : pidControllerRotation.getOutput());
