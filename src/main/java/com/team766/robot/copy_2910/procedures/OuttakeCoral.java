@@ -18,11 +18,13 @@ public class OuttakeCoral extends Procedure {
         Optional<Intake.IntakeStatus> status = getStatus(Intake.IntakeStatus.class);
 
         while (status.get().hasCoralInFrontCenter()) {
+            context.yield();
             status = getStatus(Intake.IntakeStatus.class);
 
             intake.turnRightPositive();
             intake.turnLeftNegative();
         }
+        context.waitForSeconds(0.5);
         intake.stop();
     }
 }

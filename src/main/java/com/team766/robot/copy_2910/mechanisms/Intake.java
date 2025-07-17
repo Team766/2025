@@ -3,14 +3,13 @@ package com.team766.robot.copy_2910.mechanisms;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.*;
-import com.team766.hal.wpilib.CANRangeTimeOfFlight;
 
 public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
-    private CANRangeTimeOfFlight leftCANRange;
-    private CANRangeTimeOfFlight rightCANRange;
-    private CANRangeTimeOfFlight frontCenterCANRange;
-    private CANRangeTimeOfFlight backCenterCANRange;
+    private TimeOfFlightReader leftCANRange;
+    private TimeOfFlightReader rightCANRange;
+    private TimeOfFlightReader frontCenterCANRange;
+    private TimeOfFlightReader backCenterCANRange;
 
     private MotorController leftMotor;
     private MotorController rightMotor;
@@ -25,18 +24,11 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     private double algaePower = 0.35;
 
     public Intake() {
-        leftCANRange =
-                (CANRangeTimeOfFlight)
-                        RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.left");
-        rightCANRange =
-                (CANRangeTimeOfFlight)
-                        RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.right");
+        leftCANRange = RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.left");
+        rightCANRange = RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.right");
         frontCenterCANRange =
-                (CANRangeTimeOfFlight)
-                        RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.front_center");
-        backCenterCANRange =
-                (CANRangeTimeOfFlight)
-                        RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.back_center");
+                RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.front_center");
+        backCenterCANRange = RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.back_center");
 
         leftMotor = RobotProvider.instance.getMotor("INTAKE.leftIntakeMotor");
         rightMotor = RobotProvider.instance.getMotor("INTAKE.rightIntakeMotor");
@@ -51,6 +43,9 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
             double backCenterDistance)
             implements Status {
 
+        /*
+         * TODO: During bringup, check the atual distance values to find a range where the coral is validly in the sensor (to ensure no malfunctioning sensors).
+         */
         public boolean hasCoralInLeft() {
             return leftDistance < CORAL_THRESHOLD;
         }

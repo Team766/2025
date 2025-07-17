@@ -21,6 +21,8 @@ public class IntakeCoral extends Procedure {
             return;
         }
         while (!status.get().hasCoralInBackCenter()) {
+            context.yield();
+            intake.turnAlgaePositive();
             status = getStatus(Intake.IntakeStatus.class);
             boolean hasCoralInLeft = status.get().hasCoralInLeft();
             boolean hasCoralInRight = status.get().hasCoralInRight();
