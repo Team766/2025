@@ -17,7 +17,7 @@ public class OuttakeCoral extends Procedure {
         intake.turnRightPositive();
         intake.turnLeftNegative();
         intake.turnAlgaeNegative();
-        waitForStatusMatching(context, Intake.IntakeStatus.class, s -> s.hasCoralInFrontCenter());
+        waitForStatusMatching(context, Intake.IntakeStatus.class, s -> !s.hasCoralInFrontCenter());
         intake.stop();
     }
 }
