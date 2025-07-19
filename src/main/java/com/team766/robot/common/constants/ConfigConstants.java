@@ -27,6 +27,10 @@ public final class ConfigConstants {
 
     public static final String TARGET_LOCK_ROTATION_PID = "drive.targetLockRotationPID";
 
+    // burro drive
+    public static final String BURRO_DRIVE_LEFT = "burroDrive.leftMotor";
+    public static final String BURRO_DRIVE_RIGHT = "burroDrive.rightMotor";
+
     // pathplanner config values
     public static final String PATH_FOLLOWING_MAX_MODULE_SPEED_MPS =
             "followpath.maxSpeedMetersPerSecond";
