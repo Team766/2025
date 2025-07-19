@@ -12,8 +12,8 @@ public class BurroDrive extends Mechanism {
     private final MotorController rightMotor;
 
     public BurroDrive() {
-        leftMotor = RobotProvider.instance.getMotor(DRIVE_LEFT);
-        rightMotor = RobotProvider.instance.getMotor(DRIVE_RIGHT);
+        leftMotor = RobotProvider.instance.getMotor(BURRO_DRIVE_LEFT);
+        rightMotor = RobotProvider.instance.getMotor(BURRO_DRIVE_RIGHT);
     }
 
     @Override

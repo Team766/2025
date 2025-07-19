@@ -1,24 +1,26 @@
 package com.team766.robot.mayhem_shooter;
 
-import com.team766.framework3.AutonomousMode;
-import com.team766.framework3.RuleEngine;
-import com.team766.hal.RobotConfigurator3;
+import com.team766.framework.AutonomousMode;
+import com.team766.framework.RuleEngine;
+import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.mechanisms.BurroDrive;
 import com.team766.robot.mayhem_shooter.mechanisms.*;
 import com.team766.robot.mayhem_shooter.procedures.*;
 
-public class Robot implements RobotConfigurator3 {
+public class Robot implements RobotConfigurator {
     private BurroDrive drive;
+    private Shooter shooter;
 
     @Override
     public void initializeMechanisms() {
         // Initialize mechanisms here
         drive = new BurroDrive();
+        shooter = new Shooter();
     }
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive);
+        return new OI(drive, shooter);
     }
 
     @Override

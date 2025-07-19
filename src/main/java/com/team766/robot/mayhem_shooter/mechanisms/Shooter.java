@@ -1,29 +1,64 @@
 package com.team766.robot.mayhem_shooter.mechanisms;
 
-import com.team766.framework3.Mechanism;
+import com.team766.framework.Mechanism;
+import com.team766.framework.MechanismWithStatus;
+import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.MotorController.ControlMode;
 
-public class Shooter extends Mechanism {
-    private MotorController leftMotor;
-    private MotorController rightMotor;
+public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
+    private MotorController shooterMotor;
+    private MotorController feederMotor;
+    private double targetShooterSpeed;
+    private static final double SHOOTER_SPEED_TOLERANCE = 5;
+    private static final double DEFAULT_SHOOTER_SPEED = 50;
+    private static final double DEFAULT_FEEDER_SPEED = 50;
 
-    public ExampleMechanism() {
-        leftMotor = RobotProvider.instance.getMotor("mayhemShooter.leftMotor");
-        rightMotor = RobotProvider.instance.getMotor("mayhemShooter.rightMotor");
-
-        leftMotor.setCurrentLimit(20);
-        rightMotor.setCurrentLimit(20);
+    public static record ShooterStatus(double shooterRPS, double targetSpeed) implements Status {
+        public boolean isAtTargetSpeed() {
+            return Math.abs(shooterRPS - targetSpeed) < SHOOTER_SPEED_TOLERANCE;
+        }
     }
 
-    public void setMotorPower(final double leftPower, final double rightPower) {
-        leftMotor.set(leftPower);
-        rightMotor.set(rightPower);
+    public Shooter() {
+        shooterMotor = RobotProvider.instance.getMotor("mayhemShooter.shooterMotor");
+        feederMotor = RobotProvider.instance.getMotor("mayhemShooter.feederMotor");
+
+        shooterMotor.setCurrentLimit(50);
+        feederMotor.setCurrentLimit(50);
+    }
+
+    public void setShooterPower(final double targetShooterRPS) {
+        targetShooterSpeed = targetShooterRPS;
+        shooterMotor.set(ControlMode.Velocity, targetShooterRPS);
+    }
+
+    public void enableShooter() {
+        setShooterPower(DEFAULT_SHOOTER_SPEED);
+    }
+
+    public void stopShooterMotor() {
+        shooterMotor.stopMotor();
+    }
+
+    public void setFeederPower(final double feederPower) {
+        feederMotor.set(feederPower);
+    }
+
+    public void enableFeeder() {
+        setFeederPower(DEFAULT_FEEDER_SPEED);
     }
 
     @Override
     protected void onMechanismIdle() {
         // Stop mechanism when nothing is using it.
-        setMotorPower(0, 0);
+        stopShooterMotor();
+        setFeederPower(0);
+    }
+
+    @Override
+    protected ShooterStatus updateStatus() {
+        return new ShooterStatus(shooterMotor.getSensorVelocity(), targetShooterSpeed);
     }
 }
