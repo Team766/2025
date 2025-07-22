@@ -55,7 +55,6 @@ public class OI extends RuleEngine {
                 ONCE_AND_HOLD,
                 () -> climber.setClimberSpeed(-1));
 
-
         
     }
     
