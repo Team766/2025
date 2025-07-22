@@ -136,6 +136,10 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
         double frontCenterDistance = frontCenterCANRange.getDistance().orElse(Double.MAX_VALUE);
         double backCenterDistance = backCenterCANRange.getDistance().orElse(Double.MAX_VALUE);
 
+        log("Intake Status: leftDistance = " + leftDistance
+                + ", rightDistance = " + rightDistance
+                + ", frontCenterDistance = " + frontCenterDistance
+                + ", backCenterDistance = " + backCenterDistance);
         return new IntakeStatus(
                 leftDistance, rightDistance, frontCenterDistance, backCenterDistance);
     }
