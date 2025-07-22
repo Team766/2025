@@ -24,7 +24,15 @@ public class AutoScore extends Procedure {
     private double wristAngle;
     private double shoulderAngle;
 
-    public AutoScore(Pose2d targetPosition, SwerveDrive drive, Wrist wrist, Shoulder shoulder, Elevator elevator, double elevatorHeight, double wristAngle, double shoulderAngle) {
+    public AutoScore(
+            Pose2d targetPosition,
+            SwerveDrive drive,
+            Wrist wrist,
+            Shoulder shoulder,
+            Elevator elevator,
+            double elevatorHeight,
+            double wristAngle,
+            double shoulderAngle) {
         this.targetPosition = targetPosition;
         this.drive = reserve(drive);
         this.wrist = reserve(wrist);
@@ -37,7 +45,6 @@ public class AutoScore extends Procedure {
         pidControllerY = PIDController.loadFromConfig("DRIVE_Y_PID");
         pidControllerRotation = PIDController.loadFromConfig("DRIVE_ROTATION_PID");
     }
-
 
     public void run(Context context) {
         shoulder.setSetpoint(shoulderAngle);
