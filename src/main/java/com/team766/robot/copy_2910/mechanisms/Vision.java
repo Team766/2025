@@ -1,6 +1,5 @@
 package com.team766.robot.copy_2910.mechanisms;
 
-import com.team766.config.ConfigFileReader;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.orin.GetOrinRawValue;
@@ -45,6 +44,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
     public static Pose2d getTargetPositionLeftL4() {
         return new Pose2d(L4X, leftScoringPositionY, new Rotation2d());
     }
+
     public static Pose2d getTargetPositionRightL4() {
         return new Pose2d(L4X, rightScoringPositionY, new Rotation2d());
     }
