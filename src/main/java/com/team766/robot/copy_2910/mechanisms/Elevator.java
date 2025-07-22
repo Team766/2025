@@ -55,15 +55,19 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
     public enum ElevatorPosition {
         INTAKE(0.0),
-        CORAL_L1(0.5),
-        CORAL_L2(1.0),
-        CORAL_L3(1.5),
-        CORAL_L4(2.0),
-        READY(0.4), // Should be the default position and the ready position for vision so that it
+        L1(0.881),
+        L2(-4.452),
+        L3(-11.5),
+        L4(-21.357),
+        ALGAE_HIGH(-9.357),
+        ALGAE_LOW(-3.262),
+        CORAL_GROUND(-0.357),
+        ALGAE_GROUND(-1.643),
+        READY(-10), // Should be the default position and the ready position for vision so that it
         // can see the tag
-        MAXIMUM(2.5), // Maximum height of the elevator, TODO: Adjust based on the actual elevator's
+        MAXIMUM(2), // Maximum height of the elevator, TODO: Adjust based on the actual elevator's
         // maximum position
-        MINIMUM(0.0); // Minimum height of the elevator, TODO: Adjust based on the actual elevator's
+        MINIMUM(-25); // Minimum height of the elevator, TODO: Adjust based on the actual elevator's
         // minimum position
 
         final double position;
