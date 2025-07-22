@@ -19,7 +19,6 @@ public class OI extends RuleEngine {
         Wrist wrist,
         Elevator elevator,
         Shoulder shoulder,
-        Climber climber,
         Vision vision) {
 
         final JoystickReader leftJoystick =
@@ -38,22 +37,6 @@ public class OI extends RuleEngine {
                 leftJoystick.whenButton(2),
                 ONCE_AND_HOLD,
                 () -> new OuttakeCoral());
-
-        addRule("Climb",
-                boxopGamepad.whenButton(1),
-                climber,
-                ONCE_AND_HOLD,
-                () -> climber.setClimberSpeed(1));
-        addRule("Stop Climb",
-                boxopGamepad.whenButton(2),
-                climber,
-                ONCE,
-                () -> climber.setClimberSpeed(0));
-        addRule("Remove Climber",
-                boxopGamepad.whenButton(3),
-                climber,
-                ONCE_AND_HOLD,
-                () -> climber.setClimberSpeed(-1));
 
         
     }
