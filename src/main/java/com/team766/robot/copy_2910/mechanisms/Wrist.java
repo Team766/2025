@@ -1,11 +1,9 @@
 package com.team766.robot.copy_2910.mechanisms;
 
-import com.team766.config.ConfigFileReader;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.library.ValueProvider;
 import edu.wpi.first.math.MathUtil;
 
 public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
@@ -16,7 +14,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
             0.5; // Threshold for determining if the wrist is near a position | TODO: Adjust this
     // value based on the wrist's characteristics
     private double setPoint;
-    //private ValueProvider<Double> ffGain;
+    // private ValueProvider<Double> ffGain;
 
     private final double NUDGE_AMOUNT =
             5; // Amount to nudge up/down | TODO: Adjust this value based on the wrist's
@@ -59,7 +57,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     public Wrist() {
         motor = RobotProvider.instance.getMotor("WristMotor"); // Replace with actual motor name
 
-        //ffGain =
+        // ffGain =
         //        ConfigFileReader.instance.getDouble(
         //                "WristFFGain"); // Replace with actual config key
         setPoint = WristPosition.L3.getPosition(); // Default position

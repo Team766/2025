@@ -47,13 +47,14 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
          * TODO: During bringup, check the atual distance values to find a range where the coral is validly in the sensor (to ensure no malfunctioning sensors).
          */
 
-        public double getLeftDistance(){
+        public double getLeftDistance() {
             return leftDistance;
         }
 
-        public double getBackCenterDistance(){
+        public double getBackCenterDistance() {
             return backCenterDistance;
         }
+
         public boolean hasCoralInLeft() {
             return leftDistance < CORAL_THRESHOLD;
         }

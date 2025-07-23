@@ -22,7 +22,9 @@ public class IntakeCoral extends Procedure {
         }
         log(
                 "Intake Status: leftDistance = "
-                        + status.get().getLeftDistance() + "Back center:" + status.get().getBackCenterDistance());
+                        + status.get().getLeftDistance()
+                        + "Back center:"
+                        + status.get().getBackCenterDistance());
         while (!status.get().hasCoralInBackCenter()) {
             context.yield();
             intake.turnAlgaePositive();

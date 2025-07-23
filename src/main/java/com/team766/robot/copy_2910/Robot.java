@@ -41,14 +41,14 @@ public class Robot implements RobotConfigurator {
     @Override
     public RuleEngine createLights() {
         // TODO Auto-generated method stub
-        //throw new UnsupportedOperationException("Unimplemented method 'createLights'");
+        // throw new UnsupportedOperationException("Unimplemented method 'createLights'");
         return new Lights();
     }
 
     @Override
     public AutonomousMode[] getAutonomousModes() {
         // TODO Auto-generated method stub
-        return new AutonomousMode[] { new AutonomousMode("uh", () -> new OuttakeCoral(intake))};
-        //throw new UnsupportedOperationException("Unimplemented method 'getAutonomousModes'");
+        return new AutonomousMode[] {new AutonomousMode("uh", () -> new OuttakeCoral(intake))};
+        // throw new UnsupportedOperationException("Unimplemented method 'getAutonomousModes'");
     }
 }

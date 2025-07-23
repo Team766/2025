@@ -41,7 +41,11 @@ public class OI extends RuleEngine {
         queuedControl.shoulderPosition = ShoulderPosition.L3;
         queuedControl.elevatorPosition = ElevatorPosition.L3;
 
-        addRule("Intake Coral", leftJoystick.whenButton(1), ONCE_AND_HOLD, () -> new IntakeCoral(intake));
+        addRule(
+                "Intake Coral",
+                leftJoystick.whenButton(1),
+                ONCE_AND_HOLD,
+                () -> new IntakeCoral(intake));
         addRule(
                 "Outtake Coral",
                 leftJoystick.whenButton(2),

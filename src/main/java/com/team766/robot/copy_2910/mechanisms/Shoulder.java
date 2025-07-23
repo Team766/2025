@@ -1,11 +1,9 @@
 package com.team766.robot.copy_2910.mechanisms;
 
-import com.team766.config.ConfigFileReader;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.library.ValueProvider;
 import edu.wpi.first.math.MathUtil;
 
 public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
@@ -17,7 +15,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
             0.5; // Threshold for determining if the shoulder is near a position | TODO: Adjust this
     // value based on the shoulder's characteristics
     private double setPoint;
-    //private ValueProvider<Double> ffGain;
+    // private ValueProvider<Double> ffGain;
 
     private final double NUDGE_AMOUNT =
             5; // Amount to nudge up/down | TODO: Adjust this value based on the shoulder's
@@ -68,9 +66,9 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
         rightMotor.setInverted(true);
         rightMotor.follow(leftMotor);
 
-        //ffGain =
-          //      ConfigFileReader.instance.getDouble(
-            //            "ShoulderFFGain"); // Replace with actual config key
+        // ffGain =
+        //      ConfigFileReader.instance.getDouble(
+        //            "ShoulderFFGain"); // Replace with actual config key
         setPoint = ShoulderPosition.L1.getPosition(); // Default position
     }
 

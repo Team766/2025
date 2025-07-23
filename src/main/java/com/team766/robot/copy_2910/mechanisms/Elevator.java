@@ -1,11 +1,9 @@
 package com.team766.robot.copy_2910.mechanisms;
 
-import com.team766.config.ConfigFileReader;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.library.ValueProvider;
 import com.team766.math.Maths;
 
 public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
@@ -19,7 +17,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private static double THRESHOLD =
             0.05; // Threshold for PID controller | TODO: Adjust this value based on the elevator's
     // characteristics
-    //private ValueProvider<Double> ffGain;
+    // private ValueProvider<Double> ffGain;
     private double setPoint;
 
     public static record ElevatorStatus(double currentPosition, double targetPosition)
@@ -45,9 +43,9 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         setPoint = ElevatorPosition.READY.getPosition(); // Default position
         elevatorMotorLeft.setCurrentLimit(
                 30); // Set current limit for the elevator motor | TODO: Replace with actual value
-        //ffGain =
-          //      ConfigFileReader.instance.getDouble(
-            //            "ElevatorFFGain"); // Replace with actual config key
+        // ffGain =
+        //      ConfigFileReader.instance.getDouble(
+        //            "ElevatorFFGain"); // Replace with actual config key
 
         elevatorMotorLeft.setSensorPosition(
                 0.0); // Elevator always has to start at same 0.0 position
