@@ -16,7 +16,7 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
     private MotorController centerAlgaeMotor;
 
-    private static final double CORAL_THRESHOLD = 200; // TODO: Set this to a real value
+    private static final double CORAL_THRESHOLD = 0.12; // TODO: Set this to a real value
 
     private double leftPower = 0.25;
     private double rightPower = 0.25;
@@ -46,6 +46,14 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
         /*
          * TODO: During bringup, check the atual distance values to find a range where the coral is validly in the sensor (to ensure no malfunctioning sensors).
          */
+
+        public double getLeftDistance(){
+            return leftDistance;
+        }
+
+        public double getBackCenterDistance(){
+            return backCenterDistance;
+        }
         public boolean hasCoralInLeft() {
             return leftDistance < CORAL_THRESHOLD;
         }
@@ -88,19 +96,19 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     }
 
     public void turnLeftPositive() {
-        leftMotor.set(leftPower);
-    }
-
-    public void turnLeftNegative() {
         leftMotor.set(-leftPower);
     }
 
+    public void turnLeftNegative() {
+        leftMotor.set(leftPower);
+    }
+
     public void turnRightPositive() {
-        rightMotor.set(rightPower);
+        rightMotor.set(-rightPower);
     }
 
     public void turnRightNegative() {
-        rightMotor.set(-rightPower);
+        rightMotor.set(rightPower);
     }
 
     public void turnAlgaePositive() {

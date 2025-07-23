@@ -16,7 +16,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
             0.5; // Threshold for determining if the wrist is near a position | TODO: Adjust this
     // value based on the wrist's characteristics
     private double setPoint;
-    private ValueProvider<Double> ffGain;
+    //private ValueProvider<Double> ffGain;
 
     private final double NUDGE_AMOUNT =
             5; // Amount to nudge up/down | TODO: Adjust this value based on the wrist's
@@ -40,7 +40,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         L4(-5.5),
         ALGAE_HIGH(-25.928),
         ALGAE_LOW(-25.928),
-        CORAL_GROUND(-15.81),
+        CORAL_GROUND(-12.81),
         ALGAE_GROUND(-21.786),
         MAXIMUM(10),
         MINIMUM(-30);
@@ -59,9 +59,9 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     public Wrist() {
         motor = RobotProvider.instance.getMotor("WristMotor"); // Replace with actual motor name
 
-        ffGain =
-                ConfigFileReader.instance.getDouble(
-                        "WristFFGain"); // Replace with actual config key
+        //ffGain =
+        //        ConfigFileReader.instance.getDouble(
+        //                "WristFFGain"); // Replace with actual config key
         setPoint = WristPosition.L3.getPosition(); // Default position
     }
 
@@ -74,7 +74,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     public void run() {
-        motor.set(MotorController.ControlMode.Position, setPoint, ffGain.get());
+        motor.set(MotorController.ControlMode.Position, setPoint);
     }
 
     public void nudgeUp() {

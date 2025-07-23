@@ -17,7 +17,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
             0.5; // Threshold for determining if the shoulder is near a position | TODO: Adjust this
     // value based on the shoulder's characteristics
     private double setPoint;
-    private ValueProvider<Double> ffGain;
+    //private ValueProvider<Double> ffGain;
 
     private final double NUDGE_AMOUNT =
             5; // Amount to nudge up/down | TODO: Adjust this value based on the shoulder's
@@ -65,11 +65,12 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
                 RobotProvider.instance.getMotor(
                         "RightShoulderMotor"); // Replace with actual motor name
 
+        rightMotor.setInverted(true);
         rightMotor.follow(leftMotor);
 
-        ffGain =
-                ConfigFileReader.instance.getDouble(
-                        "ShoulderFFGain"); // Replace with actual config key
+        //ffGain =
+          //      ConfigFileReader.instance.getDouble(
+            //            "ShoulderFFGain"); // Replace with actual config key
         setPoint = ShoulderPosition.L1.getPosition(); // Default position
     }
 
@@ -82,7 +83,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public void run() {
-        leftMotor.set(MotorController.ControlMode.Position, setPoint, ffGain.get());
+        leftMotor.set(MotorController.ControlMode.Position, setPoint);
     }
 
     public void nudgeUp() {

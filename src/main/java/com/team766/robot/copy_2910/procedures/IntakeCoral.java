@@ -9,8 +9,8 @@ public class IntakeCoral extends Procedure {
 
     private Intake intake;
 
-    public IntakeCoral() {
-        intake = reserve(intake);
+    public IntakeCoral(Intake intake2) {
+        intake = reserve(intake2);
     }
 
     @Override
@@ -20,6 +20,9 @@ public class IntakeCoral extends Procedure {
             log("No intake status");
             return;
         }
+        log(
+                "Intake Status: leftDistance = "
+                        + status.get().getLeftDistance() + "Back center:" + status.get().getBackCenterDistance());
         while (!status.get().hasCoralInBackCenter()) {
             context.yield();
             intake.turnAlgaePositive();

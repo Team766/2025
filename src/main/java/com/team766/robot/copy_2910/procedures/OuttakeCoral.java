@@ -8,8 +8,8 @@ public class OuttakeCoral extends Procedure {
 
     private Intake intake;
 
-    public OuttakeCoral() {
-        intake = reserve(intake);
+    public OuttakeCoral(Intake intake2) {
+        intake = reserve(intake2);
     }
 
     @Override

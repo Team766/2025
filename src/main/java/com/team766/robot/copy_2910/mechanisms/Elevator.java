@@ -19,7 +19,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private static double THRESHOLD =
             0.05; // Threshold for PID controller | TODO: Adjust this value based on the elevator's
     // characteristics
-    private ValueProvider<Double> ffGain;
+    //private ValueProvider<Double> ffGain;
     private double setPoint;
 
     public static record ElevatorStatus(double currentPosition, double targetPosition)
@@ -41,16 +41,17 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         // elevatorMotorRight.setInverted(false); // Set to true if the right motor needs to be
         // inverted
 
-        elevatorMotorLeft.follow(elevatorMotorRight);
+        elevatorMotorRight.follow(elevatorMotorLeft);
         setPoint = ElevatorPosition.READY.getPosition(); // Default position
-        elevatorMotorRight.setCurrentLimit(
+        elevatorMotorLeft.setCurrentLimit(
                 30); // Set current limit for the elevator motor | TODO: Replace with actual value
-        ffGain =
-                ConfigFileReader.instance.getDouble(
-                        "ElevatorFFGain"); // Replace with actual config key
+        //ffGain =
+          //      ConfigFileReader.instance.getDouble(
+            //            "ElevatorFFGain"); // Replace with actual config key
 
-        elevatorMotorRight.setSensorPosition(
+        elevatorMotorLeft.setSensorPosition(
                 0.0); // Elevator always has to start at same 0.0 position
+        elevatorMotorLeft.setInverted(true);
     }
 
     public enum ElevatorPosition {
@@ -98,10 +99,10 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public void run() {
-        elevatorMotorRight.set(MotorController.ControlMode.Position, setPoint, ffGain.valueOr(0.0));
+        elevatorMotorLeft.set(MotorController.ControlMode.Position, setPoint);
     }
 
     protected ElevatorStatus updateStatus() {
-        return new ElevatorStatus(elevatorMotorRight.getSensorPosition(), setPoint);
+        return new ElevatorStatus(elevatorMotorLeft.getSensorPosition(), setPoint);
     }
 }

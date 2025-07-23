@@ -32,7 +32,7 @@ public class OI extends RuleEngine {
             Shoulder shoulder,
             Vision vision) {
 
-        final JoystickReader leftJoystick = RobotProvider.instance.getJoystick(1);
+        final JoystickReader leftJoystick = RobotProvider.instance.getJoystick(0);
         final JoystickReader rightJoystick = RobotProvider.instance.getJoystick(2);
         final JoystickReader boxopGamepad = RobotProvider.instance.getJoystick(3);
 
@@ -41,16 +41,16 @@ public class OI extends RuleEngine {
         queuedControl.shoulderPosition = ShoulderPosition.L3;
         queuedControl.elevatorPosition = ElevatorPosition.L3;
 
-        addRule("Intake Coral", leftJoystick.whenButton(1), ONCE_AND_HOLD, () -> new IntakeCoral());
+        addRule("Intake Coral", leftJoystick.whenButton(1), ONCE_AND_HOLD, () -> new IntakeCoral(intake));
         addRule(
                 "Outtake Coral",
                 leftJoystick.whenButton(2),
                 ONCE_AND_HOLD,
-                () -> new OuttakeCoral());
+                () -> new OuttakeCoral(intake));
 
         addRule(
                 "Apply queued positions",
-                leftJoystick.whenButton(3),
+                leftJoystick.whenButton(4),
                 ONCE_AND_HOLD,
                 Set.of(wrist, shoulder, elevator),
                 () -> {
@@ -121,7 +121,7 @@ public class OI extends RuleEngine {
                 });
         addRule(
                 "Prep Coral Ground",
-                boxopGamepad.whenButton(7),
+                leftJoystick.whenButton(3),
                 ONCE,
                 Set.of(wrist, shoulder, elevator),
                 () -> {
