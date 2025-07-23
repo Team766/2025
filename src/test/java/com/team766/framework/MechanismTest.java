@@ -172,6 +172,12 @@ public class MechanismTest extends TestCase {
         assertNull(thrownException.get());
     }
 
+    /// Test that checkContextReservation will be skipped for calls to static methods of Mechanisms.
+    @Test
+    public void testNoReservationRequiredForStaticMethods() {
+        assertDoesNotThrow(() -> FakeMechanism.publicStaticMethod());
+    }
+
     /// Test that the Idle callback runs if no other Command reserves this Mechanism.
     @Test
     public void testIdleCallback() {
