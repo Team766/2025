@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -27,7 +28,7 @@ import java.util.Map;
  * 	roboRio-766.local:5800/values
  */
 
-public class WebServer {
+public class WebServer implements Closeable {
 
     public interface Handler {
         String endpoint();
@@ -67,6 +68,11 @@ public class WebServer {
                         return "";
                     }
                 });
+    }
+
+    @Override
+    public void close() {
+        server.stop(5);
     }
 
     public void addHandler(final Handler handler) {

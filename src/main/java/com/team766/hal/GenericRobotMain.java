@@ -1,10 +1,12 @@
 package com.team766.hal;
 
+import com.team766.framework.AutonomousMode;
 import com.team766.framework.AutonomousModeStateMachine;
 import com.team766.framework.RuleEngine;
 import com.team766.framework.SchedulerMonitor;
 import com.team766.framework.SchedulerUtils;
 import com.team766.library.RateLimiter;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.web.AutonomousSelector;
 import com.team766.web.ConfigUI;
 import com.team766.web.Dashboard;
@@ -16,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 // Team 766 - Robot Interface Base class
 
-public final class GenericRobotMain {
+public final class GenericRobotMain implements AutoCloseable {
     private RobotConfigurator configurator;
     private RuleEngine m_oi;
     private RuleEngine m_lights;
@@ -40,7 +42,16 @@ public final class GenericRobotMain {
         SchedulerMonitor.start();
 
         configurator = RobotSelector.createConfigurator();
-        var autonSelector = new AutonomousSelector(configurator.getAutonomousModes());
+        AutonomousMode[] autonomousModes = null;
+        try {
+            autonomousModes = configurator.getAutonomousModes();
+        } catch (Exception ex) {
+            LoggerExceptionUtils.exceptionToString(ex);
+        }
+        if (autonomousModes == null) {
+            autonomousModes = new AutonomousMode[0];
+        }
+        var autonSelector = new AutonomousSelector(autonomousModes);
         autonomous = new AutonomousModeStateMachine(autonSelector::getSelectedAutonMode);
         m_webServer = new WebServer();
         m_webServer.addHandler(new Dashboard());
@@ -63,6 +74,11 @@ public final class GenericRobotMain {
             throw ex;
         }
         faultInRobotInit = false;
+    }
+
+    @Override
+    public void close() {
+        m_webServer.close();
     }
 
     public void disabledInit() {

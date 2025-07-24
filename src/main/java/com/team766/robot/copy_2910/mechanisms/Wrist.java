@@ -34,13 +34,16 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     public enum WristPosition {
-        TOP(45),
-        RAISED(40),
-        FLOOR(10),
-        READY(5),
-        MAXIMUM(50),
-        MINIMUM(0),
-        BOTTOM(0);
+        L1(-16.643),
+        L2(0.643),
+        L3(-1.667),
+        L4(-5.5),
+        ALGAE_HIGH(-25.928),
+        ALGAE_LOW(-25.928),
+        CORAL_GROUND(-15.81),
+        ALGAE_GROUND(-21.786),
+        MAXIMUM(10),
+        MINIMUM(-30);
 
         private final double angle;
 
@@ -59,7 +62,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         ffGain =
                 ConfigFileReader.instance.getDouble(
                         "WristFFGain"); // Replace with actual config key
-        setPoint = WristPosition.READY.getPosition(); // Default position
+        setPoint = WristPosition.L3.getPosition(); // Default position
     }
 
     public void setSetpoint(double setpoint) {

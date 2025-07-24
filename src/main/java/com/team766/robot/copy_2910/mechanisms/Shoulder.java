@@ -35,13 +35,16 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public enum ShoulderPosition {
-        TOP(45),
-        RAISED(40),
-        FLOOR(10),
-        READY(5),
-        MAXIMUM(50),
-        MINIMUM(0),
-        BOTTOM(0);
+        L1(12.119),
+        L2(9.643),
+        L3(15.071),
+        L4(21.5),
+        ALGAE_HIGH(22.952),
+        ALGAE_LOW(20.405),
+        CORAL_GROUND(0.071),
+        ALGAE_GROUND(4.119),
+        MAXIMUM(40),
+        MINIMUM(0);
 
         private final double angle;
 
@@ -67,7 +70,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
         ffGain =
                 ConfigFileReader.instance.getDouble(
                         "ShoulderFFGain"); // Replace with actual config key
-        setPoint = ShoulderPosition.READY.getPosition(); // Default position
+        setPoint = ShoulderPosition.L1.getPosition(); // Default position
     }
 
     public void setSetpoint(double setpoint) {
