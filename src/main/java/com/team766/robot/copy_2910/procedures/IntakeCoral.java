@@ -69,7 +69,7 @@ public class IntakeCoral extends Procedure {
             /*
              * Case 4: Coral is in the front center of the intake
              *              |       coral       |
-             * |-----------------------intake--------------------|
+
              *
              * We just need to move the coral inwards, so spin the right motor clockwise, to the right, or in the positive direction,
              * and the left motor anticlockwise, to the left, or in the negative direction.
@@ -81,6 +81,9 @@ public class IntakeCoral extends Procedure {
             }
         }
         // Once the coral is in the back center, we stop the intake motors.
+        intake.turnLeftPositive();
+        intake.turnRightNegative();
+        context.waitForSeconds(0.05);
         intake.stop();
     }
 }

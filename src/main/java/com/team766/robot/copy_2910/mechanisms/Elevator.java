@@ -66,7 +66,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         L1(0.881),
         L2(-4.452),
         L3(-11.5),
-        L4(-23),  //-21.357
+        L4(-29),  //-21.357
         ALGAE_HIGH(-9.357),
         ALGAE_LOW(-3.262),
         CORAL_GROUND(-0.357),
@@ -75,7 +75,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         // can see the tag
         MAXIMUM(2), // Maximum height of the elevator, TODO: Adjust based on the actual elevator's
         // maximum position
-        MINIMUM(-25); // Minimum height of the elevator, TODO: Adjust based on the actual elevator's
+        MINIMUM(-30); // Minimum height of the elevator, TODO: Adjust based on the actual elevator's
         // minimum position
 
         final double position;
