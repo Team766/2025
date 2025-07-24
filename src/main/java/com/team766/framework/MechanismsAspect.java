@@ -47,4 +47,12 @@ public class MechanismsAspect {
         // TODO: should this log to mechanism's logger category?
         Logger.get(Category.MECHANISMS).logRaw(Severity.DEBUG, argsJoiner.toString());
     }
+
+    @Before(
+            "set(com.team766.framework3.Reservable+ com.team766.framework3.Procedure+.*)"
+                    + " && target(self)"
+                    + " && args(mechanism)")
+    public void settingMechanismFieldsInProcedures(Procedure self, Reservable mechanism) {
+        self.reserve(mechanism);
+    }
 }
