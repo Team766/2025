@@ -3,9 +3,11 @@ package com.team766.robot.copy_2910;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.RobotConfigurator;
+import com.team766.robot.burro_elevator.mechanisms.Elevator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.copy_2910.mechanisms.Elevator;
+import com.team766.robot.copy_2910.mechanisms.Climber;
 import com.team766.robot.copy_2910.mechanisms.Intake;
 import com.team766.robot.copy_2910.mechanisms.Shoulder;
 import com.team766.robot.copy_2910.mechanisms.Vision;
@@ -17,9 +19,10 @@ public class Robot implements RobotConfigurator {
 
     private SwerveDrive drive;
     private Intake intake;
+    private Vision vision;
+    private Climber climber;
     private Elevator elevator;
     private Shoulder shoulder;
-    private Vision vision;
     private Wrist wrist;
 
     @Override
@@ -27,9 +30,10 @@ public class Robot implements RobotConfigurator {
         SwerveConfig swerveConfig = new SwerveConfig();
         drive = new SwerveDrive(swerveConfig);
         intake = new Intake();
+        climber = new Climber();
         elevator = new Elevator();
-        shoulder = new Shoulder();
         vision = new Vision();
+        shoulder = new Shoulder();
         wrist = new Wrist();
     }
 
