@@ -124,11 +124,22 @@ public class OI extends RuleEngine {
                     queuedControl.shoulderPosition = ShoulderPosition.ALGAE_LOW;
                     queuedControl.elevatorPosition = ElevatorPosition.ALGAE_LOW;
                 });
-        addRule("Algae",
+        addRule("Algae In",
                 leftJoystick.whenButton(11),
                 ONCE_AND_HOLD,
                 intake,
                 () -> {intake.turnAlgaeNegative();});
+
+        addRule("Nudge Shoulder Up",
+                leftJoystick.whenButton(12),
+                ONCE,
+                Set.of(shoulder),
+                () -> shoulder.nudgeUp());
+        addRule("Nudge Shoulder Down",
+                leftJoystick.whenButton(13),
+                ONCE,
+                Set.of(shoulder),
+                () -> shoulder.nudgeDown());
         addRule(
                 "Prep Coral Ground",
                 leftJoystick.whenButton(3),

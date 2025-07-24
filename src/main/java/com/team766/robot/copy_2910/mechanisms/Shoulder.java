@@ -22,7 +22,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     // private ValueProvider<Double> ffGain;
 
     private final double NUDGE_AMOUNT =
-            0.1; // Amount to nudge up/down | TODO: Adjust this value based on the shoulder's
+            0.5; // Amount to nudge up/down | TODO: Adjust this value based on the shoulder's
 
     // characteristics
 
