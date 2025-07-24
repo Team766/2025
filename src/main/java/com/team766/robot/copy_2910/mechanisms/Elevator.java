@@ -1,5 +1,9 @@
 package com.team766.robot.copy_2910.mechanisms;
 
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.MotorController;
@@ -42,14 +46,19 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         elevatorMotorRight.follow(elevatorMotorLeft);
         setPoint = ElevatorPosition.READY.getPosition(); // Default position
         elevatorMotorLeft.setCurrentLimit(
-                30); // Set current limit for the elevator motor | TODO: Replace with actual value
+                35); // Set current limit for the elevator motor | TODO: Replace with actual value
+        elevatorMotorLeft.setInverted(false);
+        SparkMaxConfig rightConfig = new SparkMaxConfig();
+        rightConfig.follow((SparkMax)elevatorMotorLeft, true /* invert */);
+        ((SparkMax)elevatorMotorRight).configure(
+            rightConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         // ffGain =
         //      ConfigFileReader.instance.getDouble(
         //            "ElevatorFFGain"); // Replace with actual config key
 
         elevatorMotorLeft.setSensorPosition(
                 0.0); // Elevator always has to start at same 0.0 position
-        elevatorMotorLeft.setInverted(true);
+        //elevatorMotorRight.setInverted(true);
     }
 
     public enum ElevatorPosition {
@@ -57,7 +66,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         L1(0.881),
         L2(-4.452),
         L3(-11.5),
-        L4(-21.357),
+        L4(-23),  //-21.357
         ALGAE_HIGH(-9.357),
         ALGAE_LOW(-3.262),
         CORAL_GROUND(-0.357),
@@ -98,6 +107,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
     public void run() {
         elevatorMotorLeft.set(MotorController.ControlMode.Position, setPoint);
+        log("SHOULDER Setpoint: " + setPoint + " Pos: " + elevatorMotorLeft.getSensorPosition());
     }
 
     protected ElevatorStatus updateStatus() {

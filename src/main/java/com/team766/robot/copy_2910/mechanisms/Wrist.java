@@ -38,7 +38,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         L4(-5.5),
         ALGAE_HIGH(-25.928),
         ALGAE_LOW(-25.928),
-        CORAL_GROUND(-12.81),
+        CORAL_GROUND(-15.2),
         ALGAE_GROUND(-21.786),
         MAXIMUM(10),
         MINIMUM(-30);

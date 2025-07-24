@@ -1,5 +1,9 @@
 package com.team766.robot.copy_2910.mechanisms;
 
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.MotorController;
@@ -18,7 +22,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     // private ValueProvider<Double> ffGain;
 
     private final double NUDGE_AMOUNT =
-            5; // Amount to nudge up/down | TODO: Adjust this value based on the shoulder's
+            0.1; // Amount to nudge up/down | TODO: Adjust this value based on the shoulder's
 
     // characteristics
 
@@ -34,9 +38,9 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
 
     public enum ShoulderPosition {
         L1(12.119),
-        L2(9.643),
-        L3(15.071),
-        L4(21.5),
+        L2(11.5),
+        L3(17),
+        L4(22.5),
         ALGAE_HIGH(22.952),
         ALGAE_LOW(20.405),
         CORAL_GROUND(0.071),
@@ -63,8 +67,13 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
                 RobotProvider.instance.getMotor(
                         "RightShoulderMotor"); // Replace with actual motor name
 
-        rightMotor.setInverted(true);
+        leftMotor.setInverted(true);
         rightMotor.follow(leftMotor);
+
+        SparkMaxConfig rightConfig = new SparkMaxConfig();
+        rightConfig.follow((SparkMax)leftMotor, true /* invert */);
+        ((SparkMax)rightMotor).configure(
+            rightConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         // ffGain =
         //      ConfigFileReader.instance.getDouble(
@@ -81,7 +90,9 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public void run() {
+        //leftMotor.set(.Position, setPoint)
         leftMotor.set(MotorController.ControlMode.Position, setPoint);
+        log("SHOULDER Setpoint: " + setPoint + " Pos: " + leftMotor.getSensorPosition());
     }
 
     public void nudgeUp() {

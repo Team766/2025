@@ -30,7 +30,8 @@ public class OI extends RuleEngine {
             Wrist wrist,
             Elevator elevator,
             Shoulder shoulder,
-            Vision vision) {
+            Vision vision,
+            Climber climber) {
 
         final JoystickReader leftJoystick = RobotProvider.instance.getJoystick(0);
         final JoystickReader rightJoystick = RobotProvider.instance.getJoystick(2);
@@ -65,7 +66,7 @@ public class OI extends RuleEngine {
 
         addRule(
                 "Prep L1 Coral",
-                boxopGamepad.whenButton(1),
+                leftJoystick.whenButton(5),
                 ONCE,
                 Set.of(wrist, shoulder, elevator),
                 () -> {
@@ -75,7 +76,7 @@ public class OI extends RuleEngine {
                 });
         addRule(
                 "Prep L2 Coral",
-                boxopGamepad.whenButton(2),
+                leftJoystick.whenButton(6),
                 ONCE,
                 Set.of(wrist, shoulder, elevator),
                 () -> {
@@ -85,7 +86,7 @@ public class OI extends RuleEngine {
                 });
         addRule(
                 "Prep L3 Coral",
-                boxopGamepad.whenButton(3),
+                leftJoystick.whenButton(7),
                 ONCE,
                 Set.of(wrist, shoulder, elevator),
                 () -> {
@@ -95,7 +96,7 @@ public class OI extends RuleEngine {
                 });
         addRule(
                 "Prep L4 Coral",
-                boxopGamepad.whenButton(4),
+                leftJoystick.whenButton(8),
                 ONCE,
                 Set.of(wrist, shoulder, elevator),
                 () -> {
@@ -105,7 +106,7 @@ public class OI extends RuleEngine {
                 });
         addRule(
                 "Prep Algae High",
-                boxopGamepad.whenButton(5),
+                leftJoystick.whenButton(9),
                 ONCE,
                 Set.of(wrist, shoulder, elevator),
                 () -> {
@@ -115,7 +116,7 @@ public class OI extends RuleEngine {
                 });
         addRule(
                 "Prep Algae Low",
-                boxopGamepad.whenButton(6),
+                leftJoystick.whenButton(10),
                 ONCE,
                 Set.of(wrist, shoulder, elevator),
                 () -> {
@@ -123,6 +124,11 @@ public class OI extends RuleEngine {
                     queuedControl.shoulderPosition = ShoulderPosition.ALGAE_LOW;
                     queuedControl.elevatorPosition = ElevatorPosition.ALGAE_LOW;
                 });
+        addRule("Algae",
+                leftJoystick.whenButton(11),
+                ONCE_AND_HOLD,
+                intake,
+                () -> {intake.turnAlgaeNegative();});
         addRule(
                 "Prep Coral Ground",
                 leftJoystick.whenButton(3),

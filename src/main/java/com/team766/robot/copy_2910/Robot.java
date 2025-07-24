@@ -3,7 +3,6 @@ package com.team766.robot.copy_2910;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.RobotConfigurator;
-import com.team766.robot.burro_elevator.mechanisms.Elevator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.copy_2910.mechanisms.Elevator;
@@ -39,7 +38,7 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, intake, wrist, elevator, shoulder, vision);
+        return new OI(drive, intake, wrist, elevator, shoulder, vision, climber);
     }
 
     @Override

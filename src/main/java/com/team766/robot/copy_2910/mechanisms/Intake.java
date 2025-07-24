@@ -18,10 +18,10 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
     private static final double CORAL_THRESHOLD = 0.12; // TODO: Set this to a real value
 
-    private double leftPower = 0.25;
-    private double rightPower = 0.25;
+    private double leftPower = 0.125;
+    private double rightPower = 1;
 
-    private double algaePower = 0.35;
+    private double algaePower = 1;
 
     public Intake() {
         leftCANRange = RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.left");
