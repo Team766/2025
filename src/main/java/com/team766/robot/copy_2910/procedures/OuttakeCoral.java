@@ -14,9 +14,8 @@ public class OuttakeCoral extends Procedure {
 
     @Override
     public void run(Context context) {
-        intake.turnRightPositive();
-        intake.turnLeftNegative();
-        intake.turnAlgaeNegative();
+        intake.setLeft(1);
+        intake.setRight(-1);
         waitForStatusMatching(context, Intake.IntakeStatus.class, s -> !s.hasCoralInFrontCenter());
         intake.stop();
     }

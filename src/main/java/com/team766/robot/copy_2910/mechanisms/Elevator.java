@@ -45,8 +45,8 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
         elevatorMotorRight.follow(elevatorMotorLeft);
         setPoint = ElevatorPosition.READY.getPosition(); // Default position
-        elevatorMotorLeft.setCurrentLimit(
-                35); // Set current limit for the elevator motor | TODO: Replace with actual value
+        elevatorMotorLeft.setCurrentLimit(40);
+        elevatorMotorRight.setCurrentLimit(40); // Set current limit for the elevator motor
         elevatorMotorLeft.setInverted(false);
         SparkMaxConfig rightConfig = new SparkMaxConfig();
         rightConfig.follow((SparkMax)elevatorMotorLeft, true /* invert */);
@@ -62,16 +62,22 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public enum ElevatorPosition {
-        INTAKE(0.0),
+        INTAKE(2.0),
         L1(0.881),
         L2(-4.452),
-        L3(-11.5),
+        L3(-11),
         L4(-29),  //-21.357
         ALGAE_HIGH(-9.357),
         ALGAE_LOW(-3.262),
-        CORAL_GROUND(-0.357),
+        CORAL_GROUND(2),
         ALGAE_GROUND(-1.643),
-        READY(-10), // Should be the default position and the ready position for vision so that it
+
+
+
+
+
+
+        READY(2), // Should be the default position and the ready position for vision so that it
         // can see the tag
         MAXIMUM(2), // Maximum height of the elevator, TODO: Adjust based on the actual elevator's
         // maximum position
@@ -97,12 +103,20 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
                         ElevatorPosition.MAXIMUM.getPosition());
     }
 
+    public void setPosition(ElevatorPosition setPosition) {
+        setPosition(setPosition.getPosition());
+    }
+
     public void nudgeUp() {
         setPosition(setPoint + NUDGE_AMOUNT);
     }
 
     public void nudgeDown() {
         setPosition(setPoint - NUDGE_AMOUNT);
+    }
+
+    public void nudge(double input) {
+        if (input > 0) {nudgeUp();} else {nudgeDown();}
     }
 
     public void run() {

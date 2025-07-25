@@ -37,14 +37,16 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public enum ShoulderPosition {
-        L1(12.119),
+        L1(14),
         L2(11.5),
         L3(17),
-        L4(23),
+        L4(24.5),
         ALGAE_HIGH(22.952),
         ALGAE_LOW(20.405),
         CORAL_GROUND(0.071),
         ALGAE_GROUND(4.119),
+        CLIMBER(28),
+        STOW(5),
         MAXIMUM(40),
         MINIMUM(0);
 
@@ -75,10 +77,13 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
         ((SparkMax)rightMotor).configure(
             rightConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
+        leftMotor.setCurrentLimit(40);
+        rightMotor.setCurrentLimit(40);
+
         // ffGain =
         //      ConfigFileReader.instance.getDouble(
         //            "ShoulderFFGain"); // Replace with actual config key
-        setPoint = ShoulderPosition.L1.getPosition(); // Default position
+        // setPoint = ShoulderPosition.L1.getPosition(); // Default position
     }
 
     public void setSetpoint(double setpoint) {
@@ -87,6 +92,10 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
                         setpoint,
                         ShoulderPosition.MINIMUM.getPosition(),
                         ShoulderPosition.MAXIMUM.getPosition());
+    }
+
+    public void setPosition(ShoulderPosition position) {
+        setSetpoint(position.getPosition());
     }
 
     public void run() {
@@ -101,6 +110,10 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
 
     public void nudgeDown() {
         setSetpoint(setPoint - NUDGE_AMOUNT);
+    }
+
+    public void nudge(double input) {
+        if (input > 0) {nudgeUp();} else {nudgeDown();}
     }
 
     @Override

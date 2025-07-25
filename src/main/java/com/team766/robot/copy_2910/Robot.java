@@ -11,6 +11,7 @@ import com.team766.robot.copy_2910.mechanisms.Intake;
 import com.team766.robot.copy_2910.mechanisms.Shoulder;
 import com.team766.robot.copy_2910.mechanisms.Vision;
 import com.team766.robot.copy_2910.mechanisms.Wrist;
+import com.team766.robot.copy_2910.procedures.CenterL1;
 import com.team766.robot.copy_2910.procedures.OuttakeCoral;
 import com.team766.robot.gatorade.Lights;
 
@@ -26,7 +27,7 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public void initializeMechanisms() {
-        SwerveConfig swerveConfig = new SwerveConfig();
+        SwerveConfig swerveConfig = new SwerveConfig().withDistanceBetweenWheels(0.533);
         drive = new SwerveDrive(swerveConfig);
         intake = new Intake();
         climber = new Climber();
@@ -51,7 +52,7 @@ public class Robot implements RobotConfigurator {
     @Override
     public AutonomousMode[] getAutonomousModes() {
         // TODO Auto-generated method stub
-        return new AutonomousMode[] {new AutonomousMode("uh", () -> new OuttakeCoral(intake))};
+        return new AutonomousMode[] {new AutonomousMode("Center Start L1", () -> new CenterL1(drive, intake, wrist, elevator, shoulder))};
         // throw new UnsupportedOperationException("Unimplemented method 'getAutonomousModes'");
     }
 }

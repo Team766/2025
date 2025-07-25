@@ -35,11 +35,12 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         L1(-16.643),
         L2(0.643),
         L3(-1.667),
-        L4(-7),
+        L4(-9),
         ALGAE_HIGH(-25.928),
         ALGAE_LOW(-25.928),
-        CORAL_GROUND(-15.2),
+        CORAL_GROUND(-16.5),
         ALGAE_GROUND(-21.786),
+        STOW(-5),
         MAXIMUM(10),
         MINIMUM(-30);
 
@@ -60,7 +61,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         // ffGain =
         //        ConfigFileReader.instance.getDouble(
         //                "WristFFGain"); // Replace with actual config key
-        setPoint = WristPosition.L3.getPosition(); // Default position
+        // setPoint = WristPosition.L3.getPosition(); // Default position
     }
 
     public void setSetpoint(double setpoint) {
@@ -69,6 +70,10 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
                         setpoint,
                         WristPosition.MINIMUM.getPosition(),
                         WristPosition.MAXIMUM.getPosition());
+    }
+
+    public void setPosition(WristPosition wristPosition) {
+        setSetpoint(wristPosition.getPosition());
     }
 
     public void run() {
@@ -81,6 +86,10 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     public void nudgeDown() {
         setSetpoint(setPoint - NUDGE_AMOUNT);
+    }
+
+    public void nudge(double input) {
+        if (input > 0) {nudgeUp();} else {nudgeDown();}
     }
 
     @Override

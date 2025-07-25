@@ -2,19 +2,39 @@ package com.team766.robot.copy_2910.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
+import com.team766.robot.copy_2910.mechanisms.Elevator;
+import com.team766.robot.copy_2910.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.copy_2910.mechanisms.Intake;
+import com.team766.robot.copy_2910.mechanisms.Shoulder;
+import com.team766.robot.copy_2910.mechanisms.Shoulder.ShoulderPosition;
+import com.team766.robot.copy_2910.mechanisms.Wrist;
+import com.team766.robot.copy_2910.mechanisms.Wrist.WristPosition;
+
 import java.util.Optional;
 
 public class IntakeCoral extends Procedure {
 
     private Intake intake;
+    private Elevator elevator;
+    private Shoulder shoulder;
+    private Wrist wrist;
 
-    public IntakeCoral(Intake intake2) {
-        intake = reserve(intake2);
+    public IntakeCoral(Intake intake, Elevator elevator, Shoulder shoulder, Wrist wrist) {
+        this.intake = reserve(intake);
+        this.elevator = reserve(elevator);
+        this.shoulder = reserve(shoulder);
+        this.wrist = reserve(wrist);
     }
 
     @Override
     public void run(Context context) {
+        elevator.setPosition(ElevatorPosition.CORAL_GROUND);
+        shoulder.setPosition(ShoulderPosition.CORAL_GROUND);
+        wrist.setPosition(WristPosition.CORAL_GROUND);
+        waitForStatusMatching(
+                context, Shoulder.ShoulderStatus.class, s -> s.isNearTo(ShoulderPosition.CORAL_GROUND));
+        waitForStatusMatching(
+                context, Wrist.WristStatus.class, s -> s.isNearTo(WristPosition.CORAL_GROUND));
         Optional<Intake.IntakeStatus> status = getStatus(Intake.IntakeStatus.class);
         if (status.isEmpty()) {
             log("No intake status");
