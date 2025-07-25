@@ -1,6 +1,5 @@
 package com.team766.robot.copy_2910;
 
-import static com.team766.framework.RulePersistence.ONCE;
 import static com.team766.framework.RulePersistence.ONCE_AND_HOLD;
 
 import com.team766.framework.RuleEngine;
@@ -12,10 +11,7 @@ import com.team766.robot.copy_2910.mechanisms.*;
 import com.team766.robot.copy_2910.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.copy_2910.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.copy_2910.mechanisms.Wrist.WristPosition;
-import com.team766.robot.copy_2910.procedures.AutoScore;
-import com.team766.robot.copy_2910.procedures.IntakeCoral;
 import com.team766.robot.copy_2910.procedures.OuttakeCoral;
-import java.util.Set;
 
 public class OI extends RuleEngine {
 
@@ -48,21 +44,24 @@ public class OI extends RuleEngine {
         queuedControl.elevatorPosition = ElevatorPosition.READY;
 
         addRules(new DriverOI(leftJoystick, rightJoystick, swerveDrive));
-        addRules(new BoxOpOI(boxopGamepad, shoulder, elevator, wrist, climber, intake, queuedControl));
+        addRules(
+                new BoxOpOI(
+                        boxopGamepad, shoulder, elevator, wrist, climber, intake, queuedControl));
 
         addRule(
-                "Outtake Coral",
-                leftJoystick.whenButton(InputConstants.JOYSTICK_RIGHT_BUTTON),
-                ONCE_AND_HOLD,
-                () -> new OuttakeCoral(intake)).withFinishedTriggeringProcedure(intake, () -> intake.stop());
+                        "Outtake Coral",
+                        leftJoystick.whenButton(InputConstants.JOYSTICK_RIGHT_BUTTON),
+                        ONCE_AND_HOLD,
+                        () -> new OuttakeCoral(intake))
+                .withFinishedTriggeringProcedure(intake, () -> intake.stop());
 
         addRule(
-                "Outtake Algae",
-                leftJoystick.whenButton(InputConstants.JOYSTICK_LEFT_BUTTON),
-                ONCE_AND_HOLD,
-                intake,
-                () -> intake.setAlgaePower(-0.5)
-                ).withFinishedTriggeringProcedure(intake, () -> intake.stop());
+                        "Outtake Algae",
+                        leftJoystick.whenButton(InputConstants.JOYSTICK_LEFT_BUTTON),
+                        ONCE_AND_HOLD,
+                        intake,
+                        () -> intake.setAlgaePower(-0.5))
+                .withFinishedTriggeringProcedure(intake, () -> intake.stop());
 
         // addRule(
         //         "Apply queued positions",

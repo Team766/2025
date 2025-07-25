@@ -49,16 +49,19 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         elevatorMotorRight.setCurrentLimit(40); // Set current limit for the elevator motor
         elevatorMotorLeft.setInverted(false);
         SparkMaxConfig rightConfig = new SparkMaxConfig();
-        rightConfig.follow((SparkMax)elevatorMotorLeft, true /* invert */);
-        ((SparkMax)elevatorMotorRight).configure(
-            rightConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        rightConfig.follow((SparkMax) elevatorMotorLeft, true /* invert */);
+        ((SparkMax) elevatorMotorRight)
+                .configure(
+                        rightConfig,
+                        ResetMode.kNoResetSafeParameters,
+                        PersistMode.kPersistParameters);
         // ffGain =
         //      ConfigFileReader.instance.getDouble(
         //            "ElevatorFFGain"); // Replace with actual config key
 
         elevatorMotorLeft.setSensorPosition(
                 0.0); // Elevator always has to start at same 0.0 position
-        //elevatorMotorRight.setInverted(true);
+        // elevatorMotorRight.setInverted(true);
     }
 
     public enum ElevatorPosition {
@@ -66,16 +69,11 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         L1(0.881),
         L2(-4.452),
         L3(-11),
-        L4(-29),  //-21.357
+        L4(-29), // -21.357
         ALGAE_HIGH(-9.357),
         ALGAE_LOW(-3.262),
         CORAL_GROUND(2),
         ALGAE_GROUND(-1.643),
-
-
-
-
-
 
         READY(2), // Should be the default position and the ready position for vision so that it
         // can see the tag
@@ -116,7 +114,11 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public void nudge(double input) {
-        if (input > 0) {nudgeUp();} else {nudgeDown();}
+        if (input > 0) {
+            nudgeUp();
+        } else {
+            nudgeDown();
+        }
     }
 
     public void run() {

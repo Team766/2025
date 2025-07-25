@@ -9,7 +9,6 @@ import com.team766.robot.copy_2910.mechanisms.Shoulder;
 import com.team766.robot.copy_2910.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.copy_2910.mechanisms.Wrist;
 import com.team766.robot.copy_2910.mechanisms.Wrist.WristPosition;
-
 import java.util.Optional;
 
 public class IntakeCoral extends Procedure {
@@ -32,7 +31,9 @@ public class IntakeCoral extends Procedure {
         shoulder.setPosition(ShoulderPosition.CORAL_GROUND);
         wrist.setPosition(WristPosition.CORAL_GROUND);
         waitForStatusMatching(
-                context, Shoulder.ShoulderStatus.class, s -> s.isNearTo(ShoulderPosition.CORAL_GROUND));
+                context,
+                Shoulder.ShoulderStatus.class,
+                s -> s.isNearTo(ShoulderPosition.CORAL_GROUND));
         waitForStatusMatching(
                 context, Wrist.WristStatus.class, s -> s.isNearTo(WristPosition.CORAL_GROUND));
         Optional<Intake.IntakeStatus> status = getStatus(Intake.IntakeStatus.class);
@@ -87,14 +88,14 @@ public class IntakeCoral extends Procedure {
              * Crazy enough, this is the same as situation two!
              */
             /*
-             * Case 4: Coral is in the front center of the intake
-             *              |       coral       |
+            * Case 4: Coral is in the front center of the intake
+            *              |       coral       |
 
-             *
-             * We just need to move the coral inwards, so spin the right motor clockwise, to the right, or in the positive direction,
-             * and the left motor anticlockwise, to the left, or in the negative direction.
-             * This is the same as situation two and three!
-             */
+            *
+            * We just need to move the coral inwards, so spin the right motor clockwise, to the right, or in the positive direction,
+            * and the left motor anticlockwise, to the left, or in the negative direction.
+            * This is the same as situation two and three!
+            */
             else {
                 intake.turnLeftNegative();
                 intake.turnRightPositive();

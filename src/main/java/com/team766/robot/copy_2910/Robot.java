@@ -5,14 +5,13 @@ import com.team766.framework.RuleEngine;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
-import com.team766.robot.copy_2910.mechanisms.Elevator;
 import com.team766.robot.copy_2910.mechanisms.Climber;
+import com.team766.robot.copy_2910.mechanisms.Elevator;
 import com.team766.robot.copy_2910.mechanisms.Intake;
 import com.team766.robot.copy_2910.mechanisms.Shoulder;
 import com.team766.robot.copy_2910.mechanisms.Vision;
 import com.team766.robot.copy_2910.mechanisms.Wrist;
 import com.team766.robot.copy_2910.procedures.CenterL1;
-import com.team766.robot.copy_2910.procedures.OuttakeCoral;
 import com.team766.robot.gatorade.Lights;
 
 public class Robot implements RobotConfigurator {
@@ -52,7 +51,10 @@ public class Robot implements RobotConfigurator {
     @Override
     public AutonomousMode[] getAutonomousModes() {
         // TODO Auto-generated method stub
-        return new AutonomousMode[] {new AutonomousMode("Center Start L1", () -> new CenterL1(drive, intake, wrist, elevator, shoulder))};
+        return new AutonomousMode[] {
+            new AutonomousMode(
+                    "Center Start L1", () -> new CenterL1(drive, intake, wrist, elevator, shoulder))
+        };
         // throw new UnsupportedOperationException("Unimplemented method 'getAutonomousModes'");
     }
 }

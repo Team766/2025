@@ -89,7 +89,11 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     public void nudge(double input) {
-        if (input > 0) {nudgeUp();} else {nudgeDown();}
+        if (input > 0) {
+            nudgeUp();
+        } else {
+            nudgeDown();
+        }
     }
 
     @Override

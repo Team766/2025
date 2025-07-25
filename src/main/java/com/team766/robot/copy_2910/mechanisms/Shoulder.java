@@ -73,9 +73,12 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
         rightMotor.follow(leftMotor);
 
         SparkMaxConfig rightConfig = new SparkMaxConfig();
-        rightConfig.follow((SparkMax)leftMotor, true /* invert */);
-        ((SparkMax)rightMotor).configure(
-            rightConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        rightConfig.follow((SparkMax) leftMotor, true /* invert */);
+        ((SparkMax) rightMotor)
+                .configure(
+                        rightConfig,
+                        ResetMode.kNoResetSafeParameters,
+                        PersistMode.kPersistParameters);
 
         leftMotor.setCurrentLimit(40);
         rightMotor.setCurrentLimit(40);
@@ -99,7 +102,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public void run() {
-        //leftMotor.set(.Position, setPoint)
+        // leftMotor.set(.Position, setPoint)
         leftMotor.set(MotorController.ControlMode.Position, setPoint);
         log("SHOULDER Setpoint: " + setPoint + " Pos: " + leftMotor.getSensorPosition());
     }
@@ -113,7 +116,11 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public void nudge(double input) {
-        if (input > 0) {nudgeUp();} else {nudgeDown();}
+        if (input > 0) {
+            nudgeUp();
+        } else {
+            nudgeDown();
+        }
     }
 
     @Override

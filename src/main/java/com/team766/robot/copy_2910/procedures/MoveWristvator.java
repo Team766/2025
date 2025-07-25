@@ -9,7 +9,6 @@ import com.team766.robot.copy_2910.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.copy_2910.mechanisms.Wrist;
 import com.team766.robot.copy_2910.mechanisms.Wrist.WristPosition;
 
-
 public class MoveWristvator extends Procedure {
     private final Shoulder shoulder;
     private final Elevator elevator;
@@ -39,7 +38,8 @@ public class MoveWristvator extends Procedure {
         // It might already be retracted, so it's possible that this step finishes instantaneously.
         wrist.setPosition(WristPosition.STOW);
         // If raising the shoulder, do that before the elevator (else, lower it after the elevator).
-        if (shoulderSetpoint.getPosition() > getStatusOrThrow(Shoulder.ShoulderStatus.class).position()) {
+        if (shoulderSetpoint.getPosition()
+                > getStatusOrThrow(Shoulder.ShoulderStatus.class).position()) {
             shoulder.setPosition(shoulderSetpoint);
             waitForStatusMatching(
                     context, Shoulder.ShoulderStatus.class, s -> s.isNearTo(shoulderSetpoint));
@@ -49,14 +49,14 @@ public class MoveWristvator extends Procedure {
 
         // Move the elevator. Wait until it gets near the target position.
         elevator.setPosition(elevatorSetpoint);
-        waitForStatusMatching(
-                context, Elevator.ElevatorStatus.class, s -> s.isAtHeight());
+        waitForStatusMatching(context, Elevator.ElevatorStatus.class, s -> s.isAtHeight());
 
         // If lowering the shoulder, do that after the elevator.
-        if (shoulderSetpoint.getPosition() < getStatusOrThrow(Shoulder.ShoulderStatus.class).position()) {
+        if (shoulderSetpoint.getPosition()
+                < getStatusOrThrow(Shoulder.ShoulderStatus.class).position()) {
             shoulder.setPosition(shoulderSetpoint);
         }
-        
+
         // Lastly, move the wrist.
         wrist.setPosition(wristSetpoint);
         waitForStatusMatching(context, Wrist.WristStatus.class, s -> s.isNearTo(wristSetpoint));
