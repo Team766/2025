@@ -32,6 +32,7 @@ public class TestRobotProvider extends RobotProvider {
     @Override
     public MotorController getMotor(
             final int index,
+            final String canBus,
             final String configPrefix,
             final MotorController.Type type,
             final ControlInputReader localSensor) {
