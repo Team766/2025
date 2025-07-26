@@ -130,7 +130,7 @@ public class AlgaeIntake extends MechanismWithStatus<AlgaeIntake.AlgaeIntakeStat
         L2L3AlgaeIntake(20, -1, 0.455, 0.70),
         L3L4AlgaeIntake(60, -1, 0.59, 0.62),
         Stow(-80, 1, 0.6, 0.28),
-        Shoot(-25, 1, 0.15, 0.37); // placeholder number
+        Shoot(-30, 1, 0.15, 0.37); // placeholder number
 
         private final double angle;
         private final double direction;
