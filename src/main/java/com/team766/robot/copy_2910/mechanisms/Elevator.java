@@ -65,15 +65,15 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public enum ElevatorPosition {
-        INTAKE(2.0),
-        L1(0.881),
-        L2(-4.452),
-        L3(-11),
-        L4(-29), // -21.357
-        ALGAE_HIGH(-9.357),
-        ALGAE_LOW(-3.262),
-        CORAL_GROUND(2),
-        ALGAE_GROUND(-1.643),
+        INTAKE(2.0 * 48.7619),
+        L1(0.881 * 48.7619),
+        L2(-4.452 * 48.7619),
+        L3(-11 * 48.7619),
+        L4(-29 * 48.7619), // -21.357
+        ALGAE_HIGH(-9.357 * 48.7619),
+        ALGAE_LOW(-3.262 * 48.7619),
+        CORAL_GROUND(2 * 48.7619),
+        ALGAE_GROUND(-1.643 * 48.7619),
 
         READY(2), // Should be the default position and the ready position for vision so that it
         // can see the tag
