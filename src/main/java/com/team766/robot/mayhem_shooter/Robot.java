@@ -3,18 +3,18 @@ package com.team766.robot.mayhem_shooter;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.RobotConfigurator;
-import com.team766.robot.common.mechanisms.BurroDrive;
-import com.team766.robot.mayhem_shooter.mechanisms.*;
-import com.team766.robot.mayhem_shooter.procedures.*;
+import com.team766.robot.burro_arm.procedures.DoNothing;    
+import com.team766.robot.mayhem_shooter.Mechanisms.*;
+import com.team766.robot.mayhem_shooter.Procedures.*;
 
 public class Robot implements RobotConfigurator {
-    private BurroDrive drive;
+    private Drive drive;
     private Shooter shooter;
 
     @Override
     public void initializeMechanisms() {
         // Initialize mechanisms here
-        drive = new BurroDrive();
+        drive = new Drive();
         shooter = new Shooter();
     }
 
@@ -30,7 +30,7 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public AutonomousMode[] getAutonomousModes() {
-        return new AutonomousMode[] {
+        return new AutonomousMode[] {new AutonomousMode("DONT USE ME", () -> new DoNothing())
             // Add autonomous modes here like this:
             //    new AutonomousMode("NameOfAutonomousMode", () -> new MyAutonomousProcedure()),
             //

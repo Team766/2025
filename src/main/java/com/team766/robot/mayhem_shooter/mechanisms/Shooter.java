@@ -1,15 +1,15 @@
-package com.team766.robot.mayhem_shooter.mechanisms;
+package com.team766.robot.mayhem_shooter.Mechanisms;
 
-import com.team766.framework.Mechanism;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.MotorController;
-import com.team766.hal.RobotProvider;
 import com.team766.hal.MotorController.ControlMode;
+import com.team766.hal.RobotProvider;
 
 public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
     private MotorController shooterMotor;
     private MotorController feederMotor;
+    private MotorController intakeMotor;
     private double targetShooterSpeed;
     private static final double SHOOTER_SPEED_TOLERANCE = 5;
     private static final double DEFAULT_SHOOTER_SPEED = 50;
@@ -24,18 +24,23 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
     public Shooter() {
         shooterMotor = RobotProvider.instance.getMotor("mayhemShooter.shooterMotor");
         feederMotor = RobotProvider.instance.getMotor("mayhemShooter.feederMotor");
+        intakeMotor = RobotProvider.instance.getMotor("intakeMotor");
 
         shooterMotor.setCurrentLimit(50);
         feederMotor.setCurrentLimit(50);
     }
 
-    public void setShooterPower(final double targetShooterRPS) {
-        targetShooterSpeed = targetShooterRPS;
-        shooterMotor.set(ControlMode.Velocity, targetShooterRPS);
+    public void setShooterPower(final double percent) {
+        targetShooterSpeed = percent;
+        shooterMotor.set(ControlMode.PercentOutput, percent);
     }
 
     public void enableShooter() {
-        setShooterPower(DEFAULT_SHOOTER_SPEED);
+        setShooterPower(0.4);
+    }
+
+    public void setIntakeMotor(double power){
+        intakeMotor.set(power);
     }
 
     public void stopShooterMotor() {
@@ -55,6 +60,7 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
         // Stop mechanism when nothing is using it.
         stopShooterMotor();
         setFeederPower(0);
+        setIntakeMotor(0);
     }
 
     @Override
