@@ -1,5 +1,7 @@
 package com.team766.hal.wpilib;
 
+import static com.team766.hal.wpilib.CTREPhoenix6Utils.statusCodeToException;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.StatusCode;
@@ -21,7 +23,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team766.hal.MotorController;
-import com.team766.hal.MotorControllerCommandFailedException;
+import com.team766.hal.wpilib.CTREPhoenix6Utils.ExceptionTarget;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
@@ -55,27 +57,6 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
 
     public CANTalonFxMotorController(String deviceName, final int deviceNumber) {
         this(deviceName, deviceNumber, "");
-    }
-
-    private enum ExceptionTarget {
-        THROW,
-        LOG,
-    }
-
-    private static void statusCodeToException(
-            final ExceptionTarget throwEx, final StatusCode code) {
-        if (code.isOK()) {
-            return;
-        }
-        var ex = new MotorControllerCommandFailedException(code.toString());
-        switch (throwEx) {
-            case THROW:
-                throw ex;
-            default:
-            case LOG:
-                LoggerExceptionUtils.logException(ex);
-                break;
-        }
     }
 
     private void refreshConfig() {

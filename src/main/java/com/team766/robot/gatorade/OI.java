@@ -56,7 +56,7 @@ public class OI extends RuleEngine {
                 Set.of(),
                 () -> {
                     gamePieceType = GamePieceType.CONE;
-                    updateStatus();
+                    publishStatus();
                 });
         addRule(
                 "Select Cube",
@@ -65,7 +65,7 @@ public class OI extends RuleEngine {
                 Set.of(),
                 () -> {
                     gamePieceType = GamePieceType.CUBE;
-                    updateStatus();
+                    publishStatus();
                 });
 
         // look for button presses to queue placement of intake/wrist/elevator superstructure
@@ -76,7 +76,7 @@ public class OI extends RuleEngine {
                 Set.of(),
                 () -> {
                     placementPosition = PlacementPosition.NONE;
-                    updateStatus();
+                    publishStatus();
                 });
         addRule(
                 "Select low",
@@ -85,7 +85,7 @@ public class OI extends RuleEngine {
                 Set.of(),
                 () -> {
                     placementPosition = PlacementPosition.LOW_NODE;
-                    updateStatus();
+                    publishStatus();
                 });
         addRule(
                 "Select mid",
@@ -94,7 +94,7 @@ public class OI extends RuleEngine {
                 Set.of(),
                 () -> {
                     placementPosition = PlacementPosition.MID_NODE;
-                    updateStatus();
+                    publishStatus();
                 });
         addRule(
                 "Select high",
@@ -103,7 +103,7 @@ public class OI extends RuleEngine {
                 Set.of(),
                 () -> {
                     placementPosition = PlacementPosition.HIGH_NODE;
-                    updateStatus();
+                    publishStatus();
                 });
         addRule(
                 "Select human",
@@ -112,7 +112,7 @@ public class OI extends RuleEngine {
                 Set.of(),
                 () -> {
                     placementPosition = PlacementPosition.HUMAN_PLAYER;
-                    updateStatus();
+                    publishStatus();
                 });
 
         // look for button hold to start intake, release to idle intake
@@ -204,7 +204,7 @@ public class OI extends RuleEngine {
                                         : new RetractWristvator(shoulder, elevator, wrist));
     }
 
-    private void updateStatus() {
+    private void publishStatus() {
         publishStatus(new OIStatus(placementPosition, gamePieceType));
     }
 }

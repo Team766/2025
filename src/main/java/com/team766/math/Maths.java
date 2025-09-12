@@ -102,4 +102,47 @@ public class Maths {
 
         return y0 + (targetX - x0) * slope;
     }
+
+    // Returns the smallest number
+    // x such that both:
+    // x % modulus1 = remainder1
+    // x % modulus2 = remainder2
+    // Assumption: Numbers in num[] are pairwise
+    // coprime (gcd for every pair is 1)
+    public static double chineseRemainder(
+            double remainder1, int modulus1, double remainder2, int modulus2) {
+        // https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm#Pseudocode
+
+        if (modulus1 <= 1 || modulus2 <= 1) {
+            throw new IllegalArgumentException("Moduli must be greater than 1");
+        }
+
+        int bezout1, bezout2;
+        int greatest_common_divisor;
+        {
+            int s = 0, old_s = 1;
+            int r = modulus2, old_r = modulus1;
+
+            while (r != 0) {
+                final int quotient = old_r / r;
+
+                final int rp = r;
+                r = old_r - quotient * r;
+                old_r = rp;
+
+                final int sp = s;
+                s = old_s - quotient * s;
+                old_s = sp;
+            }
+
+            bezout1 = old_s;
+            bezout2 = (old_r - old_s * modulus1) / modulus2;
+            greatest_common_divisor = old_r;
+        }
+
+        // https://en.wikipedia.org/wiki/Chinese_remainder_theorem#Generalization_to_non-coprime_moduli
+
+        return (remainder1 * bezout2 * modulus2 + remainder2 * bezout1 * modulus1)
+                / greatest_common_divisor;
+    }
 }

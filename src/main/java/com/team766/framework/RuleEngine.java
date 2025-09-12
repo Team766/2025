@@ -70,7 +70,7 @@ public class RuleEngine extends RuleGroupBase {
         return Integer.MAX_VALUE;
     }
 
-    protected Rule getRuleForTriggeredProcedure(Command command) {
+    private Rule getRuleForTriggeredProcedure(Command command) {
         RuleAction ruleAction = ruleMap.get(command);
         return (ruleAction == null) ? null : ruleAction.rule;
     }
@@ -80,6 +80,8 @@ public class RuleEngine extends RuleGroupBase {
             rule.seal();
         }
     }
+
+    protected void updateStatus() {}
 
     public final void run() {
         if (!sealed) {
@@ -179,5 +181,7 @@ public class RuleEngine extends RuleGroupBase {
         for (Rule rule : rules.values()) {
             rule.flushLog();
         }
+
+        updateStatus();
     }
 }
