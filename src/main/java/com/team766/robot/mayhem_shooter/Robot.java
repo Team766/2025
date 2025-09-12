@@ -3,7 +3,7 @@ package com.team766.robot.mayhem_shooter;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.RobotConfigurator;
-import com.team766.robot.burro_arm.procedures.DoNothing;    
+import com.team766.robot.burro_arm.procedures.DoNothing;
 import com.team766.robot.mayhem_shooter.Mechanisms.*;
 import com.team766.robot.mayhem_shooter.Procedures.*;
 

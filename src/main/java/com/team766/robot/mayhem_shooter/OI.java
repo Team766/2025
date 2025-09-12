@@ -1,14 +1,11 @@
 package com.team766.robot.mayhem_shooter;
 
-import static com.team766.framework.RulePersistence.ONCE;
 import static com.team766.framework.RulePersistence.ONCE_AND_HOLD;
 import static com.team766.framework.RulePersistence.REPEATEDLY;
-import com.team766.framework.Conditions.LogicalAnd;
+
 import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
-import com.team766.robot.common.constants.InputConstants;
-import com.team766.robot.common.mechanisms.BurroDrive;
 import com.team766.robot.mayhem_shooter.Mechanisms.*;
 import com.team766.robot.mayhem_shooter.Procedures.*;
 
@@ -24,12 +21,11 @@ public class OI extends RuleEngine {
 
         // Add driver control rules here.
         addRule(
-            "Joysticks Moved",
-            joystick0.whenAnyAxisMoved(0,1),
-            REPEATEDLY,
-            drive,
-            () -> drive.arcadeDrive(joystick0.getAxis(1), joystick0.getAxis(0))
-        );
+                "Joysticks Moved",
+                joystick0.whenAnyAxisMoved(0, 1),
+                REPEATEDLY,
+                drive,
+                () -> drive.arcadeDrive(joystick0.getAxis(1), joystick0.getAxis(0)));
         addRule(
                 "spin up shooter",
                 joystick0.whenButton(1),
@@ -44,11 +40,10 @@ public class OI extends RuleEngine {
                 shooter,
                 () -> shooter.enableFeeder());
         addRule(
-            "intake",
-            joystick0.whenButton(3),
-            ONCE_AND_HOLD,
-            shooter,
-            () -> shooter.setIntakeMotor(0.5)
-        );
+                "intake",
+                joystick0.whenButton(3),
+                ONCE_AND_HOLD,
+                shooter,
+                () -> shooter.setIntakeMotor(0.5));
     }
 }

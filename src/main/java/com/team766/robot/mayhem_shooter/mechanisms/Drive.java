@@ -10,25 +10,21 @@ public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
     private MotorController leftMotor = RobotProvider.instance.getMotor("leftDriveMotor");
     private MotorController rightMotor = RobotProvider.instance.getMotor("rightDriveMotor");
 
-    public static record DriveStatus () implements Status {
+    public static record DriveStatus() implements Status {}
 
+    public void arcadeDrive(double y, double x) {
+        leftMotor.set(y - x);
+        rightMotor.set(-y - x);
     }
-
-    public void arcadeDrive(double y, double x){
-        leftMotor.set(y-x);
-        rightMotor.set(-y-x);
-    }
-
 
     protected void onMechanismIdle() {
         // Stop mechanism when nothing is using it.
         leftMotor.set(0);
         rightMotor.set(0);
     }
-    
+
     @Override
     protected DriveStatus updateStatus() {
         return new DriveStatus();
     }
-    
 }

@@ -39,7 +39,7 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
         setShooterPower(0.4);
     }
 
-    public void setIntakeMotor(double power){
+    public void setIntakeMotor(double power) {
         intakeMotor.set(power);
     }
 
