@@ -1,4 +1,4 @@
-package com.team766.robot.mayhem_shooter.Mechanisms;
+package com.team766.robot.mayhem_shooter.mechanisms;
 
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;

@@ -6,8 +6,8 @@ import static com.team766.framework.RulePersistence.REPEATEDLY;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
-import com.team766.robot.mayhem_shooter.Mechanisms.*;
-import com.team766.robot.mayhem_shooter.Procedures.*;
+import com.team766.robot.mayhem_shooter.mechanisms.*;
+import com.team766.robot.mayhem_shooter.procedures.*;
 
 /**
  * This class is the glue that binds the controls on the physical operator
