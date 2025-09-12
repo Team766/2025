@@ -1,7 +1,6 @@
 package com.team766.robot.jackrabbit.mechanisms;
 
 import static com.team766.hal.wpilib.CTREPhoenix6Utils.statusCodeToException;
-import static com.team766.math.Maths.normalizeAngleDegrees;
 
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.controls.StrictFollower;
@@ -15,9 +14,13 @@ import com.team766.robot.jackrabbit.HardwareConfig;
 public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
     private static final double AT_SPEED_THRESHOLD = 3.0; // TODO: Find actual value
 
-    public record ShooterStatus(double speed) implements Status {
+    public record ShooterStatus(double speed, double targetSpeed) implements Status {
         public boolean isAtSpeed(double targetSpeed) {
-            return Math.abs(normalizeAngleDegrees(targetSpeed - speed)) < AT_SPEED_THRESHOLD;
+            return Math.abs(targetSpeed - speed) < AT_SPEED_THRESHOLD;
+        }
+
+        public boolean isAtTarget() {
+            return isAtSpeed(targetSpeed());
         }
     }
 
@@ -29,6 +32,8 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
 
     private final TalonFX leftMotor;
     private final TalonFX rightMotor;
+
+    private double targetSpeed = Double.POSITIVE_INFINITY;
 
     public Shooter() {
         leftMotor =
@@ -51,14 +56,17 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
 
     public void stop() {
         leftMotor.stopMotor();
+        targetSpeed = Double.POSITIVE_INFINITY;
     }
 
     public void shoot(double speed) {
         leftMotor.setControl(new VelocityVoltage(speed));
+        targetSpeed = speed;
     }
 
     public void reverse() {
         leftMotor.set(-0.3);
+        targetSpeed = Double.POSITIVE_INFINITY;
     }
 
     @Override
@@ -68,6 +76,6 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
 
     @Override
     protected ShooterStatus updateStatus() {
-        return new ShooterStatus(leftMotor.getVelocity(false).getValueAsDouble());
+        return new ShooterStatus(leftMotor.getVelocity(false).getValueAsDouble(), targetSpeed);
     }
 }

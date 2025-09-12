@@ -15,15 +15,22 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import java.util.Optional;
 
 public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
     private static final double AT_ROTATIONAL_ANGLE_THRESHOLD = 3.0; // TODO: Find actual value
 
     public static record DriveStatus(
-            double heading, double yawRate, double pitch, double roll, Pose2d currentPosition)
+            Optional<Pose2d> currentPosition, double yawRate, double pitch, double roll)
             implements Status {
         public boolean isAtRotationHeading(double targetHeading) {
-            return Math.abs(normalizeAngleDegrees(targetHeading - heading))
+            if (!currentPosition.isPresent()) {
+                return false;
+            }
+            return Math.abs(
+                            normalizeAngleDegrees(
+                                    targetHeading
+                                            - currentPosition.get().getRotation().getDegrees()))
                     < AT_ROTATIONAL_ANGLE_THRESHOLD;
         }
 
@@ -32,22 +39,14 @@ public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
         }
     }
 
-    private sealed interface Mode {}
-
-    private record Stop() implements Mode {}
-
-    private record RobotOriented(double forward, double turn) implements Mode {}
-
-    private record AllianceOriented(double x, double y) implements Mode {}
-
-    private record FieldOriented(double x, double y) implements Mode {}
+    private interface Mode extends Runnable {}
 
     private final TalonFX leftMotor;
     private final TalonFX rightMotor;
     private final Pigeon2 gyro;
     private final DifferentialMechanism differentialMechanism;
 
-    private Mode mode = new Stop();
+    private Mode mode;
 
     public Drive() {
         leftMotor =
@@ -66,55 +65,35 @@ public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
                         rightMotor, leftMotor, false, gyro, DifferentialPigeon2Source.Yaw);
 
         // TODO: Set ratios for differential control
-    }
 
-    public void stop() {
-        mode = new Stop();
-    }
-
-    public void driveRobotOriented(double forward, double turn) {
-        mode = new RobotOriented(forward, turn);
-    }
-
-    public void driveAllianceOriented(double x, double y) {
-        mode = new AllianceOriented(x, y);
-    }
-
-    public void driveFieldOriented(double x, double y) {
-        mode = new FieldOriented(x, y);
-    }
-
-    @Override
-    protected void onMechanismIdle() {
         stop();
     }
 
-    @Override
-    protected DriveStatus updateStatus() {
-        Pose2d currentPosition = null; // TODO: localization
+    public void stop() {
+        leftMotor.stopMotor();
+        rightMotor.stopMotor();
 
-        return new DriveStatus(
-                gyro.getYaw(false).getValueAsDouble(),
-                gyro.getAngularVelocityZWorld(false).getValueAsDouble(),
-                gyro.getPitch(false).getValueAsDouble(),
-                gyro.getRoll(false).getValueAsDouble(),
-                currentPosition);
+        mode = new Mode() {
+            public void run() {
+            }
+        };
     }
 
-    @Override
-    protected void run() {
-        switch (mode) {
-            case Stop m -> {
-                leftMotor.stopMotor();
-                rightMotor.stopMotor();
+    public void driveRobotOriented(double forward, double turn) {
+        leftMotor.setVoltage(forward - turn);
+        rightMotor.setVoltage(forward + turn);
+
+        mode = new Mode() {
+            public void run() {
             }
-            case RobotOriented m -> {
-                leftMotor.setVoltage(m.forward() - m.turn());
-                rightMotor.setVoltage(m.forward() + m.turn());
-            }
-            case AllianceOriented m -> {
-                double targetPower = Math.hypot(m.x(), m.y());
-                double targetHeading = Math.atan2(m.y(), m.x());
+        };
+    }
+
+    public void driveAllianceOriented(double x, double y) {
+        mode = new Mode() {
+            public void run() {
+                double targetPower = Math.hypot(x, y);
+                double targetHeading = Math.atan2(y, x);
                 if (DriverStation.getAlliance().orElse(null) != Alliance.Blue) {
                     targetHeading += 180;
                 }
@@ -124,15 +103,42 @@ public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
                 differentialMechanism.setControl(
                         new VoltageOut(12 * targetPower), new PositionVoltage(targetHeading));
             }
-            case FieldOriented m -> {
-                double targetPower = Math.hypot(m.x(), m.y());
-                double targetHeading = Math.atan2(m.y(), m.x());
+        };
+    }
+
+    public void driveFieldOriented(double x, double y) {
+        mode = new Mode() {
+            public void run() {
+                double targetPower = Math.hypot(x, y);
+                double targetHeading = Math.atan2(y, x);
                 if (!getStatus().isAtRotationHeading(targetHeading)) {
                     targetPower = 0.0;
                 }
                 differentialMechanism.setControl(
                         new VoltageOut(12 * targetPower), new PositionVoltage(targetHeading));
             }
-        }
+        };
+    }
+
+    @Override
+    protected void onMechanismIdle() {
+        stop();
+    }
+
+    @Override
+    protected DriveStatus updateStatus() {
+        // gyro.getYaw(false).getValueAsDouble(),
+        Pose2d currentPosition = null; // TODO: localization
+
+        return new DriveStatus(
+                Optional.ofNullable(currentPosition),
+                gyro.getAngularVelocityZWorld(false).getValueAsDouble(),
+                gyro.getPitch(false).getValueAsDouble(),
+                gyro.getRoll(false).getValueAsDouble());
+    }
+
+    @Override
+    protected void run() {
+        mode.run();
     }
 }

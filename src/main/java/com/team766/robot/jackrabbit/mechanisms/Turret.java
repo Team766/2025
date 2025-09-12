@@ -26,6 +26,7 @@ public class Turret extends MechanismWithStatus<Turret.TurretStatus> {
             boolean initialized,
             double angle,
             double gyroHeading,
+            GyroHeading targetGyroHeading,
             boolean leftMagnetSensor,
             boolean rightMagnetSensor)
             implements Status {
@@ -33,6 +34,16 @@ public class Turret extends MechanismWithStatus<Turret.TurretStatus> {
             return Math.abs(normalizeAngleDegrees(targetGyroHeading.heading - gyroHeading))
                     < AT_ROTATIONAL_ANGLE_THRESHOLD;
         }
+
+        public boolean isAtTarget() {
+            return isAtGyroHeading(targetGyroHeading());
+        }
+    }
+
+    private interface Mode {
+        void run();
+
+        GyroHeading getTargetGyroHeading();
     }
 
     // Gearing stages:
@@ -47,10 +58,14 @@ public class Turret extends MechanismWithStatus<Turret.TurretStatus> {
     private static final double RIGHT_SENSOR_LEFT_ANGLE = -20;
     private static final double RIGHT_SENSOR_RIGHT_ANGLE = -22;
 
+    private static final double MIN_ANGLE = -200;
+    private static final double MAX_ANGLE = 200;
+
     private final TalonFXS motor;
     private final Pigeon2 gyro;
 
     private boolean initialized = false;
+    private Mode mode;
 
     public Turret() {
         motor =
@@ -73,6 +88,8 @@ public class Turret extends MechanismWithStatus<Turret.TurretStatus> {
         var gyroConfig = new Pigeon2Configuration();
         // TODO: gyroConfig.MountPose
         statusCodeToException(ExceptionTarget.THROW, gyro.getConfigurator().apply(gyroConfig));
+
+        stop();
     }
 
     public GyroHeading setTargetAngle(double targetAngle) {
@@ -80,21 +97,60 @@ public class Turret extends MechanismWithStatus<Turret.TurretStatus> {
             throw new IllegalStateException("Turret ia not initialized yet");
         }
         final double targetHeading = targetAngle - getStatus().angle() + getStatus().gyroHeading();
-        motor.setControl(new PositionVoltage(targetHeading));
-        return new GyroHeading(targetHeading);
+        var targetGyroHeading = new GyroHeading(targetHeading);
+        mode = new Mode() {
+            public void run() {
+                motor.setControl(new PositionVoltage(targetHeading));
+            }
+
+            public GyroHeading getTargetGyroHeading() {
+                return targetGyroHeading;
+            }
+        };
+        return targetGyroHeading;
     }
 
     public void move(double power) {
-        motor.setVoltage(12 * power);
+        mode = new Mode() {
+            @Override
+            public void run() {
+                motor.setVoltage(12 * power);
+            }
+
+            @Override
+            public GyroHeading getTargetGyroHeading() {
+                return new GyroHeading(getStatus().gyroHeading());
+            }
+        };
     }
 
     public void stop() {
-        motor.stopMotor();
+        mode = new Mode() {
+            @Override
+            public void run() {
+                motor.stopMotor();
+            }
+
+            @Override
+            public GyroHeading getTargetGyroHeading() {
+                return new GyroHeading(getStatus().gyroHeading());
+            }
+        };
     }
 
     public void moveCCWForInitialization() {
         initialized = false;
-        motor.set(0.15);
+        mode = new Mode() {
+            @Override
+            public void run() {
+                motor.set(0.15);
+            }
+
+            @Override
+            public GyroHeading getTargetGyroHeading() {
+                return new GyroHeading(getStatus().gyroHeading());
+            }
+        };
     }
 
     @Override
@@ -103,6 +159,7 @@ public class Turret extends MechanismWithStatus<Turret.TurretStatus> {
                 initialized,
                 motor.getRotorPosition(false).getValueAsDouble(),
                 motor.getPosition(false).getValueAsDouble(),
+                mode.getTargetGyroHeading(),
                 motor.getForwardLimit(false).getValue() == ForwardLimitValue.ClosedToGround,
                 motor.getReverseLimit(false).getValue() == ReverseLimitValue.ClosedToGround);
     }
@@ -143,6 +200,14 @@ public class Turret extends MechanismWithStatus<Turret.TurretStatus> {
             }
         }
 
-        // TODO: Unwind saturated turret
+        // Unwind saturated turret
+        final double targetAngle =
+            mode.getTargetGyroHeading().heading() - getStatus().gyroHeading() + getStatus().angle();
+        if (targetAngle > MAX_ANGLE || targetAngle < MIN_ANGLE) {
+            final double unwoundTargetAngle = normalizeAngleDegrees(targetAngle);
+            setTargetAngle(unwoundTargetAngle);
+        }
+        
+        mode.run();
     }
 }

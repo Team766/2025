@@ -80,6 +80,10 @@ public interface StatusesMixin {
                 .orElse(false);
     }
 
+    default <S extends Status> BooleanSupplier whenStatus(Class<S> statusClass) {
+        return () -> checkForStatus(statusClass);
+    }
+
     default <S extends Status> BooleanSupplier whenStatusMatching(
             Class<S> statusClass, Predicate<S> predicate) {
         return () -> checkForStatusMatching(statusClass, predicate);

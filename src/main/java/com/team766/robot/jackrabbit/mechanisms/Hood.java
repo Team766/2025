@@ -1,8 +1,7 @@
 package com.team766.robot.jackrabbit.mechanisms;
 
 import static com.team766.hal.wpilib.CTREPhoenix6Utils.statusCodeToException;
-import static com.team766.math.Maths.normalizeAngleDegrees;
-
+import java.util.Optional;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -17,10 +16,13 @@ import com.team766.robot.jackrabbit.HardwareConfig;
 public class Hood extends MechanismWithStatus<Hood.HoodStatus> {
     private static final double AT_ROTATIONAL_ANGLE_THRESHOLD = 3.0; // TODO: Find actual value
 
-    public record HoodStatus(double angle) implements Status {
+    public record HoodStatus(double angle, double targetAngle) implements Status {
         public boolean isAtAngle(double targetAngle) {
-            return Math.abs(normalizeAngleDegrees(targetAngle - angle))
-                    < AT_ROTATIONAL_ANGLE_THRESHOLD;
+            return Math.abs(targetAngle - angle) < AT_ROTATIONAL_ANGLE_THRESHOLD;
+        }
+
+        public boolean isAtTarget() {
+            return isAtAngle(targetAngle());
         }
     }
 
@@ -45,6 +47,8 @@ public class Hood extends MechanismWithStatus<Hood.HoodStatus> {
     private final TalonFX motor;
     private final CANcoder majorEncoder;
     private final CANcoder minorEncoder;
+
+    private Optional<Double> targetAngle = Optional.empty();
 
     public Hood() {
         motor = new TalonFX(HardwareConfig.Motor.HOOD.canId(), HardwareConfig.Motor.HOOD.canBus());
@@ -84,18 +88,22 @@ public class Hood extends MechanismWithStatus<Hood.HoodStatus> {
 
     public void setTargetAngle(double angle) {
         motor.setControl(new PositionVoltage(angle));
+        targetAngle = Optional.of(angle);
     }
 
     public void move(double power) {
         motor.setVoltage(12 * power);
+        targetAngle = Optional.empty();
     }
 
     public void stop() {
         motor.stopMotor();
+        targetAngle = Optional.empty();
     }
 
     @Override
     protected HoodStatus updateStatus() {
-        return new HoodStatus(motor.getPosition(false).getValueAsDouble());
+        final double currentPosition = motor.getPosition(false).getValueAsDouble();
+        return new HoodStatus(currentPosition, targetAngle.orElse(currentPosition));
     }
 }
