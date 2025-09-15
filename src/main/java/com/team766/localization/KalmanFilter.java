@@ -69,10 +69,7 @@ public class KalmanFilter {
     }
 
     public KalmanFilter(Matrix<N2, N2> odometryCovariancePerDist, Matrix<N2, N2> visionCovariance) {
-        this(
-                odometryCovariancePerDist,
-                visionCovariance,
-                VELOCITY_INPUT_DELETION_TIME_DEFAULT);
+        this(odometryCovariancePerDist, visionCovariance, VELOCITY_INPUT_DELETION_TIME_DEFAULT);
     }
 
     public KalmanFilter() {
@@ -279,40 +276,40 @@ public class KalmanFilter {
     }
 
     /**
-    * @return Translation2d of current position
-    */
+     * @return Translation2d of current position
+     */
     public Translation2d getPos() {
         return new Translation2d(new Vector<N2>(curState));
     }
 
     /**
-    * @return 2x2 Matrix of current covariance
-    */
+     * @return 2x2 Matrix of current covariance
+     */
     public Matrix<N2, N2> getCovariance() {
         return curCovariance;
     }
 
     /**
-    * set current state, both positon and covariance
-    * @param pos Translation2d of pos
-    * @param covariance 2x2 Matrix of covariance
-    */
+     * set current state, both positon and covariance
+     * @param pos Translation2d of pos
+     * @param covariance 2x2 Matrix of covariance
+     */
     public void setPos(Translation2d pos, Matrix<N2, N2> covariance) {
         curState = pos.toVector();
         curCovariance = covariance;
     }
 
     /**
-    * set current position with a default covariance
-    * @param pos Translation2d of pos
-    */
+     * set current position with a default covariance
+     * @param pos Translation2d of pos
+     */
     public void setPos(Translation2d pos) {
         setPos(pos, SET_POS_COVARIANCE_DEFAULT);
     }
 
     /**
-    * resets state to a position of (0,0) and high covariance, meaning state will jump to next landmark measurement
-    */
+     * resets state to a position of (0,0) and high covariance, meaning state will jump to next landmark measurement
+     */
     public void resetPos() {
         setPos(new Translation2d(), INITIAL_COVARIANCE_DEFAULT);
     }
