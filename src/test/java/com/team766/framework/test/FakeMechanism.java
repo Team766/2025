@@ -7,6 +7,8 @@ import com.team766.framework.Status;
 public class FakeMechanism extends MechanismWithStatus<FakeMechanism.FakeStatus> {
     public record FakeStatus(int currentState) implements Status {}
 
+    public static void publicStaticMethod() {}
+
     int currentState = -1;
 
     public void mutateMechanism(int newState) {

@@ -1,6 +1,5 @@
 package com.team766.robot.copy_2910.mechanisms;
 
-import com.team766.config.ConfigFileReader;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.orin.GetOrinRawValue;
@@ -10,17 +9,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
-    private static double leftScoringPositionX =
-            ConfigFileReader.instance.getDouble("vision.leftScoringPositionX").valueOr(0d);
+    private static double L2L3X = 0.5597;
 
-    private static double leftScoringPositionY =
-            ConfigFileReader.instance.getDouble("vision.leftScoringPositionY").valueOr(0d);
+    private static double L4X = 0.4533;
 
-    private static double rightScoringPositionX =
-            ConfigFileReader.instance.getDouble("vision.rightScoringPositionX").valueOr(0d);
+    private static double leftScoringPositionY = -0.0962;
 
-    private static double rightScoringPositionY =
-            ConfigFileReader.instance.getDouble("vision.rightScoringPositionY").valueOr(0d);
+    private static double rightScoringPositionY = 0.200;
 
     private GetOrinRawValue camera = new GetOrinRawValue("766", 0);
 
@@ -38,12 +33,20 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
 
     public Vision() {}
 
-    public static Pose2d getTargetPositionLeft() {
-        return new Pose2d(leftScoringPositionX, leftScoringPositionY, new Rotation2d());
+    public static Pose2d getTargetPositionLeftL2L3() {
+        return new Pose2d(L2L3X, leftScoringPositionY, new Rotation2d());
     }
 
-    public static Pose2d getTargetPositionRight() {
-        return new Pose2d(rightScoringPositionX, rightScoringPositionY, new Rotation2d());
+    public static Pose2d getTargetPositionRightL2L3() {
+        return new Pose2d(L2L3X, rightScoringPositionY, new Rotation2d());
+    }
+
+    public static Pose2d getTargetPositionLeftL4() {
+        return new Pose2d(L4X, leftScoringPositionY, new Rotation2d());
+    }
+
+    public static Pose2d getTargetPositionRightL4() {
+        return new Pose2d(L4X, rightScoringPositionY, new Rotation2d());
     }
 
     @Override
@@ -62,6 +65,12 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
          */
         // AprilTag tag = new AprilTag((int) poseData[1], new Pose3d(poseData[2], poseData[3],
         // poseData[4], new Rotation3d()));
+        if (Math.sqrt(poseData[2] * poseData[2] + poseData[3] * poseData[3]) > 2.0) {
+            // log(
+            //        "Closest tag is over two meters away. Move closer to the tag, as this is
+            // probably not a valid reef tag.");
+            return new VisionStatus((int) poseData[1], 0, 0, false); // Return invalid status
+        }
         return new VisionStatus((int) poseData[1], poseData[2], poseData[3], true);
     }
 }
