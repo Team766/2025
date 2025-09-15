@@ -4,7 +4,6 @@ import com.team766.config.ConfigFileReader;
 import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.simulator.Program;
 import com.team766.simulator.ProgramInterface;
 import com.team766.simulator.Simulator;
 import java.io.IOException;
@@ -16,7 +15,7 @@ public class RobotMain {
     }
 
     private GenericRobotMain robot;
-    private Runnable simulator;
+    private SimulatorInterface simulator;
 
     @SuppressWarnings("StaticAssignmentInConstructor")
     public RobotMain(final Mode mode) {
@@ -28,59 +27,16 @@ public class RobotMain {
             robot = new GenericRobotMain();
 
             robot.robotInit();
-
-            ProgramInterface.program =
-                    new Program() {
-                        ProgramInterface.RobotMode prevRobotMode = null;
-
-                        @Override
-                        public void step(double dt) {
-                            switch (ProgramInterface.robotMode) {
-                                case DISABLED:
-                                    if (prevRobotMode != ProgramInterface.RobotMode.DISABLED) {
-                                        robot.disabledInit();
-                                        prevRobotMode = ProgramInterface.RobotMode.DISABLED;
-                                    }
-                                    robot.disabledPeriodic();
-                                    break;
-                                case AUTON:
-                                    if (prevRobotMode != ProgramInterface.RobotMode.AUTON) {
-                                        robot.autonomousInit();
-                                        prevRobotMode = ProgramInterface.RobotMode.AUTON;
-                                    }
-                                    robot.autonomousPeriodic();
-                                    break;
-                                case TELEOP:
-                                    if (prevRobotMode != ProgramInterface.RobotMode.TELEOP) {
-                                        robot.teleopInit();
-                                        prevRobotMode = ProgramInterface.RobotMode.TELEOP;
-                                    }
-                                    robot.teleopPeriodic();
-                                    break;
-                                default:
-                                    LoggerExceptionUtils.logException(
-                                            new IllegalArgumentException(
-                                                    "Value of ProgramInterface.robotMode invalid. Provided value: "
-                                                            + ProgramInterface.robotMode));
-                                    break;
-                            }
-                        }
-
-                        @Override
-                        public void reset() {
-                            robot.resetAutonomousMode("simulation reset");
-                        }
-                    };
         } catch (Exception exc) {
             exc.printStackTrace();
             LoggerExceptionUtils.logException(exc);
         }
 
         switch (mode) {
-            case MaroonSim:
+            case MaroonSim -> {
                 simulator = new Simulator();
-                break;
-            case VrConnector:
+            }
+            case VrConnector -> {
                 ProgramInterface.robotMode = ProgramInterface.RobotMode.DISABLED;
                 try {
                     simulator = new VrConnector();
@@ -88,19 +44,42 @@ public class RobotMain {
                     throw new RuntimeException(
                             "Error initializing communication with 3d Simulator", ex);
                 }
-                break;
-            default:
-                LoggerExceptionUtils.logException(
-                        new IllegalArgumentException(
-                                "Unknown simulator mode. ProgramInterface.robotMode: "
-                                        + ProgramInterface.robotMode));
-                break;
+            }
         }
+
+        simulator.setResetHandler(() -> robot.resetAutonomousMode("simulation reset"));
     }
 
     public void run() {
         try {
-            simulator.run();
+            ProgramInterface.RobotMode prevRobotMode = null;
+            while (true) {
+                simulator.prepareStep();
+
+                switch (ProgramInterface.robotMode) {
+                    case DISABLED -> {
+                        if (prevRobotMode != ProgramInterface.RobotMode.DISABLED) {
+                            robot.disabledInit();
+                            prevRobotMode = ProgramInterface.RobotMode.DISABLED;
+                        }
+                        robot.disabledPeriodic();
+                    }
+                    case AUTON -> {
+                        if (prevRobotMode != ProgramInterface.RobotMode.AUTON) {
+                            robot.autonomousInit();
+                            prevRobotMode = ProgramInterface.RobotMode.AUTON;
+                        }
+                        robot.autonomousPeriodic();
+                    }
+                    case TELEOP -> {
+                        if (prevRobotMode != ProgramInterface.RobotMode.TELEOP) {
+                            robot.teleopInit();
+                            prevRobotMode = ProgramInterface.RobotMode.TELEOP;
+                        }
+                        robot.teleopPeriodic();
+                    }
+                }
+            }
         } catch (Exception exc) {
             exc.printStackTrace();
             LoggerExceptionUtils.logException(exc);

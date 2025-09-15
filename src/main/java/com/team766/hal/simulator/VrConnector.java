@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class VrConnector implements Runnable {
+public class VrConnector implements SimulatorInterface {
     private static class PortMapping {
         public final int messageDataIndex;
         public final int robotPortIndex;
@@ -149,8 +149,11 @@ public class VrConnector implements Runnable {
     private static final int feedbackPort = 7662;
     private static final int BUF_SZ = 1024;
 
+    private Runnable resetHandler;
+
     private long startTime;
     private boolean started = false;
+    private double prevStepSimTime = 0;
 
     private Selector selector;
     private InetSocketAddress sendAddr;
@@ -353,8 +356,8 @@ public class VrConnector implements Runnable {
         return newData;
     }
 
-    public void run() {
-        double prevSimTime = 0;
+    @Override
+    public double prepareStep() {
         while (true) {
             boolean newData = false;
             try {
@@ -374,7 +377,9 @@ public class VrConnector implements Runnable {
             }
             if (resetCounter != lastResetCounter) {
                 lastResetCounter = resetCounter;
-                ProgramInterface.program.reset();
+                if (resetHandler != null) {
+                    resetHandler.run();
+                }
             }
             if (!newData) {
                 continue;
@@ -390,13 +395,16 @@ public class VrConnector implements Runnable {
                 } else {
                     continue;
                 }
-                prevSimTime = ProgramInterface.simulationTime;
+                prevStepSimTime = ProgramInterface.simulationTime;
             }
-            if (ProgramInterface.program != null) {
-                final double time = ProgramInterface.simulationTime;
-                ProgramInterface.program.step(time - prevSimTime);
-                prevSimTime = time;
-            }
+            final double time = ProgramInterface.simulationTime;
+            prevStepSimTime = time;
+            return time - prevStepSimTime;
         }
+    }
+
+    @Override
+    public void setResetHandler(Runnable handler) {
+        resetHandler = handler;
     }
 }
