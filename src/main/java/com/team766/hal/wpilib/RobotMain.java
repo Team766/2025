@@ -193,6 +193,8 @@ public class RobotMain extends LoggedRobot {
                 }
             }
             simulator.setResetHandler(() -> robot.resetAutonomousMode("simulation reset"));
+            // Do an initial step here to flush any needed state initialization.
+            simulator.prepareStep();
         } catch (Exception exc) {
             exc.printStackTrace();
             LoggerExceptionUtils.logException(exc);

@@ -189,4 +189,4 @@ compile_commands.json
 .factorypath
 
 # Don't commit the cache of downloaded sim files
-/buildSim/
+/build-sim/

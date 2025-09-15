@@ -4,19 +4,65 @@
 	"version": "2.0.0",
 	"tasks": [
         {
+            "label": "Run Simulator",
+            "type": "shell",
+            "command": "./deploy_sim.py",
+            "hide": true,
+            "showOutput": "always",
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "Simulation doesn't report errors so we don't need a pattern"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "Simulation never restarts so we don't need a beginPattern",
+                    "endsPattern": ".*Waiting for robot code to start.*"
+                }
+            },
+            "presentation": {
+                "group": "robotSim",
+                "echo": true,
+                "reveal": "always",
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true,
+                "close": true
+            }
+        },
+        {
+            "label": "Cleanup old robot code instances",
+            "type": "shell",
+            "command": "pkill --signal TERM --full simulateJava || true",
+            "hide": true,
+            "problemMatcher": [],
+            "presentation": {
+                "group": "robotSim",
+                "echo": true,
+                "showReuseMessage": false,
+                "clear": true,
+                "close": true
+            },
+        },
+        {
             "label": "Deploy Sim",
             "type": "shell",
-            "command": "./deploy_sim.sh",
+            "command": "./gradlew simulateJava",
             "problemMatcher": [],
             "showOutput": "always",
             "presentation": {
+                "group": "robotSim",
                 "echo": true,
                 "reveal": "always",
-                "focus": true,
                 "panel": "dedicated",
                 "showReuseMessage": false,
                 "clear": true
-            }
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Cleanup old robot code instances",
+                "Run Simulator"
+            ]
         },
         {
             "label": "Gradle Build",
