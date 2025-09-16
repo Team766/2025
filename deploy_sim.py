@@ -1,10 +1,57 @@
 #!/usr/bin/env python3
 
+import ctypes
+import ctypes.util
 import os
 import shutil
+import signal
 import socket
 import subprocess
+import threading
 import time
+
+# Constant taken from http://linux.die.net/include/linux/prctl.h
+PR_SET_PDEATHSIG = 1
+
+class PrCtlError(Exception):
+    pass
+
+def set_parent_exit_signal():
+    """
+    Return a function to be run in a child process which will trigger SIGNAME
+    to be sent when the parent process dies
+    """
+    # http://linux.die.net/man/2/prctl
+    libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
+    if libc.prctl(PR_SET_PDEATHSIG, signal.SIGABRT) != 0:
+        errno = ctypes.get_errno()
+        raise OSError(errno, f"SET_PDEATHSIG prctl failed: {os.strerror(errno)}")
+
+class TerminatingPopen(subprocess.Popen):
+    def __exit__(self, exc_type, value, traceback) -> None:
+        self.terminate()
+        return super().__exit__(exc_type, value, traceback)
+
+connected = None
+
+def code_monitor_thread():
+    global connected
+    iter = 0
+    while True:
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect(("localhost", 5800))
+                if connected != True:
+                    print("Robot code started")
+                    connected = True
+                iter = 0
+        except ConnectionRefusedError:
+            if connected != False:
+                print("Waiting for robot code to start")
+                connected = False
+            iter += 1
+            print("." * (iter % 6) + "      ", end="\r")
+        time.sleep(1)
 
 def main(argv=None):
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -56,21 +103,13 @@ def main(argv=None):
 
     os.chdir(extracted_dir)
 
-    print("Waiting for robot code to start")
-    connected = False
-    iter = 0
-    while not connected:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            try:
-                s.connect(("localhost", 5800))
-                connected = True
-            except ConnectionRefusedError:
-                iter += 1
-                print("Waiting for robot code to start" + "." * iter, end="\r")
-                time.sleep(5)
-    print()
+    threading.Thread(target=code_monitor_thread, daemon=True).start()
 
-    os.execl("./run.sh", "./run.sh", project_base, f"{project_base}/build-sim")
+    while not connected:
+        time.sleep(1)
+
+    with TerminatingPopen(["./run.sh", project_base, f"{project_base}/build-sim"]) as p:
+        p.wait()
 
 if __name__ == "__main__":
     try:

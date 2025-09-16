@@ -16,7 +16,7 @@
                 },
                 "background": {
                     "activeOnStart": true,
-                    "beginsPattern": "Simulation never restarts so we don't need a beginPattern",
+                    "beginsPattern": ".*Robot code started.*",
                     "endsPattern": ".*Waiting for robot code to start.*"
                 }
             },
@@ -27,7 +27,6 @@
                 "panel": "dedicated",
                 "showReuseMessage": false,
                 "clear": true,
-                "close": true
             }
         },
         {
