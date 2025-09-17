@@ -80,7 +80,7 @@ public class RobotMain extends LoggedRobot {
     }
 
     public RobotMain() {
-        super(0.005);
+        setUseTiming(false);
     }
 
     private static String checkForAndReturnPathToConfigFile(final String file) {
@@ -140,6 +140,14 @@ public class RobotMain extends LoggedRobot {
             e.printStackTrace();
             LoggerExceptionUtils.logException(e);
         }
+    }
+
+    @Override
+    public void robotPeriodic() {
+        // We ask the main loop to run as quickly as possible (using setUseTiming(false) in the
+        // constructor), so we want to give a chance for service threads (such as the LogWriter and
+        // WPIRobotProvider.DataRefreshRunnable) to run.
+        Thread.yield();
     }
 
     @Override
