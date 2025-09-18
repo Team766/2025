@@ -17,7 +17,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     // private ValueProvider<Double> ffGain;
 
     private final double NUDGE_AMOUNT =
-            5; // Amount to nudge up/down | TODO: Adjust this value based on the wrist's
+            0.5; // Amount to nudge up/down | TODO: Adjust this value based on the wrist's
 
     // characteristics
 
@@ -38,9 +38,10 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         L4(-9),
         ALGAE_HIGH(-25.928),
         ALGAE_LOW(-25.928),
-        CORAL_GROUND(-16.5),
+        CORAL_GROUND(-15),
+        ALGAE(-25.2),
         ALGAE_GROUND(-21.786),
-        STOW(-5),
+        STOW(0),
         MAXIMUM(10),
         MINIMUM(-30);
 
@@ -81,11 +82,11 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     public void nudgeUp() {
-        setSetpoint(setPoint + NUDGE_AMOUNT);
+        setPoint += NUDGE_AMOUNT;
     }
 
     public void nudgeDown() {
-        setSetpoint(setPoint - NUDGE_AMOUNT);
+        setPoint -= NUDGE_AMOUNT;
     }
 
     public void nudge(double input) {

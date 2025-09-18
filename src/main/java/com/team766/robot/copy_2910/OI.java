@@ -1,5 +1,6 @@
 package com.team766.robot.copy_2910;
 
+import static com.team766.framework.RulePersistence.ONCE;
 import static com.team766.framework.RulePersistence.ONCE_AND_HOLD;
 
 import com.team766.framework.RuleEngine;
@@ -62,6 +63,29 @@ public class OI extends RuleEngine {
                         intake,
                         () -> intake.setAlgaePower(-0.5))
                 .withFinishedTriggeringProcedure(intake, () -> intake.stop());
+
+        addRule("Wrist Nudge Up",
+                leftJoystick.whenButton(2),
+                ONCE,
+                wrist,
+                () -> wrist.nudgeUp());
+        addRule("Wrist Nudge Down",
+                leftJoystick.whenButton(3),
+                ONCE,
+                wrist,
+                () -> wrist.nudgeDown());
+
+        addRule("Elevator Nudge Up",
+                rightJoystick.whenButton(2),
+                ONCE,
+                elevator,
+                () -> elevator.nudgeUp());
+        addRule("Elevator Nudge Down",
+                rightJoystick.whenButton(3),
+                ONCE,
+                elevator,
+                () -> elevator.nudgeDown());
+        
 
         // addRule(
         //         "Apply queued positions",

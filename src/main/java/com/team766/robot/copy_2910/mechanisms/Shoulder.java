@@ -43,12 +43,12 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
         L4(24.5),
         ALGAE_HIGH(22.952),
         ALGAE_LOW(20.405),
-        CORAL_GROUND(0.071),
+        CORAL_GROUND(-0.75),
         ALGAE_GROUND(4.119),
         CLIMBER(28),
-        STOW(5),
+        STOW(0),
         MAXIMUM(40),
-        MINIMUM(0);
+        MINIMUM(-1);
 
         private final double angle;
 
@@ -108,7 +108,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public void nudgeUp() {
-        setSetpoint(setPoint + NUDGE_AMOUNT);
+        setPoint += 1;
     }
 
     public void nudgeDown() {

@@ -12,6 +12,7 @@ import com.team766.robot.copy_2910.mechanisms.Shoulder;
 import com.team766.robot.copy_2910.mechanisms.Vision;
 import com.team766.robot.copy_2910.mechanisms.Wrist;
 import com.team766.robot.copy_2910.procedures.CenterL1;
+import com.team766.robot.copy_2910.procedures.DriveStraight;
 import com.team766.robot.gatorade.Lights;
 
 public class Robot implements RobotConfigurator {
@@ -53,7 +54,9 @@ public class Robot implements RobotConfigurator {
         // TODO Auto-generated method stub
         return new AutonomousMode[] {
             new AutonomousMode(
-                    "Center Start L1", () -> new CenterL1(drive, intake, wrist, elevator, shoulder))
+                    "Move", () -> new DriveStraight(drive)),
+            new AutonomousMode(
+                "Center L1", () -> new CenterL1(drive, intake, wrist, elevator, shoulder))
         };
         // throw new UnsupportedOperationException("Unimplemented method 'getAutonomousModes'");
     }

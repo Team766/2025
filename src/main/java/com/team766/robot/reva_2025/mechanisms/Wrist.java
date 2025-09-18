@@ -2,7 +2,7 @@ package com.team766.robot.reva_2025.mechanisms;
 
 import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_ENCODER;
 import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_GYRO;
-
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.MechanismWithStatus;
@@ -36,7 +36,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         // TODO: Change these angles to actual values
         CORAL_BOTTOM(30),
         CORAL_START(30),
-        CORAL_INTAKE(40),
+        CORAL_INTAKE(70),
         // CORAL_L2_PREP(260),
         CORAL_L1_PLACE(40),
         CORAL_L2_PLACE(245),
@@ -68,6 +68,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         absoluteEncoder = RobotProvider.instance.getEncoder(WRIST_ENCODER);
         gyro = ((PigeonGyro) RobotProvider.instance.getGyro(WRIST_GYRO)).getPigeon();
         wristMotor.setCurrentLimit(30);
+        wristMotor.setNeutralMode(NeutralMode.Brake);
     }
 
     public void setAngle(WristPosition position) {

@@ -16,7 +16,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     private MotorController elevatorMotorLeft;
 
     private static double NUDGE_AMOUNT =
-            0.1; // Amount to nudge up/down | TODO: Adjust this value based on the elevator's
+            0.5; // Amount to nudge up/down | TODO: Adjust this value based on the elevator's
     // characteristics
     private static double THRESHOLD =
             0.05; // Threshold for PID controller | TODO: Adjust this value based on the elevator's
@@ -42,19 +42,12 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         // TODO: FIGURE OUT WHICH MOTOR NEEDS TO BE INVERTED
         // elevatorMotorRight.setInverted(false); // Set to true if the right motor needs to be
         // inverted
-
-        elevatorMotorRight.follow(elevatorMotorLeft);
         setPoint = ElevatorPosition.READY.getPosition(); // Default position
         elevatorMotorLeft.setCurrentLimit(40);
         elevatorMotorRight.setCurrentLimit(40); // Set current limit for the elevator motor
-        elevatorMotorLeft.setInverted(false);
-        SparkMaxConfig rightConfig = new SparkMaxConfig();
-        rightConfig.follow((SparkMax) elevatorMotorLeft, true /* invert */);
-        ((SparkMax) elevatorMotorRight)
-                .configure(
-                        rightConfig,
-                        ResetMode.kNoResetSafeParameters,
-                        PersistMode.kPersistParameters);
+        elevatorMotorLeft.setInverted(true);
+        elevatorMotorRight.setInverted(false);
+        elevatorMotorRight.follow(elevatorMotorLeft);
         // ffGain =
         //      ConfigFileReader.instance.getDouble(
         //            "ElevatorFFGain"); // Replace with actual config key
@@ -65,21 +58,22 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public enum ElevatorPosition {
-        INTAKE(2.0 * 48.7619),
-        L1(0.881 * 48.7619),
-        L2(-4.452 * 48.7619),
-        L3(-11 * 48.7619),
-        L4(-29 * 48.7619), // -21.357
-        ALGAE_HIGH(-9.357 * 48.7619),
-        ALGAE_LOW(-3.262 * 48.7619),
-        CORAL_GROUND(2 * 48.7619),
-        ALGAE_GROUND(-1.643 * 48.7619),
+        INTAKE(0.3),
+        L1(3.8),
+        L2(4.44),
+        L3(13),
+        L4(17.80), // -21.357
+        ALGAE_HIGH(12),
+        ALGAE_LOW(7),
+        CORAL_GROUND(0.3),
+        ALGAE_GROUND(0.5),
+        STOW(0),
 
-        READY(2), // Should be the default position and the ready position for vision so that it
+        READY(3), // Should be the default position and the ready position for vision so that it
         // can see the tag
-        MAXIMUM(2), // Maximum height of the elevator, TODO: Adjust based on the actual elevator's
+        MAXIMUM(17.9), // Maximum height of the elevator, TODO: Adjust based on the actual elevator's
         // maximum position
-        MINIMUM(-30); // Minimum height of the elevator, TODO: Adjust based on the actual elevator's
+        MINIMUM(0); // Minimum height of the elevator, TODO: Adjust based on the actual elevator's
         // minimum position
 
         final double position;
@@ -106,11 +100,11 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public void nudgeUp() {
-        setPosition(setPoint + NUDGE_AMOUNT);
+        setPoint += NUDGE_AMOUNT;
     }
 
     public void nudgeDown() {
-        setPosition(setPoint - NUDGE_AMOUNT);
+        setPoint -= NUDGE_AMOUNT;
     }
 
     public void nudge(double input) {

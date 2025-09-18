@@ -102,9 +102,6 @@ public class IntakeCoral extends Procedure {
             }
         }
         // Once the coral is in the back center, we stop the intake motors.
-        intake.turnLeftPositive();
-        intake.turnRightNegative();
-        context.waitForSeconds(0.05);
         intake.stop();
     }
 }

@@ -54,52 +54,38 @@ public class BoxOpOI extends RuleGroup {
                         });
         // ALGAE INTAKE POSITIONS
 
-        addRule(
-                "Queue to Algae Ground Intake Position",
-                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_GROUND,
-                ONCE,
-                Set.of(elevator, shoulder, intake),
-                () -> {
-                    queuedControl.elevatorPosition = ElevatorPosition.ALGAE_GROUND;
-                    queuedControl.shoulderPosition = ShoulderPosition.ALGAE_GROUND;
-                    queuedControl.wristPosition = WristPosition.ALGAE_GROUND;
-                });
+        // addRule(
+        //         "Queue to Algae Ground Intake Position",
+        //         () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_GROUND,
+        //         ONCE,
+        //         Set.of(elevator, shoulder, intake),
+        //         () -> {
+        //             queuedControl.elevatorPosition = ElevatorPosition.ALGAE_GROUND;
+        //             queuedControl.shoulderPosition = ShoulderPosition.ALGAE_GROUND;
+        //             queuedControl.wristPosition = WristPosition.ALGAE_GROUND;
+        //         });
 
-        addRule(
-                "Queue Algae Intake to L2 L3 Position",
-                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L2_L3,
-                ONCE,
-                Set.of(elevator, shoulder, intake),
-                () -> {
-                    queuedControl.elevatorPosition = ElevatorPosition.ALGAE_LOW;
-                    queuedControl.shoulderPosition = ShoulderPosition.ALGAE_LOW;
-                    queuedControl.wristPosition = WristPosition.ALGAE_LOW;
-                });
+        // addRule(
+        //         "Queue Algae Intake to L2 L3 Position",
+        //         () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L2_L3,
+        //         ONCE,
+        //         Set.of(elevator, shoulder, intake),
+        //         () -> {
+        //             queuedControl.elevatorPosition = ElevatorPosition.ALGAE_LOW;
+        //             queuedControl.shoulderPosition = ShoulderPosition.ALGAE_LOW;
+        //             queuedControl.wristPosition = WristPosition.ALGAE_LOW;
+        //         });
 
-        addRule(
-                "Queue Algae Intake to L3 L4 Position",
-                () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L3_L4,
-                ONCE,
-                Set.of(elevator, shoulder, intake),
-                () -> {
-                    queuedControl.elevatorPosition = ElevatorPosition.ALGAE_LOW;
-                    queuedControl.shoulderPosition = ShoulderPosition.ALGAE_LOW;
-                    queuedControl.wristPosition = WristPosition.ALGAE_LOW;
-                });
-
-        addRule(
-                        "Ground Intake",
-                        boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
-                        ONCE_AND_HOLD,
-                        () -> new IntakeCoral(intake, elevator, shoulder, wrist))
-                .withFinishedTriggeringProcedure(
-                        Set.of(intake, elevator, wrist, shoulder),
-                        () -> {
-                            intake.stop();
-                            elevator.setPosition(ElevatorPosition.READY);
-                            wrist.setPosition(WristPosition.STOW);
-                            shoulder.setPosition(ShoulderPosition.STOW);
-                        });
+        //addRule(
+                // "Queue Algae Intake to L3 L4 Position",
+                // () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L3_L4,
+                // ONCE,
+                // Set.of(elevator, shoulder, intake),
+                // () -> {
+                //     queuedControl.elevatorPosition = ElevatorPosition.ALGAE_HIGH;
+                //     queuedControl.shoulderPosition = ShoulderPosition.ALGAE_HIGH;
+                //     queuedControl.wristPosition = WristPosition.ALGAE_HIGH;
+                // });
 
         addRule(
                 "Queue Elevator and Wrist to L1 Position",
@@ -146,6 +132,20 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
+                "Ground Intake",
+                boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                ONCE_AND_HOLD,
+                () -> new IntakeCoral(intake, elevator, shoulder, wrist))
+        .withFinishedTriggeringProcedure(
+                Set.of(intake, elevator, wrist, shoulder),
+                () -> {
+                        intake.stop();
+                        elevator.setPosition(ElevatorPosition.READY);
+                        wrist.setPosition(WristPosition.STOW);
+                        shoulder.setPosition(ShoulderPosition.STOW);
+                });
+
+        addRule(
                         "Move to Target Position",
                         boxopGamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
                         ONCE_AND_HOLD,
@@ -172,49 +172,39 @@ public class BoxOpOI extends RuleGroup {
                                                 })
                                         .withFinishedTriggeringProcedure(
                                                 intake, () -> intake.setAlgaePower(0.1));
-                                addRule(
-                                        "Nudge Elevator",
-                                        boxopGamepad.whenAxisMoved(
-                                                InputConstants.AXIS_ELEVATOR_FINETUNE),
-                                        ONCE_AND_HOLD,
-                                        elevator,
-                                        () -> {
-                                            elevator.nudge(
-                                                    boxopGamepad.getAxis(
-                                                            InputConstants.AXIS_ELEVATOR_FINETUNE));
-                                        });
-
-                                addRule(
-                                        "Nudge Wrist",
-                                        boxopGamepad.whenAxisMoved(
-                                                InputConstants.AXIS_WRIST_FINETUNE),
-                                        ONCE_AND_HOLD,
-                                        wrist,
-                                        () -> {
-                                            wrist.nudge(
-                                                    boxopGamepad.getAxis(
-                                                            InputConstants.AXIS_WRIST_FINETUNE));
-                                        });
 
                                 addRule(
                                         "Nudge Shoulder",
                                         boxopGamepad.whenAxisMoved(
                                                 InputConstants.AXIS_WRIST_FINETUNE),
                                         ONCE_AND_HOLD,
-                                        wrist,
+                                        shoulder,
                                         () -> {
                                             shoulder.nudge(
                                                     boxopGamepad.getAxis(
                                                             InputConstants.AXIS_WRIST_FINETUNE));
                                         });
                             }
-                        })
-                .withFinishedTriggeringProcedure(
-                        Set.of(elevator, wrist, shoulder),
-                        () -> {
-                            elevator.setPosition(ElevatorPosition.READY);
-                            wrist.setPosition(WristPosition.STOW);
-                            shoulder.setPosition(ShoulderPosition.STOW);
                         });
+        addRule("Nudge Shoulder Up",
+                boxopGamepad.whenButton(9),
+                ONCE,
+                shoulder,
+                () -> shoulder.nudgeUp());
+        addRule("Nudge Shoulder Down",
+                boxopGamepad.whenButton(10),
+                ONCE,
+                shoulder,
+                () -> shoulder.nudgeDown());
+        addRule("Stow", 
+        () -> boxopGamepad.getPOV() == 0,
+        ONCE,
+        Set.of(elevator, shoulder, intake),
+                () -> {
+                    queuedControl.elevatorPosition = ElevatorPosition.STOW;
+                    queuedControl.shoulderPosition = ShoulderPosition.STOW;
+                    queuedControl.wristPosition = WristPosition.STOW;
+                });
+        
     }
 }
