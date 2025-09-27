@@ -69,16 +69,8 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
                 RobotProvider.instance.getMotor(
                         "RightShoulderMotor"); // Replace with actual motor name
 
-        leftMotor.setInverted(true);
+        //leftMotor.setInverted(true);
         rightMotor.follow(leftMotor);
-
-        SparkMaxConfig rightConfig = new SparkMaxConfig();
-        rightConfig.follow((SparkMax) leftMotor, true /* invert */);
-        ((SparkMax) rightMotor)
-                .configure(
-                        rightConfig,
-                        ResetMode.kNoResetSafeParameters,
-                        PersistMode.kPersistParameters);
 
         leftMotor.setCurrentLimit(40);
         rightMotor.setCurrentLimit(40);

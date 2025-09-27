@@ -45,8 +45,8 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         setPoint = ElevatorPosition.READY.getPosition(); // Default position
         elevatorMotorLeft.setCurrentLimit(40);
         elevatorMotorRight.setCurrentLimit(40); // Set current limit for the elevator motor
-        elevatorMotorLeft.setInverted(true);
-        elevatorMotorRight.setInverted(false);
+        //elevatorMotorLeft.setInverted(true);
+        //elevatorMotorRight.setInverted(false);
         elevatorMotorRight.follow(elevatorMotorLeft);
         // ffGain =
         //      ConfigFileReader.instance.getDouble(
