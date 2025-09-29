@@ -3,6 +3,7 @@ package com.team766.logging;
 import com.google.errorprone.annotations.FormatMethod;
 import com.team766.config.ConfigFileReader;
 import com.team766.library.CircularBuffer;
+import com.team766.library.ValueProvider;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import java.io.File;
@@ -54,30 +55,25 @@ public final class Logger {
         for (Category category : Category.values()) {
             m_loggers.put(category, new Logger(category));
         }
+
+        Thread.setDefaultUncaughtExceptionHandler(new LogUncaughtException());
+    }
+
+    public static ValueProvider<String> getLogDirFromConfig() {
+        return ConfigFileReader.getInstance().getString(LOG_FILE_PATH_KEY);
+    }
+
+    public static void init(String logDir) {
         try {
-            ConfigFileReader config_file = ConfigFileReader.getInstance();
-            if (config_file != null && config_file.containsKey(LOG_FILE_PATH_KEY)) {
-                logFilePathBase = config_file.getString(LOG_FILE_PATH_KEY).get();
-                new File(logFilePathBase).mkdirs();
-                final String timestamp =
-                        new SimpleDateFormat("yyyyMMdd'T'HHmmss").format(new Date());
-                final String logFilePath = new File(logFilePathBase, timestamp).getAbsolutePath();
-                m_logWriter = new LogWriter(logFilePath);
-                get(Category.CONFIGURATION).logRaw(Severity.INFO, "Logging to " + logFilePath);
-            } else {
-                get(Category.CONFIGURATION)
-                        .logRaw(
-                                Severity.ERROR,
-                                "Config file does not specify "
-                                        + LOG_FILE_PATH_KEY
-                                        + ". Logs will only be in-memory and will be lost when the robot is turned off.");
-            }
+            logFilePathBase = logDir;
+            final String timestamp = new SimpleDateFormat("yyyyMMdd'T'HHmmss").format(new Date());
+            final String logFilePath = new File(logFilePathBase, timestamp).getAbsolutePath();
+            m_logWriter = new LogWriter(logFilePath);
+            get(Category.CONFIGURATION).logRaw(Severity.INFO, "Logging to " + logFilePath);
         } catch (Exception e) {
             e.printStackTrace();
             LoggerExceptionUtils.logException(e);
         }
-
-        Thread.setDefaultUncaughtExceptionHandler(new LogUncaughtException());
     }
 
     public static void enableLoggingToDataLog(boolean enabled) {

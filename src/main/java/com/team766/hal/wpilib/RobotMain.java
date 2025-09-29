@@ -95,48 +95,49 @@ public class RobotMain extends LoggedRobot {
     @Override
     public void robotInit() {
         try {
-            boolean configFromUSB = true;
-            String filename = checkForAndReturnPathToConfigFile(USB_CONFIG_FILE);
-
-            if (filename == null) {
-                filename = INTERNAL_CONFIG_FILE;
-                configFromUSB = false;
-            }
-
             if (isSimulation()) {
                 ConfigFileReader.instance = new ConfigFileReader("simConfig.txt");
                 // TODO: Use WPILib's simulation interfaces and switch this to WPIRobotProvider
                 RobotProvider.instance = new SimulationRobotProvider();
             } else {
+                boolean configFromUSB = true;
+                String filename = checkForAndReturnPathToConfigFile(USB_CONFIG_FILE);
+                if (filename == null) {
+                    filename = INTERNAL_CONFIG_FILE;
+                    configFromUSB = false;
+                }
                 ConfigFileReader.instance =
                         new ConfigFileReader(filename, configFromUSB ? INTERNAL_CONFIG_FILE : null);
                 RobotProvider.instance = new WPIRobotProvider();
             }
-            robot = new GenericRobotMain();
+
+            var configLogDir = com.team766.logging.Logger.getLogDirFromConfig();
+            if (configLogDir.hasValue()) {
+                new File(configLogDir.get()).mkdirs();
+            }
+            DataLogManager.start(configLogDir.valueOr("" /* use DataLogManager's default dir */));
+            com.team766.logging.Logger.init(DataLogManager.getLogDir());
 
             DriverStation.startDataLog(DataLogManager.getLog());
 
-            if (isReal()) {
-                // enable dual-logging
-                com.team766.logging.Logger.enableLoggingToDataLog(true);
+            // enable dual-logging
+            com.team766.logging.Logger.enableLoggingToDataLog(true);
 
-                // set up AdvantageKit logging
-                DataLogManager.log("Initializing logging.");
-                Logger.addDataReceiver(new WPILOGWriter("/U/logs")); // Log to sdcard
-                if (!DriverStation.isFMSAttached()) {
-                    Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-                }
-                new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-
-            } else {
-                // TODO: add support for simulation logging/replay
+            // set up AdvantageKit logging
+            DataLogManager.log("Initializing logging.");
+            Logger.addDataReceiver(new WPILOGWriter(DataLogManager.getLogDir())); // Log to sdcard
+            if (!DriverStation.isFMSAttached()) {
+                Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
             }
+            new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
             Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
             Logger.recordMetadata("GitDirty", BuildConstants.DIRTY != 0 ? "Yes" : "No");
             Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
 
             Logger.start();
+
+            robot = new GenericRobotMain();
 
             robot.robotInit();
         } catch (Exception e) {
