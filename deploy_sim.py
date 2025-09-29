@@ -47,27 +47,6 @@ def main(argv=None):
             "-xf",
             sim_package,
         ])
-    
-    # This is a backwards compatibility shim for existing 3d simulator packages.
-    # Previously, the run script of the simulator was also responsible for running the robot code,
-    # so give it some placeholder Java code to run. The simulator has a hard-coded Java class that
-    # it expects to run.
-    os.makedirs("com/team766/hal/simulator", exist_ok=True)
-    with open("com/team766/hal/simulator/RobotMain.java", "w") as fd:
-        fd.write(r"""
-                 package com.team766.hal.simulator;
-                 public class RobotMain {
-                     public static void main(final String[] args) {
-                         while (true) {
-                             try {
-                                 Thread.sleep(10000);
-                             } catch (InterruptedException e) {
-                             }
-                         }
-                     }
-                 }
-                 """)
-    subprocess.check_call(["javac", "com/team766/hal/simulator/RobotMain.java"])
 
     os.chdir(extracted_dir)
 
@@ -102,7 +81,7 @@ def main(argv=None):
     # instance of the simulator without any disruption to the user.
     os.execlp(
         "screen", "screen", "-D", "-R", "-S", "simulator",
-        "./run.sh", project_base, f"{project_base}/build-sim")
+        "./run.sh", project_base)
 
 if __name__ == "__main__":
     try:
