@@ -12,10 +12,6 @@ def main(argv=None):
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     project_base = os.getcwd()
 
-    # Install dependencies
-    subprocess.check_call(["sudo", "apt", "update"])
-    subprocess.check_call(["sudo", "apt", "install", "-y", "screen"])
-
     # Create a directory in which to keep all of the simulator's files.
     os.makedirs("build-sim", exist_ok=True)
     os.chdir("build-sim")
