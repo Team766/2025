@@ -5,5 +5,6 @@ public class FilipMovingMotor extends MechanismWithStatus<MovingMotor.MovingMoto
   }
   RobotProvider.instance.getMotor()
   public Motor() {}
-  otorController.set()
+  MotorController.set(){}
+  run(){}
 }
