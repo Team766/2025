@@ -1,10 +1,23 @@
+package com.team766.robot.filip.mechanisms;
+
+// importing previous functions, classes needed
+
+import com.team766.framework.MechanismWithStatus;
+import com.team766.framework.Status;
+import com.team766.hal.MotorController;
+import com.team766.hal.RobotProvider;
+
+
+
+// double is a type (tuple)
+
 public class FilipMovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStatus> {
-  public record MovingMotorStatus(doublecurrentPosition) implements Status {}
-  protected MovingMotorStatus updateStatus() {
-    return 4
+  public record MovingMotorStatus(double currentPosition) implements Status {}
+ // creating a motor object
+  MotorController motor = RobotProvider.instance.getMotor("leftMotor");
+  public FilipMovingMotor() {}
+  public void moveSpeed(double speed) {
+    motor.set(speed);
   }
-  RobotProvider.instance.getMotor()
-  public Motor() {}
-  MotorController.set(){}
-  run(){}
+
 }
