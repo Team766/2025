@@ -170,12 +170,17 @@ public class RobotMain extends LoggedRobot {
     public void simulationInit() {
         try {
             enum SimulationMode {
+                None,
                 MaroonSim,
                 VrConnector,
             }
             final var simulationMode =
                     ConfigFileReader.getInstance().getEnum(SimulationMode.class, "simulationMode");
             switch (simulationMode.get()) {
+                case None -> {
+                    simulator = null;
+                    return;
+                }
                 case MaroonSim -> {
                     com.team766.logging.Logger.get(Category.FRAMEWORK)
                             .logRaw(Severity.INFO, "Running Maroon simulator");

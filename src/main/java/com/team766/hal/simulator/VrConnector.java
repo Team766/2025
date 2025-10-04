@@ -229,7 +229,7 @@ public class VrConnector implements SimulatorInterface {
         }
 
         selector.selectedKeys().clear();
-        selector.select();
+        selector.select(3000);
         boolean newData = false;
         for (SelectionKey key : selector.selectedKeys()) {
             if (!key.isValid()) {
@@ -373,6 +373,7 @@ public class VrConnector implements SimulatorInterface {
             if (ProgramInterface.simulationTime == 0) {
                 // Wait for a connection to the simulator before starting to run the robot code.
                 startTime = System.currentTimeMillis();
+                System.out.println("Waiting for 3d simulator to connect");
                 continue;
             }
             if (resetCounter != lastResetCounter) {
