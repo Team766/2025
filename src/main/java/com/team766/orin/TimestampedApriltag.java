@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public record TimestampedApriltag(double collectTime, int tagId, Pose3d pose3d, double covariance) {
     public Translation2d toRobotPosition(Rotation2d gyro) {
+        
         Translation2d tagPosition =
                 (tagId == FieldConstants.TEST_TAG_ID)
                         ? FieldConstants.TEST_TAG_POSITION.getTranslation()

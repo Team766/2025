@@ -40,6 +40,14 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
                     new GetOrinRawValue("left_front", 0.0049),
                     new GetOrinRawValue("right_back", 0.0009),
                     new GetOrinRawValue("right_front", 0.0049)
+
+                    // new GetOrinRawValue("766", 0.0009), new GetOrinRawValue("cam12", 0.0009)
+                    // new GetOrinRawValue("right_back", 0.0009),
+                    // new GetOrinRawValue("right_front", 0.0049)
+
+                    // new GetOrinRawValue("766", 0.0009),
+                    // new GetOrinRawValue("cam12", 0.0049)
+                    // new GetOrinRawValue("766", 0.0009)
                 };
     }
 

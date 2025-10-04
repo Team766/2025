@@ -8,6 +8,9 @@ import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva_2025.mechanisms.*;
 import com.team766.robot.reva_2025.procedures.autons.*;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class Robot implements RobotConfigurator {
 
     private SwerveDrive drive;
@@ -54,6 +57,10 @@ public class Robot implements RobotConfigurator {
             new AutonomousMode(
                     "Right Side Between Cages EDC",
                     () -> new ThreePieceEDC(drive, coral, wrist, elevator, algaeIntake)),
+            new AutonomousMode(
+                "L1 Center",
+                () -> new L1Center(drive, new Pose2d(0,0, new Rotation2d()))
+            )
             // new AutonomousMode(
             //         "AutoAlign", () -> new AutoAlign(new Pose2d(1, 0, new Rotation2d()), drive))
         };

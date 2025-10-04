@@ -32,7 +32,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     public enum ElevatorPosition {
         ELEVATOR_TOP(28.4),
         ELEVATOR_BOTTOM(0.5),
-        ELEVATOR_INTAKE(14.5),
+        ELEVATOR_INTAKE(14),
         ELEVATOR_L1(2),
         ELEVATOR_L2(0.5),
         ELEVATOR_L3(2.5),

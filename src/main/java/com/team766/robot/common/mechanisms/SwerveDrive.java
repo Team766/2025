@@ -16,6 +16,7 @@ import com.team766.localization.KalmanFilter;
 import com.team766.localization.Odometry;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.orin.TimestampedApriltag;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
@@ -524,8 +525,14 @@ public class SwerveDrive extends MultiFacetedMechanismWithStatus<SwerveDrive.Dri
                 HashMap<Translation2d, Double> tagPoses = new HashMap<>();
                 if (cameraTags.size() > 0) {
                     for (TimestampedApriltag tag : cameraTags) {
-                        Translation2d position =
-                                tag.toRobotPosition(Rotation2d.fromDegrees(heading));
+                        
+                        Translation2d position = new Translation2d();
+                        try {
+                               position = tag.toRobotPosition(Rotation2d.fromDegrees(heading));
+                        } catch (Exception e){
+                            LoggerExceptionUtils.logException(e);
+                            continue;
+                        }
                         tagPoses.put(position, tag.pose3d().getTranslation().getNorm());
                         if (Logger.isLoggingToDataLog()) {
                             org.littletonrobotics.junction.Logger.recordOutput(
@@ -543,6 +550,12 @@ public class SwerveDrive extends MultiFacetedMechanismWithStatus<SwerveDrive.Dri
                                 RobotProvider.instance.getClock().getTime()
                                         - (cameraTags.get(0).collectTime() / 1000000.));
                     }
+
+                    // Try ignoring the latency correction.
+                    /*kalmanFilter.updateWithVisionMeasurement(
+                    tagPoses,
+                    cameraTags.get(0).covariance(),
+                    RobotProvider.instance.getClock().getTime());*/
 
                     // Only do position update if current timestamp doesn't match with previous
                     // timestamp
