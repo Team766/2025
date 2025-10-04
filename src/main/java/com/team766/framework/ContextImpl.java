@@ -416,7 +416,7 @@ import java.util.function.BooleanSupplier;
     @Override
     public void execute() {
         ReservingCommand.enterCommand(this);
-        try {
+        try (var profileScope = Profiling.scope("Procedures/" + m_procedure.getName())) {
             if (m_state == State.DONE) {
                 return;
             }

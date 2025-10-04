@@ -2,6 +2,7 @@ package com.team766.hal.wpilib;
 
 import com.team766.BuildConstants;
 import com.team766.config.ConfigFileReader;
+import com.team766.framework.Profiling;
 import com.team766.hal.CanivPoller;
 import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
@@ -128,6 +129,16 @@ public class RobotMain extends LoggedRobot {
             e.printStackTrace();
             LoggerExceptionUtils.logException(e);
         }
+    }
+
+    private Profiling.Scope robotLoopScope = null;
+
+    @Override
+    public void robotPeriodic() {
+        if (robotLoopScope != null) {
+            robotLoopScope.close();
+        }
+        robotLoopScope = Profiling.scope("RobotMain");
     }
 
     @Override
