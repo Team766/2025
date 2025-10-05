@@ -1,0 +1,110 @@
+{
+	// Place your 2024_4 workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	"Procedure": {
+		"scope": "java",
+		"prefix": "ProcedureClass",
+		"isFileTemplate": true,
+		"body": [
+			"package com.team766.robot.${TM_DIRECTORY/.*\\/([^\\/]+)\\/procedures/$1/}.procedures;",
+			"",
+			"import com.team766.framework.Context;",
+			"import com.team766.framework.Procedure;",
+			"import com.team766.robot.${TM_DIRECTORY/.*\\/([^\\/]+)\\/procedures/$1/}.mechanisms.*;",
+			"",
+			"public class ${TM_FILENAME_BASE} extends Procedure {",
+			"    // TODO: Add mechanisms that your procedure needs to control",
+			"    public ${TM_FILENAME_BASE}() {",
+			"    }",
+			"",
+			"    @Override",
+			"    public void run(final Context context) {",
+			"        $0",
+			"    }",
+			"}",
+		],
+		"description": "A class file for a procedure"
+	},
+	"Mechanism": {
+		"scope": "java",
+		"prefix": "MechanismClass",
+		"isFileTemplate": true,
+		"body": [
+			"package com.team766.robot.${TM_DIRECTORY/.*\\/([^\\/]+)\\/mechanisms/$1/}.mechanisms;",
+			"",
+			"import com.team766.framework.MechanismWithStatus;",
+			"import com.team766.framework.Status;",
+			"import com.team766.hal.MotorController;",
+			"import com.team766.hal.RobotProvider;",
+			"",
+			"public class ${TM_FILENAME_BASE} extends MechanismWithStatus<${TM_FILENAME_BASE}.${TM_FILENAME_BASE}Status> {",
+			"    public record ${TM_FILENAME_BASE}Status() implements Status {}",
+			"",
+			"    $0",
+			"",
+			"    @Override",
+			"    protected void onMechanismIdle() {",
+			"        // TODO: Set the behavior for this mechanism when not being used by a Procedure or a Rule",
+			"    }",
+			"",
+			"    @Override",
+			"    protected ${TM_FILENAME_BASE}Status updateStatus() {",
+			"        return new ${TM_FILENAME_BASE}Status();",
+			"    }",
+			"}",
+		],
+		"description": "A class file for a robot mechanism"
+	},
+	"Motor": {
+		"scope": "java",
+		"prefix": "AddMotor",
+		"body": [
+			"private final MotorController $1 = RobotProvider.instance.getMotor(\"${2:$1}\");",
+		],
+		"description": "Add a MotorController to a Mechanism class"
+	},
+	"AbsoluteMotor": {
+		"scope": "java",
+		"prefix": "AddAbsoluteEncoder",
+		"body": [
+			"private final EncoderReader $1 = RobotProvider.instance.getEncoder(\"${2:$1}\");",
+		],
+		"description": "Add an absolute encoder to a Mechanism class"
+	},
+	"DigitalInput": {
+		"scope": "java",
+		"prefix": "AddDigitalInput",
+		"body": [
+			"private final DigitalInputReader $1 = RobotProvider.instance.getDigitalInput(\"${2:$1}\");",
+		],
+		"description": "Add a digital input to a Mechanism class"
+	},
+	"AnalogInput": {
+		"scope": "java",
+		"prefix": "AddAnalogInput",
+		"body": [
+			"private final AnalogInputReader $1 = RobotProvider.instance.getAnalogInput(\"${2:$1}\");",
+		],
+		"description": "Add an analog input to a Mechanism class"
+	},
+	"TimeOfFlight": {
+		"scope": "java",
+		"prefix": "AddTimeOfFlight",
+		"body": [
+			"private final TimeOfFlightReader $1 = RobotProvider.instance.getTimeOfFlight(\"${2:$1}\");",
+		],
+		"description": "Add an time of flight sensor to a Mechanism class"
+	},
+	"Solenoid": {
+		"scope": "java",
+		"prefix": "AddSolenoid",
+		"body": [
+			"private final SolenoidController $1 = RobotProvider.instance.getSolenoid(\"${2:$1}\");",
+		],
+		"description": "Add a solenoid channel to a Mechanism class"
+	}
+}
