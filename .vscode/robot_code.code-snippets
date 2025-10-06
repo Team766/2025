@@ -67,7 +67,7 @@
 		],
 		"description": "Add a MotorController to a Mechanism class"
 	},
-	"AbsoluteMotor": {
+	"AbsoluteEncoder": {
 		"scope": "java",
 		"prefix": "AddAbsoluteEncoder",
 		"body": [
