@@ -5,12 +5,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "java",
-      "name": "LocalLogReader",
-      "request": "launch",
-      "mainClass": "com.team766.web.LocalLogReader"
-    },
-    {
       "type": "wpilib",
       "name": "WPILib Desktop Debug",
       "request": "launch",

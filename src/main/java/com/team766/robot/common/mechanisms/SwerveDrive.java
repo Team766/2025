@@ -15,7 +15,6 @@ import com.team766.hal.RobotProvider;
 import com.team766.localization.KalmanFilter;
 import com.team766.localization.Odometry;
 import com.team766.logging.Category;
-import com.team766.logging.Logger;
 import com.team766.orin.TimestampedApriltag;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
@@ -527,22 +526,18 @@ public class SwerveDrive extends MultiFacetedMechanismWithStatus<SwerveDrive.Dri
                         Translation2d position =
                                 tag.toRobotPosition(Rotation2d.fromDegrees(heading));
                         tagPoses.put(position, tag.pose3d().getTranslation().getNorm());
-                        if (Logger.isLoggingToDataLog()) {
-                            org.littletonrobotics.junction.Logger.recordOutput(
-                                    "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
-                                    position.getY());
-                            org.littletonrobotics.junction.Logger.recordOutput(
-                                    "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
-                                    new Pose2d(position, Rotation2d.fromDegrees(heading)));
-                        }
+                        org.littletonrobotics.junction.Logger.recordOutput(
+                                "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
+                                position.getY());
+                        org.littletonrobotics.junction.Logger.recordOutput(
+                                "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
+                                new Pose2d(position, Rotation2d.fromDegrees(heading)));
                     }
 
-                    if (Logger.isLoggingToDataLog()) {
-                        org.littletonrobotics.junction.Logger.recordOutput(
-                                "delay",
-                                RobotProvider.instance.getClock().getTime()
-                                        - (cameraTags.get(0).collectTime() / 1000000.));
-                    }
+                    org.littletonrobotics.junction.Logger.recordOutput(
+                            "delay",
+                            RobotProvider.instance.getClock().getTime()
+                                    - (cameraTags.get(0).collectTime() / 1000000.));
 
                     // Only do position update if current timestamp doesn't match with previous
                     // timestamp
@@ -591,13 +586,10 @@ public class SwerveDrive extends MultiFacetedMechanismWithStatus<SwerveDrive.Dri
                     swerveBR.getModuleState(),
                     swerveBL.getModuleState(),
                 };
-        if (Logger.isLoggingToDataLog()) {
-            org.littletonrobotics.junction.Logger.recordOutput("curPose", currentPosition);
-            org.littletonrobotics.junction.Logger.recordOutput(
-                    "current rotational velocity",
-                    robotOrientedChassisSpeeds.omegaRadiansPerSecond);
-            org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", swerveModuleStates);
-        }
+        org.littletonrobotics.junction.Logger.recordOutput("curPose", currentPosition);
+        org.littletonrobotics.junction.Logger.recordOutput(
+                "current rotational velocity", robotOrientedChassisSpeeds.omegaRadiansPerSecond);
+        org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", swerveModuleStates);
 
         return new DriveStatus(
                 shouldCrossWheels(),
