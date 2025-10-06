@@ -31,7 +31,6 @@
     "spotlessGradle.format.enable": true,
     "editor.codeActionsOnSave": {
       "source.fixAll.spotlessGradle": "explicit",
-      "source.organizeImports": "explicit",
       "source.addMissingImports": "explicit"
     }
   },
