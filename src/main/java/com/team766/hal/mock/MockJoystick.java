@@ -27,7 +27,8 @@ public class MockJoystick implements JoystickReader {
 
     @Override
     public boolean isAxisMoved(int axis) {
-        return getAxis(axis) >= axisDeadzoneMap.getOrDefault(axis, defaultAxisDeadzone);
+        return Math.abs(axisValues[axis])
+                >= axisDeadzoneMap.getOrDefault(axis, defaultAxisDeadzone);
     }
 
     @Override

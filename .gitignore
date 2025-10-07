@@ -172,6 +172,7 @@ out/
 # Simulation GUI and other tools window save file
 networktables.json
 simgui.json
+simgui-ds.json
 *-window.json
 
 # Simulation data log directory
@@ -188,4 +189,4 @@ compile_commands.json
 .factorypath
 
 # Don't commit the cache of downloaded sim files
-/buildSim/
+/build-sim/
