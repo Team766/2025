@@ -190,6 +190,7 @@ tasks.withType(JavaCompile).configureEach {
         disable("MissingSummary")
         disable("StringCaseLocaleUsage")
         error("DontDiscardProcedures")
+        error("DontInvokeProcedureRunDirectly")
         excludedPaths.set(".*/build/generated/.*")
     }
 }

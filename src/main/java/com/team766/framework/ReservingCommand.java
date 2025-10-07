@@ -60,7 +60,7 @@ public final class ReservingCommand extends WrapperCommand {
                 throw new IllegalStateException();
             }
         } else if (!command.getRequirements().isEmpty()) {
-            checkProcedureReservationsSubset(currentCommands.getLast(), command);
+            checkCommandRequirementsSubset(currentCommands.getLast(), command);
         }
         currentCommands.addLast(command);
     }
@@ -82,7 +82,7 @@ public final class ReservingCommand extends WrapperCommand {
      *      if the child Command's reservations are not a subset of the parent Command's
      *      reservations.
      */
-    private static void checkProcedureReservationsSubset(Command parent, Command child) {
+    private static void checkCommandRequirementsSubset(Command parent, Command child) {
         final var thisReservations = parent.getRequirements();
         for (var req : child.getRequirements()) {
             if (!thisReservations.contains(req)) {
