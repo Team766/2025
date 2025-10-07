@@ -27,7 +27,13 @@
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
  
-  "editor.formatOnSave": false,
+  "[java]": {
+    "spotlessGradle.format.enable": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.spotlessGradle": "explicit",
+      "source.addMissingImports": "explicit"
+    }
+  },
   "editor.insertSpaces": true,
   "editor.tabSize": 4,
   "diffEditor.ignoreTrimWhitespace": false,

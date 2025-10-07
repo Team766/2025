@@ -23,18 +23,11 @@
       "desktop": false,
     },
     {
-      "type": "java",
-      "name": "Start 3d simulation mode",
+      "type": "wpilib",
+      "name": "Run simulation",
       "request": "launch",
-      "mainClass": "com.team766.hal.simulator.RobotMain",
-      "args": ["-vr_connector"]
-    },
-    {
-      "type": "java",
-      "name": "Start Maroon simulation",
-      "request": "launch",
-      "mainClass": "com.team766.hal.simulator.RobotMain",
-      "args": ["-maroon_sim"]
+      "desktop": true,
+      "preLaunchTask": "Run Simulator"
     }
   ]
 }
