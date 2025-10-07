@@ -133,6 +133,27 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Create New Robot",
+            "type": "shell",
+            "command": "./gradlew createNewRobot -ProbotName=${input:robot_name}",
+            "problemMatcher": [],
+            "showOutput": "always",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "showReuseMessage": false,
+                "clear": true
+            },
+        }
+    ],
+    "inputs": [
+        {
+            "id": "robot_name",
+            "description": "New Robot Name",
+            "default": "",
+            "type": "promptString"
         }
     ]
 }

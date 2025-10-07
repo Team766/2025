@@ -313,3 +313,12 @@ protobuf {
         }
     }
 }
+
+// Invoke with -ProbotName=MyRobot
+task createNewRobot(type: Copy) {
+    from 'templates/robot'
+    into 'src'
+    eachFile { file -> file.path = file.path.replace('ROBOT_NAME', robotName) }
+    filter { line -> line.replace('ROBOT_NAME', robotName) }
+    includeEmptyDirs = false
+}
