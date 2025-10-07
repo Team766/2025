@@ -1,7 +1,10 @@
 package com.team766.framework;
 
 import com.team766.config.ConfigFileReader;
+import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
+import com.team766.logging.Category;
+import com.team766.logging.Severity;
 import org.littletonrobotics.junction.Logger;
 
 public class Profiling {
@@ -35,10 +38,13 @@ public class Profiling {
         }
     }
 
+    private static final int PROFILING_SCOPE_STACK_DEPTH = 20;
+
     private static final ValueProvider<Boolean> profilingEnabled =
             ConfigFileReader.instance.getBoolean("profiling.enabled");
-    private static final Scope[] scopes = new Scope[20];
+    private static final Scope[] scopes = new Scope[PROFILING_SCOPE_STACK_DEPTH];
     private static int scopeIndex = 0;
+    private static RateLimiter logWarningLimiter = new RateLimiter(1.0);
 
     static {
         for (int i = 0; i < scopes.length; ++i) {
@@ -51,6 +57,14 @@ public class Profiling {
             return null;
         }
         if (scopeIndex >= scopes.length) {
+            if (logWarningLimiter.next()) {
+                com.team766.logging.Logger.get(Category.FRAMEWORK)
+                        .logRaw(
+                                Severity.ERROR,
+                                "Exceeded the maximum stack depth of profiling scopes. Increase "
+                                        + "PROFILING_SCOPE_STACK_DEPTH or reduce the number of "
+                                        + "profiling scopes.");
+            }
             return null;
         }
         final var scope = scopes[scopeIndex];
