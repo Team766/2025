@@ -5,8 +5,6 @@ import com.team766.hal.mock.MockJoystick;
 import java.lang.reflect.Array;
 
 public class ProgramInterface {
-    public static Program program = null;
-
     public static double simulationTime;
 
     public static int driverStationUpdateNumber = 0;

@@ -1,4 +1,5 @@
 {
+	"simulationMode": "VrConnector",
 	"drive": {
 		"leftMotor": {
 			"deviceId": 6,
