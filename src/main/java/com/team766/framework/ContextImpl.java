@@ -294,6 +294,7 @@ import java.util.function.BooleanSupplier;
     /**
      * This is the entry point for this Context's worker thread.
      */
+    @SuppressWarnings("DontInvokeProcedureRunDirectly")
     private void threadFunction() {
         try {
             m_thread = Thread.currentThread();
@@ -352,50 +353,37 @@ import java.util.function.BooleanSupplier;
         transferControl(ControlOwner.SUBROUTINE, ControlOwner.MAIN_THREAD);
     }
 
+    @SuppressWarnings("DontInvokeProcedureRunDirectly")
     @Override
     public void runSync(final Procedure procedure) {
-        checkProcedureReservationsSubset(procedure);
+        procedure.checkReservations(this);
         procedure.run(this);
     }
 
+    @SuppressWarnings("DontInvokeProcedureRunDirectly")
     @Override
     public void runParallel(Procedure... procedures) {
         var contexts = new Command[procedures.length];
         for (int i = 0; i < contexts.length; ++i) {
             var procedure = procedures[i];
-            checkProcedureReservationsSubset(procedure);
+            procedure.checkReservations(this);
             contexts[i] = procedure.createCommandToRunProcedure();
         }
         // NOTE: Commands.parallel will ensure procedures' reservations are disjoint.
         new WPILibCommandProcedure(Commands.parallel(contexts)).run(this);
     }
 
+    @SuppressWarnings("DontInvokeProcedureRunDirectly")
     @Override
     public void runParallelRace(Procedure... procedures) {
         var contexts = new Command[procedures.length];
         for (int i = 0; i < contexts.length; ++i) {
             var procedure = procedures[i];
-            checkProcedureReservationsSubset(procedure);
+            procedure.checkReservations(this);
             contexts[i] = procedure.createCommandToRunProcedure();
         }
         // NOTE: Commands.race will ensure procedures' reservations are disjoint.
         new WPILibCommandProcedure(Commands.race(contexts)).run(this);
-    }
-
-    private void checkProcedureReservationsSubset(Procedure procedure) {
-        final var thisReservations = getRequirements();
-        for (var res : procedure.reservations()) {
-            for (var req : res.getReservableSubsystems()) {
-                if (!thisReservations.contains(req)) {
-                    throw new IllegalArgumentException(
-                            getName()
-                                    + " tried to run "
-                                    + procedure.getName()
-                                    + " but is missing the reservation on "
-                                    + req.getName());
-                }
-            }
-        }
     }
 
     @SuppressWarnings("FutureReturnValueIgnored")

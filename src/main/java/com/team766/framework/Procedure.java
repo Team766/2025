@@ -10,7 +10,7 @@ public abstract class Procedure implements StatusesMixin, LoggingBase {
     // A reusable Procedure that does nothing.
     private static final class NoOpProcedure extends InstantProcedure {
         @Override
-        public void run() {}
+        public void run(InstantContext context) {}
     }
 
     public static final InstantProcedure NO_OP = new NoOpProcedure();
@@ -60,17 +60,27 @@ public abstract class Procedure implements StatusesMixin, LoggingBase {
     }
 
     protected final <M extends Reservable> M reserve(M m) {
+        if (m == null) {
+            throw new NullPointerException("The Mechanism object is null and so can't be reserved");
+        }
         reservations.add(m);
         return m;
     }
 
     protected final void reserve(Reservable... ms) {
         for (var m : ms) {
+            if (m == null) {
+                throw new NullPointerException(
+                        "A Mechanism object is null and so can't be reserved");
+            }
             reservations.add(m);
         }
     }
 
     protected final void reserve(Collection<? extends Reservable> ms) {
+        if (ms.contains(null)) {
+            throw new NullPointerException("A Mechanism object is null and so can't be reserved");
+        }
         reservations.addAll(ms);
     }
 
@@ -81,5 +91,21 @@ public abstract class Procedure implements StatusesMixin, LoggingBase {
     @Override
     public final String toString() {
         return getName();
+    }
+
+    /* package */ void checkReservations(Command command) {
+        final var commandReservations = command.getRequirements();
+        for (var res : this.reservations()) {
+            for (var req : res.getReservableSubsystems()) {
+                if (!commandReservations.contains(req)) {
+                    throw new IllegalArgumentException(
+                            command.getName()
+                                    + " tried to run "
+                                    + this.getName()
+                                    + " but is missing the reservation on "
+                                    + req.getName());
+                }
+            }
+        }
     }
 }
