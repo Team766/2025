@@ -116,12 +116,8 @@ public class RobotMain extends LoggedRobot {
                 new File(configLogDir.get()).mkdirs();
             }
             DataLogManager.start(configLogDir.valueOr("" /* use DataLogManager's default dir */));
-            com.team766.logging.Logger.init(DataLogManager.getLogDir());
 
             DriverStation.startDataLog(DataLogManager.getLog());
-
-            // enable dual-logging
-            com.team766.logging.Logger.enableLoggingToDataLog(true);
 
             // set up AdvantageKit logging
             DataLogManager.log("Initializing logging.");
