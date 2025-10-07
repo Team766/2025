@@ -1,5 +1,6 @@
 package com.team766.simulator;
 
+import com.team766.hal.simulator.SimulatorInterface;
 import com.team766.simulator.elements.*;
 import com.team766.simulator.mechanisms.*;
 import com.team766.simulator.ui.*;
@@ -8,15 +9,18 @@ import java.util.HashMap;
 import org.apache.commons.math3.geometry.euclidean.threed.RotationConvention;
 import org.apache.commons.math3.geometry.euclidean.threed.RotationOrder;
 
-public class Simulator implements Runnable {
+public class Simulator implements SimulatorInterface {
     private ElectricalSystem electricalSystem = new ElectricalSystem();
     private PneumaticsSystem pneumaticsSystem = new PneumaticsSystem();
     private WestCoastDrive drive = new WestCoastDrive(electricalSystem);
     private AirCompressor compressor = new AirCompressor();
     private DoubleJointedArm arm = new DoubleJointedArm(electricalSystem);
 
+    private Runnable resetHandler;
+
     private double time;
     private double nextLogTime;
+    private double nextDisplayTime = Parameters.DISPLAY_PERIOD;
 
     private final Metrics metrics = new Metrics();
     private final Metrics.Series xPositionSeries = metrics.addSeries("X Position (m)", false);
@@ -54,7 +58,8 @@ public class Simulator implements Runnable {
         }
     }
 
-    public void step() {
+    @Override
+    public double prepareStep() {
         double dt = Parameters.TIME_STEP;
         time += dt;
         ProgramInterface.simulationTime = time;
@@ -64,8 +69,8 @@ public class Simulator implements Runnable {
         drive.step(dt);
         arm.step(dt);
 
-        if (ProgramInterface.program != null) {
-            ProgramInterface.program.step(dt);
+        if (Math.abs(time - 3.0) < Parameters.TIME_STEP) {
+            pneumaticsSystem.ventPressure();
         }
 
         if (nextLogTime <= time) {
@@ -116,19 +121,32 @@ public class Simulator implements Runnable {
                         arm.getJ2Position().get(1, 0)
                     });
         }
+
+        if (nextDisplayTime <= time) {
+            nextDisplayTime += Parameters.DISPLAY_PERIOD;
+
+            displayResultsUi();
+        }
+
+        return dt;
     }
 
-    public void run() {
+    public void reset() {
         metrics.clear();
         time = 0.0;
         nextLogTime = 0.0;
-        while (time <= Parameters.DURATION) {
-            step();
-            if (Math.abs(time - 3.0) < Parameters.TIME_STEP) {
-                pneumaticsSystem.ventPressure();
-            }
+        nextDisplayTime = Parameters.DISPLAY_PERIOD;
+        if (resetHandler != null) {
+            resetHandler.run();
         }
+    }
 
+    @Override
+    public void setResetHandler(Runnable handler) {
+        resetHandler = handler;
+    }
+
+    void displayResultsUi() {
         var playbackTimer = new PlaybackTimer(time);
 
         // var trajectoryPanel = new Trajectory(driveTrajectory, playbackTimer);

@@ -1,5 +1,6 @@
 package com.team766.hal;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.team766.config.ConfigFileReader;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
@@ -14,7 +15,9 @@ import com.team766.robot.example.Robot;
  */
 public final class RobotSelector {
 
-    private static final String ROBOT_CONFIGURATOR_KEY = "robotConfigurator";
+    @VisibleForTesting
+    /* package */ static final String ROBOT_CONFIGURATOR_KEY = "robotConfigurator";
+
     private static final String DEFAULT_CONFIGURATOR = Robot.class.getName();
 
     private RobotSelector() {} // utility class

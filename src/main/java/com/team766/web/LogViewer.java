@@ -2,12 +2,10 @@ package com.team766.web;
 
 import com.team766.logging.Category;
 import com.team766.logging.LogEntry;
-import com.team766.logging.LogEntryRenderer;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -24,10 +22,10 @@ public class LogViewer implements WebServer.Handler {
             r +=
                     String.format(
                             "<tr><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td></tr>\n",
-                            entry.getCategory().name(),
-                            timeFormat.format(new Date(entry.getTime() / 1000000)),
-                            entry.getSeverity().name(),
-                            LogEntryRenderer.renderLogEntry(entry, null));
+                            entry.category().name(),
+                            timeFormat.format(entry.time()),
+                            entry.severity().name(),
+                            entry.message());
         }
         r += "</table>";
         return r;
@@ -89,7 +87,7 @@ public class LogViewer implements WebServer.Handler {
                 ALL_ERRORS_NAME,
                 Arrays.stream(Category.values())
                                 .flatMap(category -> Logger.get(category).recentEntries().stream())
-                                .filter(entry -> entry.getSeverity() == Severity.ERROR)
+                                .filter(entry -> entry.severity() == Severity.ERROR)
                         ::iterator);
     }
 

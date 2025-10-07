@@ -57,30 +57,30 @@ public class KalmanFilter {
     }
 
     public KalmanFilter(
-            Matrix<N2, N1> curState,
-            Matrix<N2, N2> covariance,
             Matrix<N2, N2> odometryCovariancePerDist,
-            Matrix<N2, N2> visionCovariance) {
-        this(
-                curState,
-                covariance,
-                odometryCovariancePerDist,
-                visionCovariance,
-                VELOCITY_INPUT_DELETION_TIME_DEFAULT);
-    }
-
-    public KalmanFilter(Matrix<N2, N2> odometryCovariancePerDist, Matrix<N2, N2> visionCovariance) {
+            Matrix<N2, N2> visionCovariance,
+            double velocityInputDeletionTime) {
         this(
                 CUR_STATE_DEFAULT,
                 INITIAL_COVARIANCE_DEFAULT,
                 odometryCovariancePerDist,
-                visionCovariance);
+                visionCovariance,
+                velocityInputDeletionTime);
+    }
+
+    public KalmanFilter(Matrix<N2, N2> odometryCovariancePerDist, Matrix<N2, N2> visionCovariance) {
+        this(odometryCovariancePerDist, visionCovariance, VELOCITY_INPUT_DELETION_TIME_DEFAULT);
     }
 
     public KalmanFilter() {
         this(ODOMETRY_COVARIANCE_PER_DIST_DEFAULT, VISION_COVARIANCE_DEFAULT);
     }
 
+    /**
+     * Adds odometry input into log of recent position updates
+     * @param odometryInput the change in position between the last timestamp input and the current time
+     * @param time the current time
+     */
     public void addOdometryInput(Translation2d odometryInput, double time) {
 
         // short circuits if inputting a value with the wrong time
@@ -100,6 +100,12 @@ public class KalmanFilter {
         }
     }
 
+    /**
+     * Helper method to change the current state to a previous or future state
+     * @param time the time of the current state
+     * @param nextStepTime the time of the next state which is in inputLog
+     * @param dt the change in time between time and the target time. The target time can be in between inputLog times.
+     */
     private void predict(double time, double nextStepTime, double dt) {
         Translation2d positionChange;
 
@@ -247,7 +253,7 @@ public class KalmanFilter {
     }
 
     /**
-     * Updates the esimated position using vision measurements mapped to their covariance, allowing for a unique covariance for each measurement
+     * Updates the esimated position using vision measurements mapped to the distance to tag, scaling the covariance input based on distance
      * @param measurements map key is the vision-based robot position (x, y), value is the distance from the tag to the robot
      * @param covariance the covariance of this camera
      * @param time the time that the measurement took place, in seconds
@@ -269,23 +275,41 @@ public class KalmanFilter {
         updateWithPositionMeasurement(measurementTreeMap, time);
     }
 
+    /**
+     * @return Translation2d of current position
+     */
     public Translation2d getPos() {
         return new Translation2d(new Vector<N2>(curState));
     }
 
+    /**
+     * @return 2x2 Matrix of current covariance
+     */
     public Matrix<N2, N2> getCovariance() {
         return curCovariance;
     }
 
+    /**
+     * set current state, both positon and covariance
+     * @param pos Translation2d of pos
+     * @param covariance 2x2 Matrix of covariance
+     */
     public void setPos(Translation2d pos, Matrix<N2, N2> covariance) {
         curState = pos.toVector();
         curCovariance = covariance;
     }
 
+    /**
+     * set current position with a default covariance
+     * @param pos Translation2d of pos
+     */
     public void setPos(Translation2d pos) {
         setPos(pos, SET_POS_COVARIANCE_DEFAULT);
     }
 
+    /**
+     * resets state to a position of (0,0) and high covariance, meaning state will jump to next landmark measurement
+     */
     public void resetPos() {
         setPos(new Translation2d(), INITIAL_COVARIANCE_DEFAULT);
     }

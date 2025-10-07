@@ -3,20 +3,79 @@
 	// for the documentation about the tasks.json format
 	"version": "2.0.0",
 	"tasks": [
+        // The "Run Simulator" task starts the simulator to run in parallel with the robot code.
+        {
+            "label": "Run Simulator",
+            "type": "shell",
+            "command": "./deploy_sim.py",
+            "hide": true,
+            "showOutput": "always",
+            // This task is a dependency of the Deploy Sim task which runs the robot code, and so
+            // it needs to finish before the robot code will be allowed to start running. However,
+            // we want the simulator to run in parallel with the robot code, so we set it as a
+            // background task, which allows a task to signal when it has finished (with console
+            // output that matches the endsPattern of the problemMatcher) and then continue running
+            // in the background. We then reactivate the task after the robot code starts running
+            // (using the beginsPattern).
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "Simulation doesn't report errors so we don't need a pattern"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*Robot code started.*",
+                    "endsPattern": ".*Waiting for robot code to start.*"
+                }
+            },
+            "presentation": {
+                "group": "robotSim",
+                "echo": true,
+                "reveal": "always",
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true,
+            }
+        },
+        // The "Cleanup old robot code instances" task is used to terminate any existing instances
+        // of the robot code before starting a new one.
+        // Codespaces can orphan task processes if the user refreshes the browser tab or
+        // disconnects, so we need to manually clean them up.
+        {
+            "label": "Cleanup old robot code instances",
+            "type": "shell",
+            "command": "pkill --signal TERM --full simulateJava || true",
+            "hide": true,
+            "problemMatcher": [],
+            "presentation": {
+                "group": "robotSim",
+                "echo": true,
+                "showReuseMessage": false,
+                "clear": true,
+                "close": true
+            },
+        },
         {
             "label": "Deploy Sim",
             "type": "shell",
-            "command": "./deploy_sim.sh",
+            "command": "./gradlew simulateJava",
             "problemMatcher": [],
             "showOutput": "always",
             "presentation": {
+                "group": "robotSim",
                 "echo": true,
                 "reveal": "always",
-                "focus": true,
                 "panel": "dedicated",
                 "showReuseMessage": false,
                 "clear": true
-            }
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                // Before starting the robot code, make sure that any previous instances are
+                // stopped, and that the simulator is started.
+                "Cleanup old robot code instances",
+                "Run Simulator"
+            ]
         },
         {
             "label": "Gradle Build",
@@ -74,6 +133,27 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Create New Robot",
+            "type": "shell",
+            "command": "./gradlew createNewRobot -ProbotName=${input:robot_name}",
+            "problemMatcher": [],
+            "showOutput": "always",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "showReuseMessage": false,
+                "clear": true
+            },
+        }
+    ],
+    "inputs": [
+        {
+            "id": "robot_name",
+            "description": "New Robot Name",
+            "default": "",
+            "type": "promptString"
         }
     ]
 }

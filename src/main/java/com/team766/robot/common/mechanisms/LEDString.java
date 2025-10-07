@@ -5,6 +5,7 @@ import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.MultiFacetedMechanism;
+import com.team766.framework.NoReservationRequired;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -124,6 +125,7 @@ public class LEDString extends MultiFacetedMechanism {
         }
     }
 
+    @NoReservationRequired
     public Segment makeSegment(int ledStartIndex, int ledCount) {
         final int ledEndIndex = ledStartIndex + ledCount;
         for (var s : segments) {

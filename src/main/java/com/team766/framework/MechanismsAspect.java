@@ -27,7 +27,7 @@ public class MechanismsAspect {
     // not also methods of the Mechanism base class, or any other base class contained in the
     // framework package. Also ignore any methods that are annotated with NoReservationRequired.
     @Before(
-            "execution(public * com.team766.framework.Reservable+.*(..))"
+            "execution(public !static * com.team766.framework.Reservable+.*(..))"
                     + " && !within(com.team766.framework.*)"
                     + " && !@annotation(com.team766.framework.NoReservationRequired)")
     public void mechanismCheckedPublicMethods(JoinPoint joinPoint) {
