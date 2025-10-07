@@ -119,9 +119,6 @@ public class RobotMain extends LoggedRobot {
 
             DriverStation.startDataLog(DataLogManager.getLog());
 
-            // enable dual-logging
-            com.team766.logging.Logger.enableLoggingToDataLog(true);
-
             // set up AdvantageKit logging
             DataLogManager.log("Initializing logging.");
             Logger.addDataReceiver(new WPILOGWriter(DataLogManager.getLogDir())); // Log to sdcard

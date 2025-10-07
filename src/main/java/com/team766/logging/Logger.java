@@ -4,18 +4,12 @@ import com.google.errorprone.annotations.FormatMethod;
 import com.team766.config.ConfigFileReader;
 import com.team766.library.CircularBuffer;
 import com.team766.library.ValueProvider;
-import edu.wpi.first.util.datalog.StringLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 public final class Logger {
-
-    private static AtomicReference<StringLogEntry> wpiLogEntryReference =
-            new AtomicReference<StringLogEntry>();
 
     private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
         @SuppressWarnings("CatchAndPrintStackTrace")
@@ -30,6 +24,7 @@ public final class Logger {
 
     private static final int MAX_NUM_RECENT_ENTRIES = 100;
     private static final String LOG_FILE_PATH_KEY = "logFilePath";
+    private static final String ADVANTAGE_KIT_KEY = "LogMessages";
 
     private static EnumMap<Category, Logger> m_loggers =
             new EnumMap<Category, Logger>(Category.class);
@@ -46,15 +41,6 @@ public final class Logger {
 
     public static ValueProvider<String> getLogDirFromConfig() {
         return ConfigFileReader.getInstance().getString(LOG_FILE_PATH_KEY);
-    }
-
-    public static void enableLoggingToDataLog(boolean enabled) {
-        if (enabled) {
-            wpiLogEntryReference.compareAndSet(
-                    null, new StringLogEntry(DataLogManager.getLog(), "/maroon/logs"));
-        } else {
-            wpiLogEntryReference.set(null);
-        }
     }
 
     public static Logger get(final Category category) {
@@ -79,9 +65,6 @@ public final class Logger {
     public void logRaw(final Severity severity, final String message) {
         var entry = new LogEntry(new Date(), severity, m_category, message);
         m_recentEntries.add(entry);
-        StringLogEntry stringLogEntry = wpiLogEntryReference.get();
-        if (stringLogEntry != null && (severity.compareTo(Severity.INFO) >= 0)) {
-            stringLogEntry.append(message);
-        }
+        org.littletonrobotics.junction.Logger.recordOutput(ADVANTAGE_KIT_KEY, message);
     }
 }
