@@ -9,11 +9,14 @@ import com.team766.hal.RobotProvider;
 
 
 
-// double is a type (tuple)
+// double is a type (int.int)
 
 public class FilipMovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStatus> {
   public record MovingMotorStatus(double currentPosition) implements Status {}
  // creating a motor object
+  protected MovingMotorStatus updateStatus(){
+    return new MovingMotorStatus(67);
+  }
   MotorController motor = RobotProvider.instance.getMotor("leftMotor");
   public FilipMovingMotor() {}
   public void moveSpeed(double speed) {
