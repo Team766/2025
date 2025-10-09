@@ -8,7 +8,7 @@ import com.team766.hal.RobotProvider;
 public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStatus> {
     
     public MovingMotor() {
-
+ 
     }
     public record MovingMotorStatus(double currentPosition) implements Status {
 
@@ -18,5 +18,6 @@ public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStat
     }
     protected MovingMotorStatus updateStatus() {
         return new MovingMotorStatus(currentPosition:0);
+        motor.getSensorPosition();
     }
  }
