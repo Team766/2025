@@ -6,21 +6,21 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
 public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
-    MotorController motor1 = RobotProvider.instance.getMotor("leftMotor");
-    MotorController motor2 = RobotProvider.instance.getMotor("rightMotor");
-    public record DriveStatus(double pos_motor1, double pos_motor2) implements Status {}
+    MotorController motor_left = RobotProvider.instance.getMotor("leftMotor");
+    MotorController motor_right = RobotProvider.instance.getMotor("rightMotor");
+    public record DriveStatus(double pos_motor_left, double pos_motor_right) implements Status {}
 
     public Drive() {}
 
     public void move_left(double speed) {
-        motor1.set(speed);
+        motor_left.set(speed);
     }
 
     public void move_right(double speed) {
-        motor2.set(speed);
+        motor_right.set(speed);
     }
 
     protected DriveStatus updateStatus() {
-        return new DriveStatus(motor1.getSensorPosition(), motor2.getSensorPosition());
+        return new DriveStatus(motor_left.getSensorPosition(), motor_right.getSensorPosition());
     }
 }

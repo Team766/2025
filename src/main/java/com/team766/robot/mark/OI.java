@@ -1,6 +1,6 @@
 package com.team766.robot.mark;
-import java.util.Set;
 
+import java.util.Set;
 import static com.team766.framework.RulePersistence.*;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.RobotProvider;
