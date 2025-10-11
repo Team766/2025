@@ -17,13 +17,13 @@ public class Robot implements RobotConfigurator {
     public void initializeMechanisms() {
         // Initialize mechanisms here
         drive = new BurroDrive();
-        arm = new Arm();
-        gripper = new Gripper();
+        // arm = new Arm();
+        // gripper = new Gripper();
     }
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, arm, gripper);
+        return new OI(drive);// , arm, gripper);
     }
 
     @Override
