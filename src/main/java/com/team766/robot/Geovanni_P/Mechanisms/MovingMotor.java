@@ -12,7 +12,7 @@ import com.team766.hal.RobotProvider;
 
 /** Add your docs here. */
 
-public class MovingMotor extends MechanismsWithStatus <MovingMotor.MovingMotorStatus> {
+public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStatus> {
     public MotorController motor;
     public MovingMotor() {
       motor = RobotProvider.instance.getMotor("motor");
@@ -27,7 +27,7 @@ public class MovingMotor extends MechanismsWithStatus <MovingMotor.MovingMotorSt
     }
 
     protected MovingMotorStatus updateStatus(){
-        return new MovingMotorStatus(currentPosition:3)
+        return new MovingMotorStatus(3);
     }
     
 }
