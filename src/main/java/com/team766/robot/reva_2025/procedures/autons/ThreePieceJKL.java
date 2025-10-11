@@ -43,7 +43,30 @@ public class ThreePieceJKL extends PathSequenceAuto {
         addPath("Reef J - Coral Station 1");
         addProcedure(new IntakeCoralUntilIn(intake));
 
+        // Score on K
+        addProcedure(new StartCoralIntake(intake));
+        addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.L4));
+        addPath("Coral Station 1 - Reef K");
+        addProcedure(
+                new ScoreCoral(
+                        RelativeReefPos.Right,
+                        ScoreHeight.L4,
+                        drive,
+                        elevator,
+                        wrist,
+                        intake,
+                        algaeIntake));
+
+        // Intake
+        addProcedure(new StartCoralIntake(intake));
+        addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.Intake));
+        addPath("Reef K - Coral Station 1");
+        addProcedure(new IntakeCoralUntilIn(intake));
+
         // Score on L
+        addProcedure(new StartCoralIntake(intake));
+        addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.L4));
+        addPath("Coral Station 1 - Reef L");
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Right,
@@ -59,16 +82,5 @@ public class ThreePieceJKL extends PathSequenceAuto {
         addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.Intake));
         addPath("Reef L - Coral Station 1");
         addProcedure(new IntakeCoralUntilIn(intake));
-
-        // Score on L
-        addProcedure(
-                new ScoreCoral(
-                        RelativeReefPos.Left,
-                        ScoreHeight.L4,
-                        drive,
-                        elevator,
-                        wrist,
-                        intake,
-                        algaeIntake));
     }
 }

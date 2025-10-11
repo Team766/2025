@@ -45,9 +45,13 @@ public class ThreePieceEDC extends PathSequenceAuto {
         addProcedure(new IntakeCoralUntilIn(intake));
 
         // Score on D
+        addProcedure(new StartCoralIntake(intake));
+        addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.L4));
+        addPath("Coral Station 2 - Reef D");
+
         addProcedure(
                 new ScoreCoral(
-                        RelativeReefPos.Right,
+                        RelativeReefPos.Left,
                         ScoreHeight.L4,
                         drive,
                         elevator,
@@ -62,6 +66,10 @@ public class ThreePieceEDC extends PathSequenceAuto {
         addProcedure(new IntakeCoralUntilIn(intake));
 
         // Score on C
+        addProcedure(new StartCoralIntake(intake));
+        addProcedure(new MoveElevator(elevator, wrist, ScoreHeight.L4));
+        addPath("Coral Station 2 - Reef C");
+
         addProcedure(
                 new ScoreCoral(
                         RelativeReefPos.Left,

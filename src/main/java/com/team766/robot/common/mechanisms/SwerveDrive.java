@@ -530,9 +530,6 @@ public class SwerveDrive extends MultiFacetedMechanismWithStatus<SwerveDrive.Dri
                         if (Logger.isLoggingToDataLog()) {
                             org.littletonrobotics.junction.Logger.recordOutput(
                                     "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
-                                    position.getY());
-                            org.littletonrobotics.junction.Logger.recordOutput(
-                                    "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
                                     new Pose2d(position, Rotation2d.fromDegrees(heading)));
                         }
                     }
