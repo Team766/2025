@@ -1,4 +1,5 @@
 {
+	"robotConfigurator": "com.team766.robot.reva_2025.Robot",
 	"simulationMode": "VrConnector",
 	"drive": {
 		"leftMotor": {

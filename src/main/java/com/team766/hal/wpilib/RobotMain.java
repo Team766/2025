@@ -35,6 +35,7 @@ public class RobotMain extends LoggedRobot {
 
     private GenericRobotMain robot;
     private SimulatorInterface simulator;
+    private com.team766.simulator.AprilTagSimulator aprilTagSimulator;
 
     public static void main(final String... args) {
         Supplier<RobotMain> supplier =
@@ -201,6 +202,18 @@ public class RobotMain extends LoggedRobot {
             simulator.setResetHandler(() -> robot.resetAutonomousMode("simulation reset"));
             // Do an initial step here to flush any needed state initialization.
             simulator.prepareStep();
+
+            // Initialize AprilTag simulator
+            // Topic names must match what Vision.java expects
+            String[] cameraTopics = {"left_back", "left_front", "right_back", "right_front"};
+            aprilTagSimulator =
+                    new com.team766.simulator.AprilTagSimulator(
+                            cameraTopics, // NetworkTables topic names (matches Vision.java)
+                            5.0, // Detection range in meters
+                            20.0 // Publish rate in Hz
+                            );
+            com.team766.logging.Logger.get(Category.FRAMEWORK)
+                    .logRaw(Severity.INFO, "AprilTag simulator initialized");
         } catch (Exception exc) {
             exc.printStackTrace();
             LoggerExceptionUtils.logException(exc);
@@ -228,6 +241,11 @@ public class RobotMain extends LoggedRobot {
                 }
             }
             DriverStationSim.notifyNewData();
+
+            // Update AprilTag simulator with current simulation time
+            if (aprilTagSimulator != null) {
+                aprilTagSimulator.simulateAprilTags(ProgramInterface.simulationTime);
+            }
         } catch (Exception exc) {
             exc.printStackTrace();
             LoggerExceptionUtils.logException(exc);
