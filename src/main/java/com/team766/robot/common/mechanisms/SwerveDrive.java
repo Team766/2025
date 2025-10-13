@@ -516,6 +516,13 @@ public class SwerveDrive extends MultiFacetedMechanismWithStatus<SwerveDrive.Dri
         final double pitch = gyro.getPitch();
         final double roll = gyro.getRoll();
 
+        // TEMPORARY BYPASS: Collect all vision positions for averaging instead of using KF
+        Translation2d avgVisionPosition = null;
+        int totalTagCount = 0;
+        double sumX = 0;
+        double sumY = 0;
+        java.util.ArrayList<Integer> includedTagIds = new java.util.ArrayList<>();
+
         var visionStatus = StatusBus.getInstance().getStatus(Vision.VisionStatus.class);
         if (visionStatus.isPresent() && !visionStatus.get().allTags().isEmpty()) {
             int camCounter = 0;
@@ -527,6 +534,13 @@ public class SwerveDrive extends MultiFacetedMechanismWithStatus<SwerveDrive.Dri
                         Translation2d position =
                                 tag.toRobotPosition(Rotation2d.fromDegrees(heading));
                         tagPoses.put(position, tag.pose3d().getTranslation().getNorm());
+
+                        // TEMPORARY BYPASS: Accumulate positions for averaging
+                        sumX += position.getX();
+                        sumY += position.getY();
+                        totalTagCount++;
+                        includedTagIds.add(tag.tagId());
+
                         if (Logger.isLoggingToDataLog()) {
                             org.littletonrobotics.junction.Logger.recordOutput(
                                     "Vision Pos/cam " + camCounter + "/tagID " + tag.tagId(),
@@ -544,24 +558,49 @@ public class SwerveDrive extends MultiFacetedMechanismWithStatus<SwerveDrive.Dri
                                         - (cameraTags.get(0).collectTime() / 1000000.));
                     }
 
+                    // COMMENTED OUT: Bypass the slow Kalman Filter update
                     // Only do position update if current timestamp doesn't match with previous
                     // timestamp
-                    if (prevCamTimes[0] != 0
-                            && Math.abs(
-                                            cameraTags.get(0).collectTime()
-                                                    - prevCamTimes[camCounter - 1])
-                                    > 1 // microseconds
-                    ) {
-                        kalmanFilter.updateWithVisionMeasurement(
-                                tagPoses,
-                                cameraTags.get(0).covariance(),
-                                RobotProvider.instance
-                                        .getClock()
-                                        .getTime()); // Latency correction off
-                        // cameraTags.get(0).collectTime() / 1000000.); // Latency correction option
-                    }
+                    // if (prevCamTimes[0] != 0
+                    //         && Math.abs(
+                    //                         cameraTags.get(0).collectTime()
+                    //                                 - prevCamTimes[camCounter - 1])
+                    //                 > 1 // microseconds
+                    // ) {
+                    //     kalmanFilter.updateWithVisionMeasurement(
+                    //             tagPoses,
+                    //             cameraTags.get(0).covariance(),
+                    //             RobotProvider.instance
+                    //                     .getClock()
+                    //                     .getTime()); // Latency correction off
+                    //     // cameraTags.get(0).collectTime() / 1000000.); // Latency correction
+                    // option
+                    // }
                     prevCamTimes[camCounter - 1] = cameraTags.get(0).collectTime();
                 }
+            }
+        }
+
+        // TEMPORARY BYPASS: Compute average of all tag positions
+        if (totalTagCount > 0) {
+            avgVisionPosition = new Translation2d(sumX / totalTagCount, sumY / totalTagCount);
+            kalmanFilter.setPos(avgVisionPosition); // Override KF position with vision average
+
+            // Log which tags were used in the average
+            if (Logger.isLoggingToDataLog()) {
+                org.littletonrobotics.junction.Logger.recordOutput(
+                        "Vision Bypass/Tag Count", totalTagCount);
+                org.littletonrobotics.junction.Logger.recordOutput(
+                        "Vision Bypass/Included Tag IDs",
+                        includedTagIds.stream().mapToInt(Integer::intValue).toArray());
+                org.littletonrobotics.junction.Logger.recordOutput(
+                        "Vision Bypass/Averaged Position",
+                        new Pose2d(avgVisionPosition, Rotation2d.fromDegrees(heading)));
+            }
+        } else {
+            // Log when no tags are available
+            if (Logger.isLoggingToDataLog()) {
+                org.littletonrobotics.junction.Logger.recordOutput("Vision Bypass/Tag Count", 0);
             }
         }
 
