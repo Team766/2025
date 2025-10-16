@@ -4,7 +4,7 @@ import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.common.constants.InputConstants;
+import com.team766.robot.common.constants.InputConstants;
 
 public class Arm extends MechanismWithStatus<Arm.ArmStatus> {
 
