@@ -11,8 +11,12 @@ public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStat
 
     public MovingMotor() {}
 
-    public void move(double speed) {
-        motor.set(speed);
+    public void move(double power) {
+        motor.set(power);
+    }
+
+    public void stop() {
+        motor.set(0);
     }
 
     protected MovingMotorStatus updateStatus() {
