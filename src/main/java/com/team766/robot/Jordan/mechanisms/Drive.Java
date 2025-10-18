@@ -1,34 +1,41 @@
-package com.team766.robot.Rookie_Training.mechanisms;
 
-import com.team776.framework.MechanismWithStatus;
-import com.team766.framework.Status;
-import com.team766.hal.MotorController;
-import com.team766.hal.RobotProvider;
+public class Drive extends MechanismWithStatus <Drive.DriveStatus> {
 
-public class MovingMotor extends MechanismWithStatus <MovingMotor.MovingMotorStatus> {
+    private MotorController motor1;
+    private MotorController motor2;
 
-    Public MovingMotor () {
+    Public Drive () {
+        motor1 = RobotProvider.instance.getMotor(configName:"motorLeft");
+        motor2 = RobotProvider.instance.getMotor(configName:"motorRight");
 
     }
 
-    MotorController motor = RobotProvider.instance.getMotor(configName:"motor");
-
-    public record MovingMotorStatus (double currentPosition) implements Status {
+    
+    public record DriveStatus (double currentPositionLeft, double currentPositionRight) implements Status {
     }
 
-    public void setMotorPower(double power) {
-        motor.set(power);
+    protected DriveStatus updateStatus() {
+            return DriveStatus (motor1.getSensorPosition(), motor2.getSensorPosition());
+    }
+    
+
+    public void setMotorPower(double powerLeft, double powerRight) {
+        motor1.set(powerLeft);
+        motor2.set(powerRight);
     }
 
-    protected MovingMotorStatus updateStatus() {
-            return MovingMotorStatus (MotorController.getSensorPosition());
-    }
+    
+
+   
+
+
 
     //MotorController.getSensorPosition();
     //MotorController.setPosition();
     //MotorController.setCurrentLimit();
     //MotorController.follow();
     //MotorController.setInverted();
+
 
 
 
