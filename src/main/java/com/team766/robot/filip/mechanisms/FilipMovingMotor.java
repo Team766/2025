@@ -11,10 +11,9 @@ import com.team766.hal.RobotProvider;
 
 // double is a type (int.int)
 
-public class FilipMovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStatus> {
+public class FilipMovingMotor extends MechanismWithStatus<FilipMovingMotor.MovingMotorStatus> {
   
-  public record MovingMotorStatus(double currentPosition) implements Status
-  }
+  public record MovingMotorStatus(double currentPosition) implements Status {}
  // creating a motor object
   protected MovingMotorStatus updateStatus(){
     return new MovingMotorStatus(motor.getSensorPosition());
