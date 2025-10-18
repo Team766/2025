@@ -1,10 +1,10 @@
 package com.team766.robot.Geovanni_P;
 
-import com.team766.robot.Geovanni_P.Mechanisms.*;
 import com.team766.hal.JoystickReader; 
 import com.team766.framework.RuleEngine;
 import static com.team766.framework.RulePersistence.*;
-import com.team766.hal.RobotProvider; 
+import com.team766.hal.RobotProvider;
+import com.team766.robot.Geovanni_P.mechanisms.*;
 import java.util.Set;
 
 public class OI extends RuleEngine {
