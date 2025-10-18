@@ -2,6 +2,7 @@ package com.team766.robot.copy_2910.mechanisms;
 
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
+import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import edu.wpi.first.math.MathUtil;
@@ -9,6 +10,10 @@ import edu.wpi.first.math.MathUtil;
 public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     private MotorController motor;
+    private final EncoderReader absoluteEncoder;
+    private boolean encoderInitialized = false;
+
+    private double gearRatio = 21.8;
 
     private static final double THRESHOLD =
             0.5; // Threshold for determining if the wrist is near a position | TODO: Adjust this
@@ -32,17 +37,17 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     public enum WristPosition {
-        L1(-16.643),
-        L2(0.643),
-        L3(-1.667),
-        L4(-9),
+        L1(-16.643),//16.643
+        L2(1.095),
+        L3(-0.808), //-0.808
+        L4(-5.561),
         ALGAE_HIGH(-25.928),
         ALGAE_LOW(-25.928),
-        CORAL_GROUND(-15),
+        CORAL_GROUND(-9.75),
         ALGAE(-25.2),
         ALGAE_GROUND(-21.786),
-        STOW(0),
-        MAXIMUM(10),
+        STOW(-1.0),
+        MAXIMUM(50),
         MINIMUM(-30);
 
         private final double angle;
@@ -58,7 +63,9 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     public Wrist() {
         motor = RobotProvider.instance.getMotor("WristMotor"); // Replace with actual motor name
-
+        absoluteEncoder =
+                RobotProvider.instance.getEncoder("WristEncoder"); // **WristEncoder may not exist**
+        motor.setCurrentLimit(40);
         // ffGain =
         //        ConfigFileReader.instance.getDouble(
         //                "WristFFGain"); // Replace with actual config key
@@ -99,6 +106,11 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     @Override
     protected WristStatus updateStatus() {
+        /*if (!encoderInitialized && absoluteEncoder.isConnected()) {
+            double motorRotations = absoluteEncoder.getPosition() * gearRatio;
+            motor.setSensorPosition(motorRotations);
+            encoderInitialized = true;
+        } */
         return new WristStatus(motor.getSensorPosition(), setPoint);
     }
 }

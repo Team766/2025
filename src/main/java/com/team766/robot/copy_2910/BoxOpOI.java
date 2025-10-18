@@ -26,7 +26,6 @@ public class BoxOpOI extends RuleGroup {
             Shoulder shoulder,
             Elevator elevator,
             Wrist wrist,
-            Climber climber,
             Intake intake,
             QueuedControl queuedControl) {
 
@@ -38,17 +37,17 @@ public class BoxOpOI extends RuleGroup {
                         "Control Climber",
                         new Conditions.Toggle(boxopGamepad.whenButton(InputConstants.BUTTON_CLIMB)),
                         ONCE_AND_HOLD,
-                        Set.of(climber, wrist, elevator, shoulder),
+                        Set.of(wrist, elevator, shoulder),
                         () -> {
                             elevator.setPosition(Elevator.ElevatorPosition.MAXIMUM);
                             wrist.setPosition(Wrist.WristPosition.ALGAE_LOW);
-                            climber.setClimberSpeed(0.5);
+                            
                             shoulder.setPosition(Shoulder.ShoulderPosition.CLIMBER);
                         })
                 .withFinishedTriggeringProcedure(
-                        Set.of(climber, shoulder),
+                        Set.of(shoulder),
                         context -> {
-                            climber.stop();
+                            
                             shoulder.setPosition(ShoulderPosition.CORAL_GROUND);
                             log("finished triggering");
                         });
@@ -76,16 +75,16 @@ public class BoxOpOI extends RuleGroup {
         //             queuedControl.wristPosition = WristPosition.ALGAE_LOW;
         //         });
 
-        //addRule(
-                // "Queue Algae Intake to L3 L4 Position",
-                // () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L3_L4,
-                // ONCE,
-                // Set.of(elevator, shoulder, intake),
-                // () -> {
-                //     queuedControl.elevatorPosition = ElevatorPosition.ALGAE_HIGH;
-                //     queuedControl.shoulderPosition = ShoulderPosition.ALGAE_HIGH;
-                //     queuedControl.wristPosition = WristPosition.ALGAE_HIGH;
-                // });
+        // addRule(
+        // "Queue Algae Intake to L3 L4 Position",
+        // () -> boxopGamepad.getPOV() == InputConstants.BUTTON_ALGAE_INTAKE_L3_L4,
+        // ONCE,
+        // Set.of(elevator, shoulder, intake),
+        // () -> {
+        //     queuedControl.elevatorPosition = ElevatorPosition.ALGAE_HIGH;
+        //     queuedControl.shoulderPosition = ShoulderPosition.ALGAE_HIGH;
+        //     queuedControl.wristPosition = WristPosition.ALGAE_HIGH;
+        // });
 
         addRule(
                 "Queue Elevator and Wrist to L1 Position",
@@ -132,18 +131,18 @@ public class BoxOpOI extends RuleGroup {
                 });
 
         addRule(
-                "Ground Intake",
-                boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
-                ONCE_AND_HOLD,
-                () -> new IntakeCoral(intake, elevator, shoulder, wrist))
-        .withFinishedTriggeringProcedure(
-                Set.of(intake, elevator, wrist, shoulder),
-                () -> {
-                        intake.stop();
-                        elevator.setPosition(ElevatorPosition.READY);
-                        wrist.setPosition(WristPosition.STOW);
-                        shoulder.setPosition(ShoulderPosition.STOW);
-                });
+                        "Ground Intake",
+                        boxopGamepad.whenAxisMoved(InputConstants.BUTTON_ALGAE_MOTOR_INTAKE_POWER),
+                        ONCE_AND_HOLD,
+                        () -> new IntakeCoral(intake, elevator, shoulder, wrist))
+                .withFinishedTriggeringProcedure(
+                        Set.of(intake, elevator, wrist, shoulder),
+                        () -> {
+                            intake.stop();
+                            elevator.setPosition(ElevatorPosition.READY);
+                            wrist.setPosition(WristPosition.STOW);
+                            shoulder.setPosition(ShoulderPosition.STOW);
+                        });
 
         addRule(
                         "Move to Target Position",
@@ -186,25 +185,27 @@ public class BoxOpOI extends RuleGroup {
                                         });
                             }
                         });
-        addRule("Nudge Shoulder Up",
+        addRule(
+                "Nudge Shoulder Up",
                 boxopGamepad.whenButton(9),
                 ONCE,
                 shoulder,
                 () -> shoulder.nudgeUp());
-        addRule("Nudge Shoulder Down",
+        addRule(
+                "Nudge Shoulder Down",
                 boxopGamepad.whenButton(10),
                 ONCE,
                 shoulder,
                 () -> shoulder.nudgeDown());
-        addRule("Stow", 
-        () -> boxopGamepad.getPOV() == 0,
-        ONCE,
-        Set.of(elevator, shoulder, intake),
+        addRule(
+                "Stow",
+                () -> boxopGamepad.getPOV() == 0,
+                ONCE,
+                Set.of(elevator, shoulder, intake),
                 () -> {
                     queuedControl.elevatorPosition = ElevatorPosition.STOW;
-                    queuedControl.shoulderPosition = ShoulderPosition.STOW;
                     queuedControl.wristPosition = WristPosition.STOW;
+                    queuedControl.shoulderPosition = ShoulderPosition.STOW;
                 });
-        
     }
 }

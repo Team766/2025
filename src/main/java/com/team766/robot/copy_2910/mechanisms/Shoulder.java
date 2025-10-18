@@ -1,11 +1,8 @@
 package com.team766.robot.copy_2910.mechanisms;
 
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
+import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import edu.wpi.first.math.MathUtil;
@@ -14,9 +11,12 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
 
     private MotorController leftMotor;
     private MotorController rightMotor;
+    private final EncoderReader absoluteEncoder;
+    private boolean encoderInitialized = false;
+    private double gearRatio = 120;
 
     private static final double THRESHOLD =
-            0.5; // Threshold for determining if the shoulder is near a position | TODO: Adjust this
+            0.5; // Threshold for determining if the shoulder is near a position | TODO: Adjust this was 0.5
     // value based on the shoulder's characteristics
     private double setPoint;
     // private ValueProvider<Double> ffGain;
@@ -38,17 +38,17 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
 
     public enum ShoulderPosition {
         L1(14),
-        L2(11.5),
-        L3(17),
-        L4(24.5),
+        L2(50.891),
+        L3(70.247),
+        L4(87.606),
         ALGAE_HIGH(22.952),
         ALGAE_LOW(20.405),
-        CORAL_GROUND(-0.75),
+        CORAL_GROUND(1),
         ALGAE_GROUND(4.119),
         CLIMBER(28),
         STOW(0),
-        MAXIMUM(40),
-        MINIMUM(-1);
+        MAXIMUM(100),
+        MINIMUM(-10);
 
         private final double angle;
 
@@ -68,8 +68,11 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
         rightMotor =
                 RobotProvider.instance.getMotor(
                         "RightShoulderMotor"); // Replace with actual motor name
+        absoluteEncoder =
+                RobotProvider.instance.getEncoder(
+                        "ShoulderEncoder"); // **ShoulderEncoder may not exist**
 
-        //leftMotor.setInverted(true);
+        // leftMotor.setInverted(true);
         rightMotor.follow(leftMotor);
 
         leftMotor.setCurrentLimit(40);
@@ -117,6 +120,11 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
 
     @Override
     protected ShoulderStatus updateStatus() {
+        if (!encoderInitialized && absoluteEncoder.isConnected()) {
+            double motorRotations = absoluteEncoder.getPosition() * gearRatio;
+            leftMotor.setSensorPosition(motorRotations);
+            encoderInitialized = true;
+        }
         return new ShoulderStatus(leftMotor.getSensorPosition(), setPoint);
     }
 }

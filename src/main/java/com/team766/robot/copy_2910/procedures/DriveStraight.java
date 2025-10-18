@@ -7,7 +7,7 @@ import com.team766.robot.common.mechanisms.SwerveDrive;
 public class DriveStraight extends Procedure {
     private SwerveDrive drive;
 
-    public DriveStraight(SwerveDrive drive){
+    public DriveStraight(SwerveDrive drive) {
         this.drive = reserve(drive);
     }
 
@@ -18,5 +18,4 @@ public class DriveStraight extends Procedure {
         context.waitForSeconds(10);
         drive.controlRobotOriented(0, 0, 0);
     }
-    
 }

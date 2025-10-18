@@ -28,8 +28,7 @@ public class OI extends RuleEngine {
             Wrist wrist,
             Elevator elevator,
             Shoulder shoulder,
-            Vision vision,
-            Climber climber) {
+            Vision vision) {
 
         final JoystickReader leftJoystick = RobotProvider.instance.getJoystick(0);
         final JoystickReader rightJoystick = RobotProvider.instance.getJoystick(1);
@@ -47,7 +46,7 @@ public class OI extends RuleEngine {
         addRules(new DriverOI(leftJoystick, rightJoystick, swerveDrive));
         addRules(
                 new BoxOpOI(
-                        boxopGamepad, shoulder, elevator, wrist, climber, intake, queuedControl));
+                        boxopGamepad, shoulder, elevator, wrist, intake, queuedControl));
 
         addRule(
                         "Outtake Coral",
@@ -64,28 +63,26 @@ public class OI extends RuleEngine {
                         () -> intake.setAlgaePower(-0.5))
                 .withFinishedTriggeringProcedure(intake, () -> intake.stop());
 
-        addRule("Wrist Nudge Up",
-                leftJoystick.whenButton(2),
-                ONCE,
-                wrist,
-                () -> wrist.nudgeUp());
-        addRule("Wrist Nudge Down",
+        addRule("Wrist Nudge Up", leftJoystick.whenButton(2), ONCE, wrist, () -> wrist.nudgeUp());
+        addRule(
+                "Wrist Nudge Down",
                 leftJoystick.whenButton(3),
                 ONCE,
                 wrist,
                 () -> wrist.nudgeDown());
 
-        addRule("Elevator Nudge Up",
+        addRule(
+                "Elevator Nudge Up",
                 rightJoystick.whenButton(2),
                 ONCE,
                 elevator,
                 () -> elevator.nudgeUp());
-        addRule("Elevator Nudge Down",
+        addRule(
+                "Elevator Nudge Down",
                 rightJoystick.whenButton(3),
                 ONCE,
                 elevator,
                 () -> elevator.nudgeDown());
-        
 
         // addRule(
         //         "Apply queued positions",

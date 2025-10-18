@@ -20,7 +20,7 @@ public class Robot implements RobotConfigurator {
     private SwerveDrive drive;
     private Intake intake;
     private Vision vision;
-    private Climber climber;
+    //private Climber climber;
     private Elevator elevator;
     private Shoulder shoulder;
     private Wrist wrist;
@@ -30,7 +30,7 @@ public class Robot implements RobotConfigurator {
         SwerveConfig swerveConfig = new SwerveConfig().withDistanceBetweenWheels(0.533);
         drive = new SwerveDrive(swerveConfig);
         intake = new Intake();
-        climber = new Climber();
+        //climber = new Climber();
         elevator = new Elevator();
         vision = new Vision();
         shoulder = new Shoulder();
@@ -39,7 +39,7 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, intake, wrist, elevator, shoulder, vision, climber);
+        return new OI(drive, intake, wrist, elevator, shoulder, vision);
     }
 
     @Override
@@ -53,10 +53,9 @@ public class Robot implements RobotConfigurator {
     public AutonomousMode[] getAutonomousModes() {
         // TODO Auto-generated method stub
         return new AutonomousMode[] {
+            new AutonomousMode("Move", () -> new DriveStraight(drive)),
             new AutonomousMode(
-                    "Move", () -> new DriveStraight(drive)),
-            new AutonomousMode(
-                "Center L1", () -> new CenterL1(drive, intake, wrist, elevator, shoulder))
+                    "Center L1", () -> new CenterL1(drive, intake, wrist, elevator, shoulder))
         };
         // throw new UnsupportedOperationException("Unimplemented method 'getAutonomousModes'");
     }

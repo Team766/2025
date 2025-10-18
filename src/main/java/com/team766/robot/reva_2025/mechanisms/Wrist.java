@@ -2,6 +2,7 @@ package com.team766.robot.reva_2025.mechanisms;
 
 import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_ENCODER;
 import static com.team766.robot.reva_2025.constants.ConfigConstants.WRIST_GYRO;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.team766.config.ConfigFileReader;

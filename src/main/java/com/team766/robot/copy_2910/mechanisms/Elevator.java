@@ -1,9 +1,5 @@
 package com.team766.robot.copy_2910.mechanisms;
 
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.MotorController;
@@ -19,7 +15,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
             0.5; // Amount to nudge up/down | TODO: Adjust this value based on the elevator's
     // characteristics
     private static double THRESHOLD =
-            0.05; // Threshold for PID controller | TODO: Adjust this value based on the elevator's
+            0.5; // Threshold for PID controller | TODO: Adjust this value based on the elevator's
     // characteristics
     // private ValueProvider<Double> ffGain;
     private double setPoint;
@@ -45,35 +41,36 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         setPoint = ElevatorPosition.READY.getPosition(); // Default position
         elevatorMotorLeft.setCurrentLimit(40);
         elevatorMotorRight.setCurrentLimit(40); // Set current limit for the elevator motor
-        //elevatorMotorLeft.setInverted(true);
-        //elevatorMotorRight.setInverted(false);
-        elevatorMotorRight.follow(elevatorMotorLeft);
+        // elevatorMotorLeft.setInverted(true);
+        // elevatorMotorRight.setInverted(false);
+        elevatorMotorLeft.follow(elevatorMotorRight);
         // ffGain =
         //      ConfigFileReader.instance.getDouble(
         //            "ElevatorFFGain"); // Replace with actual config key
 
-        elevatorMotorLeft.setSensorPosition(
+        elevatorMotorRight.setSensorPosition(
                 0.0); // Elevator always has to start at same 0.0 position
         // elevatorMotorRight.setInverted(true);
     }
 
     public enum ElevatorPosition {
-        INTAKE(0.3),
+        INTAKE(0),
         L1(3.8),
-        L2(4.44),
-        L3(13),
-        L4(17.80), // -21.357
+        L2(3.631),
+        L3(9.536),
+        L4(21.33), // -21.357
         ALGAE_HIGH(12),
         ALGAE_LOW(7),
-        CORAL_GROUND(0.3),
+        CORAL_GROUND(-0.25),
         ALGAE_GROUND(0.5),
-        STOW(0),
+        STOW(0.5),
 
-        READY(3), // Should be the default position and the ready position for vision so that it
+        READY(1), // Should be the default position and the ready position for vision so that it
         // can see the tag
-        MAXIMUM(17.9), // Maximum height of the elevator, TODO: Adjust based on the actual elevator's
+        MAXIMUM(25), // Maximum height of the elevator, TODO: Adjust based on the actual
+        // elevator's
         // maximum position
-        MINIMUM(0); // Minimum height of the elevator, TODO: Adjust based on the actual elevator's
+        MINIMUM(-1.0); // Minimum height of the elevator, TODO: Adjust based on the actual elevator's
         // minimum position
 
         final double position;
@@ -116,11 +113,11 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public void run() {
-        elevatorMotorLeft.set(MotorController.ControlMode.Position, setPoint);
-        log("SHOULDER Setpoint: " + setPoint + " Pos: " + elevatorMotorLeft.getSensorPosition());
+        elevatorMotorRight.set(MotorController.ControlMode.Position, setPoint);
+        log("SHOULDER Setpoint: " + setPoint + " Pos: " + elevatorMotorRight.getSensorPosition());
     }
 
     protected ElevatorStatus updateStatus() {
-        return new ElevatorStatus(elevatorMotorLeft.getSensorPosition(), setPoint);
+        return new ElevatorStatus(elevatorMotorRight.getSensorPosition(), setPoint);
     }
 }
