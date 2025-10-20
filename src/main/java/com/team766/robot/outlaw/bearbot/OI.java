@@ -4,19 +4,16 @@ import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
-import com.team766.robot.common.DriverOI;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.outlaw.bearbot.constants.InputConstants;
 
 public class OI extends RuleEngine {
     public OI(SwerveDrive drive) {
-        final JoystickReader leftJoystick =
-                RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
-        final JoystickReader rightJoystick =
-                RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
+        final JoystickReader driverController =
+                RobotProvider.instance.getJoystick(InputConstants.DRIVER_CONTROLLER);
 
         // Add driver control rules here.
-        addRules(new DriverOI(leftJoystick, rightJoystick, drive));
+        addRules(new DriverOI(driverController, drive));
     }
 
     @Override
