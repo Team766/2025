@@ -58,7 +58,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         L1(3.8),
         L2(5.3),
         L3(13.27),
-        L4(23.5), // -21.357
+        L4(24), // -21.357
         ALGAE_HIGH(12),
         ALGAE_LOW(7),
         CORAL_GROUND(-0.25),

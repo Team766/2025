@@ -40,7 +40,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
         L1(14),
         L2(50.891),
         L3(70.247),
-        L4(87.606),
+        L4(89),
         ALGAE_HIGH(22.952),
         ALGAE_LOW(20.405),
         CORAL_GROUND(1),

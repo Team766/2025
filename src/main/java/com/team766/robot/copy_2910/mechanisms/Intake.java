@@ -17,6 +17,7 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     private MotorController centerAlgaeMotor;
 
     private static final double CORAL_THRESHOLD = 0.03; // TODO: Set this to a real value | Previously 0.12
+    private static final double CORAL_OUTTAKE_THRESHOLD = 0.12;
     //Previous Left & Right CANRange FOV: 27
     //Previous Phoenix Tuner prox threshold: 0.4
     //MAKE SURE both left & right motor are counterclockwise on phoenix tuner
@@ -68,6 +69,10 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
         public boolean hasCoralInFrontCenter() {
             return frontCenterDistance < CORAL_THRESHOLD;
+        }
+
+        public boolean hasCoralToOuttake() {
+            return frontCenterDistance < CORAL_OUTTAKE_THRESHOLD;
         }
 
         public boolean hasCoralInBackCenter() {
