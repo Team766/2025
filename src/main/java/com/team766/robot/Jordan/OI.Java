@@ -1,14 +1,21 @@
 public class OI extends RuleEngine {
     
-    JoystickReader joystick = RobotProvider.instance.getJoystick(INDEX)
+    JoystickReader joystickLeft = RobotProvider.instance.getJoystick(index:0);
+    JoystickReader joystickRight = RobotProvider.instance.getJoystick(index:0);
 
-    public OI (MovingMotor){
+    public OI (Drive){
 
-        addRule ("MOTOR",
-            joystick.WhenButton(0)
+        addRule ("LEFT",
+            joystickLeft.whenAxis(getAxis),
             ONCE_AND_HOLD,
-            Set.of(motor),
-            () -> {motor.setPower(1);});
+            Set.of(motor1),
+            () -> {motor1.setPower(getAxis);});
+
+        addRule ("RIGHT",
+            joystickRight.whenAxis(getAxis),
+            ONCE_AND_HOLD,
+            Set.of(motor2),
+            () -> {motor2.setPower(getAxis);});
 
     }
 }
