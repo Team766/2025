@@ -16,16 +16,18 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
     private MotorController centerAlgaeMotor;
 
-    private static final double CORAL_THRESHOLD = 0.03; // TODO: Set this to a real value | Previously 0.12
+    private static final double CORAL_THRESHOLD =
+            0.03; // TODO: Set this to a real value | Previously 0.12
     private static final double CORAL_OUTTAKE_THRESHOLD = 0.12;
-    //Previous Left & Right CANRange FOV: 27
-    //Previous Phoenix Tuner prox threshold: 0.4
-    //MAKE SURE both left & right motor are counterclockwise on phoenix tuner
+    // Previous Left & Right CANRange FOV: 27
+    // Previous Phoenix Tuner prox threshold: 0.4
+    // MAKE SURE both left & right motor are counterclockwise on phoenix tuner
 
     private double leftPower = 0.4;
     private double rightPower = 0.4;
 
-    private double algaePower = 0.3; //previously 0.5
+    private double algaePower = 0.3; // previously 0.5
+    private double algaeSlowPower = 0.1;
 
     public Intake() {
         leftCANRange = RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.left");
@@ -71,12 +73,12 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
             return frontCenterDistance < CORAL_THRESHOLD;
         }
 
-        public boolean hasCoralToOuttake() {
-            return frontCenterDistance < CORAL_OUTTAKE_THRESHOLD;
-        }
-
         public boolean hasCoralInBackCenter() {
             return backCenterDistance < CORAL_THRESHOLD;
+        }
+
+        public boolean hasCoralToOuttake() {
+            return backCenterDistance < CORAL_OUTTAKE_THRESHOLD;
         }
     }
 
@@ -122,6 +124,10 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
     public void turnAlgaePositive() {
         centerAlgaeMotor.set(algaePower);
+    }
+
+    public void turnAlgaePositiveSlow() {
+        centerAlgaeMotor.set(algaeSlowPower);
     }
 
     public void turnAlgaeNegative() {

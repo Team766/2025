@@ -7,7 +7,6 @@ import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.copy_2910.OI.QueuedControl;
-import com.team766.robot.copy_2910.mechanisms.Climber;
 import com.team766.robot.copy_2910.mechanisms.Elevator;
 import com.team766.robot.copy_2910.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.copy_2910.mechanisms.Intake;
@@ -41,13 +40,12 @@ public class BoxOpOI extends RuleGroup {
                         () -> {
                             elevator.setPosition(Elevator.ElevatorPosition.MAXIMUM);
                             wrist.setPosition(Wrist.WristPosition.ALGAE_LOW);
-                            
+
                             shoulder.setPosition(Shoulder.ShoulderPosition.CLIMBER);
                         })
                 .withFinishedTriggeringProcedure(
                         Set.of(shoulder),
                         context -> {
-                            
                             shoulder.setPosition(ShoulderPosition.CORAL_GROUND);
                             log("finished triggering");
                         });

@@ -1,10 +1,12 @@
 package com.team766.robot.copy_2910.mechanisms;
 
+import com.team766.config.ConfigFileReader;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.library.ValueProvider;
 import edu.wpi.first.math.MathUtil;
 
 public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
@@ -14,9 +16,12 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     private final EncoderReader absoluteEncoder;
     private boolean encoderInitialized = false;
     private double gearRatio = 120;
+    private boolean noPIDMode;
+    private final ValueProvider<Double> ffGain;
 
     private static final double THRESHOLD =
-            0.5; // Threshold for determining if the shoulder is near a position | TODO: Adjust this was 0.5
+            0.5; // Threshold for determining if the shoulder is near a position | TODO: Adjust this
+    // was 0.5
     // value based on the shoulder's characteristics
     private double setPoint;
     // private ValueProvider<Double> ffGain;
@@ -62,6 +67,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public Shoulder() {
+        noPIDMode = false;
         leftMotor =
                 RobotProvider.instance.getMotor(
                         "LeftShoulderMotor"); // Replace with actual motor name
@@ -73,11 +79,12 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
                         "ShoulderEncoder"); // **ShoulderEncoder may not exist**
 
         // leftMotor.setInverted(true);
+        // leftMotor.setInverted(true);
         rightMotor.follow(leftMotor);
 
         leftMotor.setCurrentLimit(40);
         rightMotor.setCurrentLimit(40);
-
+        ffGain = ConfigFileReader.getInstance().getDouble("Shoulder_FFGain");
         // ffGain =
         //      ConfigFileReader.instance.getDouble(
         //            "ShoulderFFGain"); // Replace with actual config key
@@ -85,6 +92,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public void setSetpoint(double setpoint) {
+        noPIDMode = false;
         setPoint =
                 MathUtil.clamp(
                         setpoint,
@@ -98,7 +106,15 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
 
     public void run() {
         // leftMotor.set(.Position, setPoint)
-        leftMotor.set(MotorController.ControlMode.Position, setPoint);
+        // All of the following PID code is directly copied from the 2910 wrist code -> may not work
+        // properly
+        if (!noPIDMode) {
+            double ff =
+                    ffGain.valueOr(0.0); // * Math.cos(Math.toRadians(getStatus().currentAngle()));
+            leftMotor.set(MotorController.ControlMode.Position, setPoint, ff);
+        } else {
+            leftMotor.set(MotorController.ControlMode.Position, setPoint);
+        }
         log("SHOULDER Setpoint: " + setPoint + " Pos: " + leftMotor.getSensorPosition());
     }
 
@@ -111,6 +127,16 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
     }
 
     public void nudge(double input) {
+        noPIDMode = false;
+        if (input > 0) {
+            nudgeUp();
+        } else {
+            nudgeDown();
+        }
+    }
+
+    public void nudgeNoPID(double input) {
+        noPIDMode = true;
         if (input > 0) {
             nudgeUp();
         } else {

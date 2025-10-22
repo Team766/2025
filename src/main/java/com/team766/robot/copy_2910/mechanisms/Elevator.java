@@ -43,6 +43,8 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         elevatorMotorRight.setCurrentLimit(40); // Set current limit for the elevator motor
         // elevatorMotorLeft.setInverted(true);
         // elevatorMotorRight.setInverted(false);
+        // elevatorMotorLeft.setInverted(true);
+        // elevatorMotorRight.setInverted(false);
         elevatorMotorRight.follow(elevatorMotorLeft);
         // ffGain =
         //      ConfigFileReader.instance.getDouble(
@@ -61,6 +63,7 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         L4(24), // -21.357
         ALGAE_HIGH(12),
         ALGAE_LOW(7),
+        ALGAE_SHOOT(17.80),
         CORAL_GROUND(-0.25),
         ALGAE_GROUND(0.5),
         STOW(0.5),
@@ -70,7 +73,8 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         MAXIMUM(25), // Maximum height of the elevator, TODO: Adjust based on the actual
         // elevator's
         // maximum position
-        MINIMUM(-1.0); // Minimum height of the elevator, TODO: Adjust based on the actual elevator's
+        MINIMUM(-1.0); // Minimum height of the elevator, TODO: Adjust based on the actual
+        // elevator's
         // minimum position
 
         final double position;
