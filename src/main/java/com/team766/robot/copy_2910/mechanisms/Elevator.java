@@ -43,22 +43,22 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         elevatorMotorRight.setCurrentLimit(40); // Set current limit for the elevator motor
         // elevatorMotorLeft.setInverted(true);
         // elevatorMotorRight.setInverted(false);
-        elevatorMotorLeft.follow(elevatorMotorRight);
+        elevatorMotorRight.follow(elevatorMotorLeft);
         // ffGain =
         //      ConfigFileReader.instance.getDouble(
         //            "ElevatorFFGain"); // Replace with actual config key
 
-        elevatorMotorRight.setSensorPosition(
+        elevatorMotorLeft.setSensorPosition(
                 0.0); // Elevator always has to start at same 0.0 position
         // elevatorMotorRight.setInverted(true);
     }
 
     public enum ElevatorPosition {
-        INTAKE(0),
+        INTAKE(0.4),
         L1(3.8),
-        L2(3.631),
-        L3(9.536),
-        L4(21.33), // -21.357
+        L2(5.3),
+        L3(13.27),
+        L4(23.5), // -21.357
         ALGAE_HIGH(12),
         ALGAE_LOW(7),
         CORAL_GROUND(-0.25),
@@ -113,11 +113,11 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
     }
 
     public void run() {
-        elevatorMotorRight.set(MotorController.ControlMode.Position, setPoint);
-        log("SHOULDER Setpoint: " + setPoint + " Pos: " + elevatorMotorRight.getSensorPosition());
+        elevatorMotorLeft.set(MotorController.ControlMode.Position, setPoint);
+        log("SHOULDER Setpoint: " + setPoint + " Pos: " + elevatorMotorLeft.getSensorPosition());
     }
 
     protected ElevatorStatus updateStatus() {
-        return new ElevatorStatus(elevatorMotorRight.getSensorPosition(), setPoint);
+        return new ElevatorStatus(elevatorMotorLeft.getSensorPosition(), setPoint);
     }
 }

@@ -16,12 +16,15 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
     private MotorController centerAlgaeMotor;
 
-    private static final double CORAL_THRESHOLD = 0.12; // TODO: Set this to a real value
+    private static final double CORAL_THRESHOLD = 0.03; // TODO: Set this to a real value | Previously 0.12
+    //Previous Left & Right CANRange FOV: 27
+    //Previous Phoenix Tuner prox threshold: 0.4
+    //MAKE SURE both left & right motor are counterclockwise on phoenix tuner
 
     private double leftPower = 0.4;
     private double rightPower = 0.4;
 
-    private double algaePower = 0.5;
+    private double algaePower = 0.3; //previously 0.5
 
     public Intake() {
         leftCANRange = RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.left");

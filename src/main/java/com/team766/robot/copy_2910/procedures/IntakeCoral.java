@@ -46,7 +46,7 @@ public class IntakeCoral extends Procedure {
                         + status.get().getLeftDistance()
                         + "Back center:"
                         + status.get().getBackCenterDistance());
-        while (!status.get().hasCoralInBackCenter()) {
+        while (waitForStatusMatchingOrTimeout(context, Intake.IntakeStatus.class, s -> !s.hasCoralInBackCenter(), 0.35).isPresent()) {
             context.yield();
             intake.turnAlgaePositive();
             status = getStatus(Intake.IntakeStatus.class);
