@@ -12,12 +12,27 @@ public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
 
     public Drive() {}
 
-    public void move_left(double speed) {
-        motor_left.set(speed);
+    public void stop() {
+        move_left(0);
+        move_right(0);
     }
 
-    public void move_right(double speed) {
-        motor_right.set(speed);
+    public void move_forward(double power) {
+        move_left(power);
+        move_right(power);
+    }
+
+    public void move_back(double power) {
+        move_left(-power);
+        move_right(-power);
+    }
+
+    public void move_left(double power) {
+        motor_left.set(power);
+    }
+
+    public void move_right(double power) {
+        motor_right.set(power);
     }
 
     protected DriveStatus updateStatus() {
