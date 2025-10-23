@@ -21,6 +21,10 @@ public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
     public void move_right(double motorPower) {
         rightMotor.set(motorPower);
     }
+    public void move_straight(double motorPower) {
+        leftMotor.set(motorPower);
+        rightMotor.set(motorPower);
+    }
     protected DriveStatus updateStatus() {
         return new DriveStatus(leftMotor.getSensorPosition(), rightMotor.getSensorPosition());
     }

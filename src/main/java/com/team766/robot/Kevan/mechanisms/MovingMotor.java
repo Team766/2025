@@ -8,7 +8,7 @@ import com.team766.hal.RobotProvider;
 public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStatus> {
     
     public MovingMotor() {
- 
+
     }
     MotorController motor = RobotProvider.instance.getMotor("leftMotor");
     
