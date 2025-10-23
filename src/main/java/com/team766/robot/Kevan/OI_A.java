@@ -3,17 +3,17 @@
 package com.team766.robot.Kevan;
 import java.util.Set;
 
-import com.team766.framework.RulePersistence;
+import static com.team766.framework.RulePersistence.*;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.Kevan.mechanisms.Drive;
-import com.team766.robot.Kevan.mechanisms.MovingMotor;
+//import com.team766.robot.Kevan.mechanisms.MovingMotor;
 import com.team766.robot.common.constants.InputConstants;
 
-public class OI_T extends RuleEngine {
-    public OI_T(Drive drive) {
-        final JoystickReader joystick1 = RobotProvider.instance.getJoystick(index: 0);
+public class OI_A extends RuleEngine {
+    public OI_A(Drive drive) {
+        final JoystickReader joystick1 = RobotProvider.instance.getJoystick(0);
         addRule("handle_axis_moved", 
             joystick1.whenAnyAxisMoved(InputConstants.AXIS_FORWARD_BACKWARD, InputConstants.AXIS_LEFT_RIGHT), 
             ONCE_AND_HOLD, 

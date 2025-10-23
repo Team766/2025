@@ -13,8 +13,8 @@ import com.team766.robot.common.constants.InputConstants;
 
 public class OI_T extends RuleEngine {
     public OI_T(Drive drive) {
-        final JoystickReader leftJoystick = RobotProvider.instance.getJoystick(index: 0);
-        final JoystickReader rightJoystick = RobotProvider.instance.getJoystick(index: 1);
+        final JoystickReader leftJoystick = RobotProvider.instance.getJoystick(0);
+        final JoystickReader rightJoystick = RobotProvider.instance.getJoystick(1);
         addRule("RUN_LEFT_MOTOR", 
             leftJoystick.isAxisMoved(InputConstants.AXIS_FORWARD_BACKWARD), 
             ONCE_AND_HOLD, 
