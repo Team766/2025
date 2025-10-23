@@ -11,6 +11,7 @@ public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStat
  
     }
     MotorController motor = RobotProvider.instance.getMotor("leftMotor");
+    
     public record MovingMotorStatus(double currentPosition) implements Status {
 
     }
