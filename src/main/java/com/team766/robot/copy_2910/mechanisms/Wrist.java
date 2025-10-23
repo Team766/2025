@@ -50,7 +50,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         ALGAE(-25.2),
         ALGAE_GROUND(-21.786),
         ALGAE_SHOOT(0.643),
-        STOW(-1.0),
+        STOW(0),
         MAXIMUM(50),
         MINIMUM(-30);
 
@@ -70,7 +70,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         ffGain =
                 ConfigFileReader.getInstance()
                         .getDouble("Wrist_FFGain"); // ** Wrist_FFGain does not exist yet **
-        noPIDMode = false;
+        noPIDMode = true;
         absoluteEncoder =
                 RobotProvider.instance.getEncoder(
                         "WristEncoder"); // ** WristEncoder may not exist **
@@ -83,7 +83,7 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     public void setSetpoint(double setpoint) {
-        noPIDMode = false;
+        noPIDMode = true;
         setPoint =
                 MathUtil.clamp(
                         setpoint,
@@ -137,11 +137,11 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
 
     @Override
     protected WristStatus updateStatus() {
-        /*if (!encoderInitialized && absoluteEncoder.isConnected()) {
+        if (!encoderInitialized && absoluteEncoder.isConnected()) {
             double motorRotations = absoluteEncoder.getPosition() * gearRatio;
             motor.setSensorPosition(motorRotations);
             encoderInitialized = true;
-        } */
+        }
         return new WristStatus(motor.getSensorPosition(), setPoint);
     }
 }

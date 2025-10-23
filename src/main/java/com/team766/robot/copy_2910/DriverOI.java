@@ -15,16 +15,17 @@ public class DriverOI extends RuleGroup {
         // TODO: make sure stick click works well
         addRule(
                 "Reset Gyro",
-                gamepad.whenButton(InputConstants.GAMEPAD_LEFT_STICK_CLICK),
+                gamepad.whenButton(InputConstants.GAMEPAD_BACK_BUTTON),
                 ONCE,
                 drive,
                 () -> drive.resetGyro());
-        addRule(
-                "Reset Pos",
-                gamepad.whenButton(InputConstants.GAMEPAD_RIGHT_STICK_CLICK),
-                ONCE,
-                drive,
-                () -> drive.resetCurrentPosition());
+
+        // addRule(
+        //         "Reset Pos",
+        //         gamepad.whenButton(InputConstants.GAMEPAD_RIGHT_STICK_CLICK),
+        //         ONCE,
+        //         drive,
+        //         () -> drive.resetCurrentPosition());
 
         // Sets the wheels to the cross position if the cross button is pressed
         // addRule(

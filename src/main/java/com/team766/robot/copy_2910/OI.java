@@ -124,7 +124,9 @@ public class OI extends RuleEngine {
         //                     }
         //                 });
 
-        addRule("Toggle Coral/Algae Mode", new Conditions.Toggle(() -> boxopGamepad.getPOV() == 0))
+        addRule(
+                        "Toggle Coral or Algae Mode",
+                        new Conditions.Toggle(() -> boxopGamepad.getPOV() == 0))
                 .withOnTriggeringProcedure(ONCE, Set.of(intake), () -> intake.stopAlgae())
                 .withFinishedTriggeringProcedure(Set.of(intake), () -> intake.stopAlgae())
                 .whenTriggering(
@@ -132,9 +134,7 @@ public class OI extends RuleEngine {
                             {
                                 addRule(
                                         "Move Algae Intake to Low Position",
-                                        () ->
-                                                boxopGamepad.getPOV()
-                                                        == InputConstants.GAMEPAD_A_BUTTON,
+                                        boxopGamepad.whenButton(InputConstants.GAMEPAD_A_BUTTON),
                                         ONCE,
                                         Set.of(elevator, shoulder, intake, wrist),
                                         (context) -> {
@@ -155,9 +155,7 @@ public class OI extends RuleEngine {
 
                                 addRule(
                                         "Move Algae Intake to High Position",
-                                        () ->
-                                                boxopGamepad.getPOV()
-                                                        == InputConstants.GAMEPAD_Y_BUTTON,
+                                        boxopGamepad.whenButton(InputConstants.GAMEPAD_Y_BUTTON),
                                         ONCE,
                                         Set.of(elevator, shoulder, intake, wrist),
                                         (context) -> {
@@ -178,22 +176,18 @@ public class OI extends RuleEngine {
 
                                 addRule(
                                                 "Intake Algae",
-                                                () ->
-                                                        boxopGamepad.getPOV()
-                                                                == InputConstants
-                                                                        .GAMEPAD_LEFT_TRIGGER,
+                                                boxopGamepad.whenAxisMoved(
+                                                        InputConstants.GAMEPAD_LEFT_TRIGGER),
                                                 ONCE_AND_HOLD,
                                                 Set.of(intake),
-                                                () -> intake.turnAlgaePositive())
+                                                () -> intake.turnAlgaeNegative())
                                         .withFinishedTriggeringProcedure(
-                                                intake, () -> intake.turnAlgaePositiveSlow());
+                                                intake, () -> intake.retainAlgae());
 
                                 addRule(
                                                 "Shoot Algae",
-                                                () ->
-                                                        boxopGamepad.getPOV()
-                                                                == InputConstants
-                                                                        .GAMEPAD_RIGHT_TRIGGER,
+                                                boxopGamepad.whenAxisMoved(
+                                                        InputConstants.GAMEPAD_RIGHT_TRIGGER),
                                                 ONCE_AND_HOLD,
                                                 Set.of(elevator, shoulder, intake, wrist),
                                                 (context) -> {
@@ -290,7 +284,7 @@ public class OI extends RuleEngine {
 
                                 addRule(
                                                 "Outtake Coral",
-                                                boxopGamepad.whenButton(
+                                                boxopGamepad.whenAxisMoved(
                                                         InputConstants.GAMEPAD_RIGHT_TRIGGER),
                                                 ONCE_AND_HOLD,
                                                 () -> new OuttakeCoral(intake))
@@ -301,9 +295,10 @@ public class OI extends RuleEngine {
                                                 boxopGamepad.whenAxisMoved(
                                                         InputConstants.GAMEPAD_LEFT_TRIGGER),
                                                 ONCE_AND_HOLD,
-                                                () ->
-                                                        new IntakeCoral(
-                                                                intake, elevator, shoulder, wrist))
+                                                () -> {
+                                                    return new IntakeCoral(
+                                                            intake, elevator, shoulder, wrist);
+                                                })
                                         .withFinishedTriggeringProcedure(
                                                 Set.of(intake, elevator, wrist, shoulder),
                                                 () -> {
@@ -314,7 +309,7 @@ public class OI extends RuleEngine {
                                                 });
                                 addRule(
                                                 "L1 Ground Intake",
-                                                boxopGamepad.whenAxisMoved(
+                                                boxopGamepad.whenButton(
                                                         InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
                                                 ONCE_AND_HOLD,
                                                 () ->

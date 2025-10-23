@@ -27,7 +27,7 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     private double rightPower = 0.4;
 
     private double algaePower = 0.3; // previously 0.5
-    private double algaeSlowPower = 0.1;
+    private double algaeSlowPower = -0.05;
 
     public Intake() {
         leftCANRange = RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.left");
@@ -126,7 +126,7 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
         centerAlgaeMotor.set(algaePower);
     }
 
-    public void turnAlgaePositiveSlow() {
+    public void retainAlgae() {
         centerAlgaeMotor.set(algaeSlowPower);
     }
 
