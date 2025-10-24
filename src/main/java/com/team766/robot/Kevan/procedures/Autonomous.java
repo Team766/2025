@@ -14,7 +14,7 @@ public class Autonomous extends Procedure {
         shooter = reserve(myShooter);
     }
 
-    public void AutonProc(Context context) {
+    public void AutonPro(Context context) {
         drive.move_straight(1);
         context.waitForSeconds(4);
         drive.move_straight(0);
