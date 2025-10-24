@@ -93,6 +93,10 @@ public final class GenericRobotMain {
             resetAutonomousMode("time in disabled mode");
         }
         Scheduler.getInstance().run();
+
+        if (RobotProvider.instance.isSimulation()) {
+            simulation.step(dt);
+        }
     }
 
     public void resetAutonomousMode(final String reason) {
@@ -139,6 +143,10 @@ public final class GenericRobotMain {
                             "Starting new autonomus procedure " + autonProcedure.getName());
         }
         Scheduler.getInstance().run();
+
+        if (RobotProvider.instance.isSimulation()) {
+            simulation.step(dt);
+        }
     }
 
     public void teleopInit() {
@@ -166,5 +174,9 @@ public final class GenericRobotMain {
                     .logRaw(Severity.WARNING, "Restarting OI context");
         }
         Scheduler.getInstance().run();
+
+        if (RobotProvider.instance.isSimulation()) {
+            simulation.step(dt);
+        }
     }
 }

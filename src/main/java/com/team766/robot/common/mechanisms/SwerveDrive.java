@@ -1,57 +1,52 @@
 package com.team766.robot.common.mechanisms;
 
 import static com.team766.robot.common.constants.ConfigConstants.*;
+import static com.team766.math.Transforms.add;
+import static com.team766.math.Transforms.multiply;
+import static com.team766.math.Transforms.rotateBy;
+import static com.team766.math.Transforms.toTwist2d;
+import static com.team766.math.Vectors.cross2d;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.sim.CANcoderSimState;
-import com.ctre.phoenix6.sim.Pigeon2SimState;
-import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
+import com.team766.framework.MechanismSimulation;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.hal.wpilib.CANTalonFxMotorController;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.ControlConstants;
-import com.team766.robot.common.constants.SwerveConstants;
+import com.team766.simulator.Simulation;
+import com.team766.simulator.elements.Pigeon2Sim;
+import com.team766.simulator.interfaces.SimBody;
+import com.team766.simulator.interfaces.SimBody2d;
+import com.team766.simulator.mechanisms.DriveBaseSim;
+
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class SwerveDrive extends Mechanism {
 
     private final SwerveConfig config;
-
-    private DCMotorSim driveFRSim;
-    private TalonFXSimState driveFRSimState;
-    private DCMotorSim steerFRSim;
-    private TalonFXSimState steerFRSimState;
-    private EncoderSim encoderFRSim;
-    private CANcoderSimState encoderFRSimState;
-    private AnalogGyroSim gyroSim;
-    private Pigeon2SimState gyroSimState;
 
     // SwerveModules
     private final SwerveModule swerveFR;
@@ -91,27 +86,17 @@ public class SwerveDrive extends Mechanism {
         MotorController driveBR = RobotProvider.instance.getMotor(DRIVE_DRIVE_BACK_RIGHT);
         MotorController driveBL = RobotProvider.instance.getMotor(DRIVE_DRIVE_BACK_LEFT);
 
-        driveFRSim = new DCMotorSim(DCMotor.getKrakenX60Foc(1), SwerveConstants.DRIVE_GEAR_RATIO, 0.001);
-        driveFRSimState = ((TalonFX) driveFR).getSimState();
-
         // create the steering motors
         MotorController steerFR = RobotProvider.instance.getMotor(DRIVE_STEER_FRONT_RIGHT);
         MotorController steerFL = RobotProvider.instance.getMotor(DRIVE_STEER_FRONT_LEFT);
         MotorController steerBR = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_RIGHT);
         MotorController steerBL = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_LEFT);
 
-        steerFRSim = new DCMotorSim(DCMotor.getKrakenX60Foc(1), SwerveConstants.STEER_GEAR_RATIO, 0.001);
-        steerFRSimState = ((TalonFX) steerFR).getSimState();
-
         // create the encoders
         CANcoder encoderFR = new CANcoder(2, config.canBus());
         CANcoder encoderFL = new CANcoder(4, config.canBus());
         CANcoder encoderBR = new CANcoder(3, config.canBus());
         CANcoder encoderBL = new CANcoder(1, config.canBus());
-
-        // FIXME: not 0
-        encoderFRSim = new EncoderSim(new Encoder(0, 0));
-        encoderFRSimState = encoderFR.getSimState();
 
         // initialize the swerve modules
         swerveFR =
@@ -149,10 +134,6 @@ public class SwerveDrive extends Mechanism {
 
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
-
-        // FIXME: not 0 
-        gyroSim = new AnalogGyroSim(0);
-        gyroSimState = ((Pigeon2) gyro).getSimState();
 
         rotationPID = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
 
@@ -459,51 +440,55 @@ public class SwerveDrive extends Mechanism {
             org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", states);
         }
         swerveModuleStatePublisher.set(states);
-        runSim();
     }
 
-    public void runSim() {
+    @Override
+    protected MechanismSimulation createSimulation(Simulation sim) {
+        return new MechanismSimulation() {
+            private final DriveBaseSim.Dimensions dimensions;
 
-        // set the supply voltage of the TalonFX
-        driveFRSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+            private final SwerveModule.SwerveModuleSim swerveFRSim = swerveFR.new SwerveModuleSim(sim);
+            private final SwerveModule.SwerveModuleSim swerveFLSim = swerveFL.new SwerveModuleSim(sim);
+            private final SwerveModule.SwerveModuleSim swerveBRSim = swerveBR.new SwerveModuleSim(sim);
+            private final SwerveModule.SwerveModuleSim swerveBLSim = swerveBL.new SwerveModuleSim(sim);
+            private final Pigeon2Sim gyroSim = new Pigeon2Sim((Pigeon2) gyro);
 
-        // get the motor voltage of the TalonFX
-        double driveFRMotorVoltage = driveFRSimState.getMotorVoltage();
+            private SimBody.State state = new SimBody.State(new Pose3d(), new Twist3d(), new Twist3d());
 
-        // use the motor voltage to calculate new position and velocity
-        // using WPILib's DCMotorSim class for physics simulation
-        driveFRSim.setInputVoltage(driveFRMotorVoltage);
-        driveFRSim.update(0.020); // assume 20 ms loop time
+            @Override
+            public void step(double dt) {
+                final SimBody2d.State state2d = new SimBody2d.State(
+                        state.position().toPose2d(),
+                        toTwist2d(state.velocity()),
+                        toTwist2d(state.acceleration()));
+                final Vector<N2> forceFR = swerveFRSim.step(transform(state2d, wheelPositions[0].rotateBy(state2d.position().getRotation()).unaryMinus()), dt);
+                final Vector<N2> forceFL = swerveFLSim.step(transform(state2d, wheelPositions[1].rotateBy(state2d.position().getRotation()).unaryMinus()), dt);
+                final Vector<N2> forceBR = swerveBRSim.step(transform(state2d, wheelPositions[2].rotateBy(state2d.position().getRotation()).unaryMinus()), dt);
+                final Vector<N2> forceBL = swerveBLSim.step(transform(state2d, wheelPositions[3].rotateBy(state2d.position().getRotation()).unaryMinus()), dt);
+                final Vector<N2> netForce = forceFR.plus(forceFL).plus(forceBR).plus(forceBL);
+                final double torqueFR = cross2d(wheelPositions[0].toVector(), forceFR);
+                final double torqueFL = cross2d(wheelPositions[1].toVector(), forceFL);
+                final double torqueBR = cross2d(wheelPositions[2].toVector(), forceBR);
+                final double torqueBL = cross2d(wheelPositions[3].toVector(), forceBL);
+                final double netTorque = torqueFR + torqueFL + torqueBR + torqueBL;
 
-        // apply the new rotor position and velocity to the TalonFX;
-        // note that this is rotor position/velocity (before gear ratio), but
-        // DCMotorSim returns mechanism position/velocity (after gear ratio)
-        driveFRSimState.setRawRotorPosition(
-            SwerveConstants.DRIVE_GEAR_RATIO * driveFRSim.getAngularPositionRotations()
-        );
-        driveFRSimState.setRotorVelocity(
-            SwerveConstants.DRIVE_GEAR_RATIO * driveFRSim.getAngularVelocityRadPerSec() / (2 * Math.PI)
-        );
+                // TODO: Use integration algorithm from edu.wpi.first.math.system.NumericalIntegration
+                final var acceleration =
+                        rotateBy(
+                                new Twist3d(
+                                        netForce.get(0) / dimensions.mass(),
+                                        netForce.get(1) / dimensions.mass(),
+                                        0,
+                                        0,
+                                        0,
+                                        netTorque / dimensions.momentOfInertia()),
+                                state.position().getRotation());
+                final var velocity = add(state.velocity(), multiply(acceleration, dt));
+                final var position = state.position().exp(multiply(velocity, dt));
+                state = new SimBody.State(position, velocity, acceleration);
 
-        // set the supply voltage of the TalonFX
-        steerFRSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-        // get the motor voltage of the TalonFX
-        double steerFRMotorVoltage = steerFRSimState.getMotorVoltage();
-
-        // use the motor voltage to calculate new position and velocity
-        // using WPILib's DCMotorSim class for physics simulation
-        steerFRSim.setInputVoltage(steerFRMotorVoltage);
-        steerFRSim.update(0.020); // assume 20 ms loop time
-
-        // apply the new rotor position and velocity to the TalonFX;
-        // note that this is rotor position/velocity (before gear ratio), but
-        // DCMotorSim returns mechanism position/velocity (after gear ratio)
-        steerFRSimState.setRawRotorPosition(
-            SwerveConstants.DRIVE_GEAR_RATIO * steerFRSim.getAngularPositionRotations()
-        );
-        steerFRSimState.setRotorVelocity(
-            SwerveConstants.DRIVE_GEAR_RATIO * steerFRSim.getAngularVelocityRadPerSec() / (2 * Math.PI)
-        );
+                gyroSim.step(state);
+            }
+        };
     }
 }

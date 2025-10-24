@@ -17,7 +17,7 @@ public class ProgramInterface {
         TELEOP
     }
 
-    public static RobotMode robotMode = Parameters.INITIAL_ROBOT_MODE;
+    public static RobotMode robotMode = RobotMode.DISABLED;
 
     public static final double[] pwmChannels = new double[20];
 

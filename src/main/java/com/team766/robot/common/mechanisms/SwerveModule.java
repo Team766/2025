@@ -1,17 +1,35 @@
 package com.team766.robot.common.mechanisms;
 
+import static com.team766.math.Transforms.multiply;
+import static com.team766.math.Transforms.rotateBy;
 import static com.team766.robot.common.constants.SwerveConstants.*;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 import com.team766.robot.reva.mechanisms.MotorUtil;
+import com.team766.simulator.Simulation;
+import com.team766.simulator.elements.CANcoderSim;
+import com.team766.simulator.elements.DCMotorSim;
+import com.team766.simulator.elements.GearsSim;
+import com.team766.simulator.elements.TalonFXSim;
+import com.team766.simulator.elements.WheelSim;
+import com.team766.simulator.interfaces.MechanicalAngularDevice;
+import com.team766.simulator.interfaces.MechanicalDevice;
+import com.team766.simulator.interfaces.SimBody2d;
+
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -181,5 +199,59 @@ public class SwerveModule {
         // SmartDashboard.putNumber(
         //         "[" + modulePlacement + "]" + " drive stator current",
         //         MotorUtil.getStatorCurrentUsage(drive));
+    }
+
+    public class SwerveModuleSim extends SimBody2d {
+        private final double momentOfInertia = 0.001;
+
+        private final DCMotorSim driveMotor = DCMotorSim.makeKrakenX60("drive" + modulePlacement);
+        private final TalonFXSim driveController = new TalonFXSim((TalonFX) drive, driveMotor);
+        private final WheelSim driveWheel = new WheelSim(WHEEL_DIAMETER, new GearsSim(DRIVE_GEAR_RATIO, driveMotor));
+        private final DCMotorSim steerMotor = DCMotorSim.makeKrakenX60("steer" + modulePlacement);
+        private final TalonFXSim steerController = new TalonFXSim((TalonFX) steer, steerMotor);
+        private final GearsSim steerModule = new GearsSim(STEER_GEAR_RATIO, steerMotor);
+        private final CANcoderSim encoderSim = new CANcoderSim(encoder);
+
+        private MechanicalAngularDevice.State steerState = new MechanicalAngularDevice.State(0, 0);
+        private MechanicalDevice.State driveState = new MechanicalDevice.State(0, 0);
+
+        private Pose2d previousWheelPose = new Pose2d();
+
+        public SwerveModuleSim(Simulation sim) {
+            sim.electricalSystem.addDevice(driveController);
+            sim.electricalSystem.addDevice(steerController);
+        }
+
+        public Vector<N2> step(SimBody2d.State chassisAtModule, double dt) {
+            {
+                final var action = steerModule.step(steerState, dt);
+
+                double netTorque = action.torque();
+                // TODO: Friction
+
+                // TODO: Use integration algorithm from edu.wpi.first.math.system.NumericalIntegration
+                final double acceleration = netTorque / momentOfInertia;
+                final double velocity = steerState.angularVelocity() + acceleration * dt;
+                final double position = steerState.angularPosition() + velocity * dt;
+                steerState = new MechanicalAngularDevice.State(position, velocity);
+
+                encoderSim.step(steerState);
+            }
+
+            {
+                // TODO: Add traction limit/wheel slip (static vs kinetic friction)
+                final Rotation2d moduleRotation = new Rotation2d(steerState.angularPosition());
+                final Pose2d wheelPose = chassisAtModule.position().rotateBy(moduleRotation);
+                final Twist2d wheelEgoVelocity = rotateBy(chassisAtModule.velocity(), wheelPose.getRotation().unaryMinus());
+
+                final Twist2d delta = multiply(wheelPose.log(previousWheelPose), -1);
+                driveState = new MechanicalDevice.State(driveState.position() + delta.dx, wheelEgoVelocity.dx);
+                final var action = driveWheel.step(driveState, dt);
+
+                // TODO: Transverse friction
+
+                return new Translation2d(action.force(), 0).rotateBy(moduleRotation).toVector();
+            }
+        }
     }
 }

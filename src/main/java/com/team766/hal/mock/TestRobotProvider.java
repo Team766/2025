@@ -23,6 +23,7 @@ public class TestRobotProvider extends RobotProvider {
     private MotorController[] motors = new MotorController[64];
     private boolean m_hasDriverStationUpdate = false;
     private double m_batteryVoltage = 12.0;
+    private boolean isSimulation = false;
 
     @Override
     public MotorController getMotor(
@@ -158,5 +159,14 @@ public class TestRobotProvider extends RobotProvider {
 
     public void setBatteryVoltage(final double voltage) {
         m_batteryVoltage = voltage;
+    }
+
+    @Override
+    public boolean isSimulation() {
+        return isSimulation;
+    }
+
+    public void setIsSimulation(boolean value) {
+        isSimulation = value;
     }
 }

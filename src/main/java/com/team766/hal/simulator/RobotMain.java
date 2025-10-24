@@ -7,19 +7,12 @@ import com.team766.hal.RobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.simulator.Program;
 import com.team766.simulator.ProgramInterface;
-import com.team766.simulator.Simulator;
-import java.io.IOException;
 
 public class RobotMain {
-    enum Mode {
-        MaroonSim,
-        VrConnector,
-    }
-
     private GenericRobotMain robot;
     private Runnable simulator;
 
-    public RobotMain(final Mode mode) {
+    public RobotMain() {
         try {
             // TODO: update this to come from deploy directory?
             ConfigFileReader.instance = new ConfigFileReader("simConfig.txt");
@@ -73,30 +66,11 @@ public class RobotMain {
                             robot.resetAutonomousMode("simulation reset");
                         }
                     };
+
+            simulator = new VrConnector();
         } catch (Exception exc) {
             exc.printStackTrace();
             LoggerExceptionUtils.logException(exc);
-        }
-
-        switch (mode) {
-            case MaroonSim:
-                simulator = new Simulator();
-                break;
-            case VrConnector:
-                ProgramInterface.robotMode = ProgramInterface.RobotMode.DISABLED;
-                try {
-                    simulator = new VrConnector();
-                } catch (IOException ex) {
-                    throw new RuntimeException(
-                            "Error initializing communication with 3d Simulator", ex);
-                }
-                break;
-            default:
-                LoggerExceptionUtils.logException(
-                        new IllegalArgumentException(
-                                "Unknown simulator mode. ProgramInterface.robotMode: "
-                                        + ProgramInterface.robotMode));
-                break;
         }
     }
 
@@ -110,23 +84,6 @@ public class RobotMain {
     }
 
     public static void main(final String[] args) {
-        if (args.length != 1) {
-            System.err.println("Needs -maroon_sim or -vr_connector");
-            System.exit(1);
-        }
-        Mode mode;
-        switch (args[0]) {
-            case "-maroon_sim":
-                mode = Mode.MaroonSim;
-                break;
-            case "-vr_connector":
-                mode = Mode.VrConnector;
-                break;
-            default:
-                System.err.println("Needs -maroon_sim or -vr_connector");
-                System.exit(1);
-                return;
-        }
-        new RobotMain(mode).run();
+        new RobotMain().run();
     }
 }

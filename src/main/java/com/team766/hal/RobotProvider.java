@@ -366,4 +366,6 @@ public abstract class RobotProvider {
     public abstract void refreshDriverStationData();
 
     public abstract boolean hasNewDriverStationData();
+
+    public abstract boolean isSimulation();
 }

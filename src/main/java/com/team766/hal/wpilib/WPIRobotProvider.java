@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -343,5 +344,10 @@ public class WPIRobotProvider extends RobotProvider {
     @Override
     public double getBatteryVoltage() {
         return RobotController.getBatteryVoltage();
+    }
+
+    @Override
+    public boolean isSimulation() {
+        return RobotBase.isSimulation();
     }
 }

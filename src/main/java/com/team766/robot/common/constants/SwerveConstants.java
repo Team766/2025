@@ -18,23 +18,21 @@ public final class SwerveConstants {
 
     public static final double DRIVE_GEAR_RATIO = 6.75; // L2 gear ratio configuration
 
-    public static final double STEER_GEAR_RATIO = 150/7; // L2 gear ratio configuration
+    public static final double STEER_GEAR_RATIO = 150 / 7; // L2 gear ratio configuration
 
     // Radius of the wheels. The circumference was measured to be 30.5cm, then experimentally this
-    // value had
-    // an error of 2.888%. This was then converted to meters, and then the radius.
-    public static final double WHEEL_RADIUS = 30.5 * 1.02888 / 100 / (2 * Math.PI);
+    // value had an error of 2.888%. This was then converted to meters, and then the radius.
+    public static final double WHEEL_DIAMETER = 30.5 * 1.02888 / 100 / Math.PI;
 
     /*
-     * Factor that converts between drive motor angular speed (rad/s) to drive wheel tip speed (m/s)
+     * Factor that converts between drive motor angular speed (rev/s) to drive wheel tip speed (m/s)
      * Multiply to convert from wheel tip speed to motor angular speed
      * Divide to convert from angular speed to wheel tip speed
      */
     public static final double MOTOR_WHEEL_FACTOR_MPS =
             1.
-                    / WHEEL_RADIUS // Wheel radians/sec
-                    * DRIVE_GEAR_RATIO // Motor radians/sec
-                    / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
+                    / (WHEEL_DIAMETER * Math.PI) // Wheel rotations/sec
+                    * DRIVE_GEAR_RATIO; // Motor rotations/sec (what velocity mode takes)
 
     // TUNE THESE!
     public static final double DRIVE_STATOR_CURRENT_LIMIT = 80.0;

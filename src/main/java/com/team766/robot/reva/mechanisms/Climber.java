@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import edu.wpi.first.math.MathUtil;
 
 public class Climber extends Mechanism {
 
@@ -79,13 +80,13 @@ public class Climber extends Mechanism {
     }
 
     public void setLeftPower(double power) {
-        power = com.team766.math.Math.clamp(power, -1, 1);
+        power = MathUtil.clamp(power, -1, 1);
         leftPower = power;
         leftMotor.set(power);
     }
 
     public void setRightPower(double power) {
-        power = com.team766.math.Math.clamp(power, -1, 1);
+        power = MathUtil.clamp(power, -1, 1);
         rightPower = power;
         rightMotor.set(power);
     }

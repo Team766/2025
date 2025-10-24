@@ -154,4 +154,10 @@ public class SimulationRobotProvider extends RobotProvider {
         // TODO: The simulator currently doesn't include a simulation of electrical load.
         return 12.0;
     }
+
+    @Override
+    public boolean isSimulation() {
+        // TODO: Set this to true after merging simulation modes
+        return false;
+    }
 }

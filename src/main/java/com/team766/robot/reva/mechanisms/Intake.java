@@ -10,6 +10,7 @@ import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
+import com.team766.math.Maths;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends Mechanism {
@@ -124,7 +125,7 @@ public class Intake extends Mechanism {
     public void setIntakePowerForSensorDistance() {
         checkContextOwnership();
         intakePower =
-                com.team766.math.Math.interpolate(
+                Maths.interpolate(
                         positions,
                         sensor.getRange(),
                         IntakePosition::proximityValue,

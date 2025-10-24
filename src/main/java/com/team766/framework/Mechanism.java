@@ -1,13 +1,17 @@
 package com.team766.framework;
 
+import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
+import com.team766.simulator.Simulation;
 
 public abstract class Mechanism extends LoggingBase {
     private ContextImpl<?> m_owningContext = null;
     private Thread m_runningPeriodic = null;
+    private MechanismSimulation simulation = null;
+    private boolean simulationSetup = false;
 
     public Mechanism() {
         loggerCategory = Category.MECHANISMS;
@@ -17,11 +21,20 @@ public abstract class Mechanism extends LoggingBase {
                         new Runnable() {
                             @Override
                             public void run() {
+                                if (!simulationSetup) {
+                                    simulationSetup = true;
+                                    if (RobotProvider.instance.isSimulation()) {
+                                        simulation = createSimulation();
+                                    }
+                                }
                                 try {
                                     Mechanism.this.m_runningPeriodic = Thread.currentThread();
                                     Mechanism.this.run();
                                 } finally {
                                     Mechanism.this.m_runningPeriodic = null;
+                                }
+                                if (simulation != null) {
+                                    simulation.step();
                                 }
                             }
 
@@ -37,6 +50,10 @@ public abstract class Mechanism extends LoggingBase {
                                 return repr;
                             }
                         });
+    }
+
+    protected MechanismSimulation createSimulation(Simulation sim) {
+        return null;
     }
 
     public String getName() {

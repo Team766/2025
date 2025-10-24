@@ -1,29 +1,16 @@
 package com.team766.simulator.interfaces;
 
 public interface MechanicalAngularDevice {
-    class Input {
-        public Input(final double angularVelocity_) {
-            this.angularVelocity = angularVelocity_;
-        }
+    /**
+     * @param angularPosition Position of device in radians. Should be continuous (e.g. does not roll over from PI -PI).
+     * @param angularVelocity Velocity of device in radians per second.
+     */
+    public record State(double angularPosition, double angularVelocity) {}
 
-        public Input(final Input other) {
-            this.angularVelocity = other.angularVelocity;
-        }
+    /**
+     * @param torque Torque in Newton-meters
+     */
+    public record Action(double torque) {}
 
-        public final double angularVelocity;
-    }
-
-    class Output {
-        public Output(final double torque_) {
-            this.torque = torque_;
-        }
-
-        public Output(final Output other) {
-            this.torque = other.torque;
-        }
-
-        public final double torque;
-    }
-
-    public Output step(Input input, double dt);
+    Action step(State state, double dt);
 }

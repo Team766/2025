@@ -9,6 +9,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends Mechanism {
@@ -65,7 +66,7 @@ public class Shooter extends Mechanism {
     }
 
     public void shoot(double speed) {
-        targetSpeed = com.team766.math.Math.clamp(speed, MIN_SPEED, MAX_SPEED);
+        targetSpeed = MathUtil.clamp(speed, MIN_SPEED, MAX_SPEED);
         shoot();
     }
 
