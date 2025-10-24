@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkMax;
@@ -16,12 +17,16 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
+import com.team766.simulator.ProgramInterface;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class CANSparkMaxMotorController extends SparkMax implements MotorController {
 
     private final String deviceName;
+    private final SparkMaxSim maxSim;
     private Supplier<Double> sensorPositionSupplier;
     private Supplier<Double> sensorVelocitySupplier;
     private Function<Double, REVLibError> sensorPositionSetter;
@@ -33,6 +38,8 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
         super(deviceId, MotorType.kBrushless);
 
         this.deviceName = deviceName;
+
+        maxSim = new SparkMaxSim(this, DCMotor.getNEO(1)); // TODO: Support Neo550, etc
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.smartCurrentLimit(10, 80, 200);
@@ -354,5 +361,23 @@ public class CANSparkMaxMotorController extends SparkMax implements MotorControl
     @Override
     public boolean getInverted() {
         return configAccessor.getInverted();
+    }
+
+    @Override
+    public void simulationMotorUpdate() {
+        ProgramInterface.canMotorControllerChannels[getDeviceId()].command.percentOutput =
+                maxSim.getAppliedOutput();
+    }
+
+    @Override
+    public void simulationSensorUpdate(double deltaTime) {
+        maxSim.iterate(
+                ProgramInterface.canMotorControllerChannels[getDeviceId()].status.sensorVelocity,
+                RoboRioSim.getVInVoltage(),
+                deltaTime);
+        maxSim.setPosition(
+                ProgramInterface.canMotorControllerChannels[getDeviceId()].status.sensorPosition);
+        // TODO: simulation of limit switch inputs
+        // TODO: simulation of external sensors
     }
 }

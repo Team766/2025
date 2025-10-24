@@ -1,5 +1,7 @@
 package com.team766.simulator;
 
 public interface SimulatorInterface {
-    public void step() throws SimulationResetException;
+    record StepResult(boolean simWasReset, double deltaTime) {}
+
+    StepResult step();
 }

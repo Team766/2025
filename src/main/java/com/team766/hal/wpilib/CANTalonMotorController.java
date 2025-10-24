@@ -10,6 +10,8 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
+import com.team766.simulator.ProgramInterface;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 
 public class CANTalonMotorController extends BaseCTREMotorController implements MotorController {
 
@@ -205,5 +207,36 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
     @Override
     public void setNeutralMode(final NeutralMode neutralMode) {
         m_device.setNeutralMode(neutralMode);
+    }
+
+    @Override
+    public void simulationMotorUpdate() {
+        ProgramInterface.canMotorControllerChannels[m_device.getDeviceID()].command.percentOutput =
+                m_device.getSimCollection().getMotorOutputLeadVoltage()
+                        / RoboRioSim.getVInVoltage();
+    }
+
+    @Override
+    public void simulationSensorUpdate(double deltaTime) {
+        m_device.getSimCollection().setBusVoltage(RoboRioSim.getVInVoltage());
+        m_device.getSimCollection()
+                .setQuadratureRawPosition(
+                        (int)
+                                ProgramInterface.canMotorControllerChannels[m_device.getDeviceID()]
+                                        .status
+                                        .sensorPosition);
+        m_device.getSimCollection()
+                .setQuadratureVelocity(
+                        (int)
+                                (ProgramInterface.canMotorControllerChannels[m_device.getDeviceID()]
+                                                .status
+                                                .sensorVelocity
+                                        / 0.1));
+        // TODO:
+        // m_device.getSimCollection().setStatorCurrent();
+        // m_device.getSimCollection().setSupplyCurrent();
+        // TODO: simulation of limit switch inputs
+        // m_device.getSimCollection().setLimitFwd();
+        // m_device.getSimCollection().setLimitRev();
     }
 }

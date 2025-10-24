@@ -58,8 +58,9 @@ public class Simulator implements SimulatorInterface {
         }
     }
 
-    public void step() {
-        double dt = Parameters.TIME_STEP;
+    @Override
+    public StepResult step() {
+        final double dt = Parameters.TIME_STEP;
         time += dt;
         ProgramInterface.stepSimulationTime(dt);
 
@@ -141,5 +142,7 @@ public class Simulator implements SimulatorInterface {
                 }
             }
         }
+
+        return new StepResult(false, dt);
     }
 }

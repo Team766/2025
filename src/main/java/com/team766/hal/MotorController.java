@@ -135,4 +135,8 @@ public interface MotorController {
     void setOpenLoopRamp(double secondsFromNeutralToFull);
 
     void setClosedLoopRamp(double secondsFromNeutralToFull);
+
+    void simulationSensorUpdate(double deltaTime);
+
+    void simulationMotorUpdate();
 }

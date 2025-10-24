@@ -26,8 +26,10 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
+import com.team766.simulator.ProgramInterface;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 
 public class CANTalonFxMotorController extends CoreTalonFX implements MotorController {
 
@@ -329,5 +331,31 @@ public class CANTalonFxMotorController extends CoreTalonFX implements MotorContr
         statusCodeToException(ExceptionTarget.LOG, getConfigurator().refresh(motorOutput));
         motorOutput.NeutralMode = neutralModeValue;
         statusCodeToException(ExceptionTarget.LOG, super.getConfigurator().apply(motorOutput));
+    }
+
+    @Override
+    public void simulationMotorUpdate() {
+        ProgramInterface.canMotorControllerChannels[getDeviceID()].command.percentOutput =
+                getSimState().getMotorVoltage() / RoboRioSim.getVInVoltage();
+    }
+
+    @Override
+    public void simulationSensorUpdate(double deltaTime) {
+        getSimState().setSupplyVoltage(RoboRioSim.getVInVoltage());
+        getSimState()
+                .setRawRotorPosition(
+                        ProgramInterface.canMotorControllerChannels[getDeviceID()]
+                                .status
+                                .sensorPosition);
+        getSimState()
+                .setRotorVelocity(
+                        ProgramInterface.canMotorControllerChannels[getDeviceID()]
+                                .status
+                                .sensorVelocity);
+        // TODO: Get acceleration from physics sim.
+        getSimState().setRotorAcceleration(0);
+        // TODO: simulation of limit switch inputs
+        // getSimState().setForwardLimit();
+        // getSimState().setReverseLimit();
     }
 }

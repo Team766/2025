@@ -4,7 +4,6 @@ import static com.team766.math.Math.normalizeAngleDegrees;
 
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.simulator.ProgramInterface;
-import com.team766.simulator.SimulationResetException;
 import com.team766.simulator.SimulatorInterface;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import java.io.IOException;
@@ -18,6 +17,7 @@ import java.nio.channels.Selector;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class VrConnector implements SimulatorInterface {
     private enum RobotMode {
@@ -26,30 +26,10 @@ public class VrConnector implements SimulatorInterface {
         TELEOP
     }
 
-    private static class PortMapping {
-        public final int messageDataIndex;
-        public final int robotPortIndex;
+    private record PortMapping(int messageDataIndex, int robotPortIndex) {}
 
-        PortMapping(final int messageIndex, final int robotIndex) {
-            this.messageDataIndex = messageIndex;
-            this.robotPortIndex = robotIndex;
-        }
-    }
-
-    private static class CANPortMapping {
-        public final int canId;
-        public final int motorCommandMessageDataIndex;
-        public final int sensorFeedbackMessageDataIndex;
-
-        CANPortMapping(
-                final int canId_,
-                final int motorCommandMessageDataIndex_,
-                final int sensorFeedbackMessageDataIndex_) {
-            this.canId = canId_;
-            this.motorCommandMessageDataIndex = motorCommandMessageDataIndex_;
-            this.sensorFeedbackMessageDataIndex = sensorFeedbackMessageDataIndex_;
-        }
-    }
+    private record CANPortMapping(
+            int canId, int motorCommandMessageDataIndex, int sensorFeedbackMessageDataIndex) {}
 
     /// Command indexes
 
@@ -219,7 +199,7 @@ public class VrConnector implements SimulatorInterface {
         }
     }
 
-    private boolean process() throws IOException {
+    private Optional<StepResult> process() throws IOException {
         for (PortMapping m : PWM_CHANNELS) {
             putCommandFloat(m.messageDataIndex, ProgramInterface.pwmChannels[m.robotPortIndex]);
         }
@@ -260,131 +240,127 @@ public class VrConnector implements SimulatorInterface {
             }
         }
 
-        if (newData) {
-            final double prevSimTime = simulationTime;
-            // Time is sent in milliseconds
-            simulationTime =
-                    assembleLong(
-                                    getFeedback(TIMESTAMP_MSW_CHANNEL),
-                                    getFeedback(TIMESTAMP_LSW_CHANNEL))
-                            * 0.001;
-            final double deltaTime = simulationTime - prevSimTime;
-            ProgramInterface.stepSimulationTime(deltaTime);
-
-            resetCounter = getFeedback(RESET_COUNTER_CHANNEL);
-
-            final RobotMode robotMode = ROBOT_MODES.get(getFeedback(ROBOT_MODE_CHANNEL));
-            switch (robotMode) {
-                case AUTON:
-                    DriverStationSim.setAutonomous(true);
-                    DriverStationSim.setEnabled(true);
-                    break;
-                case DISABLED:
-                    DriverStationSim.setEnabled(false);
-                    break;
-                case TELEOP:
-                    DriverStationSim.setAutonomous(false);
-                    DriverStationSim.setEnabled(true);
-                    break;
-            }
-
-            final double gyroValue = getFeedback(GYRO_CHANNEL) / 10.0;
-            if (Double.isNaN(lastGyroValue)) {
-                lastGyroValue = gyroValue;
-            }
-            ProgramInterface.gyro.angle += gyroValue - lastGyroValue;
-            lastGyroValue = gyroValue;
-
-            ProgramInterface.robotPosition.x = getFeedback(ROBOT_X_CHANNEL) / 1000.0;
-            ProgramInterface.robotPosition.y = getFeedback(ROBOT_Y_CHANNEL) / 1000.0;
-            ProgramInterface.robotPosition.heading = gyroValue;
-
-            ProgramInterface.gyro.rate = getFeedback(GYRO_RATE_CHANNEL) / 100.0;
-            ProgramInterface.gyro.pitch =
-                    normalizeAngleDegrees(getFeedback(GYRO_PITCH_CHANNEL) / 10.0);
-            ProgramInterface.gyro.roll =
-                    normalizeAngleDegrees(getFeedback(GYRO_ROLL_CHANNEL) / 10.0);
-
-            for (int i = 0; i < ProgramInterface.NUM_BEACONS; ++i) {
-                ProgramInterface.beacons[i].x =
-                        getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 0) / 1000.0;
-                ProgramInterface.beacons[i].y =
-                        getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 1) / 1000.0;
-                ProgramInterface.beacons[i].z =
-                        getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 2) / 1000.0;
-                ProgramInterface.beacons[i].yaw =
-                        getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 3) / 1000.0;
-                ProgramInterface.beacons[i].pitch =
-                        getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 4) / 1000.0;
-                ProgramInterface.beacons[i].roll =
-                        getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 5) / 1000.0;
-            }
-
-            for (PortMapping m : ENCODER_CHANNELS) {
-                final long value = getFeedback(m.messageDataIndex);
-                final long delta = value - lastEncoderValue[m.robotPortIndex];
-                lastEncoderValue[m.robotPortIndex] = value;
-
-                ProgramInterface.encoderChannels[m.robotPortIndex].distance += delta;
-                if (deltaTime > 0.) {
-                    ProgramInterface.encoderChannels[m.robotPortIndex].rate = delta / deltaTime;
-                }
-            }
-            for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
-                var status = ProgramInterface.canMotorControllerChannels[m.canId].status;
-
-                long value = getFeedback(m.sensorFeedbackMessageDataIndex);
-                long delta = value - lastCANSensorValue[m.canId];
-                lastCANSensorValue[m.canId] = value;
-
-                status.sensorPosition += delta;
-                if (deltaTime > 0.) {
-                    status.sensorVelocity = delta / deltaTime;
-                }
-            }
-            for (PortMapping m : DIGITAL_CHANNELS) {
-                ProgramInterface.digitalChannels[m.robotPortIndex] =
-                        getFeedback(m.messageDataIndex) > 0;
-            }
-            for (PortMapping m : ANALOG_CHANNELS) {
-                ProgramInterface.analogChannels[m.robotPortIndex] =
-                        getFeedback(m.messageDataIndex) * 5.0 / 1024.0;
-            }
-            for (int j = 0; j < NUM_JOYSTICK; ++j) {
-                for (int a = 0; a < BASE_AXES_PER_JOYSTICK; ++a) {
-                    DriverStationSim.setJoystickAxis(
-                            j,
-                            a,
-                            getFeedback(j * BASE_AXES_PER_JOYSTICK + a + BASE_AXIS_START) / 100.0);
-                }
-                for (int a = 0; a < ADDITIONAL_AXES_PER_JOYSTICK; ++a) {
-                    DriverStationSim.setJoystickAxis(
-                            j,
-                            a + BASE_AXES_PER_JOYSTICK,
-                            getFeedback(
-                                            j * ADDITIONAL_AXES_PER_JOYSTICK
-                                                    + a
-                                                    + ADDITIONAL_AXIS_START)
-                                    / 100.0);
-                }
-                final int denseButtonState = getFeedback(j + JOYSTICK_BUTTON_START);
-                DriverStationSim.setJoystickButtons(j, denseButtonState);
-            }
-
-            DriverStationSim.notifyNewData();
+        if (!newData) {
+            return Optional.empty();
         }
 
-        return newData;
+        final double prevSimTime = simulationTime;
+        // Time is sent in milliseconds
+        simulationTime =
+                assembleLong(getFeedback(TIMESTAMP_MSW_CHANNEL), getFeedback(TIMESTAMP_LSW_CHANNEL))
+                        * 0.001;
+        final double deltaTime = simulationTime - prevSimTime;
+        ProgramInterface.stepSimulationTime(deltaTime);
+
+        resetCounter = getFeedback(RESET_COUNTER_CHANNEL);
+
+        final RobotMode robotMode = ROBOT_MODES.get(getFeedback(ROBOT_MODE_CHANNEL));
+        switch (robotMode) {
+            case AUTON:
+                DriverStationSim.setAutonomous(true);
+                DriverStationSim.setEnabled(true);
+                break;
+            case DISABLED:
+                DriverStationSim.setEnabled(false);
+                break;
+            case TELEOP:
+                DriverStationSim.setAutonomous(false);
+                DriverStationSim.setEnabled(true);
+                break;
+        }
+
+        final double gyroValue = getFeedback(GYRO_CHANNEL) / 10.0;
+        if (Double.isNaN(lastGyroValue)) {
+            lastGyroValue = gyroValue;
+        }
+        ProgramInterface.gyro.angle += gyroValue - lastGyroValue;
+        lastGyroValue = gyroValue;
+
+        ProgramInterface.robotPosition.x = getFeedback(ROBOT_X_CHANNEL) / 1000.0;
+        ProgramInterface.robotPosition.y = getFeedback(ROBOT_Y_CHANNEL) / 1000.0;
+        ProgramInterface.robotPosition.heading = gyroValue;
+
+        ProgramInterface.gyro.rate = getFeedback(GYRO_RATE_CHANNEL) / 100.0;
+        ProgramInterface.gyro.pitch = normalizeAngleDegrees(getFeedback(GYRO_PITCH_CHANNEL) / 10.0);
+        ProgramInterface.gyro.roll = normalizeAngleDegrees(getFeedback(GYRO_ROLL_CHANNEL) / 10.0);
+
+        for (int i = 0; i < ProgramInterface.NUM_BEACONS; ++i) {
+            ProgramInterface.beacons[i].x =
+                    getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 0) / 1000.0;
+            ProgramInterface.beacons[i].y =
+                    getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 1) / 1000.0;
+            ProgramInterface.beacons[i].z =
+                    getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 2) / 1000.0;
+            ProgramInterface.beacons[i].yaw =
+                    getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 3) / 1000.0;
+            ProgramInterface.beacons[i].pitch =
+                    getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 4) / 1000.0;
+            ProgramInterface.beacons[i].roll =
+                    getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 5) / 1000.0;
+        }
+
+        for (PortMapping m : ENCODER_CHANNELS) {
+            final long value = getFeedback(m.messageDataIndex);
+            final long delta = value - lastEncoderValue[m.robotPortIndex];
+            lastEncoderValue[m.robotPortIndex] = value;
+
+            ProgramInterface.encoderChannels[m.robotPortIndex].distance += delta;
+            if (deltaTime > 0.) {
+                ProgramInterface.encoderChannels[m.robotPortIndex].rate = delta / deltaTime;
+            }
+        }
+        for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
+            var status = ProgramInterface.canMotorControllerChannels[m.canId].status;
+
+            long value = getFeedback(m.sensorFeedbackMessageDataIndex);
+            long delta = value - lastCANSensorValue[m.canId];
+            lastCANSensorValue[m.canId] = value;
+
+            status.sensorPosition += delta;
+            if (deltaTime > 0.) {
+                status.sensorVelocity = delta / deltaTime;
+            }
+        }
+        for (PortMapping m : DIGITAL_CHANNELS) {
+            ProgramInterface.digitalChannels[m.robotPortIndex] =
+                    getFeedback(m.messageDataIndex) > 0;
+        }
+        for (PortMapping m : ANALOG_CHANNELS) {
+            ProgramInterface.analogChannels[m.robotPortIndex] =
+                    getFeedback(m.messageDataIndex) * 5.0 / 1024.0;
+        }
+        for (int j = 0; j < NUM_JOYSTICK; ++j) {
+            for (int a = 0; a < BASE_AXES_PER_JOYSTICK; ++a) {
+                DriverStationSim.setJoystickAxis(
+                        j,
+                        a,
+                        getFeedback(j * BASE_AXES_PER_JOYSTICK + a + BASE_AXIS_START) / 100.0);
+            }
+            for (int a = 0; a < ADDITIONAL_AXES_PER_JOYSTICK; ++a) {
+                DriverStationSim.setJoystickAxis(
+                        j,
+                        a + BASE_AXES_PER_JOYSTICK,
+                        getFeedback(j * ADDITIONAL_AXES_PER_JOYSTICK + a + ADDITIONAL_AXIS_START)
+                                / 100.0);
+            }
+            final int denseButtonState = getFeedback(j + JOYSTICK_BUTTON_START);
+            DriverStationSim.setJoystickButtons(j, denseButtonState);
+        }
+
+        DriverStationSim.notifyNewData();
+
+        return Optional.of(new StepResult(false, deltaTime));
     }
 
-    public void step() throws SimulationResetException {
+    @Override
+    public StepResult step() {
         while (true) {
             if (simulationTime == 0) {
                 startTime = System.currentTimeMillis();
             }
-            boolean newData = false;
+            Optional<StepResult> stepResult = Optional.empty();
             try {
-                newData = process();
+                stepResult = process();
             } catch (Exception e) {
                 e.printStackTrace();
                 LoggerExceptionUtils.logException(e);
@@ -397,7 +373,7 @@ public class VrConnector implements SimulatorInterface {
                 // Wait for a connection to the simulator before starting to run the robot code.
                 continue;
             }
-            if (!newData) {
+            if (stepResult.isEmpty()) {
                 continue;
             }
             if (!started) {
@@ -414,9 +390,9 @@ public class VrConnector implements SimulatorInterface {
             }
             if (resetCounter != lastResetCounter) {
                 lastResetCounter = resetCounter;
-                throw new SimulationResetException();
+                return new StepResult(true, stepResult.orElseThrow().deltaTime());
             } else {
-                return;
+                return stepResult.orElseThrow();
             }
         }
     }

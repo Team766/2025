@@ -3,8 +3,13 @@ package com.team766.simulator;
 import com.team766.hal.BeaconReader;
 import edu.wpi.first.wpilibj.simulation.SimHooks;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class ProgramInterface {
+    public interface SensorCallback {
+        void run(double deltaTime);
+    }
+
     static {
         resetSimulationTime();
     }
@@ -21,6 +26,9 @@ public class ProgramInterface {
             SimHooks.stepTiming(deltaSeconds);
         }
     }
+
+    public static ArrayList<Runnable> motorUpdates = new ArrayList<>();
+    public static ArrayList<SensorCallback> sensorUpdates = new ArrayList<>();
 
     public static final double[] pwmChannels = new double[20];
 

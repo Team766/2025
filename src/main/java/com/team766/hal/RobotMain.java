@@ -6,7 +6,6 @@ import com.team766.hal.simulator.VrConnector;
 import com.team766.hal.wpilib.WPIRobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.simulator.ProgramInterface;
-import com.team766.simulator.SimulationResetException;
 import com.team766.simulator.SimulatorInterface;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -201,26 +200,25 @@ public class RobotMain extends LoggedRobot {
 
     @Override
     public void simulationInit() {
-        for (var cb : ProgramInterface.motorUpdates) {
-            cb.run();
-        }
         try {
             simulator = new VrConnector();
         } catch (IOException ex) {
             throw new RuntimeException("Error initializing communication with 3d Simulator", ex);
         }
-        // TODO: RoboRioSim.setVInVoltage();
-        for (var cb : ProgramInterface.sensorUpdates) {
-            cb.run();
-        }
     }
 
     @Override
     public void simulationPeriodic() {
-        try {
-            simulator.step();
-        } catch (SimulationResetException e) {
+        for (var cb : ProgramInterface.motorUpdates) {
+            cb.run();
+        }
+        var stepResult = simulator.step();
+        if (stepResult.simWasReset()) {
             robot.resetAutonomousMode("simulation reset");
+        }
+        // TODO: RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage());
+        for (var cb : ProgramInterface.sensorUpdates) {
+            cb.run(stepResult.deltaTime());
         }
     }
 }

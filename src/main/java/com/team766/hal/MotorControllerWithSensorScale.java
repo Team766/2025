@@ -141,4 +141,14 @@ public class MotorControllerWithSensorScale implements MotorController {
     public void set(final double power) {
         delegate.set(power);
     }
+
+    @Override
+    public void simulationMotorUpdate() {
+        delegate.simulationMotorUpdate();
+    }
+
+    @Override
+    public void simulationSensorUpdate(double deltaTime) {
+        delegate.simulationSensorUpdate(deltaTime);
+    }
 }

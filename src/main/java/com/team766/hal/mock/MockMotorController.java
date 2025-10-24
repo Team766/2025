@@ -99,4 +99,10 @@ public class MockMotorController implements MotorController {
 
     @Override
     public void setClosedLoopRamp(double secondsFromNeutralToFull) {}
+
+    @Override
+    public void simulationMotorUpdate() {}
+
+    @Override
+    public void simulationSensorUpdate(double deltaTime) {}
 }

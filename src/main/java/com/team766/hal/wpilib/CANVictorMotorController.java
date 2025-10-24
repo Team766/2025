@@ -10,6 +10,8 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
+import com.team766.simulator.ProgramInterface;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 
 public class CANVictorMotorController extends BaseCTREMotorController implements MotorController {
 
@@ -179,5 +181,17 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
     @Override
     public void restoreFactoryDefault() {
         errorCodeToException(ExceptionTarget.LOG, m_device.configFactoryDefault());
+    }
+
+    @Override
+    public void simulationMotorUpdate() {
+        ProgramInterface.canMotorControllerChannels[m_device.getDeviceID()].command.percentOutput =
+                m_device.getSimCollection().getMotorOutputLeadVoltage()
+                        / RoboRioSim.getVInVoltage();
+    }
+
+    @Override
+    public void simulationSensorUpdate(double deltaTime) {
+        m_device.getSimCollection().setBusVoltage(RoboRioSim.getVInVoltage());
     }
 }
