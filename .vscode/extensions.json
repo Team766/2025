@@ -1,4 +1,5 @@
 {
+    // If you add extensions here, consider also adding them in devcontainer.json
     "recommendations": [
         "richardwillis.vscode-spotless-gradle",
         "redhat.java"
