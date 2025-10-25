@@ -18,14 +18,18 @@ public class OI_T extends RuleEngine {
         addRule("RUN_LEFT_MOTOR", 
             leftJoystick.isAxisMoved(InputConstants.AXIS_FORWARD_BACKWARD), 
             ONCE_AND_HOLD, 
-            Set.of(drive), 
-            () -> {drive.move_left(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));});
+            Set.of(drive) , 
+            () -> {
+            drive.move_left(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));
+            });
         
         addRule("RUN_RIGHT_MOTOR", 
             rightJoystick.isAxisMoved(InputConstants.AXIS_FORWARD_BACKWARD), 
             ONCE_AND_HOLD, 
-            Set.of(drive), 
-            () -> {drive.move_right(rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));});
+            Set.of(drive) , 
+            () -> {
+            drive.move_right(rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));
+            });
 
     }
 }
