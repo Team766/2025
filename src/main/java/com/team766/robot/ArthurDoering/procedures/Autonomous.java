@@ -9,20 +9,22 @@ public class Autonomous extends Procedure{
     private Drive drive;
     private Shooter shooter;
 
-    public forward(Autonomous myDrive){
+    public void forward(Autonomous myDrive){
         drive = reserve(myDrive);
     }
 
-    public shoot(Autonomous myShooter){
+    public void shoot(Autonomous myShooter){
         shooter = reserve(myShooter);
     }
 
     public void run(Context context){
-        drive.setMotorPower(1);
+        drive.moveLeft(1);
+        drive.moveRight(1);
         context.waitForSeconds(5);
-        drive.setMotorPower(0);
-        shooter.setMotorPower(1);
+        drive.moveLeft(0);
+        drive.moveRight(0);
+        shooter.setShooterSpeed(1);
         context.waitForSeconds(1);
-        shooter.setMotorPower(0);
+        shooter.setShooterSpeed(0);
     }
 }

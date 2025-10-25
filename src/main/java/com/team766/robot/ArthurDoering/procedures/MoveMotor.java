@@ -7,13 +7,13 @@ import com.team766.robot.ArthurDoering.mechanisms.MovingMotor;
 public class MoveMotor extends Procedure{
     private MovingMotor motor;
 
-    public Move(MoveMotor myMotor){
+    public void Move(Autonomous myMotor){
         motor = reserve(myMotor);
     }
 
     public void run(Context context){
-        motor.move(1);
+        motor.set(1);
         context.waitForSeconds(5);
-        motor.move(0);
+        motor.set(0);
     }
 }

@@ -87,7 +87,7 @@ public abstract class RobotProvider {
         }
     }
 
-    public MotorController getMotor(final String configName) {
+    public com.team766.simulator.elements.MotorController getMotor(final String configName) {
         final String encoderConfigName = configName + ".encoder";
         final String analogInputConfigName = configName + ".analogInput";
         final ControlInputReader sensor =

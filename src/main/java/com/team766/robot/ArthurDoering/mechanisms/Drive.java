@@ -1,22 +1,24 @@
 package com.team766.robot.ArthurDoering.mechanisms;
 
 import com.team766.framework.MechanismWithStatus;
+import com.team766.framework.Status;
+import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.simulator.elements.MotorController;
 
-public class Drive extends MechanismWithStatus<drive.DriveStatus{
+
+public class Drive extends MechanismWithStatus<Drive.DriveStatus>{
     
-    MotorController leftMotor = RobotProvider.instance.getMotor("LeftMotor");
-    MotorController rightMotor = RobotProvider.instance.getMotor("RightMotor");
+    MotorController leftMotor = (MotorController) RobotProvider.instance.getMotor("leftMotor");
+    MotorController rightMotor = (MotorController) RobotProvider.instance.getMotor("rightMotor");
     public record DriveStatus(double pos_leftMotor, double pos_rightMotor) implements Status {}
 
     public Drive() {
         
     }
-    public void move_left(double motorPower) {
+    public void moveLeft(double motorPower) {
         leftMotor.set(motorPower);
     }
-    public void move_right(double motorPower) {
+    public void moveRight(double motorPower) {
         rightMotor.set(motorPower);
     }
     protected DriveStatus updateStatus() {

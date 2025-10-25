@@ -5,21 +5,20 @@ import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
-public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStatus> {
+public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStatus>{
 
     public MovingMotor(){
     }
 
-    MotorController motor = RobotProvider.instance.getMotor(configName:"motor");
+    MotorController motor = (MotorController) RobotProvider.instance.getMotor("motor");
     public record MovingMotorStatus(double currentPosition) implements Status{
     }
 
-    public void setMotorPower(double power){
+    public void set(double power){
         motor.set(power);
     }
 
     protected MovingMotorStatus updateStatus(){
-        return new MovingMotorStatus(0);
-        motor.getSensorPosition();
+        return new MovingMotorStatus(motor.getSensorPosition());
     }
 }
