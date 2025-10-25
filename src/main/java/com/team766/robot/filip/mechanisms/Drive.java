@@ -1,5 +1,4 @@
 
-<<<<<<< HEAD
 package com.team766.robot.filip.mechanisms;
 
 import com.team766.framework.MechanismWithStatus;
@@ -26,5 +25,3 @@ public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
         return new DriveStatus(motor_left.getSensorPosition(), motor_right.getSensorPosition());
     }
 }
-=======
->>>>>>> ab4bf5a61aef46c8ad4c1210195334c111e4a8b8
