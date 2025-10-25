@@ -1,10 +1,8 @@
-//THIS IS THE TANK DRIVE OI FILE
 
 package com.team766.robot.Kevan;
 import java.util.Set;
 
 import static com.team766.framework.RulePersistence.*;
-import com.team766.framework.RuleEngine;
 import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
