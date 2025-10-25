@@ -18,9 +18,9 @@ public class Autonomous extends Procedure {
         drive.move_straight(1);
         context.waitForSeconds(4);
         drive.move_straight(0);
-        shooter.move(0.5);
+        shooter.SetShooterSpeed(0.5);
         context.waitForSeconds(2);
-        shooter.move(0);
+        shooter.SetShooterSpeed(0);
 
     }
     
