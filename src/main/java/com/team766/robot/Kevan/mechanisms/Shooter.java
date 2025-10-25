@@ -14,7 +14,7 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
     }
     public Shooter() {}
     
-    public void move(double motorPower) {
+    public void SetShooterSpeed(double motorPower) {
         shooter_motor.set(motorPower);
     }
     protected ShooterStatus updateStatus() {
