@@ -35,18 +35,18 @@ public class Robot extends RuleEngine {
     addRule("Yellow for Cone"
         button1.whenButton();
         ONCE_AND_HOLD,
-        set.of(ledString)
+        _candle,
     )
     addRule("Purple for Cube"
         button2.whenButton();
         ONCE_AND_HOLD,
-        set.of(ledString),
+        _candle,
         () -> {ledString.setLEDs(128, 0, 128, 0, 0, 8);}
     )
     addRule("Rainbow for Defense"
         button3.whenButton(),
         ONCE_AND_HOLD,
-        set.of(RainbowAnimation),
+        anim,
         () -> {RainbowAnimation anim = new RainbowAnimation();
         _candle.animate(anim);}
     )
