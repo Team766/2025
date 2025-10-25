@@ -20,7 +20,7 @@ import com.team766.common.constants.InputConstants;
 import com.tean766.framework.JoystickReader;;
 
 
-public class Robot extends TimedRobot, RuleEngine {
+public class Robot extends RuleEngine {
 
 
     JoystickReader button1 = RobotProvider.instance.getButton(1);
