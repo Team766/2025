@@ -1,19 +1,19 @@
 package com.team766.robot.Kevan.CANdle;
-import static com.team766.framework.RulePersistence.*;
 import java.util.Set;
+import static com.team766.framework.RulePersistence.*;
 
 import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.common.mechanisms.LEDString;
+import com.team766.robot.common.constants.ColorConstants;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.RainbowAnimation;
-import com.team766.robot.common.constants.ColorConstants;
 
 public class CapstoneLights extends RuleGroup {
     
     private final LEDString ledString  = new LEDString("LEDs");
-    private final LEDString.Segment ledStringSegment = ledString.makeSegment(0, 8);
+    private final LEDString.Segment ledStringSegment = ledString.makeSegment(0, 7);
     
     public CapstoneLights() {
         
