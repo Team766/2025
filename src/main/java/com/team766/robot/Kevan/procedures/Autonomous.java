@@ -23,5 +23,4 @@ public class Autonomous extends Procedure {
         shooter.SetShooterSpeed(0);
 
     }
-    
 }
