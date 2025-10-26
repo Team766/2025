@@ -1,17 +1,14 @@
-//THIS IS THE ARCADE DRIVE OI FILE
-
 package com.team766.robot.Kevan;
 import java.util.Set;
-
 import static com.team766.framework.RulePersistence.*;
-import com.team766.framework.RuleEngine;
+
+import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.Kevan.mechanisms.Drive;
-//import com.team766.robot.Kevan.mechanisms.MovingMotor;
 import com.team766.robot.common.constants.InputConstants;
 
-public class OI_A extends RuleEngine {
+public class OI_A extends RuleGroup {
     public OI_A(Drive drive) {
         final JoystickReader joystick1 = RobotProvider.instance.getJoystick(0);
         addRule("handle_axis_moved", 

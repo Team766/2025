@@ -6,6 +6,7 @@ import com.team766.robot.Kevan.mechanisms.MovingMotor;
 
 public class MoveMotor extends Procedure {
     private MovingMotor motor;
+    
     public MoveMotor(MovingMotor myMotor) {
         motor = reserve(myMotor);
     
