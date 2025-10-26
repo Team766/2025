@@ -36,7 +36,5 @@ public class CapstoneLights extends RuleGroup{
         () -> {Animation rainbowAnim = new RainbowAnimation();
                     segment.animate(rainbowAnim);}
         );
-        
-        addRule(asdlkf)
     }
 }
