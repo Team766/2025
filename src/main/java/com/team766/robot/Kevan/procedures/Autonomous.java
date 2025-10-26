@@ -5,7 +5,7 @@ import com.team766.framework.Procedure;
 import com.team766.robot.Kevan.mechanisms.Drive;
 import com.team766.robot.Kevan.mechanisms.Shooter;
 
-public class Autonomous extends Procedure {
+public abstract class Autonomous extends Procedure {
     private Drive drive;
     private Shooter shooter;
     
