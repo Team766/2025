@@ -13,11 +13,11 @@ import com.team766.robot.common.constants.ColorConstants;
 public class CapstoneLights extends RuleGroup {
     
     private final LEDString ledString  = new LEDString("LEDs");
-    private final LEDString.Segment ledStringSegment = ledString.makeSegment(0, 512);
+    private final LEDString.Segment ledStringSegment = ledString.makeSegment(0, 8);
     
     public CapstoneLights() {
         
-        final Animation rainbowAnim = new RainbowAnimation();
+        final Animation rainbowAnim = new RainbowAnimation(1, 0.5, 8, false, 0);
         final JoystickReader button1 = RobotProvider.instance.getJoystick(1);
         final JoystickReader button2 = RobotProvider.instance.getJoystick(2);
         final JoystickReader button3 = RobotProvider.instance.getJoystick(3);
