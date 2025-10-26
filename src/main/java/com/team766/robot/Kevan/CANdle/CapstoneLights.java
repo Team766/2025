@@ -5,10 +5,10 @@ import java.util.Set;
 import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
+import com.team766.robot.common.mechanisms.LEDString;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.team766.robot.common.constants.ColorConstants;
-import com.team766.robot.common.mechanisms.LEDString;
 
 public class CapstoneLights extends RuleGroup {
     
