@@ -1,4 +1,4 @@
-package com.team766.robot.ArthurDoering.mechanisms;
+package com.team766.robot.ArthurDoering.OI;
 
 import static com.team766.framework.RulePersistence.*;
 
@@ -6,6 +6,7 @@ import java.util.Set;
 import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
+import com.team766.robot.ArthurDoering.mechanisms.Drive;
 import com.team766.robot.common.constants.InputConstants;
 
 public class OI_T extends RuleGroup {
