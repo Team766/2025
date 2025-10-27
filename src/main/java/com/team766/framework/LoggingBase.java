@@ -1,9 +1,9 @@
 package com.team766.framework;
 
 import com.google.errorprone.annotations.FormatMethod;
-import com.team766.logging.Category;
 import com.team766.logging.Logger;
-import com.team766.logging.Severity;
+import java.util.Locale.Category;
+import javax.print.attribute.standard.Severity;
 
 public interface LoggingBase {
     Category getLoggerCategory();
