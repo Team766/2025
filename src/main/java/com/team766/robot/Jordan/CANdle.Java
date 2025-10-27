@@ -21,30 +21,27 @@ public class CANdle extends RuleEngine {
     JoystickReader button2 = RobotProvider.instance.getJoystick(INDEX)
     JoystickReader button3 = RobotProvider.instance.getJoystick(INDEX)
 
-    addRule ("Cube",
-        joystickLeft.whenButton(button1),
-        ONCE, 
-        () -> {
-            segment.setLEDs(128, 255, 0)
-        });
-        
-    addRule ("Cone",
-        joystickLeft.whenButton(button2),
-        ONCE,
-        () -> {
-            segment.setLEDs(0, 0, 225)
-        });
-       
-    addRule ("Defense",
-        joystickLeft.whenButton(button3),
-        ONCE,
-        segment,
-        () -> {
-            Animation rainbowAnim = new RainbowAnimation();
-            segment.animate(rainbowAnim);
-        });
-}
-       
+    public OI (){
 
- 
-  
+        addRule ("Cube",
+            joystickLeft.whenButton(button1),
+            ONCE,
+            segment, 
+            () -> {segment.setColor(ColorConstants.PURPLE)});
+        
+        addRule ("Cone",
+            joystickLeft.whenButton(button2),
+            ONCE,
+            segment,
+            () -> {segment.setColor(ColorConstants.YELLOW)});
+       
+        addRule ("Defense",
+            joystickLeft.whenButton(button3),
+            ONCE,
+            segment,
+            () -> {
+                Animation rainbowAnim = new RainbowAnimation();
+                segment.animate(rainbowAnim);
+            });
+    }
+}
