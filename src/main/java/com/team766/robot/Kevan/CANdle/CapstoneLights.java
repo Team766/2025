@@ -17,25 +17,25 @@ public class CapstoneLights extends RuleGroup {
     
     public CapstoneLights() {
         
-        final Animation rainbowAnim = new RainbowAnimation(1, 0.5, 8, false, 0);
-        final JoystickReader leftButton = RobotProvider.instance.getJoystick(1);
-        final JoystickReader button2 = RobotProvider.instance.getJoystick(2);
-        final JoystickReader button3 = RobotProvider.instance.getJoystick(3);
+        final Animation rainbowAnim = new RainbowAnimation();
+        final JoystickReader buttonCone = RobotProvider.instance.getJoystick(1);
+        final JoystickReader buttonCube = RobotProvider.instance.getJoystick(2);
+        final JoystickReader buttonDef = RobotProvider.instance.getJoystick(3);
 
         addRule("Yellow Lights for Cone",
-                leftButton.whenButton(1),
+                buttonCone.whenButton(1),
                 ONCE_AND_HOLD,
                 Set.of(ledString),
                 () -> {ledStringSegment.setColor(ColorConstants.YELLOW);});
 
         addRule("Purple Lights for Cube",
-                button2.whenButton(2),
+                buttonCube.whenButton(2),
                 ONCE_AND_HOLD,
                 Set.of(ledString),
                 () -> {ledStringSegment.setColor(ColorConstants.PURPLE);});
 
         addRule("Rainbow Lights for Defense",
-                button3.whenButton(3),
+                buttonDef.whenButton(3),
                 ONCE_AND_HOLD,
                 Set.of(ledString),
                 () -> {ledStringSegment.animate(rainbowAnim);});
