@@ -57,7 +57,10 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
     }
 
     public Wrist() {
-        motor = (MotorController) RobotProvider.instance.getMotor("WristMotor"); // Replace with actual motor name
+        motor =
+                (MotorController)
+                        RobotProvider.instance.getMotor(
+                                "WristMotor"); // Replace with actual motor name
 
         ffGain =
                 ConfigFileReader.instance.getDouble(

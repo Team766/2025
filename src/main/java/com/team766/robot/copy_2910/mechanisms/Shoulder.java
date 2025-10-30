@@ -59,11 +59,13 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
 
     public Shoulder() {
         leftMotor =
-                (MotorController) RobotProvider.instance.getMotor(
-                        "LeftShoulderMotor"); // Replace with actual motor name
+                (MotorController)
+                        RobotProvider.instance.getMotor(
+                                "LeftShoulderMotor"); // Replace with actual motor name
         rightMotor =
-                (MotorController) RobotProvider.instance.getMotor(
-                        "RightShoulderMotor"); // Replace with actual motor name
+                (MotorController)
+                        RobotProvider.instance.getMotor(
+                                "RightShoulderMotor"); // Replace with actual motor name
 
         rightMotor.follow(leftMotor);
 

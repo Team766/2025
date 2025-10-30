@@ -33,7 +33,8 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
         leftMotor = (MotorController) RobotProvider.instance.getMotor("INTAKE.leftIntakeMotor");
         rightMotor = (MotorController) RobotProvider.instance.getMotor("INTAKE.rightIntakeMotor");
 
-        centerAlgaeMotor = (MotorController) RobotProvider.instance.getMotor("INTAKE.centerAlgaeMotor");
+        centerAlgaeMotor =
+                (MotorController) RobotProvider.instance.getMotor("INTAKE.centerAlgaeMotor");
     }
 
     public record IntakeStatus(
