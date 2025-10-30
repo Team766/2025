@@ -8,14 +8,16 @@ import com.team766.hal.RobotProvider;
 public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
 
     MotorController shooter_motor = RobotProvider.instance.getMotor("shooter_motor");
-    public record ShooterStatus(double currentPosition) implements Status {
-    }
+
+    public record ShooterStatus(double currentPosition) implements Status {}
+
     public Shooter() {}
-    
+
     public void SetShooterSpeed(double motorPower) {
         shooter_motor.set(motorPower);
     }
+
     protected ShooterStatus updateStatus() {
         return new ShooterStatus(0);
     }
- }
+}

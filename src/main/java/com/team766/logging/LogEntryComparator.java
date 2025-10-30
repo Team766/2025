@@ -3,7 +3,6 @@ package com.team766.logging;
 import java.util.Arrays;
 import java.util.Comparator;
 
-
 class LogEntryComparator implements Comparator<LogEntry> {
     // This LogEntry should be ordered after any normal LogEntries.
     // It is used to signal to the log writing thread that it should exit.

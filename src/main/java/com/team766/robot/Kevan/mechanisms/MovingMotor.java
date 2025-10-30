@@ -6,22 +6,22 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
 public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStatus> {
-    
-    public MovingMotor() {
 
-    }
+    public MovingMotor() {}
+
     MotorController motor = RobotProvider.instance.getMotor("mainMotor");
-    
+
     public void move(double motorPower) {
         motor.set(motorPower);
     }
-    public record MovingMotorStatus(double currentPosition) implements Status {
 
-    }
+    public record MovingMotorStatus(double currentPosition) implements Status {}
+
     public void stop() {
-        motor.move(0);
+        motor.set(0);
     }
+
     protected MovingMotorStatus updateStatus() {
         return new MovingMotorStatus(motor.getSensorPosition());
     }
- }
+}

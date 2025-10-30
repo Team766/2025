@@ -125,6 +125,4 @@ public interface MotorController extends BasicMotorController {
     void setOpenLoopRamp(double secondsFromNeutralToFull);
 
     void setClosedLoopRamp(double secondsFromNeutralToFull);
-
-    void move(int power);
 }

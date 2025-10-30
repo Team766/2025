@@ -11,13 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.Locale.Category;
-import javax.print.attribute.standard.Severity;
 import java.util.concurrent.atomic.AtomicReference;
-import com.team766.logging.LogEntryComparator;
-import com.team766.logging.LogEntryRenderer;
-import org.littletonrobotics.junction.LogTable.LogValue;
-import com.team766.logging.LogWriter;
 
 public final class Logger {
 

@@ -8,7 +8,7 @@ import com.team766.robot.Kevan.mechanisms.Shooter;
 public class Autonomous extends Procedure {
     private Drive drive;
     private Shooter shooter;
-    
+
     public Autonomous(Drive myDrive, Shooter myShooter) {
         drive = reserve(myDrive);
         shooter = reserve(myShooter);
@@ -22,5 +22,4 @@ public class Autonomous extends Procedure {
         context.waitForSeconds(2);
         shooter.SetShooterSpeed(0);
     }
-
 }
