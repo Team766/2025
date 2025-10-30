@@ -139,14 +139,19 @@ public class OI extends RuleEngine {
                         () ->
                                 switch (placementPosition) {
                                     case NONE -> null;
-                                    case LOW_NODE -> new ExtendWristvatorToLow(
-                                            shoulder, elevator, wrist);
-                                    case MID_NODE -> new ExtendWristvatorToMid(
-                                            shoulder, elevator, wrist);
-                                    case HIGH_NODE -> new ExtendWristvatorToHigh(
-                                            shoulder, elevator, wrist);
-                                    case HUMAN_PLAYER -> new ExtendToHumanWithIntake(
-                                            gamePieceType, shoulder, elevator, wrist, intake);
+                                    case LOW_NODE ->
+                                            new ExtendWristvatorToLow(shoulder, elevator, wrist);
+                                    case MID_NODE ->
+                                            new ExtendWristvatorToMid(shoulder, elevator, wrist);
+                                    case HIGH_NODE ->
+                                            new ExtendWristvatorToHigh(shoulder, elevator, wrist);
+                                    case HUMAN_PLAYER ->
+                                            new ExtendToHumanWithIntake(
+                                                    gamePieceType,
+                                                    shoulder,
+                                                    elevator,
+                                                    wrist,
+                                                    intake);
                                 })
                 .whenTriggering(
                         new RuleGroup() {

@@ -56,8 +56,10 @@ public class Lights extends RuleEngine {
             case HIGH_NODE -> segment.setColor(Color.kOrangeRed);
             case HUMAN_PLAYER -> setLightsForGamePiece(gamePieceType);
             default ->
-            // warn, ignore
-            log(Severity.WARNING, "Unexpected placement position: " + placementPosition.toString());
+                    // warn, ignore
+                    log(
+                            Severity.WARNING,
+                            "Unexpected placement position: " + placementPosition.toString());
         }
     }
 

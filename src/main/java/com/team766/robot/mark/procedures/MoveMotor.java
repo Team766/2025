@@ -1,10 +1,12 @@
 package com.team766.robot.mark.procedures;
+
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.mark.mechanisms.MovingMotor;
 
 public class MoveMotor extends Procedure {
     private MovingMotor motor;
+
     public MoveMotor(MovingMotor my_motor) {
         motor = reserve(my_motor);
     }

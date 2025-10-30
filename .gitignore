@@ -189,3 +189,6 @@ compile_commands.json
 
 # Don't commit the cache of downloaded sim files
 /buildSim/
+# Nix-specific
+.gradle-nix/
+.direnv/

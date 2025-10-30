@@ -16,7 +16,7 @@ public class OI extends RuleEngine {
         final JoystickReader joystick0 = RobotProvider.instance.getJoystick(0);
         final JoystickReader joystick1 = RobotProvider.instance.getJoystick(1);
         final JoystickReader joystick2 = RobotProvider.instance.getJoystick(2);
-        
+
         // Add driver control rules here.
     }
 
