@@ -5,6 +5,7 @@ import static com.team766.framework.RulePersistence.*;
 import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
+import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.LEDString;
 import com.team766.robot.common.constants.ColorConstants;
 import com.ctre.phoenix.led.Animation;
@@ -18,24 +19,23 @@ public class CapstoneLights extends RuleGroup {
     public CapstoneLights() {
         
         final Animation rainbowAnim = new RainbowAnimation();
-        final JoystickReader buttonCone = RobotProvider.instance.getJoystick(1);
-        final JoystickReader buttonCube = RobotProvider.instance.getJoystick(2);
-        final JoystickReader buttonDef = RobotProvider.instance.getJoystick(3);
+        final JoystickReader gamePad = RobotProvider.instance.getJoystick(1);
 
-        addRule("Yellow Lights for Cone",
-                buttonCone.whenButton(1),
+
+        addRule("Yellow Lights for Cone Right",
+                gamePad.whenButton(InputConstants.GAMEPAD_DPAD_RIGHT),
                 ONCE_AND_HOLD,
                 Set.of(ledString),
                 () -> {ledStringSegment.setColor(ColorConstants.YELLOW);});
 
-        addRule("Purple Lights for Cube",
-                buttonCube.whenButton(2),
+        addRule("Purple Lights for Cube Left",
+                gamePad.whenButton(InputConstants.GAMEPAD_DPAD_LEFT),
                 ONCE_AND_HOLD,
                 Set.of(ledString),
                 () -> {ledStringSegment.setColor(ColorConstants.PURPLE);});
 
-        addRule("Rainbow Lights for Defense",
-                buttonDef.whenButton(3),
+        addRule("Rainbow Lights for Defense Down",
+                gamePad.whenButton(InputConstants.GAMEPAD_DPAD_DOWN),
                 ONCE_AND_HOLD,
                 Set.of(ledString),
                 () -> {ledStringSegment.animate(rainbowAnim);});
