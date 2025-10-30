@@ -7,13 +7,13 @@ import com.team766.config.ConfigFileReader;
 import com.team766.framework.MultiFacetedMechanism;
 import com.team766.framework.NoReservationRequired;
 import com.team766.library.ValueProvider;
-import jdk.jfr.Category;
 import com.team766.logging.Logger;
-import javax.print.attribute.standard.Severity;
+import com.team766.logging.Severity;
 import com.team766.math.Maths;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import java.util.ArrayList;
+import com.team766.logging.Category;
 
 public class LEDString extends MultiFacetedMechanism {
     private final CANdle candle;
