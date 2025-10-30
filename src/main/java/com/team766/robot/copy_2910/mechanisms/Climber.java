@@ -12,7 +12,7 @@ public class Climber extends MechanismWithStatus<Climber.ClimberStatus> {
     public static record ClimberStatus() implements Status {}
 
     public Climber() {
-        climberMotor = RobotProvider.instance.getMotor("ClimberMotor");
+        climberMotor = (MotorController) RobotProvider.instance.getMotor("ClimberMotor");
     }
 
     public void setClimberSpeed(double speed) {

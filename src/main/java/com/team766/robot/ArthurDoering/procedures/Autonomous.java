@@ -5,19 +5,19 @@ import com.team766.framework.Procedure;
 import com.team766.robot.ArthurDoering.mechanisms.Drive;
 import com.team766.robot.ArthurDoering.mechanisms.Shooter;
 
-public class Autonomous extends Procedure{
+public class Autonomous extends Procedure {
     private Drive drive;
     private Shooter shooter;
 
-    public void forward(Autonomous myDrive){
+    public void forward(Autonomous myDrive) {
         drive = reserve(myDrive);
     }
 
-    public void shoot(Autonomous myShooter){
+    public void shoot(Autonomous myShooter) {
         shooter = reserve(myShooter);
     }
 
-    public void run(Context context){
+    public void run(Context context) {
         drive.moveLeft(1);
         drive.moveRight(1);
         context.waitForSeconds(5);

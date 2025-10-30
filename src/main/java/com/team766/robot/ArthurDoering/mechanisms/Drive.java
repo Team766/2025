@@ -5,15 +5,15 @@ import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
+public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
 
-public class Drive extends MechanismWithStatus<Drive.DriveStatus>{
-    
     MotorController leftMotor = (MotorController) RobotProvider.instance.getMotor("leftMotor");
     MotorController rightMotor = (MotorController) RobotProvider.instance.getMotor("rightMotor");
+
     public record DriveStatus(double pos_leftMotor, double pos_rightMotor) implements Status {}
 
     public Drive() {}
-    
+
     public void moveLeft(double motorPower) {
         leftMotor.set(motorPower);
     }

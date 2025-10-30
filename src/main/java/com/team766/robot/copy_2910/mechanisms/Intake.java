@@ -30,10 +30,10 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
                 RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.front_center");
         backCenterCANRange = RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.back_center");
 
-        leftMotor = RobotProvider.instance.getMotor("INTAKE.leftIntakeMotor");
-        rightMotor = RobotProvider.instance.getMotor("INTAKE.rightIntakeMotor");
+        leftMotor = (MotorController) RobotProvider.instance.getMotor("INTAKE.leftIntakeMotor");
+        rightMotor = (MotorController) RobotProvider.instance.getMotor("INTAKE.rightIntakeMotor");
 
-        centerAlgaeMotor = RobotProvider.instance.getMotor("INTAKE.centerAlgaeMotor");
+        centerAlgaeMotor = (MotorController) RobotProvider.instance.getMotor("INTAKE.centerAlgaeMotor");
     }
 
     public record IntakeStatus(

@@ -31,10 +31,10 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
 
     public Elevator() {
         elevatorMotorRight =
-                RobotProvider.instance.getMotor(
+                (MotorController) RobotProvider.instance.getMotor(
                         "ElevatorMotorRight"); // Replace with actual motor name
         elevatorMotorLeft =
-                RobotProvider.instance.getMotor(
+                (MotorController) RobotProvider.instance.getMotor(
                         "ElevatorMotorLeft"); // Replace with actual motor name
 
         // TODO: FIGURE OUT WHICH MOTOR NEEDS TO BE INVERTED
