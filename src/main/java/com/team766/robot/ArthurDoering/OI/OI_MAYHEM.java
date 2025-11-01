@@ -11,8 +11,8 @@ import com.team766.robot.ArthurDoering.mechanisms.Shooter;
 import com.team766.robot.common.constants.InputConstants;
 import java.util.Set;
 
-public class OI_T extends RuleGroup {
-    public OI_T(Drive drive, Intake intake, Shooter shoot) {
+public class OI_MAYHEM extends RuleGroup {
+    public OI_MAYHEM(Drive drive, Intake intake, Shooter shoot) {
         final JoystickReader gamepad = RobotProvider.instance.getJoystick(0);
         addRule(
                 "RUN_LEFT_MOTOR",
