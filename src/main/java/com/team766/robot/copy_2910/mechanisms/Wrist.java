@@ -52,7 +52,8 @@ public class Wrist extends MechanismWithStatus<Wrist.WristStatus> {
         ALGAE_SHOOT(0.643),
         STOW(0),
         MAXIMUM(50),
-        MINIMUM(-30);
+        MINIMUM(-30),
+        CLIMB(-11);
 
         private final double angle;
 

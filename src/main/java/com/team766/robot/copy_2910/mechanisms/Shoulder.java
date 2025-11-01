@@ -1,5 +1,6 @@
 package com.team766.robot.copy_2910.mechanisms;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
@@ -50,7 +51,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
         ALGAE_LOW(20.405),
         CORAL_GROUND(1),
         ALGAE_GROUND(4.119),
-        CLIMBER(28),
+        CLIMBER(100),
         STOW(0),
         MAXIMUM(100),
         MINIMUM(-10);
@@ -77,7 +78,8 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
         absoluteEncoder =
                 RobotProvider.instance.getEncoder(
                         "ShoulderEncoder"); // **ShoulderEncoder may not exist**
-
+        leftMotor.setNeutralMode(NeutralMode.Coast);
+        rightMotor.setNeutralMode(NeutralMode.Coast);
         // leftMotor.setInverted(true);
         // leftMotor.setInverted(true);
         rightMotor.follow(leftMotor);
@@ -102,6 +104,11 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
 
     public void setPosition(ShoulderPosition position) {
         setSetpoint(position.getPosition());
+    }
+
+    public void setBrakeMode() {
+        leftMotor.setNeutralMode(NeutralMode.Brake);
+        rightMotor.setNeutralMode(NeutralMode.Brake);
     }
 
     public void run() {

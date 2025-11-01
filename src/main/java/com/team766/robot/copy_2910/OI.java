@@ -2,6 +2,7 @@ package com.team766.robot.copy_2910;
 
 import static com.team766.framework.RulePersistence.ONCE;
 import static com.team766.framework.RulePersistence.ONCE_AND_HOLD;
+import static com.team766.framework.RulePersistence.REPEATEDLY;
 
 import com.team766.framework.Conditions;
 import com.team766.framework.RuleEngine;
@@ -10,6 +11,7 @@ import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
+import com.team766.robot.copy_2910.mechanisms.Climber;
 import com.team766.robot.copy_2910.mechanisms.Elevator;
 import com.team766.robot.copy_2910.mechanisms.Elevator.ElevatorPosition;
 import com.team766.robot.copy_2910.mechanisms.Intake;
@@ -39,6 +41,7 @@ public class OI extends RuleEngine {
             Wrist wrist,
             Elevator elevator,
             Shoulder shoulder,
+            Climber climber,
             Vision vision) {
 
         // final JoystickReader leftJoystick = RobotProvider.instance.getJoystick(0);
@@ -94,35 +97,30 @@ public class OI extends RuleEngine {
         */
         // CLIMBER
 
-        // addRule(
-        //                 "Enable Climber",
-        //                 boxopGamepad.whenButton(InputConstants.GAMEPAD_BACK_BUTTON),
-        //                 ONCE,
-        //                 Set.of(climber, wrist, elevator, shoulder),
-        //                 () -> {
-        //                     elevator.setPosition(
-        //                             Elevator.ElevatorPosition.STOW); // previously MAXIMUM
-        //                     wrist.setPosition(Wrist.WristPosition.ALGAE_LOW);
-        //                     climber.setClimberSpeed(0.5);
-        //                     shoulder.setPosition(Shoulder.ShoulderPosition.CLIMBER);
-        //                 }) // TODO: make sure whenTriggering is the right rule & not going to
-        // break
-        //         // anything
-        //         .whenTriggering(
-        //                 new RuleGroup() {
-        //                     {
-        //                         addRule(
-        //                                 "Move Climber",
-        //
-        // boxopGamepad.whenButton(InputConstants.GAMEPAD_DPAD_DOWN),
-        //                                 ONCE,
-        //                                 Set.of(climber, wrist, elevator, shoulder),
-        //                                 () -> {
-        //                                     climber.stop();
-        //                                     shoulder.setPosition(ShoulderPosition.CORAL_GROUND);
-        //                                 });
-        //                     }
-        //                 });
+        addRule(
+                "Enable Climber",
+                boxopGamepad.whenButton(InputConstants.GAMEPAD_START_BUTTON),
+                ONCE,
+                Set.of(climber, wrist, elevator, shoulder),
+                () -> {
+                    elevator.setPosition(Elevator.ElevatorPosition.STOW); // previously MAXIMUM
+                    wrist.setPosition(Wrist.WristPosition.CLIMB);
+                    climber.setClimberSpeed(0.5);
+                    shoulder.setPosition(Shoulder.ShoulderPosition.CLIMBER);
+                }); // TODO: make sure whenTriggering is the right rule
+
+        addRule(
+                "Move Climber",
+                () -> boxopGamepad.getPOV() == InputConstants.GAMEPAD_DPAD_DOWN,
+                ONCE,
+                Set.of(climber, wrist, elevator, shoulder),
+                () -> {
+                    climber.stop();
+                    elevator.setPosition(ElevatorPosition.CLIMBDOWN);
+                    shoulder.setBrakeMode();
+                    shoulder.setPosition(ShoulderPosition.CORAL_GROUND);
+                    wrist.setPosition(WristPosition.CORAL_GROUND);
+                });
 
         addRule(
                         "Toggle Coral or Algae Mode",

@@ -5,6 +5,7 @@ import com.team766.framework.RuleEngine;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
+import com.team766.robot.copy_2910.mechanisms.Climber;
 import com.team766.robot.copy_2910.mechanisms.Elevator;
 import com.team766.robot.copy_2910.mechanisms.Intake;
 import com.team766.robot.copy_2910.mechanisms.Shoulder;
@@ -19,7 +20,7 @@ public class Robot implements RobotConfigurator {
     private SwerveDrive drive;
     private Intake intake;
     private Vision vision;
-    // private Climber climber;
+    private Climber climber;
     private Elevator elevator;
     private Shoulder shoulder;
     private Wrist wrist;
@@ -29,7 +30,7 @@ public class Robot implements RobotConfigurator {
         SwerveConfig swerveConfig = new SwerveConfig().withDistanceBetweenWheels(0.533);
         drive = new SwerveDrive(swerveConfig);
         intake = new Intake();
-        // climber = new Climber();
+        climber = new Climber();
         elevator = new Elevator();
         vision = new Vision();
         shoulder = new Shoulder();
@@ -38,7 +39,7 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, intake, wrist, elevator, shoulder, vision);
+        return new OI(drive, intake, wrist, elevator, shoulder, climber, vision);
     }
 
     @Override

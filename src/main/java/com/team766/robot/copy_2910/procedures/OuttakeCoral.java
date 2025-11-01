@@ -16,7 +16,7 @@ public class OuttakeCoral extends Procedure {
     public void run(Context context) {
         intake.setLeft(1.5);
         intake.setRight(-1.5);
-        waitForStatusMatching(context, Intake.IntakeStatus.class, s -> !s.hasCoralToOuttake());
-        intake.stop();
+        // waitForStatusMatching(context, Intake.IntakeStatus.class, s -> !s.hasCoralToOuttake());
+        // intake.stop();
     }
 }

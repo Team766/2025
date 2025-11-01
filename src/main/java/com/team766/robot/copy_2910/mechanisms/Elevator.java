@@ -64,9 +64,10 @@ public class Elevator extends MechanismWithStatus<Elevator.ElevatorStatus> {
         ALGAE_HIGH(12),
         ALGAE_LOW(7),
         ALGAE_SHOOT(17.80),
-        CORAL_GROUND(-0.25),
+        CORAL_GROUND(-0.25), // -0.25
         ALGAE_GROUND(0.5),
         STOW(0.5),
+        CLIMBDOWN(3),
 
         READY(1), // Should be the default position and the ready position for vision so that it
         // can see the tag

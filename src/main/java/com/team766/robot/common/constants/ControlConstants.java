@@ -15,7 +15,7 @@ public class ControlConstants {
 
     // Exponent giving joystick curved power mapping for rotational movement
     // 1.0 for flight sticks
-    public static final double ROTATIONAL_CURVE_POWER = 0.25; // was 1.0
+    public static final double ROTATIONAL_CURVE_POWER = 1.0; // was 1.0
 
     /**
      * Translational velocity of robot that max joystick power controls in m/s
@@ -31,7 +31,7 @@ public class ControlConstants {
     /**
      * Rotational velocity of robot that max joystick power controls in rad/s
      */
-    public static final double MAX_ROTATIONAL_VELOCITY = 5.0;
+    public static final double MAX_ROTATIONAL_VELOCITY = 7.0; // was 5.0
 
     public static final double DEFAULT_ROTATION_THRESHOLD = 0.40;
 

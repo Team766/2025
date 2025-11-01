@@ -13,7 +13,7 @@ public class DriveStraight extends Procedure {
 
     @Override
     public void run(Context context) {
-        context.waitForSeconds(2);
+        // context.waitForSeconds(2);
         drive.controlRobotOriented(1, 0, 0);
         context.waitForSeconds(10);
         drive.controlRobotOriented(0, 0, 0);
