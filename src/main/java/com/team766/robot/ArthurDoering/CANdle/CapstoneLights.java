@@ -18,7 +18,7 @@ public class CapstoneLights extends RuleGroup {
         final JoystickReader gamepad = RobotProvider.instance.getJoystick(1);
         addRule(
                 "Cone",
-                gamepad.whenButton(InputConstants.GAMEPAD_DPAD_LEFT),
+                gamepad.whenButton(InputConstants.GAMEPAD_A_BUTTON),
                 ONCE_AND_HOLD,
                 Set.of(ledString),
                 () -> {
@@ -26,7 +26,7 @@ public class CapstoneLights extends RuleGroup {
                 });
         addRule(
                 "Cube",
-                gamepad.whenButton(InputConstants.GAMEPAD_DPAD_RIGHT),
+                gamepad.whenButton(InputConstants.GAMEPAD_B_BUTTON),
                 ONCE_AND_HOLD,
                 Set.of(ledString),
                 () -> {
@@ -34,7 +34,7 @@ public class CapstoneLights extends RuleGroup {
                 });
         addRule(
                 "Defense",
-                gamepad.whenButton(InputConstants.GAMEPAD_DPAD_DOWN),
+                gamepad.whenButton(InputConstants.GAMEPAD_Y_BUTTON),
                 ONCE_AND_HOLD,
                 Set.of(ledString),
                 () -> {

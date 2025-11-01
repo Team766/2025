@@ -6,29 +6,57 @@ import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.ArthurDoering.mechanisms.Drive;
+import com.team766.robot.ArthurDoering.mechanisms.Intake;
+import com.team766.robot.ArthurDoering.mechanisms.Shooter;
 import com.team766.robot.common.constants.InputConstants;
 import java.util.Set;
 
 public class OI_T extends RuleGroup {
-    public OI_T(Drive drive) {
-        final JoystickReader leftJoystick = RobotProvider.instance.getJoystick(0);
-        final JoystickReader rightJoystick = RobotProvider.instance.getJoystick(1);
+    public OI_T(Drive drive, Intake intake, Shooter shoot) {
+        final JoystickReader gamepad = RobotProvider.instance.getJoystick(0);
         addRule(
-                "Run_Left_MOTOR",
-                leftJoystick.whenAnyAxisMoved(InputConstants.AXIS_FORWARD_BACKWARD),
+                "RUN_LEFT_MOTOR",
+                gamepad.whenAxisMoved(InputConstants.GAMEPAD_LEFT_STICK_YAXIS),
                 ONCE_AND_HOLD,
                 Set.of(drive),
                 () -> {
-                    drive.moveLeft(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));
+                    drive.moveLeft(gamepad.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
                 });
 
         addRule(
-                "Run_Right_MOTOR",
-                rightJoystick.whenAnyAxisMoved(InputConstants.AXIS_FORWARD_BACKWARD),
+                "RUN_RIGHT_MOTOR",
+                gamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS),
                 ONCE_AND_HOLD,
                 Set.of(drive),
                 () -> {
-                    drive.moveRight(rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));
+                    drive.moveRight(gamepad.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
                 });
+        addRule(
+            "RUN_INTAKE",
+            gamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
+            ONCE_AND_HOLD,
+            Set.of(intake),
+            () -> {
+                intake.setIntakeSpeed(1);
+            })
+            .withFinishedTriggeringProcedure(
+                intake,
+                () -> {
+                    intake.setIntakeSpeed(0);
+                });
+        addRule(
+            "SHOOT_SET_POWER",
+            gamepad.whenButton(InputConstants.GAMEPAD_RIGHT_TRIGGER),
+            ONCE_AND_HOLD,
+            Set.of(shoot),
+            () -> {
+                shoot.setShooterSpeed(1);
+            })
+            .withFinishedTriggeringProcedure(
+                intake,
+                () -> {
+                    shoot.setShooterSpeed(0);
+                });
+        
     }
 }
