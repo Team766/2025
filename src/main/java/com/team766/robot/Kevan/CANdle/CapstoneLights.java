@@ -24,7 +24,7 @@ public class CapstoneLights extends RuleGroup {
 
         addRule(
                 "Yellow Lights for Cone Right",
-                gamePad.whenButton(InputConstants.GAMEPAD_DPAD_RIGHT),
+                gamePad.whenButton(InputConstants.GAMEPAD_A_BUTTON),
                 ONCE_AND_HOLD,
                 Set.of(ledString),
                 () -> {
@@ -33,7 +33,7 @@ public class CapstoneLights extends RuleGroup {
 
         addRule(
                 "Purple Lights for Cube Left",
-                gamePad.whenButton(InputConstants.GAMEPAD_DPAD_LEFT),
+                gamePad.whenButton(InputConstants.GAMEPAD_B_BUTTON),
                 ONCE_AND_HOLD,
                 Set.of(ledString),
                 () -> {
@@ -42,7 +42,7 @@ public class CapstoneLights extends RuleGroup {
 
         addRule(
                 "Rainbow Lights for Defense Down",
-                gamePad.whenButton(InputConstants.GAMEPAD_DPAD_DOWN),
+                gamePad.whenButton(InputConstants.GAMEPAD_Y_BUTTON),
                 ONCE_AND_HOLD,
                 Set.of(ledString),
                 () -> {
