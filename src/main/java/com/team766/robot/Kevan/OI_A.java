@@ -1,13 +1,12 @@
 package com.team766.robot.Kevan;
-
+import java.util.Set;
 import static com.team766.framework.RulePersistence.*;
 
 import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
-import com.team766.robot.Kevan.mechanisms.Drive;
 import com.team766.robot.common.constants.InputConstants;
-import java.util.Set;
+import com.team766.robot.Kevan.mechanisms.Drive;
 
 public class OI_A extends RuleGroup {
     public OI_A(Drive drive) {
