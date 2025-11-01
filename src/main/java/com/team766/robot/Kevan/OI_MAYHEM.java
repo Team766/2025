@@ -1,14 +1,15 @@
 package com.team766.robot.Kevan;
-import java.util.Set;
+
 import static com.team766.framework.RulePersistence.*;
 
 import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
-import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.Kevan.mechanisms.Drive;
 import com.team766.robot.Kevan.mechanisms.Intake;
 import com.team766.robot.Kevan.mechanisms.Shooter;
+import com.team766.robot.common.constants.InputConstants;
+import java.util.Set;
 
 public class OI_MAYHEM extends RuleGroup {
     public OI_MAYHEM(Drive drive, Shooter shooter, Intake intake) {
@@ -31,30 +32,31 @@ public class OI_MAYHEM extends RuleGroup {
                     drive.move_right(gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
                 });
         addRule(
-                "RUN_INTAKE",
-                gamePad1.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
-                ONCE_AND_HOLD,
-                Set.of(intake),
-                () -> {
-                    intake.SetIntake(1);
-                })
+                        "RUN_INTAKE",
+                        gamePad1.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
+                        ONCE_AND_HOLD,
+                        Set.of(intake),
+                        () -> {
+                            intake.SetIntake(1);
+                        })
                 .withFinishedTriggeringProcedure(
-                    intake,
-                    () -> {
-                        intake.SetIntake(0);
-                });
+                        intake,
+                        () -> {
+                            intake.SetIntake(0);
+                        });
         addRule(
-                "SHOOT_SET_POWER",
-                gamePad1.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER),
-                ONCE_AND_HOLD,
-                Set.of(shooter),
-                () -> {
-                    shooter.SetShooterSpeed(gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_TRIGGER));
-                })
+                        "SHOOT_SET_POWER",
+                        gamePad1.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER),
+                        ONCE_AND_HOLD,
+                        Set.of(shooter),
+                        () -> {
+                            shooter.SetShooterSpeed(
+                                    gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_TRIGGER));
+                        })
                 .withFinishedTriggeringProcedure(
-                    shooter,
-                    () -> {
-                        shooter.SetShooterSpeed(0);
-                });
+                        shooter,
+                        () -> {
+                            shooter.SetShooterSpeed(0);
+                        });
     }
 }
