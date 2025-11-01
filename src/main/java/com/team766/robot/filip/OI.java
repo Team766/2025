@@ -10,24 +10,25 @@ import com.team766.robot.common.constants.InputConstants;
 
 public class OI extends RuleEngine {
     public OI(Drive drive) {
-        final JoystickReader leftJoystick = RobotProvider.instance.getJoystick(0);
-        final JoystickReader rightJoystick = RobotProvider.instance.getJoystick(1);
+        final JoystickReader joystick = RobotProvider.instance.getJoystick(0);
+
         addRule("RUN_LEFT_MOTOR",
-                leftJoystick.whenAxisMoved(InputConstants.AXIS_FORWARD_BACKWARD),
+                joystick.whenAxisMoved(InputConstants.GAMEPAD_LEFT_STICK_YAXIS),
                 ONCE_AND_HOLD,
                 Set.of(drive),
                 () -> {
-                    drive.move_left(leftJoystick.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
+                    drive.move_left(joystick.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
                 }
         );
 
         addRule("RUN_RIGHT_MOTOR",
-                rightJoystick.whenAxisMoved(InputConstants.AXIS_FORWARD_BACKWARD),
+                joystick.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS),
                 ONCE_AND_HOLD,
                 Set.of(drive),
                 () -> {
-                    drive.move_right(rightJoystick.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
+                    drive.move_right(joystick.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
                 }
         );
+    
     }
 }
