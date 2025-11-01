@@ -12,7 +12,8 @@ public class InputConstants {
     public static final int AXIS_TWIST = 3;
 
     // buttons
-    public static final int BUTTON_FINE_DRIVING = 1;
+    // public static final int BUTTON_FINE_DRIVING = 1; | for flight stick
+    public static final int BUTTON_FINE_DRIVING = 5; // left bumper on controller
     public static final int BUTTON_CROSS_WHEELS = 3;
     public static final int BUTTON_RESET_GYRO = 9;
     public static final int BUTTON_RESET_POS = 15;
@@ -40,4 +41,6 @@ public class InputConstants {
     public static final int GAMEPAD_DPAD_UP = 0;
     public static final int GAMEPAD_BACK_BUTTON = 7;
     public static final int GAMEPAD_START_BUTTON = 8;
+    public static final int GAMEPAD_LEFT_STICK_CLICK = 9;
+    public static final int GAMEPAD_RIGHT_STICK_CLICK = 10;
 }

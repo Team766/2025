@@ -3,22 +3,24 @@ package com.team766.robot.common.constants;
 public class ControlConstants {
 
     // Amount to reduce driving power to when holding the fine driving button
-    public static final double FINE_DRIVING_COEFFICIENT = 0.25;
+    public static final double FINE_DRIVING_COEFFICIENT = 0.25; // was 0.25
 
     // Value below which the joystick movement does not register
     public static final double JOYSTICK_DEADZONE = 0.05;
     public static final double GAMEPAD_DEADZONE = 0.20;
 
     // Exponent giving joystick curved power mapping for translational movement
-    public static final double TRANSLATIONAL_CURVE_POWER = 1.0;
+    // 1.0 for flight sticks
+    public static final double TRANSLATIONAL_CURVE_POWER = 2.0; // was 1.0
 
     // Exponent giving joystick curved power mapping for rotational movement
-    public static final double ROTATIONAL_CURVE_POWER = 1.0;
+    // 1.0 for flight sticks
+    public static final double ROTATIONAL_CURVE_POWER = 1.0; // was 1.0
 
     /**
      * Translational velocity of robot that max joystick power controls in m/s
      */
-    public static final double MAX_TRANSLATIONAL_VELOCITY = 5.0;
+    public static final double MAX_TRANSLATIONAL_VELOCITY = 3.0; // 5.0
 
     /**
      * m/s
@@ -29,7 +31,7 @@ public class ControlConstants {
     /**
      * Rotational velocity of robot that max joystick power controls in rad/s
      */
-    public static final double MAX_ROTATIONAL_VELOCITY = 5.0;
+    public static final double MAX_ROTATIONAL_VELOCITY = 7.0; // was 5.0
 
     public static final double DEFAULT_ROTATION_THRESHOLD = 0.40;
 

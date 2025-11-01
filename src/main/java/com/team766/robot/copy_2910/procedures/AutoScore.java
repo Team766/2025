@@ -4,31 +4,52 @@ import com.team766.controllers.PIDController;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.common.mechanisms.SwerveDrive;
+import com.team766.robot.copy_2910.mechanisms.Elevator;
+import com.team766.robot.copy_2910.mechanisms.Shoulder;
 import com.team766.robot.copy_2910.mechanisms.Vision;
+import com.team766.robot.copy_2910.mechanisms.Wrist;
 import edu.wpi.first.math.geometry.Pose2d;
 
-public class AutoAlign extends Procedure {
+public class AutoScore extends Procedure {
     private Pose2d targetPosition;
     private SwerveDrive drive;
     private PIDController pidControllerX;
     private PIDController pidControllerY;
     private PIDController pidControllerRotation;
+    private Wrist wrist;
+    private Shoulder shoulder;
+    private Elevator elevator;
 
-    public AutoAlign(Pose2d targetPosition, SwerveDrive drive) {
+    private double elevatorHeight;
+    private double wristAngle;
+    private double shoulderAngle;
+
+    public AutoScore(
+            Pose2d targetPosition,
+            SwerveDrive drive,
+            Wrist wrist,
+            Shoulder shoulder,
+            Elevator elevator,
+            double elevatorHeight,
+            double wristAngle,
+            double shoulderAngle) {
         this.targetPosition = targetPosition;
         this.drive = reserve(drive);
+        this.wrist = reserve(wrist);
+        this.shoulder = reserve(shoulder);
+        this.elevator = reserve(elevator);
+        this.elevatorHeight = elevatorHeight;
+        this.wristAngle = wristAngle;
+        this.shoulderAngle = shoulderAngle;
         pidControllerX = PIDController.loadFromConfig("DRIVE_X_PID");
         pidControllerY = PIDController.loadFromConfig("DRIVE_Y_PID");
         pidControllerRotation = PIDController.loadFromConfig("DRIVE_ROTATION_PID");
     }
 
-    public AutoAlign(Pose2d targetPosition, double threshold, SwerveDrive drive) {
-        this(targetPosition, drive);
-        pidControllerX.setThreshold(threshold);
-        pidControllerY.setThreshold(threshold);
-    }
-
     public void run(Context context) {
+        shoulder.setSetpoint(shoulderAngle);
+        wrist.setSetpoint(wristAngle);
+        elevator.setPosition(elevatorHeight);
         Pose2d currentPosition;
         try {
             currentPosition = getStatusOrThrow(Vision.VisionStatus.class).getApriltagPose2d();
