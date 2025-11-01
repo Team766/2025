@@ -17,7 +17,7 @@ public class OI extends RuleEngine {
                 ONCE_AND_HOLD,
                 Set.of(drive),
                 () -> {
-                    drive.move_left(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));
+                    drive.move_left(leftJoystick.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
                 }
         );
 
@@ -26,7 +26,7 @@ public class OI extends RuleEngine {
                 ONCE_AND_HOLD,
                 Set.of(drive),
                 () -> {
-                    drive.move_right(rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));
+                    drive.move_right(rightJoystick.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
                 }
         );
     }
