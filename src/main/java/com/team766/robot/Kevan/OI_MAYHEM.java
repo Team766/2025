@@ -11,8 +11,8 @@ import java.util.Set;
 import com.team766.robot.Kevan.mechanisms.Intake;
 import com.team766.robot.Kevan.mechanisms.Shooter;
 
-public class OI_T extends RuleGroup {
-    public OI_T(Drive drive, Shooter shooter, Intake intake) {
+public class OI_MAYHEM extends RuleGroup {
+    public OI_MAYHEM(Drive drive, Shooter shooter, Intake intake) {
         final JoystickReader gamePad1 = RobotProvider.instance.getJoystick(0);
         addRule(
                 "RUN_LEFT_MOTOR",
