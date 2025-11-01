@@ -1,7 +1,7 @@
 package com.team766.robot.ArthurDoering.CANdle;
-
 import static com.team766.framework.RulePersistence.*;
 import java.util.Set;
+
 import com.ctre.phoenix.led.*;
 import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
