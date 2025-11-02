@@ -18,17 +18,18 @@ public class Autonomous extends Procedure {
     }
 
     public void run(Context context) {
-        context.runParallel(new DriveProcedure(drive, 1));
-        context.runParallel(new ShootProcedure(shooter, 1));
+        context.waitForSeconds(1);
+        context.runParallel(new DriveProcedure(drive, 1.25));
+        context.runParallel(new ShootProcedure(shooter, 0.8));
         context.runParallel(new TurnProcedure(drive, 0.25, 0.5));
-        context.runParallel(new DriveProcedure(drive, 0.25));
+        context.runParallel(new DriveProcedure(drive, 0.3125));
         context.runParallel(new IntakeProcedure(intake));
-        context.runParallel(new DriveProcedure(drive, 0.25));
+        context.runParallel(new DriveProcedure(drive, 0.3125));
         context.runParallel(new IntakeProcedure(intake));
         context.runParallel(new TurnProcedure(drive, 0.5, 0.5));
-        context.runParallel(new DriveProcedure(drive, 0.5));
+        context.runParallel(new DriveProcedure(drive, 0.625));
         context.runParallel(new TurnProcedure(drive, 0.25, 0.5));
-        context.runParallel(new ShootProcedure(shooter, 1));
-        context.runParallel(new ShootProcedure(shooter, 1));
+        context.runParallel(new ShootProcedure(shooter, 0.8));
+        context.runParallel(new ShootProcedure(shooter, 0.8));
     }
 }
