@@ -21,7 +21,7 @@ public class OI_MAYHEM extends RuleGroup {
                 ONCE_AND_HOLD,
                 Set.of(drive),
                 () -> {
-                    drive.move_left(gamePad1.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
+                    drive.move_right(gamePad1.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
                 });
 
         addRule(
@@ -30,7 +30,7 @@ public class OI_MAYHEM extends RuleGroup {
                 ONCE_AND_HOLD,
                 Set.of(drive),
                 () -> {
-                    drive.move_right(gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
+                    drive.move_left(gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
                 });
         addRule(
                     "RUN_INTAKE",
