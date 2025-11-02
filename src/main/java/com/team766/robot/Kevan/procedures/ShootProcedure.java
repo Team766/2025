@@ -4,9 +4,8 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.Kevan.mechanisms.Shooter;
 
-
 public class ShootProcedure extends Procedure {
-    
+
     private Shooter shooter;
     private double power;
 
@@ -14,6 +13,7 @@ public class ShootProcedure extends Procedure {
         shooter = reserve(myShooter);
         this.power = power;
     }
+
     public void run(Context context) {
         shooter.SetShooterSpeed(power);
         context.waitForSeconds(0.25);

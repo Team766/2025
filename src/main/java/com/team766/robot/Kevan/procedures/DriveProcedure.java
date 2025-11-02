@@ -4,9 +4,8 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.Kevan.mechanisms.Drive;
 
-
 public class DriveProcedure extends Procedure {
-    
+
     private Drive drive;
     private double seconds;
 
@@ -14,6 +13,7 @@ public class DriveProcedure extends Procedure {
         drive = reserve(myDrive);
         this.seconds = seconds;
     }
+
     public void run(Context context) {
         drive.move_straight(1);
         context.waitForSeconds(seconds);
