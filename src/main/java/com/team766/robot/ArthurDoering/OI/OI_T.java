@@ -17,12 +17,12 @@ public class OI_T extends RuleGroup {
         leftJoystick.whenAnyAxisMoved(InputConstants.AXIS_FORWARD_BACKWARD),
         ONCE_AND_HOLD,
         Set.of(drive),
-        () -> {drive.moveLeft(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));});
+        () -> {drive.move_left(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));});
         
         addRule("Run_Right_MOTOR",
         rightJoystick.whenAnyAxisMoved(InputConstants.AXIS_FORWARD_BACKWARD),
         ONCE_AND_HOLD,
         Set.of(drive),
-        () -> {drive.moveRight(rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));});
+        () -> {drive.move_right(rightJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD));});
     }
 }

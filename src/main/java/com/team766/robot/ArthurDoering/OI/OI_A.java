@@ -18,8 +18,8 @@ public class OI_A extends RuleGroup {
             () -> {
                 double forward_backward = joystick1.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
                 double left_right = joystick1.getAxis(InputConstants.AXIS_LEFT_RIGHT);
-                drive.moveLeft(forward_backward + left_right);
-                drive.moveRight(forward_backward - left_right);
+                drive.move_left(forward_backward + left_right);
+                drive.move_right(forward_backward - left_right);
             });
     }
 }

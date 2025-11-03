@@ -18,11 +18,11 @@ public class Autonomous extends Procedure{
     }
 
     public void run(Context context){
-        drive.moveLeft(1);
-        drive.moveRight(1);
+        drive.move_left(1);
+        drive.move_right(1);
         context.waitForSeconds(5);
-        drive.moveLeft(0);
-        drive.moveRight(0);
+        drive.move_left(0);
+        drive.move_right(0);
         shooter.setShooterSpeed(1);
         context.waitForSeconds(1);
         shooter.setShooterSpeed(0);
