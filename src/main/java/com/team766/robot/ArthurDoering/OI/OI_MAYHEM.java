@@ -19,7 +19,7 @@ public class OI_MAYHEM extends RuleGroup {
                 ONCE_AND_HOLD,
                 Set.of(drive),
                 () -> {
-                    drive.moveLeft(gamepad.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
+                    drive.move_left(gamepad.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
                 });
 
         addRule(
@@ -28,7 +28,7 @@ public class OI_MAYHEM extends RuleGroup {
                 ONCE_AND_HOLD,
                 Set.of(drive),
                 () -> {
-                    drive.moveRight(gamepad.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                    drive.move_right(gamepad.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
                 });
         addRule(
             "RUN_INTAKE",
@@ -49,12 +49,12 @@ public class OI_MAYHEM extends RuleGroup {
             ONCE_AND_HOLD,
             Set.of(shoot),
             () -> {
-                shoot.setShooterSpeed(1);
+                shoot.SetShooterSpeed(1);
             })
             .withFinishedTriggeringProcedure(
                 intake,
                 () -> {
-                    shoot.setShooterSpeed(0);
+                    shoot.SetShooterSpeed(0);
                 });
         
     }
