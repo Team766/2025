@@ -60,7 +60,6 @@ public class OI_MAYHEM extends RuleGroup {
                 .withFinishedTriggeringProcedure(
                         shooter,
                         () -> {
-                            shooter.SetShooterSpeed(0);
                             shooter.SetTransferSpeed(0);
                         });
     }
