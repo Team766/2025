@@ -2,29 +2,34 @@ package com.team766.robot.ArthurDoering.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.ArthurDoering.mechanisms.Drive;
-import com.team766.robot.ArthurDoering.mechanisms.Shooter;
+
+
+
 
 public class Autonomous extends Procedure {
-    private Drive drive;
-    private Shooter shooter;
+    private Autonomous drive;
+    private Autonomous shooter;
+    private Autonomous intake;
 
-    public void forward(Autonomous myDrive) {
-        drive = reserve(myDrive);
-    }
-
-    public void shoot(Autonomous myShooter) {
-        shooter = reserve(myShooter);
+    public Autonomous(Autonomous myDrive, Autonomous myShooter, Autonomous myIntake) {
+        this.drive = reserve(myDrive);
+        this.shooter = reserve(myShooter);
+        this.intake = reserve(myIntake);
     }
 
     public void run(Context context){
-        drive.move_left(1);
-        drive.move_right(1);
-        context.waitForSeconds(5);
-        drive.move_left(0);
-        drive.move_right(0);
-        shooter.SetShooterSpeed(1);
         context.waitForSeconds(1);
-        shooter.SetShooterSpeed(0);
+        context.runParallel(new DriveProcedure(drive, 1.25));
+        context.runParallel(new ShootProcedure(shooter, 0.8));
+        context.runParallel(new TurnProcedure(drive, 0.25, 0.5));
+        context.runParallel(new DriveProcedure(drive, 0.3125));
+        context.runParallel(new IntakeProcedure(intake));
+        context.runParallel(new DriveProcedure(drive,0.3125));
+        context.runParallel(new IntakeProcedure(intake));
+        context.runParallel(new TurnProcedure(drive, 0.5, 0.5));
+        context.runParallel(new DriveProcedure(drive, 0.625));
+        context.runParallel(new TurnProcedure(drive, 0.25, 0.5));
+        context.runParallel(new ShootProcedure(shooter, 0.8));
+        context.runParallel(new ShootProcedure(shooter, 0.8));
     }
 }

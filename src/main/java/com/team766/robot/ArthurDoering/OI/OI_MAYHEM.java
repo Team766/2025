@@ -1,7 +1,7 @@
 package com.team766.robot.ArthurDoering.OI;
 import static com.team766.framework.RulePersistence.*;
 import java.util.Set;
-
+import com.team766.framework.Context;
 import com.team766.framework.RuleGroup;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
@@ -11,7 +11,7 @@ import com.team766.robot.ArthurDoering.mechanisms.Intake;
 import com.team766.robot.ArthurDoering.mechanisms.Shooter;
 
 public class OI_MAYHEM extends RuleGroup {
-    public OI_MAYHEM(Drive drive, Intake intake, Shooter shoot) {
+    public OI_MAYHEM(Drive drive, Intake intake, Shooter shoot, Context context) {
         final JoystickReader gamepad = RobotProvider.instance.getJoystick(0);
         addRule(
                 "RUN_LEFT_MOTOR",
@@ -36,25 +36,29 @@ public class OI_MAYHEM extends RuleGroup {
             ONCE_AND_HOLD,
             Set.of(intake),
             () -> {
-                intake.setIntakeSpeed(1);
+                intake.setIntake(1);
             })
             .withFinishedTriggeringProcedure(
                 intake,
                 () -> {
-                    intake.setIntakeSpeed(0);
+                    intake.setIntake(0);
                 });
         addRule(
             "SHOOT_SET_POWER",
-            gamepad.whenButton(InputConstants.GAMEPAD_RIGHT_TRIGGER),
+            gamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER),
             ONCE_AND_HOLD,
             Set.of(shoot),
             () -> {
-                shoot.SetShooterSpeed(1);
+                shoot.SetShooterSpeed(
+                    gamepad.getAxis(InputConstants.GAMEPAD_RIGHT_TRIGGER)
+                );
+                context.waitForSeconds(0.25);
+                shoot.SetTransferSpeed(1);
             })
             .withFinishedTriggeringProcedure(
                 intake,
                 () -> {
-                    shoot.SetShooterSpeed(0);
+                    shoot.SetTransferSpeed(0);
                 });
         
     }

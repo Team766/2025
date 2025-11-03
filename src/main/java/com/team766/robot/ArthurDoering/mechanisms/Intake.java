@@ -13,8 +13,8 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
     public record IntakeStatus(double currentPosition) implements Status {}
 
-    public void setIntakeSpeed(double power) {
-        IntakeMotor.set(power);
+    public void setIntake(double motorPower) {
+        IntakeMotor.set(motorPower);
     }
 
     protected IntakeStatus updateStatus() {

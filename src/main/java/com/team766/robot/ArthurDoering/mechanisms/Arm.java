@@ -13,8 +13,8 @@ public class Arm extends MechanismWithStatus<Arm.ArmStatus> {
 
     public record ArmStatus(double currentPosition) implements Status {}
 
-    public void setMotorPower(double power) {
-        armMotor.set(power);
+    public void setMotorPower(double motorPower) {
+        armMotor.set(motorPower);
     }
 
     protected ArmStatus updateStatus() {
