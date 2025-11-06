@@ -51,5 +51,9 @@ public class OI extends RuleEngine {
                 ONCE_AND_HOLD,
                 shooter,
                 () -> shooter.setIntakeMotor(0.5));
+        addRule("Shoot Ball Procedure",
+                joystick0.whenButton(4),
+                ONCE_AND_HOLD,
+                () -> new ShootBall(vision, shooter));
     }
 }
