@@ -35,7 +35,6 @@ public class Robot implements RobotConfigurator {
     public AutonomousMode[] getAutonomousModes() {
         return new AutonomousMode[] {
             new AutonomousMode(
-                    "Autonomous_For_Mayhem", () -> new Autonomous(drive, shooter, intake)),
-        };
+                "Autonomous_For_Mayhem", () -> new Autonomous(drive, shooter, intake))};
     }
 }
