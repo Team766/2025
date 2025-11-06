@@ -11,7 +11,6 @@ import com.team766.robot.Kevan.mechanisms.Shooter;
 import com.team766.robot.common.constants.InputConstants;
 import java.util.Set;
 
-// Tank Drive OI
 public class OI_MAYHEM extends RuleEngine {
     public OI_MAYHEM(Drive drive, Shooter shooter, Intake intake) {
         final JoystickReader gamePad1 = RobotProvider.instance.getJoystick(0);
