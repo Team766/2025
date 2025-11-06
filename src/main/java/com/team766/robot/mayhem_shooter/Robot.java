@@ -10,17 +10,19 @@ import com.team766.robot.mayhem_shooter.procedures.*;
 public class Robot implements RobotConfigurator {
     private Drive drive;
     private Shooter shooter;
+    private Vision vision;
 
     @Override
     public void initializeMechanisms() {
         // Initialize mechanisms here
         drive = new Drive();
         shooter = new Shooter();
+        vision = new Vision();
     }
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, shooter);
+        return new OI(drive, shooter, vision);
     }
 
     @Override

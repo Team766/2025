@@ -36,7 +36,7 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
     }
 
     public void enableShooter() {
-        setShooterPower(0.4);
+        setShooterPower(0.55);
     }
 
     public void setIntakeMotor(double power) {
