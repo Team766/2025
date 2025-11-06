@@ -16,49 +16,50 @@ public class OI_MAYHEM extends RuleEngine {
     public OI_MAYHEM(Drive drive, Shooter shooter, Intake intake) {
         final JoystickReader gamePad1 = RobotProvider.instance.getJoystick(0);
         addRule(
-            "RUN_LEFT_MOTOR",
-            gamePad1.whenAxisMoved(InputConstants.GAMEPAD_LEFT_STICK_YAXIS),
-            REPEATEDLY,
-            Set.of(drive),
-            () -> {
-                drive.move_left(gamePad1.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
-            });
+                "RUN_LEFT_MOTOR",
+                gamePad1.whenAxisMoved(InputConstants.GAMEPAD_LEFT_STICK_YAXIS),
+                REPEATEDLY,
+                Set.of(drive),
+                () -> {
+                    drive.move_left(gamePad1.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
+                });
 
         addRule(
-            "RUN_RIGHT_MOTOR",
-            gamePad1.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS),
-            REPEATEDLY,
-            Set.of(drive),
-            () -> {
-                drive.move_right(gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
-            });
-        addRule(
-            "RUN_INTAKE",
-            gamePad1.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
-            ONCE_AND_HOLD,
-            Set.of(intake),
-            () -> {
-                intake.SetIntake(1);
-            })
-            .withFinishedTriggeringProcedure(
-                intake,
+                "RUN_RIGHT_MOTOR",
+                gamePad1.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS),
+                REPEATEDLY,
+                Set.of(drive),
                 () -> {
-                    intake.SetIntake(0);
+                    drive.move_right(gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
                 });
         addRule(
-            "SHOOT_SET_POWER",
-            gamePad1.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER),
-            REPEATEDLY,
-            Set.of(shooter),
-            (context) -> {
-                shooter.SetShooterSpeed(gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_TRIGGER));
-                context.waitForSeconds(0.25);
-                shooter.SetTransferSpeed(1);
-            })
-            .withFinishedTriggeringProcedure(
-                shooter,
-                () -> {
-                    shooter.SetTransferSpeed(0);
-                });
+                        "RUN_INTAKE",
+                        gamePad1.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
+                        ONCE_AND_HOLD,
+                        Set.of(intake),
+                        () -> {
+                            intake.SetIntake(1);
+                        })
+                .withFinishedTriggeringProcedure(
+                        intake,
+                        () -> {
+                            intake.SetIntake(0);
+                        });
+        addRule(
+                        "SHOOT_SET_POWER",
+                        gamePad1.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER),
+                        REPEATEDLY,
+                        Set.of(shooter),
+                        (context) -> {
+                            shooter.SetShooterSpeed(
+                                    gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_TRIGGER));
+                            context.waitForSeconds(0.25);
+                            shooter.SetTransferSpeed(1);
+                        })
+                .withFinishedTriggeringProcedure(
+                        shooter,
+                        () -> {
+                            shooter.SetTransferSpeed(0);
+                        });
     }
 }
