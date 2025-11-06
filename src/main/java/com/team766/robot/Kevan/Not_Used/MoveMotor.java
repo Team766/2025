@@ -1,8 +1,7 @@
-package com.team766.robot.Kevan.procedures;
+package com.team766.robot.Kevan.Not_Used;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.Kevan.mechanisms.MovingMotor;
 
 public class MoveMotor extends Procedure {
     private MovingMotor motor;

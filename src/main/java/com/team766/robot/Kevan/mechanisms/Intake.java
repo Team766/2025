@@ -18,6 +18,6 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     }
 
     protected IntakeStatus updateStatus() {
-        return new IntakeStatus(0);
+        return new IntakeStatus(intake_motor.getSensorPosition());
     }
 }

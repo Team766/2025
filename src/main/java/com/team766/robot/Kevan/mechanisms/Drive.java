@@ -24,11 +24,11 @@ public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
         rightMotor.set(-motorPower);
     }
 
-    public void move_right(double motorPower) {
+    public void move_left(double motorPower) {
         leftMotor.set(motorPower);
     }
 
-    public void move_left(double motorPower) {
+    public void move_right(double motorPower) {
         rightMotor.set(motorPower);
     }
 

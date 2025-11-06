@@ -2,8 +2,7 @@ package com.team766.robot.Kevan;
 
 import static com.team766.framework.RulePersistence.*;
 
-import com.team766.framework.Context;
-import com.team766.framework.RuleGroup;
+import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.Kevan.mechanisms.Drive;
@@ -13,25 +12,25 @@ import com.team766.robot.common.constants.InputConstants;
 import java.util.Set;
 
 // Tank Drive OI
-public class OI_MAYHEM extends RuleGroup {
-    public OI_MAYHEM(Drive drive, Shooter shooter, Intake intake, Context context) {
+public class OI_MAYHEM extends RuleEngine {
+    public OI_MAYHEM(Drive drive, Shooter shooter, Intake intake) {
         final JoystickReader gamePad1 = RobotProvider.instance.getJoystick(0);
         addRule(
                 "RUN_LEFT_MOTOR",
                 gamePad1.whenAxisMoved(InputConstants.GAMEPAD_LEFT_STICK_YAXIS),
-                ONCE_AND_HOLD,
+                REPEATEDLY,
                 Set.of(drive),
                 () -> {
-                    drive.move_right(gamePad1.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
+                    drive.move_left(gamePad1.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
                 });
 
         addRule(
                 "RUN_RIGHT_MOTOR",
                 gamePad1.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS),
-                ONCE_AND_HOLD,
+                REPEATEDLY,
                 Set.of(drive),
                 () -> {
-                    drive.move_left(gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
+                    drive.move_right(gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
                 });
         addRule(
                         "RUN_INTAKE",
@@ -49,9 +48,9 @@ public class OI_MAYHEM extends RuleGroup {
         addRule(
                         "SHOOT_SET_POWER",
                         gamePad1.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER),
-                        ONCE_AND_HOLD,
+                        REPEATEDLY,
                         Set.of(shooter),
-                        () -> {
+                        (context) -> {
                             shooter.SetShooterSpeed(
                                     gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_TRIGGER));
                             context.waitForSeconds(0.25);

@@ -18,18 +18,22 @@ public class Autonomous extends Procedure {
     }
 
     public void run(Context context) {
-        context.waitForSeconds(1);
-        context.runParallel(new DriveProcedure(drive, 1.25));
-        context.runParallel(new ShootProcedure(shooter, 0.8));
-        context.runParallel(new TurnProcedure(drive, 0.25, 0.5));
-        context.runParallel(new DriveProcedure(drive, 0.3125));
-        context.runParallel(new IntakeProcedure(intake));
-        context.runParallel(new DriveProcedure(drive, 0.3125));
-        context.runParallel(new IntakeProcedure(intake));
-        context.runParallel(new TurnProcedure(drive, 0.5, 0.5));
-        context.runParallel(new DriveProcedure(drive, 0.625));
-        context.runParallel(new TurnProcedure(drive, 0.25, 0.5));
-        context.runParallel(new ShootProcedure(shooter, 0.8));
-        context.runParallel(new ShootProcedure(shooter, 0.8));
+        context.runSync(new DriveProcedure(drive, 1.25));
+        context.runSync(new ShootProcedure(shooter, 0.8));
+        context.runSync(new TurnProcedure(drive, 0.25, 0.5));
+        context.runSync(new DriveProcedure(drive, 0.3125));
+        context.runSync(new IntakeProcedure(intake));
+        shooter.SetTransferSpeed(1);
+        context.waitForSeconds(0.5);
+        shooter.SetTransferSpeed(0);
+        context.runSync(new DriveProcedure(drive, 0.3125));
+        context.runSync(new IntakeProcedure(intake));
+        context.runSync(new TurnProcedure(drive, 0.5, 0.5));
+        context.runSync(new DriveProcedure(drive, 0.625));
+        context.runSync(new TurnProcedure(drive, 0.25, 0.5));
+        shooter.SetShooterSpeed(0.8);
+        context.waitForSeconds(0.25);
+        shooter.SetShooterSpeed(0);
+        context.runSync(new ShootProcedure(shooter, 0.8));
     }
 }
