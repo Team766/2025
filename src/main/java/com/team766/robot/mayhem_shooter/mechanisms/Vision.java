@@ -20,7 +20,11 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus>{
     private GetOrinRawValue frontCamera = new GetOrinRawValue("199", 0);
     private GetOrinRawValue backCamera = new GetOrinRawValue("12", 0);
 
-    
+    private final double slope = 0.0897;
+    private final double intercept = 0.254;
+
+    // Power (percentage) = slope * distance (meters) + intercept
+
 
     public Vision() {}
 
@@ -60,6 +64,21 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus>{
         //log("Back to 1: " + getDistanceFromTagBack(1));
         log("here");
         log("Front to 2: " + getDistanceFromTagFront(1));
+    }
+
+    public double getShooterSpeedFromDistance(){
+        double distance;
+        try{
+            distance = getDistanceFromTagFront(1);
+
+            if (distance == 0){
+                distance = getDistanceFromTagFront(3);
+            }
+        } catch (Exception e){
+            return 0;
+        }
+
+        return slope * distance + intercept;
     }
 
 
