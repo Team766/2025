@@ -1,29 +1,35 @@
-package com.team766.robot.filip.procedures;
+package com.team766.robot.Kevan.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.filip.mechanisms.Drive;
-import com.team766.robot.filip.mechanisms.FilipMovingMotor;
+import com.team766.robot.Kevan.mechanisms.Drive;
+import com.team766.robot.Kevan.mechanisms.Intake;
+import com.team766.robot.Kevan.mechanisms.Shooter;
 
 public class Autonomous extends Procedure {
-    private FilipMovingMotor motor;
     private Drive drive;
-    public Autonomous(Drive myDrive, FilipMovingMotor myMotor){
-        drive = reserve(myDrive);
-        motor = reserve(myMotor);
+    private Shooter shooter;
+    private Intake intake;
+
+    public Autonomous(Drive myDrive, Shooter myShooter, Intake myIntake) {
+        this.drive = reserve(myDrive);
+        this.shooter = reserve(myShooter);
+        this.intake = reserve(myIntake);
     }
+
     public void run(Context context) {
-        drive.move_left(1);
-        drive.move_right(1);
-
-        context.waitForSeconds(5);
-
-        drive.move_left(0);
-        drive.move_right(0);
-
-        motor.moveSpeed(1);
-        context.waitForSeconds(3);
-        motor.moveSpeed(0);
+        context.waitForSeconds(1);
+        context.runParallel(new DriveProcedure(drive, 1.25));
+        context.runParallel(new ShootProcedure(shooter, 0.8));
+        context.runParallel(new TurnProcedure(drive, 0.25, 0.5));
+        context.runParallel(new DriveProcedure(drive, 0.3125));
+        context.runParallel(new IntakeProcedure(intake));
+        context.runParallel(new DriveProcedure(drive, 0.3125));
+        context.runParallel(new IntakeProcedure(intake));
+        context.runParallel(new TurnProcedure(drive, 0.5, 0.5));
+        context.runParallel(new DriveProcedure(drive, 0.625));
+        context.runParallel(new TurnProcedure(drive, 0.25, 0.5));
+        context.runParallel(new ShootProcedure(shooter, 0.8));
+        context.runParallel(new ShootProcedure(shooter, 0.8));
     }
-    
 }
