@@ -3,7 +3,7 @@ package com.team766.robot.ArthurDoering.CANdle;
 import static com.team766.framework.RulePersistence.*;
 
 import com.ctre.phoenix.led.*;
-import com.team766.framework.RuleGroup;
+import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.common.constants.ColorConstants;
@@ -11,7 +11,7 @@ import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.LEDString;
 import java.util.Set;
 
-public class CapstoneLights extends RuleGroup {
+public class CapstoneLights extends RuleEngine {
     private final LEDString ledString = new LEDString("leds");
     private final LEDString.Segment segment = ledString.makeSegment(0, 512);
 

@@ -1,6 +1,7 @@
 package com.team766.robot.ArthurDoering;
 
 import com.team766.framework.AutonomousMode;
+import com.team766.framework.Context;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.ArthurDoering.mechanisms.Drive;
@@ -12,6 +13,7 @@ public class Robot implements RobotConfigurator {
     private Drive drive;
     private Intake intake;
     private Shooter shoot;
+    private Context context;
 
     @Override
     public void initializeMechanisms() {
@@ -22,7 +24,7 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public RuleEngine createOI() {
-        return new OI_MAYHEM(drive, intake, shoot);
+        return new OI_MAYHEM(drive, intake, shoot, context);
     }
 
     @Override
