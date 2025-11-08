@@ -13,7 +13,7 @@ public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
     public record DriveStatus(double pos_leftMotor, double pos_rightMotor) implements Status {}
 
     public Drive() {}
-    
+
     public void turn_left(double motorPower) {
         rightMotor.set(motorPower);
         leftMotor.set(-motorPower);
@@ -23,7 +23,7 @@ public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
         leftMotor.set(motorPower);
         rightMotor.set(-motorPower);
     }
-    
+
     public void move_left(double motorPower) {
         leftMotor.set(motorPower);
     }

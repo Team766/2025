@@ -5,7 +5,7 @@ import com.team766.framework.Procedure;
 import com.team766.robot.ArthurDoering.mechanisms.Intake;
 
 public class IntakeProcedure extends Procedure {
-    
+
     private Intake intake;
 
     public IntakeProcedure(Intake myIntake) {

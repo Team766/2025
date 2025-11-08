@@ -4,8 +4,8 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.ArthurDoering.mechanisms.Shooter;
 
-public class ShootProcedure extends Procedure{
-    
+public class ShootProcedure extends Procedure {
+
     private Shooter shooter;
     private double motorPower;
 

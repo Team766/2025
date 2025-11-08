@@ -9,8 +9,10 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
 
     public Shooter() {}
 
-    MotorController shooter_motor = (MotorController) RobotProvider.instance.getMotor("shooter_motor");
-    MotorController transfer_motor = (MotorController) RobotProvider.instance.getMotor("transfer_motor");
+    MotorController shooter_motor =
+            (MotorController) RobotProvider.instance.getMotor("shooter_motor");
+    MotorController transfer_motor =
+            (MotorController) RobotProvider.instance.getMotor("transfer_motor");
 
     public record ShooterStatus(double currentPosition) implements Status {}
 
