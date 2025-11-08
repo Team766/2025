@@ -1,8 +1,7 @@
-package com.team766.robot.ArthurDoering.procedures;
+package com.team766.robot.ArthurDoering.unused;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.ArthurDoering.Unused.MovingMotor;
 
 public class MoveMotor extends Procedure {
 

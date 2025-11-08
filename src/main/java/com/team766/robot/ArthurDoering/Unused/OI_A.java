@@ -1,4 +1,4 @@
-package com.team766.robot.ArthurDoering.Unused;
+package com.team766.robot.ArthurDoering.unused;
 
 import static com.team766.framework.RulePersistence.*;
 

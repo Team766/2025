@@ -1,4 +1,4 @@
-package com.team766.robot.ArthurDoering.Unused;
+package com.team766.robot.ArthurDoering.unused;
 
 import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
