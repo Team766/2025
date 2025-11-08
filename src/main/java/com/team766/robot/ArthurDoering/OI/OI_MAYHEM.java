@@ -1,4 +1,9 @@
 package com.team766.robot.ArthurDoering.OI;
+<<<<<<< Updated upstream
+=======
+
+import static com.team766.framework.RulePersistence.*;
+>>>>>>> Stashed changes
 
 import static com.team766.framework.RulePersistence.*;
 <<<<<<< Updated upstream
@@ -34,6 +39,7 @@ public class OI_MAYHEM extends RuleGroup {
                 ONCE_AND_HOLD,
                 Set.of(drive),
                 () -> {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
                     drive.move_right(gamepad.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
                 });
@@ -85,6 +91,24 @@ public class OI_MAYHEM extends RuleGroup {
                             intake.setIntakeSpeed(0);
                         });
         addRule(
+=======
+                    drive.moveRight(gamepad.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
+                });
+        addRule(
+                        "RUN_INTAKE",
+                        gamepad.whenButton(InputConstants.GAMEPAD_RIGHT_BUMPER_BUTTON),
+                        ONCE_AND_HOLD,
+                        Set.of(intake),
+                        () -> {
+                            intake.setIntakeSpeed(1);
+                        })
+                .withFinishedTriggeringProcedure(
+                        intake,
+                        () -> {
+                            intake.setIntakeSpeed(0);
+                        });
+        addRule(
+>>>>>>> Stashed changes
                         "SHOOT_SET_POWER",
                         gamepad.whenButton(InputConstants.GAMEPAD_RIGHT_TRIGGER),
                         ONCE_AND_HOLD,
@@ -97,6 +121,9 @@ public class OI_MAYHEM extends RuleGroup {
                         () -> {
                             shoot.setShooterSpeed(0);
                         });
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 }
