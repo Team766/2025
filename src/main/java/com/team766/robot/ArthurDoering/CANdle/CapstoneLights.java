@@ -1,6 +1,6 @@
 package com.team766.robot.ArthurDoering.CANdle;
+
 import static com.team766.framework.RulePersistence.*;
-import java.util.Set;
 
 import com.ctre.phoenix.led.*;
 import com.team766.framework.RuleGroup;
@@ -9,6 +9,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.robot.common.constants.ColorConstants;
 import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.LEDString;
+import java.util.Set;
 
 public class CapstoneLights extends RuleGroup {
     private final LEDString ledString = new LEDString("leds");
