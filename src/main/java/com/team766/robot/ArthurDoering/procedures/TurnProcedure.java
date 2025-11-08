@@ -10,8 +10,8 @@ public class TurnProcedure extends Procedure {
     private double seconds;
     private double motorPower;
 
-    public TurnProcedure(Drive drive, double seconds, double motorPower) {
-        this.drive = reserve(drive);
+    public TurnProcedure(Drive myDrive, double seconds, double motorPower) {
+        drive = reserve(myDrive);
         this.seconds = seconds;
         this.motorPower = motorPower;
     }

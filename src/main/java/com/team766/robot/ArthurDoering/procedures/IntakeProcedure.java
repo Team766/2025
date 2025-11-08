@@ -8,8 +8,8 @@ public class IntakeProcedure extends Procedure {
 
     private Intake intake;
 
-    public IntakeProcedure(Intake intake) {
-        this.intake = reserve(intake);
+    public IntakeProcedure(Intake myIntake) {
+        intake = reserve(myIntake);
     }
 
     public void run(Context context) {
