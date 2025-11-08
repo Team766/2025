@@ -3,8 +3,6 @@ package com.team766.robot.mayhem_shooter;
 import static com.team766.framework.RulePersistence.ONCE_AND_HOLD;
 import static com.team766.framework.RulePersistence.REPEATEDLY;
 
-import java.util.Set;
-
 import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
@@ -16,7 +14,7 @@ import com.team766.robot.mayhem_shooter.procedures.*;
  * interface to the code that allow control of the robot.
  */
 public class OI extends RuleEngine {
-    public OI(Drive drive, Shooter shooter, Vision vision) {
+    public OI(Drive drive, Shooter shooter, Vision vision, Lights lights) {
         final JoystickReader joystick0 = RobotProvider.instance.getJoystick(0);
         final JoystickReader joystick1 = RobotProvider.instance.getJoystick(1);
         final JoystickReader joystick2 = RobotProvider.instance.getJoystick(2);
@@ -33,12 +31,17 @@ public class OI extends RuleEngine {
                 joystick0.whenButton(1),
                 ONCE_AND_HOLD,
                 shooter,
-                () -> {shooter.enableShooter();});
-        addRule("log",
+                () -> {
+                    shooter.enableShooter();
+                });
+        addRule(
+                "log",
                 joystick0.whenAnyAxisMoved(2),
                 REPEATEDLY,
                 vision,
-                () -> {vision.sendLog();});
+                () -> {
+                    vision.sendLog();
+                });
         addRule(
                 "feed into shooter",
                 joystick0.whenButton(2),
@@ -51,9 +54,10 @@ public class OI extends RuleEngine {
                 ONCE_AND_HOLD,
                 shooter,
                 () -> shooter.setIntakeMotor(0.5));
-        addRule("Shoot Ball Procedure",
+        addRule(
+                "Shoot Ball Procedure",
                 joystick0.whenButton(4),
                 ONCE_AND_HOLD,
-                () -> new ShootBall(vision, shooter));
+                () -> new ShootBall(vision, shooter, lights));
     }
 }

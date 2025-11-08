@@ -9,6 +9,7 @@ public class Lights extends RuleEngine {
 
     public Lights() {
         // Add lights rules here.
+        
     }
 
     @Override

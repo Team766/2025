@@ -35,8 +35,12 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
         shooterMotor.set(ControlMode.PercentOutput, percent);
     }
 
+    public double getShooterPower() {
+        return shooterMotor.get();
+    }
+
     public void enableShooter() {
-        setShooterPower(0.55);
+        setShooterPower(0.40);
     }
 
     public void setIntakeMotor(double power) {
