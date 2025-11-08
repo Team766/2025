@@ -9,15 +9,17 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
     public Intake() {}
 
-    MotorController IntakeMotor = (MotorController) RobotProvider.instance.getMotor("Motor");
+    MotorController IntakeMotor1 = (MotorController) RobotProvider.instance.getMotor("Motor1");
+    MotorController IntakeMotor2 = (MotorController) RobotProvider.instance.getMotor("Motor2");
 
-    public record IntakeStatus(double currentPosition) implements Status {}
+    public record IntakeStatus(double currentPosition1, double currentPosition2) implements Status {}
 
     public void setIntake(double motorPower) {
-        IntakeMotor.set(motorPower);
+        IntakeMotor1.set(motorPower);
+        IntakeMotor2.set(motorPower);
     }
 
     protected IntakeStatus updateStatus() {
-        return new IntakeStatus(IntakeMotor.getSensorPosition());
+        return new IntakeStatus(IntakeMotor1.getSensorPosition(), IntakeMotor2.getSensorPosition()); 
     }
 }
