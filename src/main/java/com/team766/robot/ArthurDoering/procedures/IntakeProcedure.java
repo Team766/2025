@@ -8,7 +8,7 @@ public class IntakeProcedure extends Procedure {
     
     private Intake intake;
 
-    public IntakeProcedure(Autonomous myIntake) {
+    public IntakeProcedure(Intake myIntake) {
         intake = reserve(myIntake);
     }
 

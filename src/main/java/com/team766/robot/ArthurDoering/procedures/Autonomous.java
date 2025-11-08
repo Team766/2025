@@ -2,34 +2,37 @@ package com.team766.robot.ArthurDoering.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
+import com.team766.robot.ArthurDoering.mechanisms.Drive;
+import com.team766.robot.ArthurDoering.mechanisms.Intake;
+import com.team766.robot.ArthurDoering.mechanisms.Shooter;
 
 
 
 
 public class Autonomous extends Procedure {
-    private Autonomous drive;
-    private Autonomous shooter;
-    private Autonomous intake;
+    private Drive drive;
+    private Shooter shooter;
+    private Intake intake;
 
-    public Autonomous(Autonomous myDrive, Autonomous myShooter, Autonomous myIntake) {
-        this.drive = reserve(myDrive);
-        this.shooter = reserve(myShooter);
-        this.intake = reserve(myIntake);
+    public Autonomous(Drive drive, Shooter shoot, Intake intake) {
+        drive = reserve(drive);
+        shooter = reserve(shoot);
+        intake = reserve(intake);
     }
 
     public void run(Context context){
         context.waitForSeconds(1);
-        context.runParallel(new DriveProcedure(drive, 1.25));
-        context.runParallel(new ShootProcedure(shooter, 0.8));
-        context.runParallel(new TurnProcedure(drive, 0.25, 0.5));
-        context.runParallel(new DriveProcedure(drive, 0.3125));
-        context.runParallel(new IntakeProcedure(intake));
-        context.runParallel(new DriveProcedure(drive,0.3125));
-        context.runParallel(new IntakeProcedure(intake));
-        context.runParallel(new TurnProcedure(drive, 0.5, 0.5));
-        context.runParallel(new DriveProcedure(drive, 0.625));
-        context.runParallel(new TurnProcedure(drive, 0.25, 0.5));
-        context.runParallel(new ShootProcedure(shooter, 0.8));
-        context.runParallel(new ShootProcedure(shooter, 0.8));
+        context.runSync(new DriveProcedure(drive, 1.25));
+        context.runSync(new ShootProcedure(shooter, 0.8));
+        context.runSync(new TurnProcedure(drive, 0.25, 0.5));
+        context.runSync(new DriveProcedure(drive, 0.3125));
+        context.runSync(new IntakeProcedure(intake));
+        context.runSync(new DriveProcedure(drive,0.3125));
+        context.runSync(new IntakeProcedure(intake));
+        context.runSync(new TurnProcedure(drive, 0.5, 0.5));
+        context.runSync(new DriveProcedure(drive, 0.625));
+        context.runSync(new TurnProcedure(drive, 0.25, 0.5));
+        context.runSync(new ShootProcedure(shooter, 0.8));
+        context.runSync(new ShootProcedure(shooter, 0.8));
     }
 }

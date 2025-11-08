@@ -11,7 +11,7 @@ public class TurnProcedure extends Procedure{
     private double seconds;
     private double motorPower;
 
-    public TurnProcedure(Autonomous myDrive, double seconds, double motorPower) {
+    public TurnProcedure(Drive myDrive, double seconds, double motorPower) {
         drive = reserve(myDrive);
         this.seconds = seconds;
         this.motorPower = motorPower;

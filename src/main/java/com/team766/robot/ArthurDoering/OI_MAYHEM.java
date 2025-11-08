@@ -1,9 +1,8 @@
-package com.team766.robot.ArthurDoering.OI;
+package com.team766.robot.ArthurDoering;
 import static com.team766.framework.RulePersistence.*;
 import java.util.Set;
 
-import com.team766.framework.Context;
-import com.team766.framework.RuleGroup;
+import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.ArthurDoering.mechanisms.Drive;
@@ -11,8 +10,8 @@ import com.team766.robot.ArthurDoering.mechanisms.Intake;
 import com.team766.robot.ArthurDoering.mechanisms.Shooter;
 import com.team766.robot.common.constants.InputConstants;
 
-public class OI_MAYHEM extends RuleGroup {
-    public OI_MAYHEM(Drive drive, Intake intake, Shooter shoot, Context context) {
+public class OI_MAYHEM extends RuleEngine {
+    public OI_MAYHEM(Drive drive, Intake intake, Shooter shoot) {
         final JoystickReader gamepad = RobotProvider.instance.getJoystick(0);
         addRule(
                 "RUN_LEFT_MOTOR",

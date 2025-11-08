@@ -2,12 +2,13 @@ package com.team766.robot.ArthurDoering.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.ArthurDoering.mechanisms.MovingMotor;
+import com.team766.robot.ArthurDoering.Unused.MovingMotor;
 
 public class MoveMotor extends Procedure {
+
     private MovingMotor motor;
 
-    public void Move(Autonomous myMotor) {
+    public void MoveProcedure(MovingMotor myMotor) {
         motor = reserve(myMotor);
     }
 
