@@ -9,8 +9,8 @@ public class ShootProcedure extends Procedure {
     private Shooter shooter;
     private double motorPower;
 
-    public ShootProcedure(Shooter myShooter, double motorPower) {
-        shooter = reserve(myShooter);
+    public ShootProcedure(Shooter shooter, double motorPower) {
+        this.shooter = reserve(shooter);
         this.motorPower = motorPower;
     }
 

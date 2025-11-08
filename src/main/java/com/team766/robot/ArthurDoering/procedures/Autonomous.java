@@ -12,9 +12,9 @@ public class Autonomous extends Procedure {
     private Intake intake;
 
     public Autonomous(Drive drive, Shooter shoot, Intake intake) {
-        drive = reserve(drive);
-        shooter = reserve(shoot);
-        intake = reserve(intake);
+        this.drive = reserve(drive);
+        this.shooter = reserve(shoot);
+        this.intake = reserve(intake);
     }
 
     public void run(Context context) {

@@ -9,8 +9,8 @@ public class DriveProcedure extends Procedure {
     private Drive drive;
     private double seconds;
 
-    public DriveProcedure(Drive myDrive, double seconds) {
-        drive = reserve(myDrive);
+    public DriveProcedure(Drive drive, double seconds) {
+        this.drive = reserve(drive);
         this.seconds = seconds;
     }
 
