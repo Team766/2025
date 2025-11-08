@@ -33,7 +33,7 @@ public class Robot implements RobotConfigurator {
     @Override
     public AutonomousMode[] getAutonomousModes() {
         return new AutonomousMode[] {
-            new AutonomousMode("Autonomous", () -> new Autonomous(drive, shoot, intake))
+            new AutonomousMode("Autonomous_For_MAyhem", () -> new Autonomous(drive, shoot, intake))
         };
     }
 }
