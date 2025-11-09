@@ -11,7 +11,6 @@ public class Robot implements RobotConfigurator {
     private Drive drive;
     private Shooter shooter;
     private Vision vision;
-    private Lights lights;
 
     @Override
     public void initializeMechanisms() {
@@ -19,22 +18,21 @@ public class Robot implements RobotConfigurator {
         drive = new Drive();
         shooter = new Shooter();
         vision = new Vision();
-        lights = new Lights();
     }
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, shooter, vision, lights);
+        return new OI(drive, shooter, vision);
     }
 
     @Override
     public RuleEngine createLights() {
-        return new Lights();
+        return new Lightss();
     }
 
     @Override
     public AutonomousMode[] getAutonomousModes() {
-        return new AutonomousMode[] {new AutonomousMode("DONT USE ME", () -> new DoNothing())
+        return new AutonomousMode[] {new AutonomousMode("Autonomous", () -> new Autonomous(vision, shooter, drive))
             // Add autonomous modes here like this:
             //    new AutonomousMode("NameOfAutonomousMode", () -> new MyAutonomousProcedure()),
             //

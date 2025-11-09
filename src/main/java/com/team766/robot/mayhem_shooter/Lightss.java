@@ -4,10 +4,10 @@ import com.team766.framework.RuleEngine;
 import com.team766.logging.Category;
 import com.team766.robot.common.mechanisms.LEDString;
 
-public class Lights extends RuleEngine {
+public class Lightss extends RuleEngine {
     private LEDString leds = new LEDString("leds");
 
-    public Lights() {
+    public Lightss() {
         // Add lights rules here.
         
     }

@@ -16,7 +16,7 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
     private GetOrinRawValue backCamera = new GetOrinRawValue("12", 0);
 
     private final double slope = 0.0897;
-    private final double intercept = 0.254;
+    private final double intercept = 0.304;
 
     // Power (percentage) = slope * distance (meters) + intercept
 

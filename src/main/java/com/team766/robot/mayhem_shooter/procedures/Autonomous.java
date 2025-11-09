@@ -20,6 +20,25 @@ public class Autonomous extends Procedure {
 
     @Override
     public void run(Context context) {
+        drive.arcadeDrive(0, -0.25);
+        context.waitForSeconds(2.5);
+        drive.arcadeDrive(0, 0);
+        shooter.setIntakeMotor(1);
+        drive.arcadeDrive(0.25, 0.25);
+        context.waitForSeconds(1);
+        drive.arcadeDrive(-0.35, -0.25);
+        context.waitForSeconds(0.25);
+        drive.arcadeDrive(0, 0);
+        shooter.setShooterPower(0.6);
+        context.waitForSeconds(2);
+        shooter.setIntakeMotor(0);
+        double speed = vision.getShooterSpeedFromDistance();
+        shooter.setShooterPower(speed+0.075);
+        context.waitForSeconds(2);
+        shooter.enableFeeder();
+        context.waitForSeconds(1);
+        shooter.setFeederPower(0);
+        shooter.stopShooterMotor();
         // Begin autonomus phase
         // Step 1: Drive forward and back into the ball
         //Step 2: Activate intake to collect ball

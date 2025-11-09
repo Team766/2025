@@ -14,7 +14,7 @@ import com.team766.robot.mayhem_shooter.procedures.*;
  * interface to the code that allow control of the robot.
  */
 public class OI extends RuleEngine {
-    public OI(Drive drive, Shooter shooter, Vision vision, Lights lights) {
+    public OI(Drive drive, Shooter shooter, Vision vision) {
         final JoystickReader joystick0 = RobotProvider.instance.getJoystick(0);
         final JoystickReader joystick1 = RobotProvider.instance.getJoystick(1);
         final JoystickReader joystick2 = RobotProvider.instance.getJoystick(2);
@@ -35,14 +35,6 @@ public class OI extends RuleEngine {
                     shooter.enableShooter();
                 });
         addRule(
-                "log",
-                joystick0.whenAnyAxisMoved(2),
-                REPEATEDLY,
-                vision,
-                () -> {
-                    vision.sendLog();
-                });
-        addRule(
                 "feed into shooter",
                 joystick0.whenButton(2),
                 ONCE_AND_HOLD,
@@ -58,6 +50,6 @@ public class OI extends RuleEngine {
                 "Shoot Ball Procedure",
                 joystick0.whenButton(4),
                 ONCE_AND_HOLD,
-                () -> new ShootBall(vision, shooter, lights));
+                () -> new ShootBall(vision, shooter));
     }
 }

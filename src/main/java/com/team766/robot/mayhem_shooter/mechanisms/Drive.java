@@ -13,7 +13,7 @@ public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
     public static record DriveStatus() implements Status {}
 
     // TODO: Check for inverted motors
-    public void arcadeDrive(double y, double x) {
+    public void arcadeDrive(double x, double y) {
         leftMotor.set(y + x);
         rightMotor.set(y - x);
     }
