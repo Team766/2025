@@ -5,7 +5,7 @@ import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
-public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
+public class Driver extends MechanismWithStatus<Drive.DriveStatus> {
 
     MotorController leftMotor = RobotProvider.instance.getMotor("leftMotor");
     MotorController rightMotor = RobotProvider.instance.getMotor("rightMotor");
