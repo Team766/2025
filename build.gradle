@@ -108,6 +108,14 @@ task(replayWatch, type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
+// Utility to run apriltags main
+tasks.register('runApriltags', JavaExec) {
+    group = 'application'
+    description = 'Run apriltags positioning utility'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.team766.cgp.ApriltagsPositioning'
+}
+
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
 dependencies {
