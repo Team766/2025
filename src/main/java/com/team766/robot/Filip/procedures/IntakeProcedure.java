@@ -1,8 +1,8 @@
-package com.team766.robot.Kevan.procedures;
+package com.team766.robot.Filip.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.Kevan.mechanisms.Intake;
+import com.team766.robot.Filip.mechanisms.Intake;
 
 public class IntakeProcedure extends Procedure {
 
