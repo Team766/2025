@@ -1,5 +1,7 @@
+package com.team766.robot.Jordan;
+
+
 public class OI extends RuleEngine {
-    
     
     JoystickReader joystickLeft = RobotProvider.instance.getJoystick(index:0);
     JoystickReader joystickRight = RobotProvider.instance.getJoystick(index:0);

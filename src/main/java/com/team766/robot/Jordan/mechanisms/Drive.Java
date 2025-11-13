@@ -1,29 +1,31 @@
+package com.team766.robot.Jordan.mechanisms;
 
-public class Drive extends MechanismWithStatus <Drive.DriveStatus> {
+import com.team766.framework.MechanismWithStatus;
+import com.team766.hal.MotorController;
+import com.team766.hal.RobotProvider;
+
+public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
 
     private MotorController motor1;
     private MotorController motor2;
 
-    Public Drive () {
-        motor1 = RobotProvider.instance.getMotor(configName:"motorLeft");
-        motor2 = RobotProvider.instance.getMotor(configName:"motorRight");
+    public Drive () {
+        motor1 = RobotProvider.instance.getMotor("motorLeft");
+        motor2 = RobotProvider.instance.getMotor("motorRight");
 
     }
-
     
     public record DriveStatus (double currentPositionLeft, double currentPositionRight) implements Status {
     }
 
     protected DriveStatus updateStatus() {
-            return DriveStatus (motor1.getSensorPosition(), motor2.getSensorPosition());
+        return new DriveStatus(motor1.getSensorPosition(), motor2.getSensorPosition());
     }
-    
 
     public void setMotorPower(double powerLeft, double powerRight) {
         motor1.set(powerLeft);
         motor2.set(powerRight);
     }
-
     
 
    

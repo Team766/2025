@@ -1,19 +1,19 @@
-package com.team766.robot.Rookie_Training.mechanisms;
+package com.team766.robot.Jordan.mechanisms;
 
-import com.team776.framework.MechanismWithStatus;
+import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.robot.reva.procedures.PickupNote.status;
 
-public class MovingMotor extends MechanismWithStatus <MovingMotor.MovingMotorStatus> {
+public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStatus> {
 
-    Public MovingMotor () {
-
+    public MovingMotor () {
     }
 
-    MotorController motor = RobotProvider.instance.getMotor(configName:"motor");
+    MotorController motor = RobotProvider.instance.getMotor("motor");
 
-    public record MovingMotorStatus (double currentPosition) implements Status {
+    public record MovingMotorStatus(double currentPosition) implements Status {
     }
 
     public void setMotorPower(double power) {
@@ -21,8 +21,10 @@ public class MovingMotor extends MechanismWithStatus <MovingMotor.MovingMotorSta
     }
 
     protected MovingMotorStatus updateStatus() {
-            return MovingMotorStatus (MotorController.getSensorPosition());
+        return new MovingMotorStatus(motor.getSensorPosition());
     }
+
+   
 
     //MotorController.getSensorPosition();
     //MotorController.setPosition();
