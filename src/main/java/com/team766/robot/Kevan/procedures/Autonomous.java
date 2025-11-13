@@ -18,7 +18,6 @@ public class Autonomous extends Procedure {
     }
 
     public void run(Context context) {
-        // 67
         context.runSync(new DriveProcedure(drive, 1.25));
         context.runSync(new ShootProcedure(shooter, 0.8));
         context.runSync(new TurnProcedure(drive, 0.25, 0.5));
