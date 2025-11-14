@@ -7,8 +7,10 @@ public final class ConfigConstants {
     public static final String INTAKE_DEPLOYMENT_MOTOR = "Intake.deploymentMotor";
     public static final String INTAKE_ABSOLUTE_ENCODER = "Intake.absoluteEncoder";
 
+    // Feeder
+    public static final String FEEDER_FEEDER_MOTOR = "Feeder.feederMotor";
+
     // Shooter
-    public static final String SHOOTER_FEEDER_MOTOR = "Shooter.feederMotor";
     public static final String SHOOTER_SHOOTER_MOTOR = "Shooter.shooterMotor";
 
     // Turret

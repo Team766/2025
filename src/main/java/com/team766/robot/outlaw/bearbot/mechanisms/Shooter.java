@@ -9,34 +9,24 @@ import com.team766.robot.outlaw.bearbot.constants.ConfigConstants;
 
 public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
 
-    private static final double FEEDER_POWER = 1.0;
+    // private static final double FEEDER_POWER = 1.0;
     private static final double SHOOTER_POWER = 1.0;
     private static final double CURRENT_LIMIT = 30.0;
 
-    private final MotorController feederMotor;
+    // private final MotorController feederMotor;
     private final MotorController shooterMotor;
 
-    public static record ShooterStatus(double feederPower, double shooterPower) implements Status {}
+    public static record ShooterStatus(
+            double shooterPower) implements Status {}
 
     public Shooter() {
-        feederMotor = RobotProvider.instance.getMotor(ConfigConstants.SHOOTER_FEEDER_MOTOR);
-        feederMotor.setNeutralMode(NeutralMode.Brake);
-        feederMotor.setCurrentLimit(CURRENT_LIMIT);
 
         shooterMotor = RobotProvider.instance.getMotor(ConfigConstants.SHOOTER_SHOOTER_MOTOR);
         shooterMotor.setNeutralMode(NeutralMode.Brake);
         shooterMotor.setCurrentLimit(CURRENT_LIMIT);
     }
 
-    public void feed() {
-        feederMotor.set(FEEDER_POWER);
-    }
-
-    public void stopFeeder() {
-        feederMotor.set(0.0);
-    }
-
-    public void shoot() {
+     public void shoot() {
         shooterMotor.set(SHOOTER_POWER);
     }
 
@@ -46,6 +36,6 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
 
     @Override
     protected ShooterStatus updateStatus() {
-        return new ShooterStatus(feederMotor.get(), shooterMotor.get());
+        return new ShooterStatus(shooterMotor.get());
     }
 }
