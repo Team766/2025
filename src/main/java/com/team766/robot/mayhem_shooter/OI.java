@@ -1,6 +1,7 @@
 package com.team766.robot.mayhem_shooter;
 
 import static com.team766.framework.RulePersistence.ONCE_AND_HOLD;
+import static com.team766.framework.RulePersistence.ONCE;
 import static com.team766.framework.RulePersistence.REPEATEDLY;
 import java.util.Set;
 import com.team766.framework.RuleEngine;
@@ -30,25 +31,23 @@ public class OI extends RuleEngine {
                         shooter.setShooterPower(vision.getShooterSpeedFromDistance());                
                 });
         addRule(
-                "spin up shooter",
-                joystick0.whenButton(1),
-                ONCE_AND_HOLD,
-                shooter,
-                () -> {
-                    shooter.enableShooter();
-                });
-        addRule(
-                "feed into shooter",
+                "Intake On",
                 joystick0.whenButton(2),
+                ONCE,
+                shooter,
+                () -> shooter.setIntakeMotor(0.5));
+        addRule(
+                "Feed Ball",
+                joystick0.whenButton(1),
                 ONCE_AND_HOLD,
                 shooter,
                 () -> shooter.enableFeeder());
         addRule(
-                "intake",
+                "Intake Off",
                 joystick0.whenButton(3),
-                ONCE_AND_HOLD,
+                ONCE,
                 shooter,
-                () -> shooter.setIntakeMotor(0.5));
+                () -> shooter.setIntakeMotor(0));
         addRule(
                 "Shoot Ball Procedure",
                 joystick0.whenButton(4),
