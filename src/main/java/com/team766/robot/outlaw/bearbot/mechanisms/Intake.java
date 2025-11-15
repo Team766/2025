@@ -9,6 +9,7 @@ import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.outlaw.bearbot.EncoderUtils;
 import com.team766.robot.outlaw.bearbot.constants.ConfigConstants;
+import com.team766.robot.outlaw.bearbot.constants.SetPointConstants;
 
 public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     private final MotorController intakeRollerMotor;
@@ -17,8 +18,6 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     private IntakeState state = IntakeState.STOP;
 
     private static final double CURRENT_LIMIT = 30.0;
-    private static final double POWER_IN = 0.50;
-    private static final double POWER_OUT = -0.50;
 
     public enum IntakeState {
         IN,
@@ -51,9 +50,12 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
         deploymentMotor = RobotProvider.instance.getMotor(ConfigConstants.INTAKE_DEPLOYMENT_MOTOR);
         deploymentMotor.setNeutralMode(NeutralMode.Brake);
         deploymentMotor.setCurrentLimit(CURRENT_LIMIT);
-        // TODO: use the absolute encoder to set offset
+
+        // Use the absolute encoder to set offset
         absoluteEncoder =
                 RobotProvider.instance.getEncoder(ConfigConstants.INTAKE_ABSOLUTE_ENCODER);
+        deploymentMotor.setSensorPosition(
+                absoluteEncoder.getPosition() * ConfigConstants.INTAKE_GEAR_RATIO);
     }
 
     public void deploy(DeploymentPosition position) {
@@ -67,12 +69,12 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
     public void in() {
         state = IntakeState.IN;
-        intakeRollerMotor.set(POWER_IN);
+        intakeRollerMotor.set(SetPointConstants.INTAKE_IN_POWER);
     }
 
     public void out() {
         state = IntakeState.OUT;
-        intakeRollerMotor.set(POWER_OUT);
+        intakeRollerMotor.set(SetPointConstants.INTAKE_OUT_POWER);
     }
 
     public void stop() {

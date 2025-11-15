@@ -6,11 +6,10 @@ import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.outlaw.bearbot.constants.ConfigConstants;
+import com.team766.robot.outlaw.bearbot.constants.SetPointConstants;
 
 public class Feeder extends MechanismWithStatus<Feeder.FeederStatus> {
 
-    private static final double FEEDER_IN_POWER = 1.0;
-    private static final double FEEDER_OUT_POWER = 1.0;
     private static final double CURRENT_LIMIT = 30.0;
 
     private final MotorController feederMotor;
@@ -23,15 +22,15 @@ public class Feeder extends MechanismWithStatus<Feeder.FeederStatus> {
         feederMotor.setCurrentLimit(CURRENT_LIMIT);
     }
 
-    public void feedIn() {
-        feederMotor.set(FEEDER_IN_POWER);
+    public void in() {
+        feederMotor.set(SetPointConstants.FEEDER_IN_POWER);
     }
 
-    public void feedOut() {
-        feederMotor.set(FEEDER_OUT_POWER);
+    public void out() {
+        feederMotor.set(SetPointConstants.FEEDER_OUT_POWER);
     }
 
-    public void feedStop() {
+    public void stop() {
         feederMotor.set(0.0);
     }
 

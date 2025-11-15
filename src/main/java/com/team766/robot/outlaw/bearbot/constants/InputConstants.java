@@ -13,12 +13,14 @@ public final class InputConstants {
     public static final int LEFTSTICK_AXIS_FORWARD_BACKWARD = 1;
     public static final int RIGHTSTICK_AXIS_LEFT_RIGHT = 4;
     public static final int RIGHTSTICK_AXIS_FORWARD_BACKWARD = 5;
-    // Other axes
-    public static final int POV_TURRET_LEFT_RIGHT = 6; // POV left (negative) right (positive)
-    public static final int POV_TURRET_CENTER = 7; // POV center
- 
+
+    // POV (Note: 0 is up, 180 is down, increases clockwise, no button pressed returns -1)
+    public static final int POV_TURRET_LEFT = 270; // POV left (negative) right (positive)
+    public static final int POV_TURRET_RIGHT = 90; // POV left (negative) right (positive)
+    public static final int POV_TURRET_CENTER = 0; // POV center
+
     // Buttons
-    public static final int BUTTON_RESET_GYRO = 7;    // Start button
+    public static final int BUTTON_RESET_GYRO = 7; // Start button
     // public static final int BUTTON_RESET_POS = 8;     // Back button
     public static final int BUTTON_FINE_DRIVING = 10; // Right stick button
     //
@@ -26,6 +28,7 @@ public final class InputConstants {
     public static final int BUTTON_INTAKE_IN = 5; // Left bumper button (toggles intake on/off)
     public static final int BUTTON_INTAKE_OUT = 9; // Left stick button
     public static final int BUTTON_FEEDER_IN = 3; // The "X" button (starts feeder)
-    public static final int BUTTON_FEEDER_OUT = 1; // The "A" button (ends feeder, reverses feeder if currently stopped)
+    public static final int BUTTON_FEEDER_OUT =
+            1; // The "A" button (ends feeder, reverses feeder if currently stopped)
     public static final int BUTTON_SHOOT = 6; // Right bumper button (must be held to shoot)
 }

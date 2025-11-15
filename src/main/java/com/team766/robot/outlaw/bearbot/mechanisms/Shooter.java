@@ -6,18 +6,16 @@ import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.outlaw.bearbot.constants.ConfigConstants;
+import com.team766.robot.outlaw.bearbot.constants.SetPointConstants;
 
 public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
 
-    // private static final double FEEDER_POWER = 1.0;
-    private static final double SHOOTER_POWER = 1.0;
     private static final double CURRENT_LIMIT = 30.0;
 
     // private final MotorController feederMotor;
     private final MotorController shooterMotor;
 
-    public static record ShooterStatus(
-            double shooterPower) implements Status {}
+    public static record ShooterStatus(double shooterPower) implements Status {}
 
     public Shooter() {
 
@@ -26,8 +24,8 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
         shooterMotor.setCurrentLimit(CURRENT_LIMIT);
     }
 
-     public void shoot() {
-        shooterMotor.set(SHOOTER_POWER);
+    public void shoot() {
+        shooterMotor.set(SetPointConstants.SHOOTER_POWER);
     }
 
     public void stopShooter() {

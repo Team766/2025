@@ -35,6 +35,8 @@ public class Turret extends MechanismWithStatus<Turret.TurretStatus> {
         turretMotor = RobotProvider.instance.getMotor(ConfigConstants.TURRET_MOTOR);
         absoluteEncoder =
                 RobotProvider.instance.getEncoder(ConfigConstants.TURRET_ABSOLUTE_ENCODER);
+        turretMotor.setSensorPosition(
+                absoluteEncoder.getPosition() * ConfigConstants.TURRET_GEAR_RATIO);
     }
 
     public void rotate(TurretPosition position) {

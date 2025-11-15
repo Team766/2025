@@ -11,10 +11,14 @@ import com.team766.robot.outlaw.bearbot.constants.InputConstants;
 public class DriverOI extends RuleGroup {
     public DriverOI(JoystickReader driverController, SwerveDrive drive) {
         // Only set deadzones on axes meant for controlling the robot motion
-        driverController.setAxisDeadzone(InputConstants.LEFTSTICK_AXIS_LEFT_RIGHT,ControlConstants.JOYSTICK_DEADZONE);
-        driverController.setAxisDeadzone(InputConstants.LEFTSTICK_AXIS_FORWARD_BACKWARD,ControlConstants.JOYSTICK_DEADZONE);
-        driverController.setAxisDeadzone(InputConstants.RIGHTSTICK_AXIS_LEFT_RIGHT,ControlConstants.JOYSTICK_DEADZONE);
-        driverController.setAxisDeadzone(InputConstants.RIGHTSTICK_AXIS_LEFT_RIGHT,ControlConstants.JOYSTICK_DEADZONE);
+        driverController.setAxisDeadzone(
+                InputConstants.LEFTSTICK_AXIS_LEFT_RIGHT, ControlConstants.JOYSTICK_DEADZONE);
+        driverController.setAxisDeadzone(
+                InputConstants.LEFTSTICK_AXIS_FORWARD_BACKWARD, ControlConstants.JOYSTICK_DEADZONE);
+        driverController.setAxisDeadzone(
+                InputConstants.RIGHTSTICK_AXIS_LEFT_RIGHT, ControlConstants.JOYSTICK_DEADZONE);
+        driverController.setAxisDeadzone(
+                InputConstants.RIGHTSTICK_AXIS_LEFT_RIGHT, ControlConstants.JOYSTICK_DEADZONE);
 
         addRule(
                 "Reset Gyro",
@@ -22,19 +26,19 @@ public class DriverOI extends RuleGroup {
                 ONCE,
                 drive,
                 () -> drive.resetGyro());
- /*        addRule(
-                "Reset Pos",
-                driverController.whenButton(InputConstants.BUTTON_RESET_POS),
-                ONCE,
-                drive,
-                () -> drive.resetCurrentPosition());*/
+        /*        addRule(
+        "Reset Pos",
+        driverController.whenButton(InputConstants.BUTTON_RESET_POS),
+        ONCE,
+        drive,
+        () -> drive.resetCurrentPosition());*/
 
         // Moves the robot if there are joystick inputs
         addRule(
                 "Joysticks moved",
                 () ->
                         driverController.isAxisMoved(InputConstants.LEFTSTICK_AXIS_FORWARD_BACKWARD)
-                        || driverController.isAxisMoved(
+                                || driverController.isAxisMoved(
                                         InputConstants.LEFTSTICK_AXIS_LEFT_RIGHT)
                                 || driverController.isAxisMoved(
                                         InputConstants.RIGHTSTICK_AXIS_LEFT_RIGHT),
