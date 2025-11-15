@@ -4,7 +4,6 @@ import com.team766.framework.MechanismWithStatus;
 import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.robot.reva.procedures.PickupNote.status;
 
 public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStatus> {
 

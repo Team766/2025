@@ -1,22 +1,29 @@
 package com.team766.robot.Jordan;
 
+import static com.team766.framework.RulePersistence.ONCE;
+import static com.team766.robot.burro_elevator.constants.InputConstants.AXIS_FORWARD_BACKWARD;
+import com.team766.framework.RuleEngine;
+import com.team766.hal.JoystickReader;
+import com.team766.hal.RobotProvider;
 
 public class OI extends RuleEngine {
     
-    JoystickReader joystickLeft = RobotProvider.instance.getJoystick(index:0);
-    JoystickReader joystickRight = RobotProvider.instance.getJoystick(index:0);
+    JoystickReader joystickLeft = 
+        RobotProvider.instance.getJoystick(index:0);
+    JoystickReader joystickRight = 
+        RobotProvider.instance.getJoystick(index:0);
 
-    public OI (Drive){
+    public OI (){
 
         addRule ("LEFT",
-            joystickLeft.whenAxis(getAxis),
-            ONCE_AND_HOLD,
+            joystickLeft.getAxis(AXIS_FORWARD_BACKWARD),
+            ONCE,
             Set.of(motor1),
             () -> {motor1.setPower(getAxis);});
 
         addRule ("RIGHT",
-            joystickRight.whenAxis(getAxis),
-            ONCE_AND_HOLD,
+            joystickRight.getAxis(AXIS_FORWARD_BACKWARD),
+            ONCE,
             Set.of(motor2),
             () -> {motor2.setPower(getAxis);});
 

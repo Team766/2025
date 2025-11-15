@@ -4,22 +4,22 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.Jordan.mechanisms.Drive;
 import com.team766.robot.Jordan.mechanisms.MovingMotor;
-import com.team766.robot.Jordan.mechanisms.MovingMotor.MovingMotorStatus;
 
-public class Autostage extends Procedure{
+public class Autostage extends Procedure {
 
     private Drive drive;
     private MovingMotor motor;
 
     public void MoveMotor(Drive Motor1, MovingMotor Motor2){ 
 
+
         drive = reserve(Motor1);
-        motor = (MovingMotor) reserve(Motor2);
+        motor = reserve(Motor2);
 
     }
     
+    @Override
     public void run(Context context){
-
         drive.setMotorPower(1, 0);
         context.waitForSeconds(7);
         drive.setMotorPower(0, 0);

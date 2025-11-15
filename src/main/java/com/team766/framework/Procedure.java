@@ -2,8 +2,6 @@ package com.team766.framework;
 
 import com.google.common.collect.Sets;
 import com.team766.logging.Category;
-import com.team766.robot.Jordan.mechanisms.Drive;
-import com.team766.robot.Jordan.mechanisms.MovingMotour;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Collection;
 import java.util.Set;
@@ -61,22 +59,12 @@ public abstract class Procedure implements StatusesMixin, LoggingBase {
         return Category.PROCEDURES;
     }
 
-    protected final <M extends Reservable> M reserve(Drive motor1) {
+    protected final <M extends Reservable> M reserve(M motor1) {
         if (motor1 == null) {
             throw new NullPointerException("The Mechanism object is null and so can't be reserved");
         }
         reservations.add(motor1);
         return motor1;
-    }
-
-    protected final MovingMotour reserve(Reservable... ms) {
-        for (var m : ms) {
-            if (m == null) {
-                throw new NullPointerException(
-                        "A Mechanism object is null and so can't be reserved");
-            }
-            reservations.add(m);
-        }
     }
 
     protected final void reserve(Collection<? extends Reservable> ms) {
