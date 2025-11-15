@@ -24,20 +24,16 @@ public class Autonomous extends Procedure {
         context.waitForSeconds(2.5);
         drive.arcadeDrive(0, 0);
         shooter.setIntakeMotor(1);
+        shooter.setShooterPower(0.525);
         drive.arcadeDrive(0.25, 0.25);
         context.waitForSeconds(1);
         drive.arcadeDrive(-0.35, -0.25);
         context.waitForSeconds(0.25);
         drive.arcadeDrive(0, 0);
-        //shooter.setShooterPower(0.60);
-        shooter.setShooterPower(0.55);
-        context.waitForSeconds(2);
-        shooter.setIntakeMotor(0);
-        //double speed = vision.getShooterSpeedFromDistance();
-        //shooter.setShooterPower(speed+0.075);
-        context.waitForSeconds(2);
+        context.waitForSeconds(1);
         shooter.enableFeeder();
         context.waitForSeconds(1);
+        shooter.setIntakeMotor(0);
         shooter.setFeederPower(0);
         shooter.stopShooterMotor();
         // Begin autonomus phase

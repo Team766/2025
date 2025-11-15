@@ -2,7 +2,7 @@ package com.team766.robot.mayhem_shooter;
 
 import static com.team766.framework.RulePersistence.ONCE_AND_HOLD;
 import static com.team766.framework.RulePersistence.REPEATEDLY;
-
+import java.util.Set;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
@@ -24,8 +24,11 @@ public class OI extends RuleEngine {
                 "Joysticks Moved",
                 joystick0.whenAnyAxisMoved(0, 1),
                 REPEATEDLY,
-                drive,
-                () -> drive.arcadeDrive(joystick0.getAxis(0), joystick0.getAxis(1)));
+                Set.of(drive, shooter, vision),
+                () -> { 
+                        drive.arcadeDrive(joystick0.getAxis(0), joystick0.getAxis(1));
+                        shooter.setShooterPower(vision.getShooterSpeedFromDistance());                
+                });
         addRule(
                 "spin up shooter",
                 joystick0.whenButton(1),
