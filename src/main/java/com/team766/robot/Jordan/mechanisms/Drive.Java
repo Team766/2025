@@ -7,8 +7,8 @@ import com.team766.hal.RobotProvider;
 
 public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
 
-    private MotorController motor1;
-    private MotorController motor2;
+    public MotorController motor1;
+    public MotorController motor2;
 
     public Drive () {
         motor1 = RobotProvider.instance.getMotor("motorLeft");
@@ -22,23 +22,17 @@ public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
         return new DriveStatus(motor1.getSensorPosition(), motor2.getSensorPosition());
     }
 
-    public void setMotorPower(double powerLeft, double powerRight) {
+    public void setLeftMotorPower(double powerLeft) {
         motor1.set(powerLeft);
+    }
+    public void setRightMotorPower(double powerRight) {
         motor2.set(powerRight);
     }
     
-
-   
-
-
-
     //MotorController.getSensorPosition();
     //MotorController.setPosition();
     //MotorController.setCurrentLimit();
     //MotorController.follow();
     //MotorController.setInverted();
-
-
-
-
+    
 }

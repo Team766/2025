@@ -20,9 +20,11 @@ public class Autostage extends Procedure {
     
     @Override
     public void run(Context context){
-        drive.setMotorPower(1, 0);
+        drive.setLeftMotorPower(1);
+        drive.setRightMotorPower(1);
         context.waitForSeconds(7);
-        drive.setMotorPower(0, 0);
+        drive.setLeftMotorPower(0);
+        drive.setRightMotorPower(0);
         context.waitForSeconds(2);
         motor.setMotorPower(1);
         context.waitForSeconds(1);
