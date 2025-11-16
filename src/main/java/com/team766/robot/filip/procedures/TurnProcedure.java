@@ -1,21 +1,23 @@
-package com.team766.robot.Kevan.procedures;
+package com.team766.robot.filip.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.Kevan.mechanisms.Drive;
+import com.team766.robot.filip.mechanisms.Drive;
 
-public class DriveProcedure extends Procedure {
+public class TurnProcedure extends Procedure {
 
     private Drive drive;
     private double seconds;
+    private double motorPower;
 
-    public DriveProcedure(Drive myDrive, double seconds) {
+    public TurnProcedure(Drive myDrive, double seconds, double motorPower) {
         drive = reserve(myDrive);
         this.seconds = seconds;
+        this.motorPower = motorPower;
     }
 
     public void run(Context context) {
-        drive.move_straight(1);
+        drive.turn_right(motorPower);
         context.waitForSeconds(seconds);
         drive.move_straight(0);
     }
