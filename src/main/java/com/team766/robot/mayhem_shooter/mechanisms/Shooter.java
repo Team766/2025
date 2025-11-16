@@ -64,7 +64,7 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
         // Stop mechanism when nothing is using it.
         stopShooterMotor();
         setFeederPower(0);
-        setIntakeMotor(0);
+        //setIntakeMotor(0);
     }
 
     @Override

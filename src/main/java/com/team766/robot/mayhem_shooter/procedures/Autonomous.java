@@ -21,14 +21,14 @@ public class Autonomous extends Procedure {
     @Override
     public void run(Context context) {
         drive.arcadeDrive(0, -0.25);
-        context.waitForSeconds(2.5);
+        context.waitForSeconds(3);
         drive.arcadeDrive(0, 0);
         shooter.setIntakeMotor(1);
-        shooter.setShooterPower(0.525);
-        drive.arcadeDrive(0.25, 0.25);
-        context.waitForSeconds(1);
-        drive.arcadeDrive(-0.35, -0.25);
-        context.waitForSeconds(0.25);
+        shooter.setShooterPower(0.45);
+        drive.arcadeDrive(0.3, 0.25);
+        context.waitForSeconds(1.2);
+        drive.arcadeDrive(-0.375, -0.275);
+        context.waitForSeconds(0.325);
         drive.arcadeDrive(0, 0);
         context.waitForSeconds(1);
         shooter.enableFeeder();

@@ -25,10 +25,9 @@ public class OI extends RuleEngine {
                 "Joysticks Moved",
                 joystick0.whenAnyAxisMoved(0, 1),
                 REPEATEDLY,
-                Set.of(drive, shooter, vision),
+                drive,
                 () -> { 
-                        drive.arcadeDrive(joystick0.getAxis(0), joystick0.getAxis(1));
-                        shooter.setShooterPower(vision.getShooterSpeedFromDistance());                
+                        drive.arcadeDrive(joystick0.getAxis(0), joystick0.getAxis(1));              
                 });
         addRule(
                 "Intake On",
