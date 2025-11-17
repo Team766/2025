@@ -334,6 +334,7 @@ public class SwerveDrive extends MultiFacetedMechanismWithStatus<SwerveDrive.Dri
 
     @Override
     protected void run() {
+        log("In swervedrive");
         if (shouldCrossWheels()) {
             swerveFR.stopDrive();
             swerveFL.stopDrive();

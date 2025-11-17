@@ -6,6 +6,7 @@ import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 // import com.team766.robot.outlaw.bearbot.procedures.DriveAuto;
+import com.team766.robot.outlaw.bearbot.mechanisms.Deployment;
 import com.team766.robot.outlaw.bearbot.mechanisms.Feeder;
 import com.team766.robot.outlaw.bearbot.mechanisms.Intake;
 import com.team766.robot.outlaw.bearbot.mechanisms.Shooter;
@@ -14,6 +15,7 @@ import com.team766.robot.outlaw.bearbot.mechanisms.Turret;
 public class Robot implements RobotConfigurator {
 
     private SwerveDrive drive;
+    private Deployment deployment;
     private Intake intake;
     private Feeder feeder;
     private Shooter shooter;
@@ -23,6 +25,7 @@ public class Robot implements RobotConfigurator {
     public void initializeMechanisms() {
         SwerveConfig swerveConfig = new SwerveConfig();
         drive = new SwerveDrive(swerveConfig);
+        deployment = new Deployment();
         intake = new Intake();
         feeder = new Feeder();
         shooter = new Shooter();
@@ -31,7 +34,7 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, intake, feeder, shooter, turret);
+        return new OI(drive, deployment, intake, feeder, shooter, turret);
     }
 
     @Override

@@ -26,7 +26,7 @@ public final class InputConstants {
     //
     public static final int BUTTON_DEPLOY = 2; // The "B" button (toggles deployment)
     public static final int BUTTON_INTAKE_IN = 5; // Left bumper button (toggles intake on/off)
-    public static final int BUTTON_INTAKE_OUT = 9; // Left stick button
+    public static final int BUTTON_INTAKE_OUT = 4; // Left stick button
     public static final int BUTTON_FEEDER_IN = 3; // The "X" button (starts feeder)
     public static final int BUTTON_FEEDER_OUT =
             1; // The "A" button (ends feeder, reverses feeder if currently stopped)

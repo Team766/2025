@@ -9,29 +9,23 @@ import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.outlaw.bearbot.EncoderUtils;
 import com.team766.robot.outlaw.bearbot.constants.ConfigConstants;
-import com.team766.robot.outlaw.bearbot.constants.SetPointConstants;
 
-public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
-    private final MotorController intakeRollerMotor;
+public class Deployment extends MechanismWithStatus<Deployment.DeploymentStatus> {
     private final MotorController deploymentMotor;
     private final EncoderReader absoluteEncoder;
-    private IntakeState state = IntakeState.STOP;
+    private DeploymentState state = DeploymentState.RETRACTED;
 
     private static final double CURRENT_LIMIT = 30.0;
 
-    public enum IntakeState {
-        IN,
-        OUT,
-        STOP
+    public enum DeploymentState {
+        DEPLOYED,
+        RETRACTED
     }
 
-    public static record IntakeStatus(IntakeState state, double deploymentAngle)
+    public static record DeploymentStatus(DeploymentState state, double deploymentAngle)
             implements Status {}
 
-    public Intake() {
-        intakeRollerMotor = RobotProvider.instance.getMotor(ConfigConstants.INTAKE_ROLLER_MOTOR);
-        intakeRollerMotor.setNeutralMode(NeutralMode.Brake);
-        intakeRollerMotor.setCurrentLimit(CURRENT_LIMIT);
+    public Deployment() {
         deploymentMotor = RobotProvider.instance.getMotor(ConfigConstants.INTAKE_DEPLOYMENT_MOTOR);
         deploymentMotor.setNeutralMode(NeutralMode.Brake);
         deploymentMotor.setCurrentLimit(CURRENT_LIMIT);
@@ -48,24 +42,9 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
                 ControlMode.Position, EncoderUtils.intakeDeployerDegreesToRotations(degrees));
     }
 
-    public void in() {
-        state = IntakeState.IN;
-        intakeRollerMotor.set(SetPointConstants.INTAKE_IN_POWER);
-    }
-
-    public void out() {
-        state = IntakeState.OUT;
-        intakeRollerMotor.set(SetPointConstants.INTAKE_OUT_POWER);
-    }
-
-    public void stop() {
-        state = IntakeState.STOP;
-        intakeRollerMotor.set(0.0);
-    }
-
     @Override
-    protected IntakeStatus updateStatus() {
-        return new IntakeStatus(
+    protected DeploymentStatus updateStatus() {
+        return new DeploymentStatus(
                 state,
                 EncoderUtils.intakeDeployerRotationsToDegrees(deploymentMotor.getSensorPosition()));
     }

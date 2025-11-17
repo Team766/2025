@@ -3,6 +3,9 @@ package com.team766.robot.common.mechanisms;
 import com.team766.hal.EncoderReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -82,6 +85,14 @@ public class SwerveModule {
     }
 
     private double computeEncoderOffset() {
+        Logger.get(Category.DRIVE)
+                .logRaw(
+                        Severity.INFO,
+                        modulePlacement
+                                + " init at "
+                                + (steer.getSensorPosition() / encoderConversionFactor) % 360
+                                + " "
+                                + encoder.getPosition() * 360);
         return (steer.getSensorPosition() / encoderConversionFactor) % 360
                 - (encoder.getPosition() * 360);
     }
@@ -170,5 +181,9 @@ public class SwerveModule {
         // SmartDashboard.putNumber(
         //         "[" + modulePlacement + "]" + " drive stator current",
         //         MotorUtil.getStatorCurrentUsage(drive));
+        org.littletonrobotics.junction.Logger.recordOutput(
+                "Swerve/" + modulePlacement + "/" + "absoluteEncoder", encoder.getPosition());
+        org.littletonrobotics.junction.Logger.recordOutput(
+                "Swerve/" + modulePlacement + "/" + "motorEncoder", steer.getSensorPosition());
     }
 }

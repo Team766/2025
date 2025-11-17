@@ -338,8 +338,9 @@ public abstract class RobotProvider {
             Logger.get(Category.CONFIGURATION)
                     .logData(
                             Severity.ERROR,
-                            "Gyro %s not found in config file, using mock gyro instead",
-                            configName);
+                            "Gyro %s not found in config file, using mock gyro instead\n%s",
+                            configName,
+                            ex.toString());
             return new MockGyro();
         }
     }

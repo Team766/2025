@@ -19,10 +19,10 @@ public final class ConfigConstants {
 
     // Gear Ratios
     public static final double INTAKE_GEAR_RATIO = 1;
-    public static final double DEPLOYMENT_GEAR_RATIO = 60;
+    public static final double DEPLOYMENT_GEAR_RATIO = 60 /* 60 */;
     public static final double FEEDER_GEAR_RATIO = 1;
     public static final double SHOOTER_GEAR_RATIO = 1;
-    public static final double TURRET_GEAR_RATIO = 60 * 6.75;
+    public static final double TURRET_GEAR_RATIO = 60 * 6.75 / 2.75;
 
     private ConfigConstants() {}
 }

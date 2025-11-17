@@ -12,7 +12,6 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
 
     private static final double CURRENT_LIMIT = 30.0;
 
-    // private final MotorController feederMotor;
     private final MotorController shooterMotor;
 
     public static record ShooterStatus(double shooterPower) implements Status {}

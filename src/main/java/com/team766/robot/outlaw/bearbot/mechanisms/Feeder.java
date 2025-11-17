@@ -17,6 +17,7 @@ public class Feeder extends MechanismWithStatus<Feeder.FeederStatus> {
     public static record FeederStatus(double feederPower) implements Status {}
 
     public Feeder() {
+
         feederMotor = RobotProvider.instance.getMotor(ConfigConstants.FEEDER_FEEDER_MOTOR);
         feederMotor.setNeutralMode(NeutralMode.Brake);
         feederMotor.setCurrentLimit(CURRENT_LIMIT);

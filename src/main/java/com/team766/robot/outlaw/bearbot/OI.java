@@ -13,7 +13,13 @@ import com.team766.robot.outlaw.bearbot.constants.SetPointConstants;
 import com.team766.robot.outlaw.bearbot.mechanisms.*;
 
 public class OI extends RuleEngine {
-    public OI(SwerveDrive drive, Intake intake, Feeder feeder, Shooter shooter, Turret turret) {
+    public OI(
+            SwerveDrive drive,
+            Deployment deployment,
+            Intake intake,
+            Feeder feeder,
+            Shooter shooter,
+            Turret turret) {
         final JoystickReader driverController =
                 RobotProvider.instance.getJoystick(InputConstants.DRIVER_CONTROLLER);
 
@@ -21,44 +27,45 @@ public class OI extends RuleEngine {
         addRules(new DriverOI(driverController, drive));
 
         // Button controls (deploy, intake, feeder, shooter)
-        addRule( // toggle between up and down positions
-                        "Deploy",
+        addRule( // toggle Deployment between up and down positions
+                        "Deployment",
                         new Conditions.Toggle(
                                 driverController.whenButton(InputConstants.BUTTON_DEPLOY)))
                 .withOnTriggeringProcedure(
                         ONCE_AND_HOLD,
-                        intake,
-                        () -> intake.deploy(SetPointConstants.DEPLOYMENT_DEPLOYED))
+                        deployment,
+                        () -> deployment.deploy(SetPointConstants.DEPLOYMENT_DEPLOYED))
                 .withFinishedTriggeringProcedure(
-                        intake, () -> intake.deploy(SetPointConstants.DEPLOYMENT_RETRACTED));
+                        deployment,
+                        () -> deployment.deploy(SetPointConstants.DEPLOYMENT_RETRACTED));
 
-        addRule( // toggle between In power and Stop
+        addRule( // toggle Intake between In power and Stop
                         "Intake In",
                         new Conditions.Toggle(
                                 driverController.whenButton(InputConstants.BUTTON_INTAKE_IN)))
                 .withOnTriggeringProcedure(ONCE_AND_HOLD, intake, () -> intake.in())
                 .withFinishedTriggeringProcedure(intake, () -> intake.stop());
 
-        addRule( // toggle between Out power and Stop
+        addRule( // toggle Intake between Out power and Stop
                         "Intake Out",
                         new Conditions.Toggle(
                                 driverController.whenButton(InputConstants.BUTTON_INTAKE_OUT)))
                 .withOnTriggeringProcedure(ONCE_AND_HOLD, intake, () -> intake.out())
                 .withFinishedTriggeringProcedure(intake, () -> intake.stop());
 
-        addRule( // toggle between In power and Stop
+        addRule( // toggle Feeder between In power and Stop
                         "Feeder In",
                         new Conditions.Toggle(
                                 driverController.whenButton(InputConstants.BUTTON_FEEDER_IN)))
-                .withOnTriggeringProcedure(ONCE_AND_HOLD, feeder, () -> feeder.in())
-                .withFinishedTriggeringProcedure(intake, () -> feeder.stop());
+                .withOnTriggeringProcedure(ONCE, feeder, () -> feeder.in())
+                .withFinishedTriggeringProcedure(feeder, () -> feeder.stop());
 
-        addRule( // toggle between Out power and Stop
+        addRule( // toggle Feeder between Out power and Stop
                         "Feeder Out",
                         new Conditions.Toggle(
                                 driverController.whenButton(InputConstants.BUTTON_FEEDER_OUT)))
-                .withOnTriggeringProcedure(ONCE_AND_HOLD, feeder, () -> feeder.out())
-                .withFinishedTriggeringProcedure(intake, () -> feeder.stop());
+                .withOnTriggeringProcedure(ONCE, feeder, () -> feeder.out())
+                .withFinishedTriggeringProcedure(feeder, () -> feeder.stop());
 
         addRule( // apply shooter power until released, then Stop
                         "Shoot",
