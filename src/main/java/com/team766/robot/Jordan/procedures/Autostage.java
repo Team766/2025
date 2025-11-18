@@ -21,10 +21,10 @@ public class Autostage extends Procedure {
     public void run(Context context){
         drive.setLeftMotorPower(1);
         drive.setRightMotorPower(1);
-        context.waitForSeconds(7);
+        context.waitForSeconds(1);
         drive.setLeftMotorPower(0);
         drive.setRightMotorPower(0);
-        context.waitForSeconds(2);
+        context.waitForSeconds(.1);
         motor.setMotorPower(1);
         drive.motor4.setIntakeMotorPower(1);
         context.waitForSeconds(1);
