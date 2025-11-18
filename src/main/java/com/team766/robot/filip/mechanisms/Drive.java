@@ -7,8 +7,8 @@ import com.team766.hal.RobotProvider;
 
 public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
 
-    MotorController leftMotor = RobotProvider.instance.getMotor("leftMotor");
-    MotorController rightMotor = RobotProvider.instance.getMotor("rightMotor");
+    MotorController leftMotor = RobotProvider.instance.getMotor("drive.leftMotor");
+    MotorController rightMotor = RobotProvider.instance.getMotor("drive.rightMotor");
 
     public record DriveStatus(double pos_leftMotor, double pos_rightMotor) implements Status {}
 

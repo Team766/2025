@@ -5,10 +5,10 @@ import static com.team766.framework.RulePersistence.*;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
+import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.filip.mechanisms.Drive;
 import com.team766.robot.filip.mechanisms.Intake;
 import com.team766.robot.filip.mechanisms.Shooter;
-import com.team766.robot.common.constants.InputConstants;
 import java.util.Set;
 
 public class OI_MAYHEM extends RuleEngine {
