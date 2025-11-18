@@ -25,9 +25,9 @@ public class OI extends RuleEngine {
     JoystickReader buttonIntake = 
         RobotProvider.instance.getJoystick(2);
     JoystickReader buttonLoad = 
-        RobotProvider.instance.getJoystick(2);
-    JoystickReader buttonFire = 
         RobotProvider.instance.getJoystick(3);
+    JoystickReader buttonFire = 
+        RobotProvider.instance.getJoystick(4);
 
         addRule ("LEFT",
             joystickLeft.whenAxisMoved(AXIS_FORWARD_BACKWARD),

@@ -7,18 +7,19 @@ import com.team766.hal.RobotProvider;
 
 public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
 
-    public MotorController motor1;
-    public MotorController motor2;
-    public MotorController motor3;
-    public MotorController motor4;
+    public MotorController motor1; //Left Wheels Drive
+    public MotorController motor2; //Right Wheels Drive
+    public MotorController motor3; //Motor to send ball into shooter
+    public MotorController motor4; //Motor for the Inake
 
     public Drive () {
-        motor1 = RobotProvider.instance.getMotor("motorLeft");
-        motor2 = RobotProvider.instance.getMotor("motorRight");
-        motor3 = RobotProvider.instance.getMotor("motorLoad");
-        motor4 = RobotProvider.instance.getMotor("motorIntake");
-    }
-    
+        motor1 = RobotProvider.instance.getMotor("motorLeft"); //setLeftMotorPower
+        motor2 = RobotProvider.instance.getMotor("motorRight"); //setRightMotorPower
+        motor3 = RobotProvider.instance.getMotor("motorLoad"); //setLoadMotorPower
+        motor4 = RobotProvider.instance.getMotor("motorIntake"); //setIntakeMotorPower
+    }   
+       //The Shoot motor is setMotorPower
+       
     public record DriveStatus(double currentPositionLeft, double currentPositionRight, double currentPositionLoad, double currentPositionIntake) implements Status {
     }
 

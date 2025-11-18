@@ -14,11 +14,10 @@ public class Autostage extends Procedure {
 
 
         drive = reserve(Motor1);
-        motor = reserve(Motor2);
+        motor = reserve(Motor1);
 
     }
     
-    @Override
     public void run(Context context){
         drive.setLeftMotorPower(1);
         drive.setRightMotorPower(1);
@@ -27,7 +26,9 @@ public class Autostage extends Procedure {
         drive.setRightMotorPower(0);
         context.waitForSeconds(2);
         motor.setMotorPower(1);
+        drive.motor4.setIntakeMotorPower(1);
         context.waitForSeconds(1);
         motor.setMotorPower(0);
+        drive.motor4.setIntakeMotorPower(1);
     }    
 }

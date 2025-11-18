@@ -23,14 +23,10 @@ public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStat
         return new MovingMotorStatus(motor.getSensorPosition());
     }
 
-   
-
     //MotorController.getSensorPosition();
     //MotorController.setPosition();
     //MotorController.setCurrentLimit();
     //MotorController.follow();
     //MotorController.setInverted();
-
-
 
 }
