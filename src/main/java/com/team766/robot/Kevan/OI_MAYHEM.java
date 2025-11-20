@@ -52,7 +52,7 @@ public class OI_MAYHEM extends RuleEngine {
                         (context) -> {
                             shooter.SetShooterSpeed(
                                     gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_TRIGGER));
-                            context.waitForSeconds(0.25);
+                            context.waitForSeconds(1);
                             shooter.SetTransferSpeed(1);
                         })
                 .withFinishedTriggeringProcedure(
