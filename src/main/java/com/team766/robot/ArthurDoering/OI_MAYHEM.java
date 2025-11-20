@@ -48,10 +48,10 @@ public class OI_MAYHEM extends RuleEngine {
         addRule(
                         "SHOOT_SET_POWER",
                         gamepad.whenButton(InputConstants.GAMEPAD_RIGHT_TRIGGER),
-                        ONCE_AND_HOLD,
+                        REPEATEDLY,
                         Set.of(shoot),
                         () -> {
-                            shoot.SetShooterSpeed(1);
+                            shoot.SetShooterSpeed(InputConstants.GAMEPAD_RIGHT_TRIGGER);
                             context.waitForSeconds(1);
                             shoot.SetTransferSpeed(1);
                         })
@@ -59,7 +59,6 @@ public class OI_MAYHEM extends RuleEngine {
                         intake,
                         () -> {
                             shoot.SetTransferSpeed(0);
-                            shoot.SetShooterSpeed(0);
                         });
     }
 }
