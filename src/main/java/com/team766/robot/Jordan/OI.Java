@@ -48,7 +48,7 @@ public class OI extends RuleEngine {
         );
 
         addRule ("INTAKE",
-            buttonIntake.whenButton(12),
+            buttonIntake.whenButton(5),
             ONCE_AND_HOLD,
             Set.of(drive),
             () -> {
@@ -57,7 +57,7 @@ public class OI extends RuleEngine {
         );
 
         addRule ("LOAD",
-            buttonLoad.whenButton(AXIS_FORWARD_BACKWARD),
+            buttonLoad.whenButton(8),
             ONCE,
             Set.of(drive),
             () -> {
@@ -66,7 +66,7 @@ public class OI extends RuleEngine {
         );
 
         addRule ("SHOOT",
-            buttonFire.whenButton(12),
+            buttonFire.whenButton(6),
             ONCE,
             Set.of(moveitmoveitMotor),
             () -> {
