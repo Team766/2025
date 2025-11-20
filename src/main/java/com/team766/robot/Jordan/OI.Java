@@ -30,7 +30,7 @@ public class OI extends RuleEngine {
         RobotProvider.instance.getJoystick(6);
 
         addRule ("LEFT",
-            joystickLeft.whenAxisMoved(AXIS_FORWARD_BACKWARD),
+            joystickLeft.whenAxisMoved(0),
             REPEATEDLY,
             Set.of(drive),
             () -> {
@@ -39,7 +39,7 @@ public class OI extends RuleEngine {
         );
 
         addRule ("RIGHT",
-            joystickRight.whenAxisMoved(AXIS_FORWARD_BACKWARD),
+            joystickRight.whenAxisMoved(1),
             REPEATEDLY,
             Set.of(drive),
             () -> {
