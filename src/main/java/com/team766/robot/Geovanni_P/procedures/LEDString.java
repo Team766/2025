@@ -14,11 +14,7 @@ public class LEDString {
         public Lights(String configPrefix) {
             super(configPrefix);
         }
-    
-        public class OI extends RuleEngine {
 
-            public OI()
-        }
     
     
     

@@ -2,7 +2,7 @@ package com.team766.robot.Geovanni_P.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.Geovanni_P.mechanisms.MovingMotor;
+import com.team766.robot.Geovanni_P.Mechanisms.MovingMotor;
 
 public class MoveMotor extends Procedure {
 

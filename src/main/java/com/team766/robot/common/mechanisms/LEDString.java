@@ -126,7 +126,7 @@ public class LEDString extends MultiFacetedMechanism {
     }
 
     @NoReservationRequired
-    public Segment makeSegment(int ledStartIndex, int ledCount) {
+    public static Segment makeSegment(int ledStartIndex, int ledCount) {
         final int ledEndIndex = ledStartIndex + ledCount;
         for (var s : segments) {
             if (Maths.overlaps(ledStartIndex, ledEndIndex, s.startIndex, s.startIndex + s.count)) {
