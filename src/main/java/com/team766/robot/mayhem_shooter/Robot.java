@@ -11,6 +11,7 @@ public class Robot implements RobotConfigurator {
     private Drive drive;
     private Shooter shooter;
     private Vision vision;
+    private Lights lights;
 
     @Override
     public void initializeMechanisms() {
@@ -18,11 +19,12 @@ public class Robot implements RobotConfigurator {
         drive = new Drive();
         shooter = new Shooter();
         vision = new Vision();
+        lights = new Lights();
     }
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, shooter, vision);
+        return new OI(drive, shooter, vision, lights);
     }
 
     @Override

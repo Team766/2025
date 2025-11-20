@@ -15,7 +15,7 @@ import com.team766.robot.mayhem_shooter.procedures.*;
  * interface to the code that allow control of the robot.
  */
 public class OI extends RuleEngine {
-    public OI(Drive drive, Shooter shooter, Vision vision) {
+    public OI(Drive drive, Shooter shooter, Vision vision, Lights lights) {
         final JoystickReader joystick0 = RobotProvider.instance.getJoystick(0);
         final JoystickReader joystick1 = RobotProvider.instance.getJoystick(1);
         final JoystickReader joystick2 = RobotProvider.instance.getJoystick(2);
@@ -27,7 +27,7 @@ public class OI extends RuleEngine {
                 REPEATEDLY,
                 drive,
                 () -> { 
-                        drive.arcadeDrive(joystick0.getAxis(0), joystick0.getAxis(1));              
+                        drive.arcadeDrive(joystick0.getAxis(0), joystick0.getAxis(1));             
                 });
         addRule(
                 "Intake On",
@@ -47,6 +47,20 @@ public class OI extends RuleEngine {
                 ONCE,
                 shooter,
                 () -> shooter.setIntakeMotor(0));
+        addRule(
+                "Shoot Ball for Testing",
+                joystick0.whenButton(5),
+                ONCE_AND_HOLD,
+                shooter,
+                () -> shooter.setShooterPower(0.43));
+        addRule(
+                "Check Kracken Distance",
+                joystick0.whenButton(6),
+                ONCE,
+                Set.of(vision, lights),
+                () -> { 
+                        lights.setKrakenColor(vision.getDistanceFromKraken());             
+                });
         addRule(
                 "Shoot Ball Procedure",
                 joystick0.whenButton(4),

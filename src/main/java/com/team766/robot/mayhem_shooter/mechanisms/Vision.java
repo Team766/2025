@@ -85,4 +85,16 @@ public class Vision extends MechanismWithStatus<Vision.VisionStatus> {
     protected VisionStatus updateStatus() {
         return new VisionStatus();
     }
+
+    public double getDistanceFromKraken() {
+        double distance = 0;
+        distance = getDistanceFromTagFront(1);
+
+        if (distance == 0) {
+            distance = getDistanceFromTagFront(5);
+        }
+        log("DIST: " + distance);
+
+        return distance;
+    }
 }
