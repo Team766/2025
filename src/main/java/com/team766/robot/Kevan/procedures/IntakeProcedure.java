@@ -14,7 +14,7 @@ public class IntakeProcedure extends Procedure {
 
     public void run(Context context) {
         intake.SetIntake(1);
-        context.waitForSeconds(0.5);
+        context.waitForSeconds(1);
         intake.SetIntake(0);
     }
 }

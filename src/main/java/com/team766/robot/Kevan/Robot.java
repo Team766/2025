@@ -6,7 +6,7 @@ import com.team766.hal.RobotConfigurator;
 import com.team766.robot.Kevan.mechanisms.Drive;
 import com.team766.robot.Kevan.mechanisms.Intake;
 import com.team766.robot.Kevan.mechanisms.Shooter;
-import com.team766.robot.Kevan.procedures.Autonomous;
+import com.team766.robot.Kevan.procedures.Autonomous.Autonomous;
 
 public class Robot implements RobotConfigurator {
 

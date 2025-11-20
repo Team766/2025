@@ -16,7 +16,7 @@ public class ShootProcedure extends Procedure {
 
     public void run(Context context) {
         shooter.SetShooterSpeed(power);
-        context.waitForSeconds(0.25);
+        context.waitForSeconds(1);
         shooter.SetTransferSpeed(1);
         context.waitForSeconds(0.5);
         shooter.SetTransferSpeed(0);

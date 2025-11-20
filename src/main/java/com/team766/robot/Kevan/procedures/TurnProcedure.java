@@ -8,16 +8,14 @@ public class TurnProcedure extends Procedure {
 
     private Drive drive;
     private double seconds;
-    private double motorPower;
 
-    public TurnProcedure(Drive myDrive, double seconds, double motorPower) {
+    public TurnProcedure(Drive myDrive, double seconds) {
         drive = reserve(myDrive);
         this.seconds = seconds;
-        this.motorPower = motorPower;
     }
 
     public void run(Context context) {
-        drive.turn_right(motorPower);
+        drive.turn_right(1);
         context.waitForSeconds(seconds);
         drive.turn_right(0);
     }
