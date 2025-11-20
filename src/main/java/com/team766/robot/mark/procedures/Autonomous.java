@@ -14,15 +14,5 @@ public class Autonomous extends Procedure {
         drive = reserve(my_drive);
     }
 
-    public void run(Context context) {
-        // Move forward at 60% power for 3 seconds
-        drive.move_forward(0.6);
-        context.waitForSeconds(3);
-        drive.stop();
-
-        // Shoot ball by spinning motor at 100% power for 5 seconds
-        motor.move(1);
-        context.waitForSeconds(5);
-        motor.stop();
-    }
+    public void run(Context context) {}
 }

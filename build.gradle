@@ -15,8 +15,8 @@ def protobufVersion = '3.21.6'
 def errorproneVersion = '2.37.0'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 def ROBOT_MAIN_CLASS = "com.team766.hal.wpilib.RobotMain"
 
