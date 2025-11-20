@@ -16,7 +16,7 @@ import com.team766.robot.common.mechanisms.BurroDrive;
  * interface to the code that allow control of the robot.
  */
 public class OI extends RuleEngine {
-    public OI(BurroDrive drive, Arm arm, Gripper gripper) {
+    public OI(BurroDrive drive) {
         JoystickReader joystick0 = RobotProvider.instance.getJoystick(0);
         JoystickReader joystick1 = RobotProvider.instance.getJoystick(1);
         JoystickReader joystick2 = RobotProvider.instance.getJoystick(2);
@@ -29,34 +29,6 @@ public class OI extends RuleEngine {
                 REPEATEDLY,
                 drive,
                 () -> drive.drive(-joystick0.getAxis(1) * 0.5, -joystick0.getAxis(2) * 0.3));
-
-        addRule(
-                "Arm Up",
-                joystick0.whenButton(BUTTON_ARM_UP),
-                arm,
-                () ->
-                        arm.setAngle(
-                                getStatusOrThrow(Arm.ArmStatus.class).angle()
-                                        + NUDGE_UP_INCREMENT));
-        addRule(
-                "Arm Down",
-                joystick0.whenButton(BUTTON_ARM_DOWN),
-                arm,
-                () ->
-                        arm.setAngle(
-                                getStatusOrThrow(Arm.ArmStatus.class).angle()
-                                        - NUDGE_DOWN_INCREMENT));
-
-        addRule(
-                "Gripper Intake",
-                joystick0.whenButton(BUTTON_INTAKE),
-                gripper,
-                () -> gripper.intake());
-        addRule(
-                "Gripper Outtake",
-                joystick0.whenButton(BUTTON_OUTTAKE),
-                gripper,
-                () -> gripper.outtake());
     }
 
     @Override
