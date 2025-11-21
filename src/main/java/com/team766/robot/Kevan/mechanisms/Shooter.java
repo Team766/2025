@@ -7,23 +7,23 @@ import com.team766.hal.RobotProvider;
 
 public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
 
-    MotorController shooter_motor = RobotProvider.instance.getMotor("shooter.shooter_motor");
-    MotorController transfer_motor = RobotProvider.instance.getMotor("shooter.transfer_motor");
+    MotorController shooterMotor = RobotProvider.instance.getMotor("shooter.shooterMotor");
+    MotorController transferMotor = RobotProvider.instance.getMotor("shooter.transferMotor");
 
     public record ShooterStatus(double pos_shooter, double pos_transfer) implements Status {}
 
     public Shooter() {}
 
     public void SetShooterSpeed(double motorPower) {
-        shooter_motor.set(motorPower);
+        shooterMotor.set(motorPower);
     }
 
     public void SetTransferSpeed(double motorPower) {
-        transfer_motor.set(motorPower);
+        transferMotor.set(motorPower);
     }
 
     protected ShooterStatus updateStatus() {
         return new ShooterStatus(
-                shooter_motor.getSensorPosition(), transfer_motor.getSensorPosition());
+                shooterMotor.getSensorPosition(), transferMotor.getSensorPosition());
     }
 }

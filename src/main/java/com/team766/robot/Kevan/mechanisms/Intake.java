@@ -7,17 +7,17 @@ import com.team766.hal.RobotProvider;
 
 public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
-    MotorController intake_motor = RobotProvider.instance.getMotor("intake.intake_motor");
+    MotorController intakeMotor = RobotProvider.instance.getMotor("intake.intakeMotor");
 
     public record IntakeStatus(double currentPosition) implements Status {}
 
     public Intake() {}
 
     public void SetIntake(double motorPower) {
-        intake_motor.set(motorPower);
+        intakeMotor.set(motorPower);
     }
 
     protected IntakeStatus updateStatus() {
-        return new IntakeStatus(intake_motor.getSensorPosition());
+        return new IntakeStatus(intakeMotor.getSensorPosition());
     }
 }
