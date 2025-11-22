@@ -34,7 +34,7 @@ public class OI extends RuleEngine {
             REPEATEDLY,
             Set.of(drive),
             () -> {
-                drive.setLeftMotorPower(joystickLeft.getAxis(1));
+                drive.setLeftMotorPower(joystickLeft.getAxis(0));
             }
         );
 
