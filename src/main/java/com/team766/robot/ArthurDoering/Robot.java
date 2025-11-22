@@ -7,6 +7,7 @@ import com.team766.robot.ArthurDoering.mechanisms.Drive;
 import com.team766.robot.ArthurDoering.mechanisms.Intake;
 import com.team766.robot.ArthurDoering.mechanisms.Shooter;
 import com.team766.robot.ArthurDoering.procedures.Autonomous;
+import com.team766.robot.ArthurDoering.procedures.TestAuton;
 
 public class Robot implements RobotConfigurator {
     private Drive drive;
@@ -33,7 +34,7 @@ public class Robot implements RobotConfigurator {
     @Override
     public AutonomousMode[] getAutonomousModes() {
         return new AutonomousMode[] {
-            new AutonomousMode("Autonomous_For_MAyhem", () -> new Autonomous(drive, shoot, intake))
+            new AutonomousMode("Autonomous_For_MAyhem", () -> new TestAuton(drive, shoot, intake))
         };
     }
 }
