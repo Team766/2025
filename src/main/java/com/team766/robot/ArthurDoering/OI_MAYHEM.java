@@ -44,8 +44,7 @@ public class OI_MAYHEM extends RuleEngine {
                         Set.of(shoot),
                         () -> {
                             shoot.SetShooterSpeed(InputConstants.GAMEPAD_RIGHT_TRIGGER);
-                            context.waitForSeconds(1);
-                            shoot.SetTransferSpeed(1);
+                            shoot.SetTransferSpeed(InputConstants.GAMEPAD_LEFT_BUMPER_BUTTON);
                         })
                 .withFinishedTriggeringProcedure(
                         intake,
