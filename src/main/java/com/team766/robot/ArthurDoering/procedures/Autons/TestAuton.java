@@ -1,10 +1,13 @@
-package com.team766.robot.ArthurDoering.procedures;
+package com.team766.robot.ArthurDoering.procedures.Autons;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.ArthurDoering.mechanisms.Drive;
 import com.team766.robot.ArthurDoering.mechanisms.Intake;
 import com.team766.robot.ArthurDoering.mechanisms.Shooter;
+import com.team766.robot.ArthurDoering.procedures.DriveProcedure;
+import com.team766.robot.ArthurDoering.procedures.IntakeProcedure;
+import com.team766.robot.ArthurDoering.procedures.ShootProcedure;
 
 public class TestAuton extends Procedure {
     private Drive drive;
