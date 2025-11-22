@@ -13,7 +13,7 @@ public class IntakeProcedure extends Procedure {
     }
 
     public void run(Context context) {
-        intake.setIntake(1);
+        intake.setIntake(0.1);
         context.waitForSeconds(0.5);
         intake.setIntake(0);
     }

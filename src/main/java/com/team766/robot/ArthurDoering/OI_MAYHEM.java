@@ -29,7 +29,7 @@ public class OI_MAYHEM extends RuleEngine {
                         ONCE_AND_HOLD,
                         Set.of(intake),
                         () -> {
-                            intake.setIntake(1);
+                            intake.setIntake(0.5);
                         })
                 .withFinishedTriggeringProcedure(
                         intake,
