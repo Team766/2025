@@ -39,7 +39,7 @@ public class OI_MAYHEM extends RuleEngine {
                         });
         addRule(
                         "SHOOT_SET_POWER",
-                        gamepad.whenAxisMoved(3),
+                        gamepad.whenAnyAxisMoved(2,3),
                         REPEATEDLY,
                         Set.of(shoot),
                         () -> {
