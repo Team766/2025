@@ -6,8 +6,8 @@ import com.team766.hal.RobotConfigurator;
 import com.team766.robot.ArthurDoering.mechanisms.Drive;
 import com.team766.robot.ArthurDoering.mechanisms.Intake;
 import com.team766.robot.ArthurDoering.mechanisms.Shooter;
-//import com.team766.robot.ArthurDoering.procedures.Autons.Autonomous;
-import com.team766.robot.ArthurDoering.procedures.Autons.TestAuton;
+// import com.team766.robot.ArthurDoering.procedures.autons.Autonomous;
+import com.team766.robot.ArthurDoering.procedures.autons.TestAuton;
 
 public class Robot implements RobotConfigurator {
     private Drive drive;

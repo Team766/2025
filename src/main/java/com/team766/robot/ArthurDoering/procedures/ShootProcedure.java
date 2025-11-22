@@ -18,15 +18,15 @@ public class ShootProcedure extends Procedure {
     }
 
     public void run(Context context) {
-        shooter.SetShooterSpeed(motorPower);
-        context.waitForSeconds(0.5);
-        shooter.SetTransferSpeed(1);
+        shooter.SetTransferSpeed(motorPower);
+        context.waitForSeconds(2);
+        shooter.SetShooterSpeed(1);
         context.waitForSeconds(1);
         intake.setIntake(1);
-        shooter.SetTransferSpeed(1);
+        shooter.SetShooterSpeed(1);
         context.waitForSeconds(1);
         intake.setIntake(0);
-        shooter.SetTransferSpeed(0);
         shooter.SetShooterSpeed(0);
+        shooter.SetTransferSpeed(0);
     }
 }

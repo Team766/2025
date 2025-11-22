@@ -38,12 +38,12 @@ public class OI_MAYHEM extends RuleEngine {
                         });
         addRule(
                         "SHOOT_SET_POWER",
-                        gamepad.whenAnyAxisMoved(2,3),
+                        gamepad.whenAnyAxisMoved(2, 3),
                         REPEATEDLY,
                         Set.of(shoot),
                         () -> {
                             shoot.SetShooterSpeed(gamepad.getAxis(3));
-                            shoot.SetTransferSpeed(gamepad.getAxis(2));
+                            shoot.SetTransferSpeed(gamepad.getAxis(2)*0.6);
                         })
                 .withFinishedTriggeringProcedure(
                         intake,
