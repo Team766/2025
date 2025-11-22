@@ -2,7 +2,6 @@ package com.team766.robot.ArthurDoering;
 
 import static com.team766.framework.RulePersistence.*;
 
-import com.team766.framework.Context;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
@@ -13,7 +12,7 @@ import com.team766.robot.common.constants.InputConstants;
 import java.util.Set;
 
 public class OI_MAYHEM extends RuleEngine {
-    public OI_MAYHEM(Drive drive, Intake intake, Shooter shoot, Context context) {
+    public OI_MAYHEM(Drive drive, Intake intake, Shooter shoot) {
         final JoystickReader gamepad = RobotProvider.instance.getJoystick(0);
         addRule(
                 "RUN DRIVE",
@@ -39,13 +38,12 @@ public class OI_MAYHEM extends RuleEngine {
                         });
         addRule(
                         "SHOOT_SET_POWER",
-                        gamepad.whenButton(InputConstants.GAMEPAD_RIGHT_TRIGGER),
+                        gamepad.whenAnyAxisMoved(2,3),
                         REPEATEDLY,
                         Set.of(shoot),
                         () -> {
-                            shoot.SetShooterSpeed(InputConstants.GAMEPAD_RIGHT_TRIGGER);
-                            context.waitForSeconds(1);
-                            shoot.SetTransferSpeed(1);
+                            shoot.SetShooterSpeed(gamepad.getAxis(3));
+                            shoot.SetTransferSpeed(gamepad.getAxis(2));
                         })
                 .withFinishedTriggeringProcedure(
                         intake,
