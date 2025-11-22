@@ -75,5 +75,11 @@ public class OI extends RuleEngine {
         );
 
 
+        addRule ("MOTOR",
+            joystick.WhenButton(1)
+            ONCE_AND_HOLD,
+            Set.of(motor),
+            () -> {motor.setPower(1);});
+
     }
 }
