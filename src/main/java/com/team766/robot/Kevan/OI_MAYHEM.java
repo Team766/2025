@@ -38,19 +38,18 @@ public class OI_MAYHEM extends RuleEngine {
                         });
         addRule(
                         "SHOOT_SET_POWER",
-                        gamePad1.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_TRIGGER),
+                        gamePad1.whenAnyAxisMoved(2, 3),
                         REPEATEDLY,
                         Set.of(shooter),
                         (context) -> {
-                            shooter.SetShooterSpeed(
-                                    gamePad1.getAxis(InputConstants.GAMEPAD_RIGHT_TRIGGER));
-                            context.waitForSeconds(1);
-                            shooter.SetTransferSpeed(1);
+                            shooter.SetShooterSpeed(gamePad1.getAxis(3));
+                            shooter.SetTransferSpeed(gamePad1.getAxis(2));
                         })
                 .withFinishedTriggeringProcedure(
                         shooter,
                         () -> {
                             shooter.SetTransferSpeed(0);
+                            shooter.SetShooterSpeed(0);
                         });
     }
 }

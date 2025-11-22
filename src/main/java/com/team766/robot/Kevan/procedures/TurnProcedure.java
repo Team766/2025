@@ -15,7 +15,7 @@ public class TurnProcedure extends Procedure {
     }
 
     public void run(Context context) {
-        drive.turn_right(1);
+        drive.turn_right(-1);
         context.waitForSeconds(seconds);
         drive.turn_right(0);
     }

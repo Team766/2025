@@ -6,7 +6,7 @@ import com.team766.hal.RobotConfigurator;
 import com.team766.robot.Kevan.mechanisms.Drive;
 import com.team766.robot.Kevan.mechanisms.Intake;
 import com.team766.robot.Kevan.mechanisms.Shooter;
-import com.team766.robot.Kevan.procedures.Autonomous.Autonomous;
+import com.team766.robot.Kevan.procedures.Autonomous.AutonomousTest;
 
 public class Robot implements RobotConfigurator {
 
@@ -35,7 +35,7 @@ public class Robot implements RobotConfigurator {
     public AutonomousMode[] getAutonomousModes() {
         return new AutonomousMode[] {
             new AutonomousMode(
-                    "Autonomous_For_Mayhem", () -> new Autonomous(drive, shooter, intake))
+                    "Autonomous_For_Mayhem", () -> new AutonomousTest(drive, shooter, intake))
         };
     }
 }

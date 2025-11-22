@@ -22,9 +22,9 @@ public class AutonomousTest extends Procedure {
     }
 
     public void run(Context context) {
-        context.runSync(new DriveProcedure(drive, 1));
-        context.runSync(new ShootProcedure(shooter, 1));
-        context.runSync(new IntakeProcedure(intake));
-        context.runSync(new TurnProcedure(drive, 1));
+        context.runSync(new DriveProcedure(drive, 0.5));
+        //context.runSync(new ShootProcedure(shooter, 1));
+        //context.runSync(new IntakeProcedure(intake));
+        //context.runSync(new TurnProcedure(drive, 1));
     }
 }
