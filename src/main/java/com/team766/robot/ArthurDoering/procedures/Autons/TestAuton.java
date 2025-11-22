@@ -23,6 +23,6 @@ public class TestAuton extends Procedure {
     public void run(Context context) {
         context.runSync(new DriveProcedure(drive, 1));
         context.runSync(new IntakeProcedure(intake));
-        context.runSync(new ShootProcedure(shoot, 0.5));
+        //context.runSync(new ShootProcedure(shoot, 0.5));
     }
 }

@@ -1,10 +1,14 @@
-package com.team766.robot.ArthurDoering.procedures;
+package com.team766.robot.ArthurDoering.procedures.Autons;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.ArthurDoering.mechanisms.Drive;
 import com.team766.robot.ArthurDoering.mechanisms.Intake;
 import com.team766.robot.ArthurDoering.mechanisms.Shooter;
+import com.team766.robot.ArthurDoering.procedures.DriveProcedure;
+import com.team766.robot.ArthurDoering.procedures.IntakeProcedure;
+import com.team766.robot.ArthurDoering.procedures.ShootProcedure;
+import com.team766.robot.ArthurDoering.procedures.TurnProcedure;
 
 public class Autonomous extends Procedure {
     private Drive drive;
@@ -19,7 +23,7 @@ public class Autonomous extends Procedure {
 
     public void run(Context context) {
         context.runSync(new DriveProcedure(drive, 1.25));
-        context.runSync(new ShootProcedure(shooter, 0.8));
+        context.runSync(new ShootProcedure(shooter, intake, 0.8));
         context.runSync(new TurnProcedure(drive, 0.25, 0.5));
         context.runSync(new DriveProcedure(drive, 0.3125));
         context.runSync(new IntakeProcedure(intake));
@@ -34,6 +38,6 @@ public class Autonomous extends Procedure {
         shooter.SetShooterSpeed(0.8);
         context.waitForSeconds(0.25);
         shooter.SetShooterSpeed(0);
-        context.runSync(new ShootProcedure(shooter, 0.8));
+        context.runSync(new ShootProcedure(shooter, intake, 0.8));
     }
 }
