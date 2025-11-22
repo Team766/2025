@@ -16,20 +16,12 @@ public class OI_MAYHEM extends RuleEngine {
     public OI_MAYHEM(Drive drive, Intake intake, Shooter shoot, Context context) {
         final JoystickReader gamepad = RobotProvider.instance.getJoystick(0);
         addRule(
-                "RUN_LEFT_MOTOR",
-                gamepad.whenAxisMoved(InputConstants.GAMEPAD_LEFT_STICK_YAXIS),
+                "RUN DRIVE",
+                gamepad.whenAnyAxisMoved(1,3),
                 REPEATEDLY,
                 Set.of(drive),
                 () -> {
                     drive.move_left(gamepad.getAxis(InputConstants.GAMEPAD_LEFT_STICK_YAXIS));
-                });
-
-        addRule(
-                "RUN_RIGHT_MOTOR",
-                gamepad.whenAxisMoved(3),
-                REPEATEDLY,
-                Set.of(drive),
-                () -> {
                     drive.move_right(gamepad.getAxis(3));
                 });
         addRule(
