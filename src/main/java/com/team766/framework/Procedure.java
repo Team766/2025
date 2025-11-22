@@ -59,22 +59,12 @@ public abstract class Procedure implements StatusesMixin, LoggingBase {
         return Category.PROCEDURES;
     }
 
-    protected final <M extends Reservable> M reserve(M m) {
-        if (m == null) {
+    protected final <M extends Reservable> M reserve(M motor1) {
+        if (motor1 == null) {
             throw new NullPointerException("The Mechanism object is null and so can't be reserved");
         }
-        reservations.add(m);
-        return m;
-    }
-
-    protected final void reserve(Reservable... ms) {
-        for (var m : ms) {
-            if (m == null) {
-                throw new NullPointerException(
-                        "A Mechanism object is null and so can't be reserved");
-            }
-            reservations.add(m);
-        }
+        reservations.add(motor1);
+        return motor1;
     }
 
     protected final void reserve(Collection<? extends Reservable> ms) {
