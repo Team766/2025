@@ -15,7 +15,7 @@ public class DriveProcedure extends Procedure {
     }
 
     public void run(Context context) {
-        drive.move_straight(0.8);
+        drive.move_straight(-0.8);
         context.waitForSeconds(seconds);
         drive.move_straight(0);
     }
