@@ -17,7 +17,7 @@ public class OI_MAYHEM extends RuleEngine {
         final JoystickReader gamepad = RobotProvider.instance.getJoystick(0);
         addRule(
                 "RUN DRIVE",
-                gamepad.whenAnyAxisMoved(1,3),
+                gamepad.whenAnyAxisMoved(1, 3),
                 REPEATEDLY,
                 Set.of(drive),
                 () -> {
