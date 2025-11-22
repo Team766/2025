@@ -43,7 +43,7 @@ public class OI_MAYHEM extends RuleEngine {
                         Set.of(shoot),
                         () -> {
                             shoot.SetShooterSpeed(gamepad.getAxis(3));
-                            shoot.SetTransferSpeed(gamepad.getAxis(2)*0.6);
+                            shoot.SetTransferSpeed(gamepad.getAxis(2)*0.5);
                         })
                 .withFinishedTriggeringProcedure(
                         intake,
