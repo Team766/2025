@@ -1,6 +1,7 @@
 package com.team766.framework;
 
 import com.team766.library.RateLimiter;
+import com.team766.robot.Geovanni_P.Mechanisms.Drive;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -27,5 +28,4 @@ public abstract class MechanismWithStatus<S extends Record & Status> extends Mec
         status = newStatus;
     }
 
-    protected abstract S updateStatus();
 }

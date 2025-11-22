@@ -8,17 +8,18 @@ import com.team766.robot.Geovanni_P.Mechanisms.*;
 import java.util.Set;
 
 public class OI extends RuleEngine {
-    public OI(MovingMotor Rightmotor, MovingMotor Leftmotor) {
+    public OI(Drive drive) {
        JoystickReader joystick1 = RobotProvider.instance.getJoystick(0);
-       JoystickReader joystick2 = RobotProvider.instance.getJoystick(1);
-       addRule("Name",
-        joystick1.whenButton(5),
-        ONCE,
-        Set.of(Rightmotor),
-        () -> {Rightmotor.setMotorPower(1);});
-
-
-
+       
+        addRule("Drive",
+        joystick1.whenAxisMoved(0),
+        REPEATEDLY,
+        Set.of(drive),
+        () -> {
+            double UpDownAxis = joystick1.getAxis(0);
+            double LeftRightAxis = joystick1.getAxis(1);
+            drive.setMotorPower(UpDownAxis + LeftRightAxis, UpDownAxis - LeftRightAxis);});
+    
     }
 
     

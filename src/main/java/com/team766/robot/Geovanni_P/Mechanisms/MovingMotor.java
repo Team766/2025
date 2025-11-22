@@ -13,11 +13,10 @@ import com.team766.hal.RobotProvider;
 
 public class MovingMotor extends MechanismWithStatus<MovingMotor.MovingMotorStatus> {
     public MotorController motor;
-    public MovingMotor() {
-      motor = RobotProvider.instance.getMotor("motor");
+    public MovingMotor(String motorname) {
+      motor = RobotProvider.instance.getMotor(motorname);
     }
     
-
     public record MovingMotorStatus(double currentPosition) implements Status {
     }
 

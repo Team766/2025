@@ -26,4 +26,10 @@ public class Shooter extends MechanismWithStatus<Shooter.ShooterStatus> {
     protected ShooterStatus updateStatus() {
         return new ShooterStatus(motor.getSensorPosition());
     }
+
+
+    public static void shoot() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'shoot'");
+    }
 }

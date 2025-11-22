@@ -11,10 +11,34 @@ import com.team766.framework.Status;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-
-/** Add your docs here. */
-public class Drive {
+import com.team766.robot.Geovanni_P.Mechanisms.MovingMotor;
 
 
 
-}
+    public class Drive extends MechanismWithStatus<Drive.DriveStatus> {
+        private MovingMotor LeftMotor;
+        private MovingMotor RightMotor;
+        public Drive() {
+          LeftMotor =  new MovingMotor("Leftmotor");
+          RightMotor = new MovingMotor("Rightmotor");
+        }
+        
+        public void setMotorPower(double Leftpower, double Rightpower) {
+        LeftMotor.setMotorPower(Leftpower);
+        RightMotor.setMotorPower(Rightpower);
+
+    }
+
+          public record DriveStatus(double currentPosition) implements Status {
+        }
+        
+        
+      protected DriveStatus updateStatus(){
+        return new DriveStatus(1);
+      }
+        
+        
+    }
+
+
+

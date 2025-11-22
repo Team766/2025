@@ -35,7 +35,7 @@ public class CandleLight extends RuleEngine{
         
             addRule(
                 "Cube",
-                JoyStick.whenButton(InputConstants.GAMEPAD_B_BUTTON);
+                JoyStick.whenButton(InputConstants.GAMEPAD_B_BUTTON),
                 ONCE_AND_HOLD,
                 segment,
                 () -> {
