@@ -2,7 +2,6 @@ package com.team766.robot.ArthurDoering;
 
 import static com.team766.framework.RulePersistence.*;
 
-import com.team766.framework.Context;
 import com.team766.framework.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
@@ -13,7 +12,7 @@ import com.team766.robot.common.constants.InputConstants;
 import java.util.Set;
 
 public class OI_MAYHEM extends RuleEngine {
-    public OI_MAYHEM(Drive drive, Intake intake, Shooter shoot, Context context) {
+    public OI_MAYHEM(Drive drive, Intake intake, Shooter shoot) {
         final JoystickReader gamepad = RobotProvider.instance.getJoystick(0);
         addRule(
                 "RUN DRIVE",
