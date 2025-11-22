@@ -26,11 +26,11 @@ public class OI_MAYHEM extends RuleEngine {
 
         addRule(
                 "RUN_RIGHT_MOTOR",
-                gamepad.whenAxisMoved(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS),
+                gamepad.whenAxisMoved(3),
                 REPEATEDLY,
                 Set.of(drive),
                 () -> {
-                    drive.move_right(gamepad.getAxis(InputConstants.GAMEPAD_RIGHT_STICK_YAXIS));
+                    drive.move_right(gamepad.getAxis(3));
                 });
         addRule(
                         "RUN_INTAKE",
