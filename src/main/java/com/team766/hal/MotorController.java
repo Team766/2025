@@ -78,7 +78,10 @@ public interface MotorController extends BasicMotorController {
     /**
      * Read the motor position from the sensor attached to the motor controller.
      */
-    double getSensorPosition();
+    static double getSensorPosition() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSensorPosition'");
+    }
 
     /**
      * Read the motor velocity from the sensor attached to the motor controller.
