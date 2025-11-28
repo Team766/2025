@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.team766.TestCase;
 import com.team766.framework.test.FakeMechanism;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,7 +31,7 @@ public class AdvancedUtilsTest extends TestCase {
         var context = new ContextImpl(proc1);
 
         // Schedule the Context for execution by the scheduler.
-        context.schedule();
+        CommandScheduler.getInstance().schedule(context);
         assertEquals(0, proc1age.get());
         assertEquals(0, proc2.age());
         assertFalse(proc2.isEnded());
@@ -85,7 +86,7 @@ public class AdvancedUtilsTest extends TestCase {
                         });
         var context = new ContextImpl(proc1);
 
-        context.schedule();
+        CommandScheduler.getInstance().schedule(context);
         step();
 
         assertThat(thrownException.get())

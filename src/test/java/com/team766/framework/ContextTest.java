@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.google.common.collect.Sets;
 import com.team766.TestCase;
 import com.team766.framework.test.FakeMechanism;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
@@ -29,7 +30,7 @@ public class ContextTest extends TestCase {
                 context.getRequirements());
 
         // Schedule the Context for execution by the scheduler.
-        context.schedule();
+        CommandScheduler.getInstance().schedule(context);
         assertEquals(0, proc.age());
         assertFalse(proc.isEnded());
         assertFalse(context.isFinished());
@@ -63,7 +64,7 @@ public class ContextTest extends TestCase {
 
         for (int i = 0; i < 3; ++i) {
             // Schedule the Context for execution by the scheduler.
-            context.schedule();
+            CommandScheduler.getInstance().schedule(context);
             assertFalse(context.isFinished());
 
             // First step. The procedure does one step of work and then yields.
@@ -88,7 +89,7 @@ public class ContextTest extends TestCase {
     public void testCancel() {
         var proc = new FakeProcedure(100, Set.of());
         var context = new ContextImpl(proc);
-        context.schedule();
+        CommandScheduler.getInstance().schedule(context);
 
         // Do one normal step to allow the procedure to start running.
         step();
@@ -113,7 +114,7 @@ public class ContextTest extends TestCase {
         var proc = new FakeProcedure(100, Set.of());
         var context = new ContextImpl(proc);
 
-        context.schedule();
+        CommandScheduler.getInstance().schedule(context);
         assertFalse(proc.isEnded());
         assertFalse(context.isFinished());
 
@@ -132,7 +133,7 @@ public class ContextTest extends TestCase {
     public void testCancelAfterEnd() {
         var context = new ContextImpl(new FakeProcedure(0, Set.of()));
 
-        context.schedule();
+        CommandScheduler.getInstance().schedule(context);
 
         step();
 
@@ -162,7 +163,7 @@ public class ContextTest extends TestCase {
         var context = new ContextImpl(proc);
 
         // Schedule the Context for execution by the scheduler.
-        context.schedule();
+        CommandScheduler.getInstance().schedule(context);
         assertEquals(0, proc1.age());
         assertEquals(0, proc2.age());
         assertFalse(proc1.isEnded());
@@ -211,7 +212,7 @@ public class ContextTest extends TestCase {
         var context = new ContextImpl(proc);
 
         // Schedule the Context for execution by the scheduler.
-        context.schedule();
+        CommandScheduler.getInstance().schedule(context);
         assertEquals(0, proc1.age());
         assertEquals(0, proc2.age());
         assertFalse(proc1.isEnded());
@@ -260,7 +261,7 @@ public class ContextTest extends TestCase {
         var context = new ContextImpl(proc);
 
         // Schedule the Context for execution by the scheduler.
-        context.schedule();
+        CommandScheduler.getInstance().schedule(context);
         assertEquals(0, proc1.age());
         assertEquals(0, proc2.age());
         assertFalse(proc1.isEnded());
@@ -305,7 +306,7 @@ public class ContextTest extends TestCase {
                         });
         var context = new ContextImpl(proc);
 
-        context.schedule();
+        CommandScheduler.getInstance().schedule(context);
         step();
 
         assertThat(thrownException.get())
@@ -339,7 +340,7 @@ public class ContextTest extends TestCase {
                         });
         var context = new ContextImpl(proc);
 
-        context.schedule();
+        CommandScheduler.getInstance().schedule(context);
         step();
 
         assertThat(thrownException.get())

@@ -8,6 +8,7 @@ import com.team766.framework.StatusBus.Entry;
 import com.team766.framework.test.FakeMechanism;
 import com.team766.framework.test.FakeMechanism.FakeStatus;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,7 +34,7 @@ public class MechanismTest extends TestCase {
 
                                     succeeded.set(true);
                                 }));
-        cmd.schedule();
+        CommandScheduler.getInstance().schedule(cmd);
 
         step();
         assertTrue(cmd.isFinished());
@@ -78,7 +79,7 @@ public class MechanismTest extends TestCase {
                                 context -> {
                                     mech.mutateMechanism(0);
                                 }));
-        cmd.schedule();
+        CommandScheduler.getInstance().schedule(cmd);
 
         testClock.tick(0.1);
         step();
@@ -137,15 +138,15 @@ public class MechanismTest extends TestCase {
                                         thrownException.set(ex.getMessage());
                                     }
                                 }));
-        cmd.schedule();
+        CommandScheduler.getInstance().schedule(cmd);
         step();
         assertThat(thrownException.get())
                 .matches(".*FakeMechanism tried to be used without reserving it");
 
         var cmd2 = new ContextImpl(new FakeProcedure(1, Set.of(mech)));
-        cmd2.schedule();
+        CommandScheduler.getInstance().schedule(cmd2);
         thrownException.set(null);
-        cmd.schedule();
+        CommandScheduler.getInstance().schedule(cmd);
         step();
         assertThat(thrownException.get())
                 .matches(".*FakeMechanism tried to be used without reserving it");
@@ -215,7 +216,7 @@ public class MechanismTest extends TestCase {
                                     context.waitFor(() -> false);
                                 })
                         .createCommandToRunProcedure();
-        command.schedule();
+        CommandScheduler.getInstance().schedule(command);
         step();
         step();
         assertEquals(false, mech.isIdle);
