@@ -17,6 +17,17 @@
 		}
 	},
 
+	// https://docs.github.com/en/codespaces/prebuilding-your-codespaces/configuring-prebuilds#configuring-time-consuming-tasks-to-be-included-in-the-prebuild
+	"updateContentCommand": "./gradlew build",
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"richardwillis.vscode-spotless-gradle"
+			]
+		}
+	},
+
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [8000],
 
