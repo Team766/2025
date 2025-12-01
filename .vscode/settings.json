@@ -73,5 +73,17 @@
     "edu.wpi.first.math.proto.*",
     "edu.wpi.first.math.**.proto.*",
     "edu.wpi.first.math.**.struct.*",
-  ]
+  ],
+  "files.readonlyInclude": {
+    "annotations/**": true,
+    "src/main/java/com/team766/config/**": true,
+    "src/main/java/com/team766/controllers/**": true,
+    "src/main/java/com/team766/framework/**": true,
+    "src/main/java/com/team766/hal/**": true,
+    "src/main/java/com/team766/library/**": true,
+    "src/main/java/com/team766/logging/**": true,
+    "src/main/java/com/team766/math/**": true,
+    "src/main/java/com/team766/simulator/**": true,
+    "src/main/java/com/team766/web/**": true
+  }
 }
