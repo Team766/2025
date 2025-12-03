@@ -34,6 +34,7 @@ public abstract class RobotProvider {
     // HAL
     protected abstract MotorController getMotor(
             int index,
+            String canBus,
             String configPrefix,
             MotorController.Type type,
             ControlInputReader localSensor);
@@ -111,6 +112,8 @@ public abstract class RobotProvider {
             final ValueProvider<MotorController.Type> type =
                     ConfigFileReader.getInstance()
                             .getEnum(MotorController.Type.class, configName + ".type");
+            final ValueProvider<String> canBus =
+                    ConfigFileReader.getInstance().getString(configName + ".CANBus");
 
             if (deviceId.hasValue() && port.hasValue()) {
                 Logger.get(Category.CONFIGURATION)
@@ -130,7 +133,13 @@ public abstract class RobotProvider {
                         "CAN motor controller", motorDeviceIdNames, deviceId.get(), configName);
             }
 
-            var motor = getMotor(deviceId.get(), configName, type.valueOr(defaultType), sensor);
+            var motor =
+                    getMotor(
+                            deviceId.get(),
+                            canBus.valueOr(""),
+                            configName,
+                            type.valueOr(defaultType),
+                            sensor);
             if (sensorScaleConfig.hasValue()) {
                 motor = new MotorControllerWithSensorScale(motor, sensorScaleConfig.get());
             }

@@ -120,6 +120,7 @@ public class WPIRobotProvider extends RobotProvider {
     @Override
     public MotorController getMotor(
             final int index,
+            final String canBus,
             final String configPrefix,
             final MotorController.Type type,
             ControlInputReader localSensor) {
@@ -146,11 +147,7 @@ public class WPIRobotProvider extends RobotProvider {
                 motor = new CANVictorMotorController(index);
                 break;
             case TalonFX:
-                final ValueProvider<String> canBus =
-                        ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
-                motor =
-                        new CANTalonFxMotorController(
-                                configPrefix, index, getStringOrEmpty(canBus));
+                motor = new CANTalonFxMotorController(configPrefix, index, canBus);
                 break;
             case VictorSP:
                 motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);
