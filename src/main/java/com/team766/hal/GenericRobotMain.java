@@ -58,6 +58,8 @@ public final class GenericRobotMain implements AutoCloseable {
         m_webServer.addHandler(new ConfigUI());
         m_webServer.addHandler(new LogViewer());
         m_webServer.addHandler(autonSelector);
+        // TODO: make this more generic
+        m_webServer.setStaticFileHandler("/html", "/home/lvuser/deploy/html");
         m_webServer.start();
     }
 

@@ -44,6 +44,8 @@ public class WebServer implements Closeable {
 
     private HttpServer server;
     private LinkedHashMap<String, Handler> pages = new LinkedHashMap<String, Handler>();
+    private String staticUrlPrefix;
+    private HttpHandler staticFileHandler;
 
     public WebServer() {
         addHandler(
@@ -79,6 +81,14 @@ public class WebServer implements Closeable {
         pages.put(handler.endpoint(), handler);
     }
 
+    public void setStaticFileHandler(String urlPrefix, String filesystemRoot) {
+        if (!urlPrefix.startsWith("/")) {
+            urlPrefix = "/" + urlPrefix;
+        }
+        this.staticUrlPrefix = urlPrefix;
+        this.staticFileHandler = new StaticFileHandler(filesystemRoot, urlPrefix);
+    }
+
     public void start() {
         try {
             server = HttpServer.create(new InetSocketAddress(5800), 0);
@@ -109,6 +119,11 @@ public class WebServer implements Closeable {
                     };
             server.createContext(page.getKey(), httpHandler);
         }
+
+        if (staticFileHandler != null) {
+            server.createContext(staticUrlPrefix, staticFileHandler);
+        }
+
         addLineNumbersSvgHandler();
         server.start();
     }
