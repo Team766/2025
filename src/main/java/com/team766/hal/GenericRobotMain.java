@@ -13,6 +13,7 @@ import com.team766.web.Dashboard;
 import com.team766.web.DriverInterface;
 import com.team766.web.LogViewer;
 import com.team766.web.WebServer;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 // Team 766 - Robot Interface Base class
@@ -58,8 +59,8 @@ public final class GenericRobotMain implements AutoCloseable {
         m_webServer.addHandler(new ConfigUI());
         m_webServer.addHandler(new LogViewer());
         m_webServer.addHandler(autonSelector);
-        // TODO: make this more generic
-        m_webServer.setStaticFileHandler("/html", "/home/lvuser/deploy/html");
+        m_webServer.setStaticFileHandler(
+                "/html", Filesystem.getDeployDirectory().getAbsolutePath() + "/html");
         m_webServer.start();
     }
 
