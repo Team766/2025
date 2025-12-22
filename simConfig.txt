@@ -1,1 +1,171 @@
-{  "robotConfigurator": null,  "lineSensorRight": {    "port": 6  },  "lineSensorLeft": {    "port": 4  },  "lineSensorCenter": {    "port": 5  },  "launch": {    "port": 1  },  "storage": {    "proximitySensor": {      "port": 2    },    "left": {      "deviceId": 6    },    "right": {      "deviceId": 4    }  },  "intakeWheels": {    "deviceId": 10  },  "climber": {    "elevator": {      "deviceId": 10    },    "arms": {      "port": 0    }  },  "intakeArm": {    "port": 0  },  "simulationMode": "VrConnector",  "exampleMechanism": {    "rightMotor": {      "sensorScale": null,      "port": null,      "sensorInverted": null,      "analogInput": null,      "pid": {        "outputMaxHigh": null,        "iGain": null,        "dGain": null,        "ffGain": null,        "pGain": null,        "outputMaxLow": null,        "threshold": null      },      "inverted": null,      "type": null,      "encoder": null,      "deviceId": null,      "CANBus": null    },    "leftMotor": {      "sensorScale": null,      "port": null,      "sensorInverted": null,      "analogInput": null,      "pid": {        "outputMaxHigh": null,        "iGain": null,        "dGain": null,        "ffGain": null,        "pGain": null,        "outputMaxLow": null,        "threshold": null      },      "inverted": null,      "type": null,      "encoder": null,      "deviceId": null,      "CANBus": null    }  },  "logFilePath": null,  "shooter": {    "motor": {      "deviceId": 14    }  },  "leds": {    "deviceId": null,    "CANBus": null  },  "drive": {    "frontRightDriveMotor": {      "sensorScale": 0.0008866,      "deviceId": 86,      "sensorScaledUnits": "meter"    },    "backLeftSteerMotor": {      "inverted": true,      "deviceId": 89,      "sensorScaledUnits": "degree"    },    "backRightDriveMotor": {      "sensorScale": 0.0008866,      "deviceId": 87,      "sensorScaledUnits": "meter"    },    "frontLeftSteerMotor": {      "inverted": true,      "deviceId": 88,      "sensorScaledUnits": "degree"    },    "rightMotor": {      "sensorScale": 0.0524,      "deviceId": 4    },    "rightEncoder": {      "ports": [        2,        3      ],      "distancePerPulse": 0.0524    },    "frontLeftDriveMotor": {      "sensorScale": 0.0008866,      "deviceId": 84,      "sensorScaledUnits": "meter"    },    "leftMotor": {      "sensorScale": 0.0524,      "deviceId": 6    },    "frontRightSteerMotor": {      "inverted": true,      "deviceId": 90,      "sensorScaledUnits": "degree"    },    "backRightSteerMotor": {      "inverted": true,      "deviceId": 91,      "sensorScaledUnits": "degree"    },    "leftEncoder": {      "ports": [        0,        1      ],      "distancePerPulse": 0.0524    },    "backLeftDriveMotor": {      "sensorScale": 0.0008866,      "deviceId": 85,      "sensorScaledUnits": "meter"    },    "gyro": {      "port": 12    }  },  "intake": {    "extend": {      "port": 0    },    "topWheels": {      "deviceId": 12    },    "frontWheels": {      "deviceId": 10    }  }}
+{
+  "robotConfigurator": null,
+  "lineSensorRight": {
+    "port": 6
+  },
+  "lineSensorLeft": {
+    "port": 4
+  },
+  "lineSensorCenter": {
+    "port": 5
+  },
+  "launch": {
+    "port": 1
+  },
+  "storage": {
+    "proximitySensor": {
+      "port": 2
+    },
+    "left": {
+      "deviceId": 6
+    },
+    "right": {
+      "deviceId": 4
+    }
+  },
+  "intakeWheels": {
+    "deviceId": 10
+  },
+  "climber": {
+    "elevator": {
+      "deviceId": 10
+    },
+    "arms": {
+      "port": 0
+    }
+  },
+  "intakeArm": {
+    "port": 0
+  },
+  "simulationMode": "VrConnector",
+  "exampleMechanism": {
+    "rightMotor": {
+      "sensorScale": null,
+      "port": null,
+      "sensorInverted": null,
+      "analogInput": null,
+      "pid": {
+        "outputMaxHigh": null,
+        "iGain": null,
+        "dGain": null,
+        "ffGain": null,
+        "pGain": null,
+        "outputMaxLow": null,
+        "threshold": null
+      },
+      "inverted": null,
+      "type": null,
+      "encoder": null,
+      "deviceId": null,
+      "CANBus": null
+    },
+    "leftMotor": {
+      "sensorScale": null,
+      "port": null,
+      "sensorInverted": null,
+      "analogInput": null,
+      "pid": {
+        "outputMaxHigh": null,
+        "iGain": null,
+        "dGain": null,
+        "ffGain": null,
+        "pGain": null,
+        "outputMaxLow": null,
+        "threshold": null
+      },
+      "inverted": null,
+      "type": null,
+      "encoder": null,
+      "deviceId": null,
+      "CANBus": null
+    }
+  },
+  "logFilePath": null,
+  "shooter": {
+    "motor": {
+      "deviceId": 14
+    }
+  },
+  "leds": {
+    "deviceId": null,
+    "CANBus": null
+  },
+  "drive": {
+    "frontRightDriveMotor": {
+      "sensorScale": 0.0008866,
+      "deviceId": 86,
+      "sensorScaledUnits": "meter"
+    },
+    "backLeftSteerMotor": {
+      "inverted": true,
+      "deviceId": 89,
+      "sensorScaledUnits": "degree"
+    },
+    "backRightDriveMotor": {
+      "sensorScale": 0.0008866,
+      "deviceId": 87,
+      "sensorScaledUnits": "meter"
+    },
+    "frontLeftSteerMotor": {
+      "inverted": true,
+      "deviceId": 88,
+      "sensorScaledUnits": "degree"
+    },
+    "rightMotor": {
+      "sensorScale": 0.0524,
+      "deviceId": 4
+    },
+    "rightEncoder": {
+      "ports": [
+        2,
+        3
+      ],
+      "distancePerPulse": 0.0524
+    },
+    "frontLeftDriveMotor": {
+      "sensorScale": 0.0008866,
+      "deviceId": 84,
+      "sensorScaledUnits": "meter"
+    },
+    "leftMotor": {
+      "sensorScale": 0.0524,
+      "deviceId": 6
+    },
+    "frontRightSteerMotor": {
+      "inverted": true,
+      "deviceId": 90,
+      "sensorScaledUnits": "degree"
+    },
+    "backRightSteerMotor": {
+      "inverted": true,
+      "deviceId": 91,
+      "sensorScaledUnits": "degree"
+    },
+    "leftEncoder": {
+      "ports": [
+        0,
+        1
+      ],
+      "distancePerPulse": 0.0524
+    },
+    "backLeftDriveMotor": {
+      "sensorScale": 0.0008866,
+      "deviceId": 85,
+      "sensorScaledUnits": "meter"
+    },
+    "gyro": {
+      "port": 12
+    }
+  },
+  "intake": {
+    "extend": {
+      "port": 0
+    },
+    "topWheels": {
+      "deviceId": 12
+    },
+    "frontWheels": {
+      "deviceId": 10
+    }
+  }
+}
