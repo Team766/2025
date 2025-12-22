@@ -122,6 +122,7 @@ public class WebServer implements Closeable {
 
         if (staticFileHandler != null) {
             server.createContext(staticUrlPrefix, staticFileHandler);
+            server.createContext("/fancy-config-backend", new FancyConfigBackend());
         }
 
         addLineNumbersSvgHandler();

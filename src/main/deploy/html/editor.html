@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Config Editor</title>
+<style>
+html, body {
+margin: 0;
+padding: 0;
+height: 100%;
+width: 100%;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+    }
+#message {
+padding: 10px 15px 10px 30px;
+font-family: monospace;
+font-size: 13px;
+display: none;
+position: relative;
+overflow: auto;
+min-height: 20px;
+max-height: 80%;
+    }
+#message.success {
+background-color: #d4edda;
+color: #155724;
+    }
+#message.error {
+background-color: #f8d7da;
+color: #721c24;
+    }
+#message-text {
+display: block;
+white-space: pre-wrap;
+word-wrap: break-word;
+    }
+#dismiss-btn {
+position: absolute;
+left: 5px;
+top: 5px;
+background: none;
+border: none;
+padding: 0;
+cursor: pointer;
+font-family: monospace;
+font-size: 16px;
+color: rgba(0, 0, 0, 0.3);
+line-height: 1;
+width: 16px;
+height: 16px;
+    }
+#dismiss-btn:hover {
+color: rgba(0, 0, 0, 0.6);
+    }
+#resizer {
+height: 5px;
+background: #ccc;
+cursor: ns-resize;
+display: none;
+position: relative;
+    }
+#resizer:hover {
+background: #999;
+    }
+#resizer::after {
+content: '⋯';
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 20px;
+color: #666;
+letter-spacing: 2px;
+    }
+#container {
+flex: 1;
+overflow: hidden;
+    }
+</style>
+</head>
+<body>
+<div id="message">
+<button id="dismiss-btn">×</button>
+<span id="message-text"></span>
+</div>
+<div id="resizer"></div>
+<div id="container"></div>
+<script src="vs/loader.js"></script>
+<script>
+require.config({ paths: { vs: 'vs' } });
+require(['vs/editor/editor.main'], function () {
+fetch('/fancy-config-backend/load-json')
+        .then(res => res.text())
+        .then(text => {
+          // Format the JSON on load as well
+          let formattedText;
+          try {
+formattedText = JSON.stringify(JSON.parse(text), null, 2);
+          } catch (e) {
+            // If it's not valid JSON, just use it as-is
+formattedText = text;
+          }
+          
+window.editor = monaco.editor.create(
+document.getElementById('container'),
+            {
+value: formattedText,
+language: 'json',
+automaticLayout: true
+            }
+          );
+        });
+    });
+
+function showMessage(text, isError) {
+const messageDiv = document.getElementById('message');
+const messageText = document.getElementById('message-text');
+const resizer = document.getElementById('resizer');
+      
+messageText.textContent = text;
+messageDiv.className = isError ? 'error' : 'success';
+messageDiv.style.display = 'block';
+resizer.style.display = 'block';
+      
+// Remove any previous explicit height so it sizes to content
+messageDiv.style.height = '';
+    }
+
+function dismissMessage() {
+document.getElementById('message').style.display = 'none';
+document.getElementById('resizer').style.display = 'none';
+    }
+
+// Resizer functionality
+let isResizing = false;
+const resizer = document.getElementById('resizer');
+const messageDiv = document.getElementById('message');
+
+resizer.addEventListener('mousedown', function(e) {
+isResizing = true;
+document.body.style.cursor = 'ns-resize';
+e.preventDefault();
+    });
+
+document.addEventListener('mousemove', function(e) {
+if (!isResizing) return;
+      
+const newHeight = e.clientY - messageDiv.offsetTop;
+if (newHeight > 20 && newHeight < window.innerHeight * 0.8) {
+messageDiv.style.height = newHeight + 'px';
+      }
+    });
+
+document.addEventListener('mouseup', function() {
+if (isResizing) {
+isResizing = false;
+document.body.style.cursor = 'default';
+      }
+    });
+
+document.getElementById('dismiss-btn').addEventListener('click', dismissMessage);
+
+window.addEventListener('keydown', function (e) {
+if (e.ctrlKey && e.key === 's') {
+e.preventDefault();
+        
+        // Get the JSON from the editor
+const jsonText = editor.getValue();
+        
+        // Format it before sending
+let formattedJson;
+        try {
+          // Parse and re-stringify with 2-space indentation
+formattedJson = JSON.stringify(JSON.parse(jsonText), null, 2);
+        } catch (parseError) {
+showMessage('Invalid JSON: ' + parseError.message, true);
+          return;
+        }
+        
+fetch('/fancy-config-backend/save-json', {
+method: 'POST',
+body: formattedJson
+        })
+        .then(response => {
+return response.text().then(text => ({
+status: response.status,
+body: text
+            }));
+        })
+        .then(result => {
+if (result.status === 200) {
+            // Update editor with formatted version
+editor.setValue(formattedJson);
+showMessage(result.body, false);
+          } else if (result.status === 400) {
+showMessage('Error: ' + result.body, true);
+          } else {
+showMessage('Unexpected error: ' + result.body, true);
+          }
+        })
+        .catch(error => {
+showMessage('Network error: ' + error.message, true);
+        });
+      }
+    });
+</script>
+</body>
+</html>

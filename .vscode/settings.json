@@ -85,5 +85,6 @@
     "src/main/java/com/team766/math/**": true,
     "src/main/java/com/team766/simulator/**": true,
     "src/main/java/com/team766/web/**": true
-  }
+  },
+  "java.compile.nullAnalysis.mode": "automatic"
 }
