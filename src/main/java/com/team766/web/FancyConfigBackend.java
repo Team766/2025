@@ -1,6 +1,7 @@
 package com.team766.web;
 
 import com.team766.config.ConfigFileReader;
+import com.team766.config.ConfigValueParseException;
 import java.util.ArrayList;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -43,9 +44,12 @@ public class FancyConfigBackend implements HttpHandler {
             ArrayList<String> errors = new ArrayList<String>();
             try {
                 ConfigFileReader.getInstance().reloadFromJson(newConfig);
+            } catch (ConfigValueParseException ex) {
+                errors.add("Invalid JSON: " + ex.getMessage());
             } catch (Exception ex) {
-                errors.add(ex.toString());
+                errors.add("Unexpected Error: " + ex.toString());
             }
+
             if (errors.isEmpty()) {
                 ConfigFileReader.getInstance().saveFile(newConfig);
                 String response = "Config saved successfully!";
@@ -55,9 +59,9 @@ public class FancyConfigBackend implements HttpHandler {
                     os.write(responseBytes);
                 }
             } else {
-                String response = "ERROR:" + errors.get(0);
+                String response = String.join("\n", errors);
                 byte[] responseBytes = response.getBytes();
-                exchange.sendResponseHeaders(200, responseBytes.length);
+                exchange.sendResponseHeaders(400, responseBytes.length);
                 try (OutputStream os = exchange.getResponseBody()) {
                     os.write(responseBytes);
                 }
