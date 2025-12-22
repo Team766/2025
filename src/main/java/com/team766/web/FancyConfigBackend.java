@@ -5,10 +5,7 @@ import com.team766.config.ConfigValueParseException;
 import java.util.ArrayList;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -22,25 +19,14 @@ public class FancyConfigBackend implements HttpHandler {
         
         if ("GET".equalsIgnoreCase(method) && path.equals("/fancy-config-backend/load-json")) {
             String json = ConfigFileReader.getInstance().getJsonString();
-            byte[] jsonBytes = json.getBytes();
+            byte[] jsonBytes = json.getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().set("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, jsonBytes.length);
             try (OutputStream os = exchange.getResponseBody()) {
                 os.write(jsonBytes);
             }
-        }
-
-        if ("POST".equalsIgnoreCase(method) && path.equals("/fancy-config-backend/save-json")) {
-            InputStream inp = exchange.getRequestBody();
-            StringBuilder response_builder = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(inp, StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response_builder.append(line);
-                }
-            }
-            String newConfig = response_builder.toString();
+        } else if ("POST".equalsIgnoreCase(method) && path.equals("/fancy-config-backend/save-json")) {
+            String newConfig = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             ArrayList<String> errors = new ArrayList<String>();
             try {
                 ConfigFileReader.getInstance().reloadFromJson(newConfig);
@@ -51,21 +37,30 @@ public class FancyConfigBackend implements HttpHandler {
             }
 
             if (errors.isEmpty()) {
-                ConfigFileReader.getInstance().saveFile(newConfig);
+                try {
+                    ConfigFileReader.getInstance().saveFile(newConfig);
+                } catch (IOException ex) {
+                    errors.add("IO Exception: " + ex.getMessage());
+                }
+            }
+
+            if (errors.isEmpty()) {
                 String response = "Config saved successfully!";
-                byte[] responseBytes = response.getBytes();
+                byte[] responseBytes = response.getBytes(StandardCharsets.UTF_8);
                 exchange.sendResponseHeaders(200, responseBytes.length);
                 try (OutputStream os = exchange.getResponseBody()) {
                     os.write(responseBytes);
                 }
             } else {
                 String response = String.join("\n", errors);
-                byte[] responseBytes = response.getBytes();
+                byte[] responseBytes = response.getBytes(StandardCharsets.UTF_8);
                 exchange.sendResponseHeaders(400, responseBytes.length);
                 try (OutputStream os = exchange.getResponseBody()) {
                     os.write(responseBytes);
                 }
             }
+        } else {
+            exchange.sendResponseHeaders(404, -1);
         }
     }
 }
