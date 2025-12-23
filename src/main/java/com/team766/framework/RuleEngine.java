@@ -82,102 +82,104 @@ public class RuleEngine extends RuleGroupBase {
     }
 
     public final void run() {
-        if (!sealed) {
-            sealRules();
-            sealed = true;
-        }
+        try (var engineProfilingScope = Profiling.scope(getName())) {
+            if (!sealed) {
+                sealRules();
+                sealed = true;
+            }
 
-        Set<Subsystem> subsystemsToUse = new HashSet<>();
+            Set<Subsystem> subsystemsToUse = new HashSet<>();
 
-        // TODO(MF3): when creating a Procedure, check that the reservations are the same as
-        // what the Rule pre-computed.
+            // TODO(MF3): when creating a Procedure, check that the reservations are the same as
+            // what the Rule pre-computed.
 
-        // evaluate each rule
-        ruleLoop:
-        for (Rule rule : rules.values()) {
-            try {
-                rule.evaluate();
+            // evaluate each rule
+            ruleLoop:
+            for (Rule rule : rules.values()) {
+                try (var rulleProfilingScope = Profiling.scope("Rules/" + rule.getName())) {
+                    rule.evaluate();
 
-                // see if the rule is triggering
-                final Rule.TriggerState triggerState = rule.getCurrentTriggerState();
-                if (triggerState != Rule.TriggerState.NONE) {
-                    int priority = getPriorityForRule(rule);
+                    // see if the rule is triggering
+                    final Rule.TriggerState triggerState = rule.getCurrentTriggerState();
+                    if (triggerState != Rule.TriggerState.NONE) {
+                        int priority = getPriorityForRule(rule);
 
-                    // see if there are mechanisms a potential procedure would want to reserve
-                    Set<Subsystem> reservations = rule.getSubsystemsToReserve();
-                    for (Subsystem subsystem : reservations) {
-                        // see if any of the mechanisms higher priority rules will use would also be
-                        // used by this lower priority rule's procedure.
-                        if (subsystemsToUse.contains(subsystem)) {
-                            rule.reset(ResetReason.IGNORED);
-                            continue ruleLoop;
-                        }
-                        // see if a previously triggered rule is still using the mechanism
-                        Command existingCommand =
-                                CommandScheduler.getInstance().requiring(subsystem);
-                        if (existingCommand != null) {
-                            // look up the rule
-                            Rule existingRule = getRuleForTriggeredProcedure(existingCommand);
-                            if (existingRule != null) {
-                                // look up the priority
-                                int existingPriority = getPriorityForRule(existingRule);
-                                if (existingPriority < priority /* less is more */) {
-                                    // existing rule takes priority.
-                                    // don't proceed with this new rule.
-                                    rule.reset(ResetReason.IGNORED);
-                                    continue ruleLoop;
-                                } else if (rule != existingRule) {
-                                    // new rule takes priority
-                                    // reset existing rule
-                                    existingRule.reset(ResetReason.PREEMPTED);
+                        // see if there are mechanisms a potential procedure would want to reserve
+                        Set<Subsystem> reservations = rule.getSubsystemsToReserve();
+                        for (Subsystem subsystem : reservations) {
+                            // see if any of the mechanisms higher priority rules would also be
+                            // used by this lower priority rule's procedure.
+                            if (subsystemsToUse.contains(subsystem)) {
+                                rule.reset(ResetReason.IGNORED);
+                                continue ruleLoop;
+                            }
+                            // see if a previously triggered rule is still using the mechanism
+                            Command existingCommand =
+                                    CommandScheduler.getInstance().requiring(subsystem);
+                            if (existingCommand != null) {
+                                // look up the rule
+                                Rule existingRule = getRuleForTriggeredProcedure(existingCommand);
+                                if (existingRule != null) {
+                                    // look up the priority
+                                    int existingPriority = getPriorityForRule(existingRule);
+                                    if (existingPriority < priority /* less is more */) {
+                                        // existing rule takes priority.
+                                        // don't proceed with this new rule.
+                                        rule.reset(ResetReason.IGNORED);
+                                        continue ruleLoop;
+                                    } else if (rule != existingRule) {
+                                        // new rule takes priority
+                                        // reset existing rule
+                                        existingRule.reset(ResetReason.PREEMPTED);
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    // we're good to proceed
-                    if (triggerState == Rule.TriggerState.FINISHED
-                            && rule.getCancellationOnFinish()
-                                    == Rule.Cancellation.CANCEL_NEWLY_ACTION) {
-                        var newlyCommand =
-                                ruleMap.inverse()
-                                        .get(new RuleAction(rule, Rule.TriggerState.NEWLY));
-                        if (newlyCommand != null) {
-                            newlyCommand.cancel();
+                        // we're good to proceed
+                        if (triggerState == Rule.TriggerState.FINISHED
+                                && rule.getCancellationOnFinish()
+                                        == Rule.Cancellation.CANCEL_NEWLY_ACTION) {
+                            var newlyCommand =
+                                    ruleMap.inverse()
+                                            .get(new RuleAction(rule, Rule.TriggerState.NEWLY));
+                            if (newlyCommand != null) {
+                                newlyCommand.cancel();
+                            }
                         }
-                    }
 
-                    Procedure procedure = rule.getProcedureToRun();
-                    if (procedure == null) {
-                        continue;
+                        Procedure procedure = rule.getProcedureToRun();
+                        if (procedure == null) {
+                            continue;
+                        }
+                        log(
+                                Severity.INFO,
+                                "Rule "
+                                        + rule.getName()
+                                        + " triggered ("
+                                        + rule.getCurrentTriggerState()
+                                        + ").  Running Procedure "
+                                        + procedure.getName()
+                                        + " with reservations "
+                                        + reservations);
+
+                        // TODO(MF3): check that the reservations have not changed
+                        Command command = procedure.createCommandToRunProcedure();
+                        subsystemsToUse.addAll(reservations);
+                        ruleMap.forcePut(command, new RuleAction(rule, triggerState));
+                        command.schedule();
                     }
+                } catch (Exception ex) {
                     log(
-                            Severity.INFO,
-                            "Rule "
-                                    + rule.getName()
-                                    + " triggered ("
-                                    + rule.getCurrentTriggerState()
-                                    + ").  Running Procedure "
-                                    + procedure.getName()
-                                    + " with reservations "
-                                    + reservations);
-
-                    // TODO(MF3): check that the reservations have not changed
-                    Command command = procedure.createCommandToRunProcedure();
-                    subsystemsToUse.addAll(reservations);
-                    ruleMap.forcePut(command, new RuleAction(rule, triggerState));
-                    command.schedule();
+                            Severity.ERROR,
+                            "Exception caught while trying to run(): "
+                                    + LoggerExceptionUtils.exceptionToString(ex));
                 }
-            } catch (Exception ex) {
-                log(
-                        Severity.ERROR,
-                        "Exception caught while trying to run(): "
-                                + LoggerExceptionUtils.exceptionToString(ex));
             }
-        }
 
-        for (Rule rule : rules.values()) {
-            rule.flushLog();
+            for (Rule rule : rules.values()) {
+                rule.flushLog();
+            }
         }
     }
 }

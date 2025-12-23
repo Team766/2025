@@ -81,20 +81,22 @@ public abstract class MultiFacetedMechanism implements Reservable, LoggingBase {
     }
 
     /* package */ final void periodicInternal() {
-        for (var m : facets) {
-            m.periodicInternal();
-        }
+        try (var profileScope = Profiling.scope("Mechanisms/" + getName())) {
+            for (var m : facets) {
+                m.periodicInternal();
+            }
 
-        try {
-            publishStatus();
+            try {
+                publishStatus();
 
-            isRunningPeriodic = true;
-            run();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            LoggerExceptionUtils.logException(ex);
-        } finally {
-            isRunningPeriodic = false;
+                isRunningPeriodic = true;
+                run();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                LoggerExceptionUtils.logException(ex);
+            } finally {
+                isRunningPeriodic = false;
+            }
         }
     }
 

@@ -120,7 +120,7 @@ public abstract class Mechanism implements Reservable, LoggingBase {
     }
 
     /* package */ final void periodicInternal() {
-        try {
+        try (var profileScope = Profiling.scope("Mechanisms/" + getName())) {
             publishStatus();
 
             isRunningPeriodic = true;
