@@ -1,14 +1,14 @@
 package com.team766.web;
 
-import com.team766.config.ConfigFileReader;
-import com.team766.config.ConfigValueParseException;
-import java.util.ArrayList;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import com.team766.config.ConfigFileReader;
+import com.team766.config.ConfigValueParseException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class FancyConfigBackend implements HttpHandler {
     @Override
@@ -16,7 +16,7 @@ public class FancyConfigBackend implements HttpHandler {
         String method = exchange.getRequestMethod();
         URI uri = exchange.getRequestURI();
         String path = uri.getPath();
-        
+
         if ("GET".equalsIgnoreCase(method) && path.equals("/fancy-config-backend/load-json")) {
             String json = ConfigFileReader.getInstance().getJsonString();
             byte[] jsonBytes = json.getBytes(StandardCharsets.UTF_8);
@@ -25,8 +25,10 @@ public class FancyConfigBackend implements HttpHandler {
             try (OutputStream os = exchange.getResponseBody()) {
                 os.write(jsonBytes);
             }
-        } else if ("POST".equalsIgnoreCase(method) && path.equals("/fancy-config-backend/save-json")) {
-            String newConfig = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+        } else if ("POST".equalsIgnoreCase(method)
+                && path.equals("/fancy-config-backend/save-json")) {
+            String newConfig =
+                    new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             ArrayList<String> errors = new ArrayList<String>();
             try {
                 ConfigFileReader.getInstance().reloadFromJson(newConfig);
