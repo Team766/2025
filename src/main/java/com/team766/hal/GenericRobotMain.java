@@ -57,9 +57,9 @@ public final class GenericRobotMain implements AutoCloseable {
         m_webServer = new WebServer();
         m_webServer.addHandler(new Dashboard());
         m_webServer.addHandler(new DriverInterface(autonSelector));
+        m_webServer.addHandler(new FancyConfigUI());
         m_webServer.addHandler(new ConfigUI());
         m_webServer.addHandler(new LogViewer());
-        m_webServer.addHandler(new FancyConfigUI());
         m_webServer.addHandler(autonSelector);
         m_webServer.setStaticFileHandler(
                 "/html", Filesystem.getDeployDirectory().getAbsolutePath() + "/html");
