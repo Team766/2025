@@ -261,7 +261,7 @@
             document.getElementById("save-btn").addEventListener("click", saveConfig);
 
             window.addEventListener("keydown", function (e) {
-                if (e.ctrlKey && e.key === "s") {
+                if ((e.ctrlKey || e.metaKey) && e.key === "s") {
                     e.preventDefault();
                     saveConfig();
                 }
