@@ -92,6 +92,7 @@ public class WebServer implements Closeable {
     public void start() {
         try {
             server = HttpServer.create(new InetSocketAddress(5800), 0);
+            setupApiHandlers();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -122,7 +123,6 @@ public class WebServer implements Closeable {
 
         if (staticFileHandler != null) {
             server.createContext(staticUrlPrefix, staticFileHandler);
-            server.createContext("/fancy-config-backend", new FancyConfigBackend());
         }
 
         addLineNumbersSvgHandler();
@@ -244,6 +244,143 @@ public class WebServer implements Closeable {
                     parameters.put(key, value);
                 }
             }
+        }
+    }
+
+    public interface ApiHandler {
+        String endpoint();
+        ApiResponse handle(ApiRequest request);
+    }
+
+    public static class ApiRequest {
+        public enum Kind {
+            GET, POST, PUT, DELETE, PATCH
+        }
+
+        public final Kind kind;
+        public final Map<String, Object> params;
+        public final String body;
+
+        public ApiRequest(Kind kind, Map<String, Object> params, String body) {
+            this.kind = kind;
+            this.params = params;
+            this.body = body;
+        }
+    }
+
+    public static class ApiResponse {
+        public final String content;
+        public final int statusCode;
+        public final String contentType;
+
+        public ApiResponse(int statusCode) {
+            this("", statusCode, "text/plain");
+        }
+
+        public ApiResponse(String content, int statusCode) {
+            this(content, statusCode, "text/plain");
+        }
+
+        public ApiResponse(String content, int statusCode, String contentType) {
+            this.content = content;
+            this.statusCode = statusCode;
+            this.contentType = contentType;
+        }
+
+        public ApiResponse(String content, int statusCode, ContentType contentType) {
+            this.content = content;
+            this.statusCode = statusCode;
+            this.contentType = contentType.getValue();
+        }
+    }
+
+    public enum ContentType {
+        TEXT_PLAIN("text/plain"),
+        APPLICATION_JSON("application/json"),
+        TEXT_HTML("text/html"),
+        APPLICATION_XML("application/xml"),
+        IMAGE_JPEG("image/jpeg"),
+        IMAGE_PNG("image/png"),
+        IMAGE_SVG("image/svg+xml");
+
+        private final String value;
+
+        ContentType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    private List<ApiHandler> apiHandlers = new ArrayList<>();
+
+    public void addApiHandler(ApiHandler handler) {
+        apiHandlers.add(handler);
+    }
+
+    // Note: This uses reflection to enumerate endpoints, which I believe is convenient and reduces boilerplate. However, I'm also happy to implement a more explicit version
+    public void addApiHandlers(Object container) {
+        for (Class<?> innerClass : container.getClass().getDeclaredClasses()) {
+            if (ApiHandler.class.isAssignableFrom(innerClass)) {
+                try {
+                    ApiHandler handler = (ApiHandler) innerClass.getDeclaredConstructor().newInstance();
+                    apiHandlers.add(handler);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void setupApiHandlers() {
+        for (ApiHandler handler : apiHandlers) {
+            String endpoint = handler.endpoint();
+            if (!endpoint.startsWith("/")) {
+                endpoint = "/" + endpoint;
+            }
+
+            HttpHandler httpHandler = new HttpHandler() {
+                @Override
+                public void handle(HttpExchange exchange) throws IOException {
+                    try {
+                        String method = exchange.getRequestMethod().toUpperCase();
+                        ApiRequest.Kind kind = ApiRequest.Kind.valueOf(method);
+                        
+                        Map<String, Object> params = new HashMap<>();
+                        parseGetParameters(exchange, params);
+                        
+                        String body = "";
+                        if (kind == ApiRequest.Kind.POST || kind == ApiRequest.Kind.PUT) {
+                            InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(), "utf-8");
+                            BufferedReader br = new BufferedReader(isr);
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+                            while ((line = br.readLine()) != null) {
+                                sb.append(line);
+                            }
+                            body = sb.toString();
+                        }
+
+                        ApiRequest request = new ApiRequest(kind, params, body);
+                        ApiResponse response = handler.handle(request);
+
+                        exchange.getResponseHeaders().set("Content-Type", response.contentType);
+                        byte[] bytes = response.content.getBytes();
+                        exchange.sendResponseHeaders(response.statusCode, bytes.length);
+                        try (OutputStream os = exchange.getResponseBody()) {
+                            os.write(bytes);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        exchange.sendResponseHeaders(500, 0);
+                        exchange.getResponseBody().close();
+                    }
+                }
+            };
+
+            server.createContext(endpoint, httpHandler);
         }
     }
 }

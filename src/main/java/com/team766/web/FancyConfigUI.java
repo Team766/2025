@@ -1,8 +1,13 @@
 package com.team766.web;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
+import com.team766.config.ConfigFileReader;
+import com.team766.config.ConfigValueParseException;
+import com.team766.web.WebServer.*;
 
-public class FancyConfigUI implements WebServer.Handler {
+public class FancyConfigUI implements Handler {
     @Override
     public String endpoint() {
         return "/fancy-config";
@@ -16,5 +21,65 @@ public class FancyConfigUI implements WebServer.Handler {
     @Override
     public String title() {
         return "Fancy Config Editor";
+    }
+
+    public static class LoadJson implements ApiHandler {
+        public String endpoint() {
+            return "/fancy-config-backend/load-json";
+        }
+        
+        public ApiResponse handle(ApiRequest request) {
+            if (request.kind == ApiRequest.Kind.GET) {
+                String json = ConfigFileReader.getInstance().getJsonString();
+                return new ApiResponse(json, 200, ContentType.APPLICATION_JSON);
+            }
+            return new ApiResponse(404);
+        }
+    }
+    
+    public static class SaveJson implements ApiHandler {
+        public String endpoint() {
+            return "/fancy-config-backend/save-json";
+        }
+        
+        public ApiResponse handle(ApiRequest request) {
+            if (request.kind == ApiRequest.Kind.POST) {
+                ArrayList<String> errors = new ArrayList<String>();
+                boolean toDisk = false;
+                
+                try {
+                    ConfigFileReader.getInstance().reloadFromJson(request.body);
+                } catch (ConfigValueParseException ex) {
+                    errors.add("Invalid JSON: " + ex.getMessage());
+                } catch (Exception ex) {
+                    errors.add("Unexpected Error: " + ex.toString());
+                }
+                
+                if (errors.isEmpty()) {
+                    boolean isPersistent = "true".equals(request.params.get("persistent"));
+                    if (isPersistent) {
+                        try {
+                            ConfigFileReader.getInstance().saveFile(request.body);
+                            toDisk = true;
+                        } catch (IOException ex) {
+                            errors.add("IO Exception: " + ex.getMessage());
+                        }
+                    }
+                }
+                
+                if (errors.isEmpty()) {
+                    String response = "Config generation " + ConfigFileReader.getInstance().getGeneration() + " saved successfully";
+                    if (toDisk) {
+                        response = response + " to disk";
+                    }
+                    response = response + "!";
+                    return new ApiResponse(response, 200);
+                } else {
+                    String response = String.join("\n", errors);
+                    return new ApiResponse(response, 400);
+                }
+            }
+            return new ApiResponse(404);
+        }
     }
 }

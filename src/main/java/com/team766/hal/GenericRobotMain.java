@@ -58,6 +58,7 @@ public final class GenericRobotMain implements AutoCloseable {
         m_webServer.addHandler(new Dashboard());
         m_webServer.addHandler(new DriverInterface(autonSelector));
         m_webServer.addHandler(new FancyConfigUI());
+        m_webServer.addApiHandlers(new FancyConfigUI());
         m_webServer.addHandler(new ConfigUI());
         m_webServer.addHandler(new LogViewer());
         m_webServer.addHandler(autonSelector);
