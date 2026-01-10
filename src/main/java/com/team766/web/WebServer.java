@@ -325,22 +325,6 @@ public class WebServer implements Closeable {
         apiHandlers.add(handler);
     }
 
-    // Note: This uses reflection to enumerate endpoints, which I believe is convenient and reduces
-    // boilerplate. However, I'm also happy to implement a more explicit version
-    public void addApiHandlers(Object container) {
-        for (Class<?> innerClass : container.getClass().getDeclaredClasses()) {
-            if (ApiHandler.class.isAssignableFrom(innerClass)) {
-                try {
-                    ApiHandler handler =
-                            (ApiHandler) innerClass.getDeclaredConstructor().newInstance();
-                    apiHandlers.add(handler);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     private void setupApiHandlers() {
         for (ApiHandler handler : apiHandlers) {
             String endpoint = handler.endpoint();
