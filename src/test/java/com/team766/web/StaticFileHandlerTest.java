@@ -42,13 +42,14 @@ public class StaticFileHandlerTest {
         // Recursive delete
         try (var stream = Files.walk(tempDir)) {
             stream.sorted((a, b) -> b.compareTo(a)) // Delete children first
-                    .forEach(p -> {
-                        try {
-                            Files.delete(p);
-                        } catch (IOException e) {
-                            // ignore
-                        }
-                    });
+                    .forEach(
+                            p -> {
+                                try {
+                                    Files.delete(p);
+                                } catch (IOException e) {
+                                    // ignore
+                                }
+                            });
         }
     }
 
@@ -93,14 +94,17 @@ public class StaticFileHandlerTest {
 
         assertEquals(200, response.statusCode());
         String ct = response.headers().firstValue("Content-Type").orElse("");
-        assertTrue(ct.contains("javascript"),
-                "Content-Type '" + ct + "' should contain 'javascript'");
+        assertTrue(
+                ct.contains("javascript"), "Content-Type '" + ct + "' should contain 'javascript'");
     }
 
     @Test
     void testNotFound() throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(baseUrl + "/does-not-exist.txt")).GET().build();
+        HttpRequest request =
+                HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/does-not-exist.txt"))
+                        .GET()
+                        .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
@@ -114,8 +118,11 @@ public class StaticFileHandlerTest {
         Path file = subDir.resolve("data.txt");
         Files.writeString(file, "some data");
 
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(baseUrl + "/subdir/data.txt"))
-                .GET().build();
+        HttpRequest request =
+                HttpRequest.newBuilder()
+                        .uri(URI.create(baseUrl + "/subdir/data.txt"))
+                        .GET()
+                        .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
