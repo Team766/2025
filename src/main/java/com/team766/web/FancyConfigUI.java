@@ -55,7 +55,7 @@ public class FancyConfigUI implements Handler {
                     errors.add("Unexpected Error: " + ex.toString());
                 }
 
-                if (errors.isEmpty()) {
+                if (errors.isEmpty() && request.params != null) {
                     boolean isPersistent = "true".equals(request.params.get("persistent"));
                     if (isPersistent) {
                         try {
