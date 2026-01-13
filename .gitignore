@@ -191,6 +191,3 @@ compile_commands.json
 
 # Don't commit the cache of downloaded sim files
 /build-sim/
-
-# Include config editor source bundle
-!src/main/deploy/html/editor-source.tar.gz
