@@ -352,7 +352,7 @@ public class WebServer implements Closeable {
                                     StringBuilder sb = new StringBuilder();
                                     String line;
                                     while ((line = br.readLine()) != null) {
-                                        sb.append(line);
+                                        sb.append(line + "\n");
                                     }
                                     body = sb.toString();
                                 }
