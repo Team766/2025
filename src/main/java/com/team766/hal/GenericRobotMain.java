@@ -11,6 +11,7 @@ import com.team766.web.AutonomousSelector;
 import com.team766.web.ConfigUI;
 import com.team766.web.Dashboard;
 import com.team766.web.DriverInterface;
+import com.team766.web.FancyConfigUI;
 import com.team766.web.LogViewer;
 import com.team766.web.WebServer;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -56,6 +57,9 @@ public final class GenericRobotMain implements AutoCloseable {
         m_webServer = new WebServer();
         m_webServer.addHandler(new Dashboard());
         m_webServer.addHandler(new DriverInterface(autonSelector));
+        m_webServer.addHandler(new FancyConfigUI());
+        m_webServer.addApiHandler(new FancyConfigUI.LoadJson());
+        m_webServer.addApiHandler(new FancyConfigUI.SaveJson());
         m_webServer.addHandler(new ConfigUI());
         m_webServer.addHandler(new LogViewer());
         m_webServer.addHandler(autonSelector);
