@@ -123,7 +123,7 @@ public class WebServer implements Closeable {
         if (staticFileHandler != null) {
             server.createContext(staticUrlPrefix, staticFileHandler);
         }
-        
+
         setupApiHandlers();
         addLineNumbersSvgHandler();
         server.start();
