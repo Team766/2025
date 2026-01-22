@@ -92,7 +92,6 @@ public class WebServer implements Closeable {
     public void start() {
         try {
             server = HttpServer.create(new InetSocketAddress(5800), 0);
-            setupApiHandlers();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -124,7 +123,8 @@ public class WebServer implements Closeable {
         if (staticFileHandler != null) {
             server.createContext(staticUrlPrefix, staticFileHandler);
         }
-
+        
+        setupApiHandlers();
         addLineNumbersSvgHandler();
         server.start();
     }

@@ -141,6 +141,7 @@
     }
   }
 
+  // Remove compact button and table mode from editor menu, as they are irrelevant
   function handleRenderMenu(items) {
     let compactIndex = null;
     items.forEach(function(item, index) {

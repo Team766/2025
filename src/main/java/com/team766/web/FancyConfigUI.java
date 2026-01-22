@@ -29,11 +29,11 @@ public class FancyConfigUI implements Handler {
         }
 
         public ApiResponse handle(ApiRequest request) {
-            if (request.kind == ApiRequest.Kind.GET) {
-                String json = ConfigFileReader.getInstance().getJsonString();
-                return new ApiResponse(json, 200, ContentType.APPLICATION_JSON);
+            if (request.kind != ApiRequest.Kind.GET) {
+                return new ApiResponse(405);
             }
-            return new ApiResponse(404);
+            String json = ConfigFileReader.getInstance().getJsonString();
+            return new ApiResponse(json, 200, ContentType.APPLICATION_JSON);
         }
     }
 
@@ -43,46 +43,46 @@ public class FancyConfigUI implements Handler {
         }
 
         public ApiResponse handle(ApiRequest request) {
-            if (request.kind == ApiRequest.Kind.POST) {
-                ArrayList<String> errors = new ArrayList<String>();
-                boolean toDisk = false;
+            if (request.kind != ApiRequest.Kind.POST) {
+                return new ApiResponse(405);
+            }
+            ArrayList<String> errors = new ArrayList<String>();
+            boolean toDisk = false;
 
-                try {
-                    ConfigFileReader.getInstance().reloadFromJson(request.body);
-                } catch (ConfigValueParseException ex) {
-                    errors.add("Invalid JSON: " + ex.getMessage());
-                } catch (Exception ex) {
-                    errors.add("Unexpected Error: " + ex.toString());
-                }
+            try {
+                ConfigFileReader.getInstance().reloadFromJson(request.body);
+            } catch (ConfigValueParseException ex) {
+                errors.add("Invalid JSON: " + ex.getMessage());
+            } catch (Exception ex) {
+                errors.add("Unexpected Error: " + ex.toString());
+            }
 
-                if (errors.isEmpty() && request.params != null) {
-                    boolean isPersistent = "true".equals(request.params.get("persistent"));
-                    if (isPersistent) {
-                        try {
-                            ConfigFileReader.getInstance().saveFile(request.body);
-                            toDisk = true;
-                        } catch (IOException ex) {
-                            errors.add("IO Exception: " + ex.getMessage());
-                        }
+            if (errors.isEmpty() && request.params != null) {
+                boolean isPersistent = "true".equals(request.params.get("persistent"));
+                if (isPersistent) {
+                    try {
+                        ConfigFileReader.getInstance().saveFile(request.body);
+                        toDisk = true;
+                    } catch (IOException ex) {
+                        errors.add("IO Exception: " + ex.getMessage());
                     }
-                }
-
-                if (errors.isEmpty()) {
-                    String response =
-                            "Config generation "
-                                    + ConfigFileReader.getInstance().getGeneration()
-                                    + " saved successfully";
-                    if (toDisk) {
-                        response = response + " to disk";
-                    }
-                    response = response + "!";
-                    return new ApiResponse(response, 200);
-                } else {
-                    String response = String.join("\n", errors);
-                    return new ApiResponse(response, 400);
                 }
             }
-            return new ApiResponse(404);
+
+            if (errors.isEmpty()) {
+                String response =
+                        "Config generation "
+                                + ConfigFileReader.getInstance().getGeneration()
+                                + " saved successfully";
+                if (toDisk) {
+                    response = response + " to disk";
+                }
+                response = response + "!";
+                return new ApiResponse(response, 200);
+            } else {
+                String response = String.join("\n", errors);
+                return new ApiResponse(response, 400);
+            }
         }
     }
 }
