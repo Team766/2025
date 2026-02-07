@@ -16,12 +16,18 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
     private MotorController centerAlgaeMotor;
 
-    private static final double CORAL_THRESHOLD = 200; // TODO: Set this to a real value
+    private static final double CORAL_THRESHOLD =
+            0.03; // TODO: Set this to a real value | Previously 0.12
+    private static final double CORAL_OUTTAKE_THRESHOLD = 0.12;
+    // Previous Left & Right CANRange FOV: 27
+    // Previous Phoenix Tuner prox threshold: 0.4
+    // MAKE SURE both left & right motor are counterclockwise on phoenix tuner
 
-    private double leftPower = 0.25;
-    private double rightPower = 0.25;
+    private double leftPower = 0.4;
+    private double rightPower = 0.4;
 
-    private double algaePower = 0.35;
+    private double algaePower = 0.3; // previously 0.5
+    private double algaeSlowPower = -0.05;
 
     public Intake() {
         leftCANRange = RobotProvider.instance.getTimeOfFlight("INTAKE.CANRange.left");
@@ -46,6 +52,15 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
         /*
          * TODO: During bringup, check the atual distance values to find a range where the coral is validly in the sensor (to ensure no malfunctioning sensors).
          */
+
+        public double getLeftDistance() {
+            return leftDistance;
+        }
+
+        public double getBackCenterDistance() {
+            return backCenterDistance;
+        }
+
         public boolean hasCoralInLeft() {
             return leftDistance < CORAL_THRESHOLD;
         }
@@ -60,6 +75,10 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
 
         public boolean hasCoralInBackCenter() {
             return backCenterDistance < CORAL_THRESHOLD;
+        }
+
+        public boolean hasCoralToOuttake() {
+            return backCenterDistance < CORAL_OUTTAKE_THRESHOLD;
         }
     }
 
@@ -88,23 +107,27 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
     }
 
     public void turnLeftPositive() {
-        leftMotor.set(leftPower);
-    }
-
-    public void turnLeftNegative() {
         leftMotor.set(-leftPower);
     }
 
+    public void turnLeftNegative() {
+        leftMotor.set(leftPower);
+    }
+
     public void turnRightPositive() {
-        rightMotor.set(rightPower);
+        rightMotor.set(-rightPower);
     }
 
     public void turnRightNegative() {
-        rightMotor.set(-rightPower);
+        rightMotor.set(rightPower);
     }
 
     public void turnAlgaePositive() {
         centerAlgaeMotor.set(algaePower);
+    }
+
+    public void retainAlgae() {
+        centerAlgaeMotor.set(algaeSlowPower);
     }
 
     public void turnAlgaeNegative() {
@@ -136,6 +159,15 @@ public class Intake extends MechanismWithStatus<Intake.IntakeStatus> {
         double frontCenterDistance = frontCenterCANRange.getDistance().orElse(Double.MAX_VALUE);
         double backCenterDistance = backCenterCANRange.getDistance().orElse(Double.MAX_VALUE);
 
+        log(
+                "Intake Status: leftDistance = "
+                        + leftDistance
+                        + ", rightDistance = "
+                        + rightDistance
+                        + ", frontCenterDistance = "
+                        + frontCenterDistance
+                        + ", backCenterDistance = "
+                        + backCenterDistance);
         return new IntakeStatus(
                 leftDistance, rightDistance, frontCenterDistance, backCenterDistance);
     }

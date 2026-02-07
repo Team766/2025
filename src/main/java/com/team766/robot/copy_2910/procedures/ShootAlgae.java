@@ -4,19 +4,17 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.copy_2910.mechanisms.Intake;
 
-public class OuttakeCoral extends Procedure {
+public class ShootAlgae extends Procedure {
 
     private Intake intake;
 
-    public OuttakeCoral(Intake intake2) {
+    public ShootAlgae(Intake intake2) {
         intake = reserve(intake2);
     }
 
     @Override
     public void run(Context context) {
-        intake.setLeft(1.5);
-        intake.setRight(-1.5);
-        // waitForStatusMatching(context, Intake.IntakeStatus.class, s -> !s.hasCoralToOuttake());
-        // intake.stop();
+        context.waitForSeconds(.1);
+        intake.turnAlgaeNegative();
     }
 }

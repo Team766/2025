@@ -106,7 +106,7 @@ public class Shoulder extends MechanismWithStatus<Shoulder.ShoulderStatus> {
         rightMotor = (SparkMax) halRightMotor;
 
         SparkMaxConfig rightConfig = new SparkMaxConfig();
-        rightConfig.follow(leftMotor, true /* invert */);
+        rightConfig.follow(leftMotor, false /* invert */);
         rightMotor.configure(
                 rightConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 

@@ -11,14 +11,14 @@ import com.team766.robot.copy_2910.mechanisms.Wrist;
 import com.team766.robot.copy_2910.mechanisms.Wrist.WristPosition;
 import java.util.Optional;
 
-public class IntakeCoral extends Procedure {
+public class IntakeCoralL1 extends Procedure {
 
     private Intake intake;
     private Elevator elevator;
     private Shoulder shoulder;
     private Wrist wrist;
 
-    public IntakeCoral(Intake intake, Elevator elevator, Shoulder shoulder, Wrist wrist) {
+    public IntakeCoralL1(Intake intake, Elevator elevator, Shoulder shoulder, Wrist wrist) {
         this.intake = reserve(intake);
         this.elevator = reserve(elevator);
         this.shoulder = reserve(shoulder);
@@ -46,9 +46,7 @@ public class IntakeCoral extends Procedure {
                         + status.get().getLeftDistance()
                         + "Back center:"
                         + status.get().getBackCenterDistance());
-        while (waitForStatusMatchingOrTimeout(
-                        context, Intake.IntakeStatus.class, s -> !s.hasCoralInBackCenter(), 0.35)
-                .isPresent()) {
+        while (!status.get().hasCoralInBackCenter()) {
             context.yield();
             intake.turnAlgaePositive();
             status = getStatus(Intake.IntakeStatus.class);
@@ -66,8 +64,8 @@ public class IntakeCoral extends Procedure {
              * Thus, we need to turn both motors clockwise–to the right, or in the positive direction.
              */
             if (hasCoralInLeft && hasCoralInRight && hasCoralInFrontCenter) {
-                intake.turnLeftPositive();
-                intake.turnRightPositive();
+                intake.turnAlgaePositive();
+                continue;
             }
 
             /*
@@ -98,8 +96,8 @@ public class IntakeCoral extends Procedure {
             * This is the same as situation two and three!
             */
             else {
-                intake.turnLeftNegative();
-                intake.turnRightPositive();
+                intake.turnAlgaePositive(); // No way to move coral slightly to the left or right,
+                // so needs to be pos/neg all the time
             }
         }
         // Once the coral is in the back center, we stop the intake motors.
